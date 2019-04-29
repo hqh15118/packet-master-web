@@ -1,10 +1,33 @@
 package com.zjucsc.application.tshark.decode;
 
+/**
+ * #project spring-boot-starter
+ *
+ * @author hongqianhui
+ * #create_time 2019-04-25 - 12:15
+ */
+
+/**
+ *
+ * @param <T> return type of this handler
+ */
 public abstract class AbstractHandler<T> implements Handler<T>{
 
     private AbstractHandler prevHandler;
     private AbstractHandler nextHandler;
+    protected String id;
+    /**
+     *
+     */
     private PipeLine pipeLine;
+    public AbstractHandler(){
+        id = this.getClass().getSimpleName();
+    }
+
+    public AbstractHandler setId(String id){
+        this.id = id;
+        return this;
+    }
 
     @Override
     public void setPipeLine(PipeLine line) {
@@ -32,4 +55,9 @@ public abstract class AbstractHandler<T> implements Handler<T>{
     }
 
     public abstract void handleAndPass(Object t);
+
+    @Override
+    public String toString() {
+        return " ---> " + id;
+    }
 }

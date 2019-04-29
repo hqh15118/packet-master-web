@@ -1,9 +1,11 @@
-package com.zjucsc.application.tshark;
+package com.zjucsc.application.tshark.capture;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.google.common.base.Splitter;
 import com.zjucsc.application.domain.exceptions.OpenCaptureServiceException;
+import com.zjucsc.application.tshark.BasePacketHandler;
+import com.zjucsc.application.tshark.PacketDecodeHandler;
+import com.zjucsc.application.tshark.PacketSendHandler;
 import com.zjucsc.application.tshark.decode.DefaultPipeLine;
 import lombok.Data;
 import org.slf4j.Logger;
@@ -160,6 +162,7 @@ public class PacketMain {
             pipeLine.addLast(new PacketDecodeHandler(Executors.newFixedThreadPool(10)));
             pipeLine.addLast(new PacketSendHandler(Executors.newSingleThreadExecutor()));
         }
+        System.out.println(pipeLine);
         System.out.println(System.currentTimeMillis());
         try (InputStream is = process.getInputStream();BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
             for (; ; ) {

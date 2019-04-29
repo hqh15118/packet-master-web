@@ -1,37 +1,21 @@
 package com.zjucsc.application.tshark;
 
+import java.util.List;
+
 public class BasePacket {
 
+
     /**
-     * timestamp : 946695632244
-     * layers : {"frame":{"frame_frame_encap_type":"1","frame_frame_time":"Jan  1, 2000 11:00:32.244216000 ä¸­å\u009b½æ \u0087å\u0087\u0086æ\u0097¶é\u0097´","frame_frame_offset_shift":"0.000000000","frame_frame_time_epoch":"946695632.244216000","frame_frame_time_delta":"0.009438000","frame_frame_time_delta_displayed":"0.009438000","frame_frame_time_relative":"0.042628000","frame_frame_number":"5","frame_frame_len":"85","frame_frame_cap_len":"85","frame_frame_marked":"0","frame_frame_ignored":"0","frame_frame_protocols":"eth:ethertype:ip:tcp:tpkt:cotp:s7comm"}}
+     * timestamp : 946695632201
+     * layers : {"frame_protocols":["eth:ethertype:ip:tcp:mbtcp:modbus"],"eth_dst":["00:0c:29:9e:7a:44"],"eth_src":["00:0c:29:75:b2:38"],"ip_src":["192.168.254.134"],"ip_addr":["192.168.254.134","192.168.254.143"],"tcp_srcport":["1075"],"tcp_dstport":["502"],"modbus_func_code":["2"],"tcp_payload":["d9:04:00:00:00:06:01:02:00:00:00:0b"]}
      */
 
     public String timestamp;
     public LayersBean layers;
-    public static class LayersBean {
-        /**
-         * frame : {"frame_frame_encap_type":"1","frame_frame_time":"Jan  1, 2000 11:00:32.244216000 ä¸­å\u009b½æ \u0087å\u0087\u0086æ\u0097¶é\u0097´","frame_frame_offset_shift":"0.000000000","frame_frame_time_epoch":"946695632.244216000","frame_frame_time_delta":"0.009438000","frame_frame_time_delta_displayed":"0.009438000","frame_frame_time_relative":"0.042628000","frame_frame_number":"5","frame_frame_len":"85","frame_frame_cap_len":"85","frame_frame_marked":"0","frame_frame_ignored":"0","frame_frame_protocols":"eth:ethertype:ip:tcp:tpkt:cotp:s7comm"}
-         */
-        public FrameBean frame;
-        public static class FrameBean {
-            /**
-             * frame_frame_encap_type : 1
-             * frame_frame_time : Jan  1, 2000 11:00:32.244216000 ä¸­å½æ åæ¶é´
-             * frame_frame_offset_shift : 0.000000000
-             * frame_frame_time_epoch : 946695632.244216000
-             * frame_frame_time_delta : 0.009438000
-             * frame_frame_time_delta_displayed : 0.009438000
-             * frame_frame_time_relative : 0.042628000
-             * frame_frame_number : 5
-             * frame_frame_len : 85
-             * frame_frame_cap_len : 85
-             * frame_frame_marked : 0
-             * frame_frame_ignored : 0
-             * frame_frame_protocols : eth:ethertype:ip:tcp:tpkt:cotp:s7comm
-             */
 
-            public String frame_frame_protocols;
-        }
+    public static class LayersBean {
+        public String[] frame_protocols;
     }
+
+
 }

@@ -23,7 +23,7 @@ public class PacketSendHandler extends AbstractAsyncHandler<Void> {
             client.sendEvent("packet_event",(String)t);
             System.out.println("send msg successfully");
         }else{
-           logger.error("not define client , {} msg send failed" , t);
+           //logger.error("not define client , {} msg send failed" , t);
         }
         return null;
     }

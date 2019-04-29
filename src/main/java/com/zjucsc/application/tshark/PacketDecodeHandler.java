@@ -7,7 +7,9 @@ import com.zjucsc.application.tshark.packet.layers.S7Packet;
 
 import java.util.concurrent.ExecutorService;
 
-
+/**
+ * packet json_string -> packet instance -> return five dimentsion info
+ */
 public class PacketDecodeHandler extends AbstractAsyncHandler<String> {
 
     public PacketDecodeHandler(ExecutorService executor) {

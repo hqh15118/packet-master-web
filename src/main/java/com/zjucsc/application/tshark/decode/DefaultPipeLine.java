@@ -1,9 +1,14 @@
 package com.zjucsc.application.tshark.decode;
 
-import lombok.experimental.SuperBuilder;
-
 import java.util.LinkedList;
+import java.util.List;
 
+/**
+ * #project spring-boot-starter
+ *
+ * @author hongqianhui
+ * #create_time 2019-04-25 - 11:20
+ */
 public class DefaultPipeLine implements PipeLine {
     private LinkedList<AbstractHandler> handlerLinkedList = new LinkedList<>();
 
@@ -28,5 +33,24 @@ public class DefaultPipeLine implements PipeLine {
 
     public int pipeLineSize(){
         return handlerLinkedList.size();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("start[").append(this.getClass().getSimpleName()).append("]");
+        for (AbstractHandler handlerInstance : handlerLinkedList) {
+            stringBuilder.append(handlerInstance);
+        }
+        stringBuilder.append("\n");
+        for (AbstractHandler handlerInstance : handlerLinkedList) {
+            if (handlerInstance instanceof AbstractAsyncHandler){
+                List pipeLines = ((AbstractAsyncHandler)handlerInstance).getPipeLine();
+                for (Object pipeLine : pipeLines){
+                    stringBuilder.append(pipeLine);
+                }
+            }
+        }
+        return stringBuilder.toString();
     }
 }

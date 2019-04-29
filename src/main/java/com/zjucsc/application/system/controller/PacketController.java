@@ -8,7 +8,7 @@ import com.zjucsc.application.config.Common;
 import com.zjucsc.application.socketio.MainServer;
 import com.zjucsc.application.domain.bean.CaptureService;
 import com.zjucsc.application.domain.exceptions.OpenCaptureServiceException;
-import com.zjucsc.application.tshark.PacketService;
+import com.zjucsc.application.tshark.capture.PacketService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

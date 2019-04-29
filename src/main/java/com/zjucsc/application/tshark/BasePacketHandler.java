@@ -15,7 +15,7 @@ public class BasePacketHandler extends AbstractAsyncHandler<PacketInfo.PacketWra
     @Override
     public PacketInfo.PacketWrapper handle(Object t) {
         return new PacketInfo.PacketWrapper(
-                PacketInfo.discernPacket(JSON.parseObject((String)t,BasePacket.class).layers.frame.frame_frame_protocols),
+                PacketInfo.discernPacket(JSON.parseObject((String)t,BasePacket.class).layers.frame_protocols[0]),
                 (String)t);
     }
 }
