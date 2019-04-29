@@ -161,15 +161,13 @@ public class PacketMain {
             pipeLine.addLast(new PacketSendHandler(Executors.newSingleThreadExecutor()));
         }
         System.out.println(System.currentTimeMillis());
-//        Splitter splitter = Splitter.on(" ");
         try (InputStream is = process.getInputStream();BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
             for (; ; ) {
                 String str = "";
                 if ((str = reader.readLine()) != null) {
-//                    System.out.println(str);
-//                    if (str.length() > 100)
-//                        pipeLine.pushDataAtHead(str);
-//                    splitter.splitToList(str);
+                    System.out.println(str);
+                    if (str.length() > 100)
+                        pipeLine.pushDataAtHead(str);
                 } else {
                     break;
                 }
