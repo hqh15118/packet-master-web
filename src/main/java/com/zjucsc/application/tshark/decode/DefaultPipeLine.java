@@ -12,6 +12,7 @@ import java.util.List;
 public class DefaultPipeLine implements PipeLine {
     private LinkedList<AbstractHandler> handlerLinkedList = new LinkedList<>();
 
+    private String pipeId;
     @Override
     public void addLast(AbstractHandler handler) {
         if (handlerLinkedList.size() == 0){
@@ -23,6 +24,14 @@ public class DefaultPipeLine implements PipeLine {
             lastHandler.setNextHandler(handler);
         }
         handler.setPipeLine(this);
+    }
+
+    public DefaultPipeLine(){
+        pipeId = this.getClass().getSimpleName();
+    }
+
+    public DefaultPipeLine(String pipeId){
+        this.pipeId = pipeId;
     }
 
     @SuppressWarnings("unchecked")
@@ -38,7 +47,7 @@ public class DefaultPipeLine implements PipeLine {
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("start[").append(this.getClass().getSimpleName()).append("]");
+        stringBuilder.append("start[").append(pipeId).append("]");
         for (AbstractHandler handlerInstance : handlerLinkedList) {
             stringBuilder.append(handlerInstance);
         }

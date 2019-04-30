@@ -71,7 +71,7 @@ public class PacketController {
     }
 
 
-    @GetMapping("getallinterface")
+    @GetMapping("get_all_interface")
     public List<NetworkInterface> getAllNetworkInterfaces() throws SocketException {
         return packetService.getAllNetworkInterface();
     }

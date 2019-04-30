@@ -1,12 +1,13 @@
 package com.zjucsc.packetmasterweb;
 
 import com.alibaba.fastjson.JSON;
-import com.google.common.base.Splitter;
 import com.zjucsc.application.domain.exceptions.OpenCaptureServiceException;
-import com.zjucsc.application.tshark.*;
 import com.zjucsc.application.tshark.capture.PacketMain;
-import com.zjucsc.application.tshark.packet.layers.ModbusPacket;
-import com.zjucsc.application.tshark.packet.layers.S7Packet;
+import com.zjucsc.application.tshark.domain.packet.InitPacket;
+import com.zjucsc.application.tshark.domain.packet.layers.ModbusPacket;
+import com.zjucsc.application.tshark.domain.packet.layers.S7Packet;
+import com.zjucsc.application.util.ByteUtils;
+import com.zjucsc.application.util.PacketDecodeUtil;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -57,11 +58,22 @@ public class DecodeTest {
 
     @Test
     public void base_json_test(){
-        BasePacket packet = JSON.parseObject(modbus_json,BasePacket.class );
+        InitPacket packet = JSON.parseObject(modbus_json, InitPacket.class );
         System.out.println(packet.layers.frame_protocols[0]);
     }
 
+    private String hexString = "080CA19E0F00FC00";
 
 
+    //40000 -> 47 ms
+    @Test
+    public void timeStampTest(){
+        byte[] bytes = ByteUtils.hexStringToByteArray(hexString);
+        long time1 = System.currentTimeMillis();
+        for (int i = 0; i < 800000; i++) {
+            PacketDecodeUtil.decodeTimeStamp(bytes , 0);
+        }
+        System.out.println(System.currentTimeMillis() - time1);
+    }
 
 }

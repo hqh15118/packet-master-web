@@ -7,24 +7,29 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * 组态配置实体类
  */
 @Data
-@TableName("configurations_setting")
+@TableName("configurations")
 public class ConfigurationSetting {
-    @TableId(value = "id" , type = IdType.AUTO)
-    private int id;
-    @TableField(value = "src_ip")
-    private String src_ip;
-    @TableField(value = "dst_ip")
-    private String dst_ip;
-    @TableField(value = "src_mac")
-    private String src_mac;
-    @TableField(value = "dst_mac")
-    private String dst_mac;
-    @TableField(value = "port")
-    private String port;
-    @TableField(value = "protocol")
+    //0 white 1 black
+    @TableField("type")
+    @NotBlank
+    private int type;
+    @NotBlank
+    @TableField("ip")
+    private String ip;
+    @TableField("protocol")
     private String protocol;
+    @TableField("port")
+    private String port;
+    //operation
+    @TableField("fun_code")
+    private String fun_code;
+    //工艺参数
+    @TableField("artifical_parm")
+    private String artificalParm;
 }

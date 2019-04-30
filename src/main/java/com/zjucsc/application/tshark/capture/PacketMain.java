@@ -3,9 +3,7 @@ package com.zjucsc.application.tshark.capture;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.zjucsc.application.domain.exceptions.OpenCaptureServiceException;
-import com.zjucsc.application.tshark.BasePacketHandler;
-import com.zjucsc.application.tshark.PacketDecodeHandler;
-import com.zjucsc.application.tshark.PacketSendHandler;
+import com.zjucsc.application.tshark.handler.*;
 import com.zjucsc.application.tshark.decode.DefaultPipeLine;
 import lombok.Data;
 import org.slf4j.Logger;
@@ -23,7 +21,7 @@ public class PacketMain {
     private static TsharkConfiguraionClass tsharkConfiguraion = null;
     private static File tsharkConfigurationFile = null;
 
-    private static DefaultPipeLine pipeLine = new DefaultPipeLine();
+    private static DefaultPipeLine pipeLine = new DefaultPipeLine("main pipe line");
 
     //<class 'list'>: ['/usr/local/bin/tshark', '-l', '-n', '-T', 'pdml', '-r', '/Users/hongqianhui/Desktop/2019_4_24_pyshark_test.pcapng']
     static void main1(String[] args) throws IOException {
@@ -158,9 +156,31 @@ public class PacketMain {
     public static void doProcess(Process process) throws IOException {
         //init handlers
         if (pipeLine.pipeLineSize() == 0){
-            pipeLine.addLast(new BasePacketHandler(Executors.newSingleThreadExecutor()));
-            pipeLine.addLast(new PacketDecodeHandler(Executors.newFixedThreadPool(10)));
-            pipeLine.addLast(new PacketSendHandler(Executors.newSingleThreadExecutor()));
+            /*
+             * main pipeLine handler
+             */
+            BasePacketHandler basePacketHandler = new BasePacketHandler(Executors.newSingleThreadExecutor());
+            PacketDecodeHandler packetDecodeHandler = new PacketDecodeHandler(Executors.newFixedThreadPool(10));
+            PacketSendHandler packetSendHandler = new PacketSendHandler(Executors.newSingleThreadExecutor());
+            /*
+             * packet statistics pipe line
+             */
+            DefaultPipeLine packetStatisticsPipeLine = new DefaultPipeLine("packet statistics pipeLine");
+            packetStatisticsPipeLine.addLast(new PacketStatisticsHandler(null));
+            /*
+             * bad packet pipe line
+             */
+            DefaultPipeLine badPacketAnalysisPipeLine = new DefaultPipeLine("bad packet pipeLine");
+            badPacketAnalysisPipeLine.addLast(new BadPacketAnalyzeHandler());
+            /*
+             * connect pipelines
+             */
+            basePacketHandler.addPipeLine(packetStatisticsPipeLine);
+            packetDecodeHandler.addPipeLine(badPacketAnalysisPipeLine);
+
+            pipeLine.addLast(basePacketHandler);
+            pipeLine.addLast(packetDecodeHandler);
+            pipeLine.addLast(packetSendHandler);
         }
         System.out.println(pipeLine);
         System.out.println(System.currentTimeMillis());

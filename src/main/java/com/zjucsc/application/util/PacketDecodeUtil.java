@@ -1,5 +1,10 @@
 package com.zjucsc.application.util;
 
+import com.zjucsc.application.tshark.domain.beans.TimeStamp;
+
+import static com.zjucsc.application.tshark.domain.beans.PacketInfo.PACKET_PROTOCOL.MODBUS;
+import static com.zjucsc.application.tshark.domain.beans.PacketInfo.PACKET_PROTOCOL.S7;
+
 /**
  * #project packet-master-web
  *
@@ -24,4 +29,49 @@ public class PacketDecodeUtil {
                 + Character.digit(s.charAt(len - 1), 16));
         return data;
     }
+
+    /**
+     *
+     * @param payload tcp payload
+     * @param offset offset from payload end
+     * @return
+     */
+    public static String decodeTimeStamp(byte[] payload , int offset){
+        int len = payload.length;
+        offset = len - offset;
+        int year = payload[offset] >>> 3;
+        int var1 =  (payload[offset] & 0b00000111) << 6;
+        int var2 = (payload[offset + 1] & 0b11111100) >>> 2;
+        int day = var1 + var2;
+        var1 = ((payload[offset + 1] & 0b00000011)) << 3;
+        var2 = ((payload[offset + 2] & 0b11100000)) >>> 5;
+        int hour = var1 + var2;
+        var1 = ((payload[offset + 2] & 0b00011111)) << 1;
+        var2 = ((payload[offset + 3] & 0b10000000)) >>> 7;
+        int minute =  var1 + var2;
+        int second = ((payload[offset + 3] & 0b01111110)) >>> 1 ;
+        var1 = ((payload[offset + 3] & 0b00000001)) << 10;
+        var2 = (payload[offset + 4]) << 1;
+        int var3 = ((payload[offset + 5] & 0b10000000)) >>> 7;
+        int millsecond =  var1 + var2 + var3;
+        var1 = ((payload[offset + 5] & 0b01111111)) << 3;
+        var2 = ((payload[offset + 6] & 0b11100000)) >>> 5;
+        int unsecond = var1 + var2;
+        var1 = (payload[offset + 6] & 0b00011100) >>> 2;
+        int nansecond = var1 * 200;
+        return new TimeStamp(year,day,hour,minute,second,millsecond,unsecond,nansecond).toString();
+    }
+
+    public static int decodeFuncode(String str_fun_code , String protocol){
+        switch (protocol){
+            case MODBUS :
+
+                break;
+            case S7:
+
+                break;
+        }
+        return 0;
+    }
+
 }

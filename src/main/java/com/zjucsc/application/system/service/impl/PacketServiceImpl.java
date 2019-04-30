@@ -1,10 +1,14 @@
 package com.zjucsc.application.system.service.impl;
 
+import com.zjucsc.application.config.Common;
+import com.zjucsc.application.config.SocketIoEvent;
 import com.zjucsc.application.domain.bean.NetworkInterface;
 import com.zjucsc.application.system.service.PacketService;
 import com.zjucsc.application.util.NetworkInterfaceUtil;
+import org.apache.catalina.core.StandardWrapper;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.net.InetAddress;
@@ -46,4 +50,23 @@ public class PacketServiceImpl implements PacketService {
         }
         return all;
     }
+
+    /**
+     * 一秒钟发送一次统计信息，发送总报文数
+     */
+    @Scheduled(fixedRate = 1000)
+    public void sendPacketStatisticsMsg(){
+        Common.updateAllClient(SocketIoEvent.STATISTICS_PACKET,new StatisticsDataWrapper(Common.getRecvPacketFlow(),Common.getRecvPacketNuber()));
+    }
+
+    public static class StatisticsDataWrapper{
+        public long number;
+        public long flow;
+
+        public StatisticsDataWrapper(long number, long flow) {
+            this.number = number;
+            this.flow = flow;
+        }
+    }
+
 }
