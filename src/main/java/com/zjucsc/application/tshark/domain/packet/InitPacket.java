@@ -1,5 +1,7 @@
 package com.zjucsc.application.tshark.domain.packet;
 
+import java.util.Arrays;
+
 public class InitPacket {
 
 
@@ -16,5 +18,21 @@ public class InitPacket {
         public String[] frame_protocols;
         public String[] tcp_payload;
         public String[] frame_cap_len;
+
+        @Override
+        public String toString() {
+            return "LayersBean{" +
+                    "frame_protocols=" + Arrays.toString(frame_protocols) +
+                    ", tcp_payload=" + Arrays.toString(tcp_payload) +
+                    ", frame_cap_len=" + Arrays.toString(frame_cap_len) +
+                    '}';
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "InitPacket{" +
+                "layers=" + layers +
+                '}';
     }
 }

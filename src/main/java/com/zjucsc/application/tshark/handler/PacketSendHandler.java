@@ -18,6 +18,7 @@ public class PacketSendHandler extends AbstractAsyncHandler<Void> {
     @Override
     public Void handle(Object t) {
         FiveDimensionPacketWrapper packet = ((FiveDimensionPacketWrapper) t);
+        System.out.println("send packet handler : " + packet);
         if (client != null){
             client.sendEvent("packet_event", JSON.toJSONString(packet.fiveDimensionPacket));
             System.out.println("send msg successfully");

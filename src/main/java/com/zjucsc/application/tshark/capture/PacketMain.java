@@ -3,6 +3,8 @@ package com.zjucsc.application.tshark.capture;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.zjucsc.application.domain.exceptions.OpenCaptureServiceException;
+import com.zjucsc.application.system.service.impl.PacketAnalyzeService;
+import com.zjucsc.application.tshark.decode.PipeLine;
 import com.zjucsc.application.tshark.handler.*;
 import com.zjucsc.application.tshark.decode.DefaultPipeLine;
 import lombok.Data;
@@ -21,7 +23,7 @@ public class PacketMain {
     private static TsharkConfiguraionClass tsharkConfiguraion = null;
     private static File tsharkConfigurationFile = null;
 
-    private static DefaultPipeLine pipeLine = new DefaultPipeLine("main pipe line");
+    private static DefaultPipeLine pipeLine = null;
 
     //<class 'list'>: ['/usr/local/bin/tshark', '-l', '-n', '-T', 'pdml', '-r', '/Users/hongqianhui/Desktop/2019_4_24_pyshark_test.pcapng']
     static void main1(String[] args) throws IOException {
@@ -152,35 +154,41 @@ public class PacketMain {
         return process;
     }
 
+    public static PipeLine getDefaultPipeLine(){
+        DefaultPipeLine pipeLine = new DefaultPipeLine("main pipe line");
+        /*
+         * main pipeLine handler
+         */
+        BasePacketHandler basePacketHandler = new BasePacketHandler(Executors.newSingleThreadExecutor());
+        PacketDecodeHandler packetDecodeHandler = new PacketDecodeHandler(Executors.newFixedThreadPool(10));
+        PacketSendHandler packetSendHandler = new PacketSendHandler(Executors.newSingleThreadExecutor());
+        /*
+         * packet statistics pipe line
+         */
+        DefaultPipeLine packetStatisticsPipeLine = new DefaultPipeLine("packet statistics pipeLine");
+        packetStatisticsPipeLine.addLast(new PacketStatisticsHandler(new PacketAnalyzeService() , Executors.newSingleThreadExecutor()));
+        /*
+         * bad packet pipe line
+         */
+        DefaultPipeLine badPacketAnalysisPipeLine = new DefaultPipeLine("bad packet pipeLine");
+        badPacketAnalysisPipeLine.addLast(new BadPacketAnalyzeHandler(Executors.newSingleThreadExecutor()));
+        /*
+         * connect pipelines
+         */
+        basePacketHandler.addPipeLine(packetStatisticsPipeLine);
+        packetDecodeHandler.addPipeLine(badPacketAnalysisPipeLine);
+
+        pipeLine.addLast(basePacketHandler);
+        pipeLine.addLast(packetDecodeHandler);
+        pipeLine.addLast(packetSendHandler);
+        return pipeLine;
+    }
+
     //run command successfully and get process
     public static void doProcess(Process process) throws IOException {
         //init handlers
         if (pipeLine.pipeLineSize() == 0){
-            /*
-             * main pipeLine handler
-             */
-            BasePacketHandler basePacketHandler = new BasePacketHandler(Executors.newSingleThreadExecutor());
-            PacketDecodeHandler packetDecodeHandler = new PacketDecodeHandler(Executors.newFixedThreadPool(10));
-            PacketSendHandler packetSendHandler = new PacketSendHandler(Executors.newSingleThreadExecutor());
-            /*
-             * packet statistics pipe line
-             */
-            DefaultPipeLine packetStatisticsPipeLine = new DefaultPipeLine("packet statistics pipeLine");
-            packetStatisticsPipeLine.addLast(new PacketStatisticsHandler(null));
-            /*
-             * bad packet pipe line
-             */
-            DefaultPipeLine badPacketAnalysisPipeLine = new DefaultPipeLine("bad packet pipeLine");
-            badPacketAnalysisPipeLine.addLast(new BadPacketAnalyzeHandler());
-            /*
-             * connect pipelines
-             */
-            basePacketHandler.addPipeLine(packetStatisticsPipeLine);
-            packetDecodeHandler.addPipeLine(badPacketAnalysisPipeLine);
-
-            pipeLine.addLast(basePacketHandler);
-            pipeLine.addLast(packetDecodeHandler);
-            pipeLine.addLast(packetSendHandler);
+            pipeLine = (DefaultPipeLine) getDefaultPipeLine();
         }
         System.out.println(pipeLine);
         System.out.println(System.currentTimeMillis());

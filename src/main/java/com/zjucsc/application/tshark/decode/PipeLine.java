@@ -15,4 +15,7 @@ public interface PipeLine {
      * @param t 压入的数据
      */
     void pushDataAtHead(Object t);
+
+    void setFirstHandler(AbstractHandler firstHandler);
+    AbstractHandler getFirstHandler();
 }

@@ -21,9 +21,18 @@ public class PacketDecodeHandler extends AbstractAsyncHandler<FiveDimensionPacke
         super(executor);
     }
 
+    /* FiveDimensionPacketWrapper fields :
+    *   timeStamp,      五元组
+    *   protocol,       五元组
+    *   src_ip,         五元组
+    *   dis_ip,         五元组
+    *   code            五元组
+    *   tcpPayload      TCP负载
+    * */
     @Override
     public FiveDimensionPacketWrapper handle(Object t) {
         PacketInfo.PacketWrapper wrapper = (PacketInfo.PacketWrapper) t;
+        System.out.println("decode packet handler : " + wrapper);
         switch (wrapper.packetProtocol) {
             case MODBUS:
                 return ModbusPacket.decode(wrapper.packetProtocol,wrapper.json);

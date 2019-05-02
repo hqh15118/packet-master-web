@@ -14,6 +14,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Scanner;
 
 public class DecodeTest {
     public String modbus_json = "{\"timestamp\" : \"946695632201\", \"layers\" : {\"frame_protocols\": [\"eth:ethertype:ip:tcp:mbtcp:modbus\"],\"eth_dst\": [\"00:0c:29:9e:7a:44\"],\"eth_src\": [\"00:0c:29:75:b2:38\"],\"ip_src\": [\"192.168.254.134\"],\"ip_addr\": [\"192.168.254.134\",\"192.168.254.143\"],\"tcp_srcport\": [\"1075\"],\"tcp_dstport\": [\"502\"],\"modbus_func_code\": [\"2\"],\"tcp_payload\": [\"d9:04:00:00:00:06:01:02:00:00:00:0b\"]}}";
@@ -62,16 +63,24 @@ public class DecodeTest {
         System.out.println(packet.layers.frame_protocols[0]);
     }
 
+    //1 年 3 天 5 时 3 分 15 秒 30 毫秒 7 微秒 1400 纳秒
     private String hexString = "080CA19E0F00FC00";
+    //17 年 2 天 7 时 5 分 12 秒 26 毫秒 15 微秒 600 纳秒
+   private String hexString1 = "8808E2980D01EC00";
 
 
     //40000 -> 47 ms
     @Test
-    public void timeStampTest(){
+    public void timeStampTest() throws InterruptedException {
         byte[] bytes = ByteUtils.hexStringToByteArray(hexString);
+        byte[] bytes1 = ByteUtils.hexStringToByteArray(hexString1);
         long time1 = System.currentTimeMillis();
-        for (int i = 0; i < 800000; i++) {
-            PacketDecodeUtil.decodeTimeStamp(bytes , 0);
+        int byteLength = bytes.length;
+        for (int i = 0; i < 400000; i++) {
+            byte[] bytes_1 = ByteUtils.hexStringToByteArray(hexString);
+            byte[] bytes1_1 = ByteUtils.hexStringToByteArray(hexString1);
+            PacketDecodeUtil.decodeTimeStamp(bytes_1 , byteLength);
+            PacketDecodeUtil.decodeTimeStamp(bytes1_1 , byteLength);
         }
         System.out.println(System.currentTimeMillis() - time1);
     }

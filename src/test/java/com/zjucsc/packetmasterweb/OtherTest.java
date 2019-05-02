@@ -1,5 +1,6 @@
 package com.zjucsc.packetmasterweb;
 
+import com.zjucsc.IProtocolFuncodeMap;
 import com.zjucsc.application.tshark.handler.BasePacketHandler;
 import com.zjucsc.application.tshark.handler.PacketDecodeHandler;
 import com.zjucsc.application.tshark.handler.PacketSendHandler;
@@ -29,5 +30,15 @@ public class OtherTest {
         pipeLine1.addLast(new PacketDecodeHandler(Executors.newFixedThreadPool(10)));
         pipeLine1.addLast(new PacketSendHandler(Executors.newSingleThreadExecutor()));
         System.out.println(pipeLine);
+    }
+
+    @Test
+    public void load_class_Test() throws ClassNotFoundException {
+        long time1 = 0;
+        for (int i = 0; i < 10; i++) {
+            time1 = System.nanoTime();
+            Class<?> iProtocolFuncodeMapClass = Class.forName("com.zjucsc.IProtocolFuncodeMap");
+            System.out.println(System.nanoTime() - time1);
+        }
     }
 }

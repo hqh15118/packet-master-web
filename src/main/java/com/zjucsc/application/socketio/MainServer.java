@@ -24,6 +24,7 @@ public class MainServer {
                 return false;
             }else{
                 hasStartedService = true;
+                //FIXME 只是简陋地这样写了一下
                 new Thread(new Runnable() {
                     @Override
                     public void run() {

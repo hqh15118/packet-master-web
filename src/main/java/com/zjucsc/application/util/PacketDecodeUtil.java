@@ -30,6 +30,9 @@ public class PacketDecodeUtil {
         return data;
     }
 
+
+    private static ThreadLocal<StringBuilder> stringBuilderThreadLocal
+            = ThreadLocal.withInitial(() -> new StringBuilder(100));
     /**
      *
      * @param payload tcp payload
@@ -37,9 +40,14 @@ public class PacketDecodeUtil {
      * @return
      */
     public static String decodeTimeStamp(byte[] payload , int offset){
+        if (offset == 20) {
+            return "not support now";
+        }
+        StringBuilder sb = stringBuilderThreadLocal.get();
+        sb.delete(0,sb.length());
         int len = payload.length;
         offset = len - offset;
-        int year = payload[offset] >>> 3;
+        int year = Byte.toUnsignedInt(payload[offset]) >>> 3;
         int var1 =  (payload[offset] & 0b00000111) << 6;
         int var2 = (payload[offset + 1] & 0b11111100) >>> 2;
         int day = var1 + var2;
@@ -59,7 +67,14 @@ public class PacketDecodeUtil {
         int unsecond = var1 + var2;
         var1 = (payload[offset + 6] & 0b00011100) >>> 2;
         int nansecond = var1 * 200;
-        return new TimeStamp(year,day,hour,minute,second,millsecond,unsecond,nansecond).toString();
+        return sb.append(year).append(" 年 ")
+                .append(day).append(" 天 ")
+                .append(hour).append(" 时 ")
+                .append(minute).append(" 分 ")
+                .append(second).append(" 秒 ")
+                .append(millsecond).append( " 毫秒 ")
+                .append(unsecond).append(" 微秒 ")
+                .append(nansecond).append(" 纳秒 ").toString();
     }
 
     public static int decodeFuncode(String str_fun_code , String protocol){

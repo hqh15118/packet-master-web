@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface PacketService {
     List<NetworkInterface> getAllNetworkInterface() throws SocketException;
+    List<NetworkInterface> getAllNetworkInterfaceFlush() throws SocketException;
 }

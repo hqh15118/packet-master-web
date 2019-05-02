@@ -16,11 +16,12 @@ public class BasePacketHandler extends AbstractAsyncHandler<PacketInfo.PacketWra
     @Override
     public PacketInfo.PacketWrapper handle(Object t) {
         InitPacket initPacket = JSON.parseObject((String)t, InitPacket.class);
+        System.out.println("base packet handler : " + initPacket);
         return new PacketInfo.PacketWrapper(
-                PacketInfo.discernPacket(initPacket.layers.frame_protocols[0]),
+                PacketInfo.discernPacket(initPacket.layers.frame_protocols[0]),//protocol type
                 (String)t,                             //json data
-                initPacket.layers.tcp_payload[1],     //timestamp<decode from tcp_payload>
-                initPacket.layers.frame_cap_len[2]);  //packet_length
+                initPacket.layers.tcp_payload[0],     //timestamp<decode from tcp_payload>
+                initPacket.layers.frame_cap_len[0]);  //packet_length
     }
 
 }

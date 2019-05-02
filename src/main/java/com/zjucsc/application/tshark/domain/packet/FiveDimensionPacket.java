@@ -7,11 +7,25 @@ public class FiveDimensionPacket {
     public String dis_ip;
     public String code;
 
+    public FiveDimensionPacket() {
+    }
+
     public FiveDimensionPacket(String timeStamp,String protocol, String src_ip, String dis_ip, String code) {
         this.timeStamp = timeStamp;
         this.protocol = protocol;
         this.src_ip = src_ip;
         this.dis_ip = dis_ip;
         this.code = code;
+    }
+
+    @Override
+    public String toString() {
+        return "FiveDimensionPacket{" +
+                "timeStamp='" + timeStamp + '\'' +
+                ", protocol='" + protocol + '\'' +
+                ", src_ip='" + src_ip + '\'' +
+                ", dis_ip='" + dis_ip + '\'' +
+                ", code='" + code + '\'' +
+                '}';
     }
 }

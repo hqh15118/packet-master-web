@@ -18,12 +18,9 @@ public abstract class AbstractAsyncHandler<T> extends AbstractHandler<T> {
      */
     private List<PipeLine> pipeLines = new ArrayList<>(0);
 
-    public AbstractAsyncHandler(){
-
-    }
-
     public void addPipeLine(PipeLine pipeLines){
         this.pipeLines.add(pipeLines);
+        pipeLines.setFirstHandler(this);
     }
 
     public AbstractAsyncHandler(ExecutorService executor){
@@ -35,23 +32,25 @@ public abstract class AbstractAsyncHandler<T> extends AbstractHandler<T> {
     public void handleAndPass(Object inValue){
         if (executor==null){
             //run handle in sync schema
-            nextHandler().handleAndPass(handle(inValue));
+            T t = handle(inValue);
+            nextHandler().handleAndPass(t);
+            for (PipeLine pipeLine : pipeLines) {
+                pipeLine.pushDataAtHead(t);
+            }
         }else{
             //run handle in async schema
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
+                    T t = handle(inValue);
                     if (nextHandler()!=null) {
-                        T t = handle(inValue);
                         nextHandler().handleAndPass(t);
-                    }else{
-                        handle(inValue);
+                    }
+                    for (PipeLine pipeLine : pipeLines) {
+                        pipeLine.pushDataAtHead(t);
                     }
                 }
             });
-        }
-        for (PipeLine pipeLine : pipeLines) {
-            pipeLine.pushDataAtHead(inValue);
         }
     }
 

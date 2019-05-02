@@ -5,14 +5,16 @@ import com.zjucsc.application.config.Common;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 import java.util.ServiceLoader;
 
 /**
- * 加载组态配置到内存中
+ * 加载组态配置到内存中 + 保存到本地数据库
  */
 @Slf4j
+@Component
 public class InitConfigurationService implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {

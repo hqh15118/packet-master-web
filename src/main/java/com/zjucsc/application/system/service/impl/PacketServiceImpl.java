@@ -3,25 +3,40 @@ package com.zjucsc.application.system.service.impl;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.SocketIoEvent;
 import com.zjucsc.application.domain.bean.NetworkInterface;
+import com.zjucsc.application.socketio.SocketServiceCenter;
 import com.zjucsc.application.system.service.PacketService;
 import com.zjucsc.application.util.NetworkInterfaceUtil;
 import org.apache.catalina.core.StandardWrapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArraySet;
+
+import static com.zjucsc.application.config.Common.recvPacketFlow;
+import static com.zjucsc.application.config.Common.recvPacketNuber;
 
 @Service("packet_service")
 public class PacketServiceImpl implements PacketService {
 
+    @Autowired
+    public PacketAnalyzeService packetAnalyzeService;
+
+    @Cacheable("netword_interfaces")
     @Override
     public List<NetworkInterface> getAllNetworkInterface() throws SocketException {
+        return dogetAllNetworkInterface();
+    }
+    @CachePut("netword_interfaces")
+    @Override
+    public List<NetworkInterface> getAllNetworkInterfaceFlush() throws SocketException {
         return dogetAllNetworkInterface();
     }
 
@@ -56,7 +71,7 @@ public class PacketServiceImpl implements PacketService {
      */
     @Scheduled(fixedRate = 1000)
     public void sendPacketStatisticsMsg(){
-        Common.updateAllClient(SocketIoEvent.STATISTICS_PACKET,new StatisticsDataWrapper(Common.getRecvPacketFlow(),Common.getRecvPacketNuber()));
+        SocketServiceCenter.updateAllClient(SocketIoEvent.STATISTICS_PACKET,new StatisticsDataWrapper(packetAnalyzeService.getRecvPacketFlow(),packetAnalyzeService.getRecvPacketNumber()));
     }
 
     public static class StatisticsDataWrapper{
@@ -68,5 +83,4 @@ public class PacketServiceImpl implements PacketService {
             this.flow = flow;
         }
     }
-
 }

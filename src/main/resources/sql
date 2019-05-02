@@ -1,0 +1,4 @@
+create table configurations(
+  protocol VARCHAR(255),
+  content TEXT
+)engine = INNODB;

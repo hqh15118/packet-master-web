@@ -9,12 +9,15 @@ import java.util.List;
  * @author hongqianhui
  * #create_time 2019-04-25 - 11:20
  */
-public class DefaultPipeLine implements PipeLine {
+public class DefaultPipeLine extends AbstractPipeLine {
     private LinkedList<AbstractHandler> handlerLinkedList = new LinkedList<>();
 
     private String pipeId;
     @Override
     public void addLast(AbstractHandler handler) {
+        if (getFirstHandler() == null) {
+            setFirstHandler(handler);
+        }
         if (handlerLinkedList.size() == 0){
             handlerLinkedList.addLast(handler);
         }else {
@@ -47,9 +50,13 @@ public class DefaultPipeLine implements PipeLine {
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("start[").append(pipeId).append("]");
+        stringBuilder.append("start<").append(pipeId).append(">");
+        stringBuilder.append(getFirstHandler()==null?"" : getFirstHandler().id);
         for (AbstractHandler handlerInstance : handlerLinkedList) {
-            stringBuilder.append(handlerInstance);
+            if (handlerInstance == getFirstHandler()) {
+                continue;
+            }
+                stringBuilder.append(handlerInstance);
         }
         stringBuilder.append("\n");
         for (AbstractHandler handlerInstance : handlerLinkedList) {
@@ -62,4 +69,5 @@ public class DefaultPipeLine implements PipeLine {
         }
         return stringBuilder.toString();
     }
+
 }

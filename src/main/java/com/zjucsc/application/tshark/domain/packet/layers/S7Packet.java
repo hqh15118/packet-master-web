@@ -17,14 +17,14 @@ public class S7Packet extends BasePacket{
     public static FiveDimensionPacketWrapper decode(String protocolName , String s7json){
         S7Packet s7Packet = JSON.parseObject(s7json, S7Packet.class);
         LayersBean layers = s7Packet.layers;
-        return new FiveDimensionPacketWrapper(
-                PacketDecodeUtil.decodeTimeStamp(PacketDecodeUtil.hexStringToByteArray(layers.tcp_payload[0]),20),
-                protocolName,
-                layers.ip_src[0],
-                layers.ip_addr[0],
-                layers.s7comm_param_func[0],
-                layers.tcp_payload[0]
-        );
+        return new FiveDimensionPacketWrapper.Builder()
+                .timeStamp(PacketDecodeUtil.decodeTimeStamp(PacketDecodeUtil.hexStringToByteArray(layers.tcp_payload[0]) , 20))
+                .protocol(protocolName)
+                .src_Ip(layers.ip_src[0])
+                .dst_Ip(layers.ip_addr[0])
+                .fun_code(layers.s7comm_param_func[0])
+                .tcpPayload(layers.tcp_payload[0])
+                .build();
     }
 
     @Override
@@ -39,8 +39,8 @@ public class S7Packet extends BasePacket{
         //public String[] eth_src;
         public String[] ip_src;
         public String[] ip_addr;
-        public String[] tcp_srcport;
-        public String[] tcp_dstport;
+        //public String[] tcp_srcport;
+        //public String[] tcp_dstport;
         public String[] s7comm_param_func;
         public String[] tcp_payload;
     }

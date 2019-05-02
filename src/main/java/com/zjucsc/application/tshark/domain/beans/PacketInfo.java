@@ -38,6 +38,16 @@ public class PacketInfo {
             this.tcpPayload = tcpPayload;
             this.packetLength = packetLength;
         }
+
+        @Override
+        public String toString() {
+            return "PacketWrapper{" +
+                    "packetProtocol='" + packetProtocol + '\'' +
+                    ", json='" + json + '\'' +
+                    ", tcpPayload='" + tcpPayload + '\'' +
+                    ", packetLength='" + packetLength + '\'' +
+                    '}';
+        }
     }
 
 }

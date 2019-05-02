@@ -7,11 +7,19 @@ import com.zjucsc.application.tshark.domain.packet.FiveDimensionPacketWrapper;
 import com.zjucsc.application.util.PacketDecodeUtil;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.concurrent.ExecutorService;
+
 public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
+
+    public BadPacketAnalyzeHandler(ExecutorService executor) {
+        super(executor);
+    }
+
     @Override
     public Void handle(Object t) {
         FiveDimensionPacketWrapper packet = ((FiveDimensionPacketWrapper) t);
-        //"0x00000004" "4"
+        System.out.println("bad packet handler : " + packet);
+        //"0x00000004" "4"   -->  fun_code of int
         int fun_code = PacketDecodeUtil.decodeFuncode(packet.fiveDimensionPacket.code
                 ,packet.fiveDimensionPacket.protocol);
         switch (packet.fiveDimensionPacket.protocol){
