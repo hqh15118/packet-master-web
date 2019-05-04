@@ -23,7 +23,7 @@ public class DecodeTest {
 
     @Test
     public void split_string(){
-        String command = "/Applications/Wireshark.app/Contents/MacOS/tshark -l -n -e frame.protocols -e eth.dst -e eth.src -e ip.src -e ip.addr -e tcp.srcport -e tcp.dstport -e s7comm.param.func -e modbus.func_code -e tcp.payload -T ek -r /Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap/question_1531953261_01.pcap" ;
+        String command = "/Applications/Wireshark.app/Contents/MacOS/tshark -l -n -e frame.protocols -e eth.dst -e eth.src -e ip.src -e ip.addr -e tcp.srcport -e tcp.dstport -e s7comm.param.func -e modbus.func_code -e tcp.payload -T ek -r /Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap4j/question_1531953261_01.pcap4j" ;
         Process process = PacketMain.runTargetCommand(command);
         System.out.println(System.currentTimeMillis());
         try (InputStream is = process.getInputStream(); BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {

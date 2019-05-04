@@ -1,13 +1,14 @@
 package com.zjucsc.application.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
-@TableName("table_info")
+@TableName("attack_info")
 public class AttackInfo {
-    @TableField("time")
+    @TableId("time")
     private String time;
     @TableField("type")
     private String type;

@@ -1,9 +1,11 @@
 package com.zjucsc.application.util;
 
-import com.zjucsc.application.tshark.domain.beans.TimeStamp;
+import com.zjucsc.application.config.Common;
+import com.zjucsc.application.domain.bean.CollectorState;
+import com.zjucsc.application.tshark.domain.packet.InitPacket;
+import com.zjucsc.application.tshark.domain.packet.layers.S7Packet;
 
-import static com.zjucsc.application.tshark.domain.beans.PacketInfo.PACKET_PROTOCOL.MODBUS;
-import static com.zjucsc.application.tshark.domain.beans.PacketInfo.PACKET_PROTOCOL.S7;
+import static com.zjucsc.application.config.PACKET_PROTOCOL.*;
 
 /**
  * #project packet-master-web
@@ -17,8 +19,12 @@ public class PacketDecodeUtil {
      *  string : 03:00:00:1f:02:f0:80:32:01:00:00:cc:c1:00:0e:00:00:04:01:12:0a:10:02:00:11:00:01:84:00:00:20
      *  ----> byte[] : 03 00 00 1f 02 f0 80 32 01 00 00 cc c1 00 0e 00 00 04 01 12 0a 10 02 00 11 00 01 84 00 00 20
      */
+    private static final byte[] EMPTY = new byte[]{};
     public static byte[] hexStringToByteArray(String s) {
         int len = s.length();
+        if (len == 0){
+            return EMPTY;
+        }
         int byteArraySize = len / 3;
         byte[] data = new byte[byteArraySize + 1];
         for (int i = 0 ; i < len; i+=3) {
@@ -77,16 +83,95 @@ public class PacketDecodeUtil {
                 .append(nansecond).append(" 纳秒 ").toString();
     }
 
+    /**
+     * 不同的协议的tshark得到的功能码的格式不一样，要全部解成int
+     * @param str_fun_code 字符串形式的功能码
+     * @param protocol 协议
+     * @return 功能码int
+     */
     public static int decodeFuncode(String str_fun_code , String protocol){
         switch (protocol){
             case MODBUS :
 
                 break;
-            case S7:
+            case S7_JOB:
+            case S7_Ack_data:
 
                 break;
         }
         return 0;
+    }
+
+
+
+    /**
+     * 用于识别报文协议
+     * @param initPacket entherner:ip:tcp:...
+     * @return packet protocol
+     */
+    public static String discernPacket(InitPacket initPacket){
+        /*
+        switch (protocolStack.substring(protocolStack.length() - 3)){
+            case "bus": return PacketInfo.PACKET_PROTOCOL.MODBUS;
+            case "omm" : return PacketInfo.PACKET_PROTOCOL.S7;
+            default: return PacketInfo.PACKET_PROTOCOL.OTHER;
+        }
+        */
+        String protocolStack = initPacket.layers.frame_protocols[0];
+        if (protocolStack.endsWith("tcp")){
+            return TCP;
+        }
+        if (protocolStack.endsWith("modbus")){
+            return MODBUS;
+        }else if(protocolStack.endsWith("s7comm")){
+            String rosctr = initPacket.layers.s7comm_header_rosctr[0];
+            if (S7Packet.ACK_DATA.equals(rosctr)){
+                return S7_Ack_data;
+            }else if (S7Packet.JOB.equals(rosctr)) {
+                return S7_JOB;
+            }else{
+                return S7;
+            }
+        }else{
+            return protocolStack;
+        }
+    }
+
+    /**
+     * 用于识别<设备采集器>状态
+     * @param payload 负载 ， 最后24个字节是自己加上去的需要解析的部分
+     * @return 采集器状态，返回null表示状态没有发生改变，返回instance，表示状态发生改变
+     *
+     * **********************************
+     * [2byte]    [1byte]     [1byte]       [20字节]
+     *  设备ID     A口状态      B口状态         其他
+     * *********************************/
+    public static CollectorState decodeCollectorState(byte[] payload , int offset){
+        if (offset == 24){
+            return null;
+        }
+        int start = payload.length - offset;//payload中自定义的字节数组的开始位置
+        int collectorId = ByteUtils.bytesToShort(payload,start,2);
+        CollectorState state = null;
+        int A_state = Byte.toUnsignedInt(payload[start + 2]);
+        int B_state = Byte.toUnsignedInt(payload[start + 3]);
+        if ((state = Common.COLLECTOR_STATE_MAP.get(collectorId))==null){
+            //还没有定义过该设备，初始化该设备状态
+            Common.COLLECTOR_STATE_MAP.put(collectorId , new CollectorState(collectorId , -1,-1,
+                    A_state,B_state));
+            return null;
+        }
+        //当前检测到的A或者B口的状态与之前检测到的不同，说明A或者B或者A和B口状态发生了改变
+        //前端只需要比较lastState和currentState是否出现偏差，即可知道哪个或者全部口是否发生了状态改变
+        if (A_state != state.getA_currentState() || B_state != state.getB_currentState()){
+            CollectorState newState = new CollectorState(collectorId ,
+                    state.getA_currentState(),
+                    state.getB_currentState(),
+                    A_state,B_state);
+            Common.COLLECTOR_STATE_MAP.put(collectorId , newState);
+            return newState;
+        }
+        return null;
     }
 
 }

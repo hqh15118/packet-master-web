@@ -1,5 +1,6 @@
 package com.zjucsc.application.socketio;
 
+import com.corundumstudio.socketio.AckRequest;
 import com.corundumstudio.socketio.Configuration;
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
@@ -8,6 +9,7 @@ import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
 
 import java.io.IOException;
+import java.util.EventObject;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainServer {
@@ -34,6 +36,12 @@ public class MainServer {
                         final SocketIOServer server = new SocketIOServer(config);
                         server.addConnectListener(connectListener);
                         server.addDisconnectListener(disconnectListener);
+                        server.addListeners(new DataListener<String>() {
+                            @Override
+                            public void onData(SocketIOClient socketIOClient, String s, AckRequest ackRequest) throws Exception {
+                                //System.out.println(s);
+                            }
+                        });
                         server.start();
                         try {
                             Thread.sleep(Integer.MAX_VALUE);

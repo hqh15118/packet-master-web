@@ -24,6 +24,7 @@ public class UserOptController {
             return BaseResponse.ERROR(404,"用户不存在");
         }else{
             if (loginUser.getPassword().equals(MD5Util.encrypt(user.getPassword()))){
+                userOptService.login(user.getName());
                 return BaseResponse.OK(Common.SOCKET_IO_PORT);
             }else{
                 return BaseResponse.ERROR(401,"密码错误");
@@ -42,21 +43,25 @@ public class UserOptController {
             return BaseResponse.OK();
         }
     }
-
-    @GetMapping("alluser")
+    //TODO quanxian
+    @GetMapping("all_user")
     public BaseResponse getAllUser(){
         return BaseResponse.OK(userOptService.getAllUsers());
     }
 
     @GetMapping("logout")
     public BaseResponse logout(@RequestParam String userName){
-        return BaseResponse.OK();
+        return userOptService.logout(userName);
     }
 
-    @PostMapping("adduser")
+    @PostMapping("add_user")
     public BaseResponse addUser(@RequestBody @Valid User user){
         return register(user);
     }
 
-
+    //TODO quanxian
+    @GetMapping("all_loginned_user")
+    public BaseResponse getAllLogginedUser(){
+        return BaseResponse.OK(userOptService.getAllLogginedUsers());
+    }
 }

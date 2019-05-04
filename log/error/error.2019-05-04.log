@@ -1,0 +1,111 @@
+2019-05-04 16:34:27.029 febs [-packet-decoder-handler-] ERROR c.z.a.tshark.capture.PacketMain - thread Thread[-packet-decoder-handler-,5,main] catch a unhandle exception : 
+
+java.lang.NullPointerException: null
+	at com.zjucsc.application.tshark.handler.PacketDecodeHandler.decodeModbusPacket(PacketDecodeHandler.java:97)
+	at com.zjucsc.application.tshark.handler.PacketDecodeHandler.handle(PacketDecodeHandler.java:77)
+	at com.zjucsc.application.tshark.handler.PacketDecodeHandler.handle(PacketDecodeHandler.java:28)
+	at com.zjucsc.application.tshark.decode.AbstractAsyncHandler$1.run(AbstractAsyncHandler.java:45)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+2019-05-04 20:27:51.489 febs [nioEventLoopGroup-2-1] ERROR c.c.socketio.SocketIOServer - SocketIO server start failed at port: 8081!
+2019-05-04 20:28:28.388 febs [nioEventLoopGroup-2-1] ERROR c.c.socketio.SocketIOServer - SocketIO server start failed at port: 8081!
+2019-05-04 20:28:30.045 febs [-bad-packet-analyze-] ERROR c.z.a.tshark.capture.PacketMain - thread Thread[-bad-packet-analyze-,5,main] catch a unhandle exception : 
+
+java.lang.NullPointerException: null
+	at com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler.operationAnalyze(BadPacketAnalyzeHandler.java:81)
+	at com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler.handle(BadPacketAnalyzeHandler.java:41)
+	at com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler.handle(BadPacketAnalyzeHandler.java:19)
+	at com.zjucsc.application.tshark.decode.AbstractAsyncHandler$1.run(AbstractAsyncHandler.java:45)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+2019-05-04 20:29:13.161 febs [-bad-packet-analyze-] ERROR c.z.a.tshark.capture.PacketMain - thread Thread[-bad-packet-analyze-,5,main] catch a unhandle exception : 
+
+java.lang.NullPointerException: null
+	at com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler.operationAnalyze(BadPacketAnalyzeHandler.java:81)
+	at com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler.handle(BadPacketAnalyzeHandler.java:41)
+	at com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler.handle(BadPacketAnalyzeHandler.java:19)
+	at com.zjucsc.application.tshark.decode.AbstractAsyncHandler$1.run(AbstractAsyncHandler.java:45)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+2019-05-04 20:30:34.489 febs [nioEventLoopGroup-3-2] ERROR c.c.s.l.DefaultExceptionListener - Connection reset by peer
+java.io.IOException: Connection reset by peer
+	at sun.nio.ch.FileDispatcherImpl.read0(Native Method)
+	at sun.nio.ch.SocketDispatcher.read(SocketDispatcher.java:39)
+	at sun.nio.ch.IOUtil.readIntoNativeBuffer(IOUtil.java:223)
+	at sun.nio.ch.IOUtil.read(IOUtil.java:192)
+	at sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:380)
+	at io.netty.buffer.PooledUnsafeDirectByteBuf.setBytes(PooledUnsafeDirectByteBuf.java:288)
+	at io.netty.buffer.AbstractByteBuf.writeBytes(AbstractByteBuf.java:1125)
+	at io.netty.channel.socket.nio.NioSocketChannel.doReadBytes(NioSocketChannel.java:347)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:148)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:682)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:617)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:534)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:496)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:906)
+	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.lang.Thread.run(Thread.java:748)
+2019-05-04 20:30:40.369 febs [-bad-packet-analyze-] ERROR c.z.a.tshark.capture.PacketMain - thread Thread[-bad-packet-analyze-,5,main] catch a unhandle exception : 
+
+java.lang.NullPointerException: null
+	at com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler.operationAnalyze(BadPacketAnalyzeHandler.java:81)
+	at com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler.handle(BadPacketAnalyzeHandler.java:41)
+	at com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler.handle(BadPacketAnalyzeHandler.java:19)
+	at com.zjucsc.application.tshark.decode.AbstractAsyncHandler$1.run(AbstractAsyncHandler.java:45)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+2019-05-04 20:32:07.602 febs [-bad-packet-analyze-] ERROR c.z.a.tshark.capture.PacketMain - thread Thread[-bad-packet-analyze-,5,main] catch a unhandle exception : 
+
+java.lang.NullPointerException: null
+	at com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler.operationAnalyze(BadPacketAnalyzeHandler.java:81)
+	at com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler.handle(BadPacketAnalyzeHandler.java:41)
+	at com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler.handle(BadPacketAnalyzeHandler.java:19)
+	at com.zjucsc.application.tshark.decode.AbstractAsyncHandler$1.run(AbstractAsyncHandler.java:45)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+2019-05-04 20:33:12.775 febs [-bad-packet-analyze-] ERROR c.z.a.tshark.capture.PacketMain - thread Thread[-bad-packet-analyze-,5,main] catch a unhandle exception : 
+
+java.lang.NullPointerException: null
+	at com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler.operationAnalyze(BadPacketAnalyzeHandler.java:81)
+	at com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler.handle(BadPacketAnalyzeHandler.java:41)
+	at com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler.handle(BadPacketAnalyzeHandler.java:19)
+	at com.zjucsc.application.tshark.decode.AbstractAsyncHandler$1.run(AbstractAsyncHandler.java:45)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+2019-05-04 20:34:56.474 febs [-bad-packet-analyze-] ERROR c.z.a.tshark.capture.PacketMain - thread Thread[-bad-packet-analyze-,5,main] catch a unhandle exception : 
+
+java.lang.NullPointerException: null
+	at com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler.operationAnalyze(BadPacketAnalyzeHandler.java:81)
+	at com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler.handle(BadPacketAnalyzeHandler.java:41)
+	at com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler.handle(BadPacketAnalyzeHandler.java:19)
+	at com.zjucsc.application.tshark.decode.AbstractAsyncHandler$1.run(AbstractAsyncHandler.java:45)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+2019-05-04 20:35:39.565 febs [-bad-packet-analyze-] ERROR c.z.a.tshark.capture.PacketMain - thread Thread[-bad-packet-analyze-,5,main] catch a unhandle exception : 
+
+java.lang.NullPointerException: null
+	at com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler.operationAnalyze(BadPacketAnalyzeHandler.java:81)
+	at com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler.handle(BadPacketAnalyzeHandler.java:41)
+	at com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler.handle(BadPacketAnalyzeHandler.java:19)
+	at com.zjucsc.application.tshark.decode.AbstractAsyncHandler$1.run(AbstractAsyncHandler.java:45)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+2019-05-04 20:37:06.781 febs [-bad-packet-analyze-] ERROR c.z.a.tshark.capture.PacketMain - thread Thread[-bad-packet-analyze-,5,main] catch a unhandle exception : 
+
+java.lang.NullPointerException: null
+	at com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler.operationAnalyze(BadPacketAnalyzeHandler.java:81)
+	at com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler.handle(BadPacketAnalyzeHandler.java:41)
+	at com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler.handle(BadPacketAnalyzeHandler.java:19)
+	at com.zjucsc.application.tshark.decode.AbstractAsyncHandler$1.run(AbstractAsyncHandler.java:45)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)

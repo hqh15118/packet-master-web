@@ -23,11 +23,9 @@ public class PacketStatisticsHandler extends AbstractAsyncHandler<Void> {
     @Override
     public Void handle(Object t) {
         PacketInfo.PacketWrapper wrapper = ((PacketInfo.PacketWrapper) t);
-        System.out.println("statis packet handler : " + wrapper );
+        //System.out.println("statis packet handler : " + wrapper );
         packetAnalyzeService.addPacketFlow(Integer.parseInt(wrapper.packetLength));
         packetAnalyzeService.addPacketNumber();
-
-
 
         return null;
     }

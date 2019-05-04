@@ -1,6 +1,7 @@
 package com.zjucsc.packetmasterweb;
 
-import com.zjucsc.IProtocolFuncodeMap;
+import com.alibaba.fastjson.JSON;
+import com.zjucsc.application.domain.filter.OperationPacketFilter;
 import com.zjucsc.application.tshark.handler.BasePacketHandler;
 import com.zjucsc.application.tshark.handler.PacketDecodeHandler;
 import com.zjucsc.application.tshark.handler.PacketSendHandler;
@@ -41,4 +42,46 @@ public class OtherTest {
             System.out.println(System.nanoTime() - time1);
         }
     }
+
+
+    public static class TestClass<T>{
+        public T t;
+        public TestClass(T t){
+            this.t = t;
+        }
+    }
+
+    @Test
+    public void json_test(){
+        TestClass<String> stringTestClass = new TestClass<>("hongqianhui");
+        System.out.println(JSON.toJSONString(stringTestClass));
+    }
+
+    @Test
+    public void default_analyzer(){
+        DefaultAnalyzer defaultAnalyzer = new DefaultAnalyzer(null);
+        OperationPacketFilter<String,String> packetFilter = new OperationPacketFilter<>("packet filter");
+        packetFilter.addBlackRule("1" , "hello");
+        packetFilter.addBlackRule("2" , "okokok!");
+        defaultAnalyzer.setAnalyzer(packetFilter);
+        System.out.println(JSON.toJSONString(defaultAnalyzer));
+    }
+
+    @Test
+    public void string_builder_Test(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("hello").append(" ").append("world");
+        String str1 = sb.toString();
+        System.out.println(str1);
+        sb.delete(0,sb.length());
+        String str2 = sb.append("hello").append(":").append("world2").toString();
+        assert str1!=str2;
+    }
+
+    @Test
+    public void less_test(){
+        String str = "{\"index\" : {\"_index\": \"packets-2019-05-04\", \"_type\": \"pcap_file\", \"_score\": null}}";
+        System.out.println(str.length());
+    }
+
 }

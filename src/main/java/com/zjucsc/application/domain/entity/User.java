@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
+import java.sql.Date;
 
 @Data
 @TableName("user")
@@ -18,8 +19,9 @@ public class User {
     private String password;
     @TableField(value = "role")
     @NotNull
-    private String role = "VISITOR";
-
+    private String role;
+    @TableField(value = "last_login_time")
+    private String date;
 
     public static final class ROLE {
         public static final String ADMINISTRACOR = "ADMINISTRACTOR";
@@ -33,6 +35,7 @@ public class User {
                 "name='" + name + '\'' +
                 ", password='" + password + '\'' +
                 ", role='" + role + '\'' +
+                ", date=" + date +
                 '}';
     }
 }

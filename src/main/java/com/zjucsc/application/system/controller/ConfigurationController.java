@@ -1,8 +1,14 @@
 package com.zjucsc.application.system.controller;
 
 
-import com.zjucsc.application.domain.entity.ConfigurationSetting;
+import com.zjucsc.application.config.Common;
+import com.zjucsc.application.config.FilterType;
+import com.zjucsc.application.domain.entity.FiveDimensionFilterEntity;
+import com.zjucsc.application.domain.entity.OperationFilterEntity;
 import com.zjucsc.application.system.service.ConfigurationService;
+import com.zjucsc.application.system.service.filter.FiveDimensionFilterService;
+import com.zjucsc.application.system.service.filter.OperationFilterService;
+import com.zjucsc.application.util.AbstractAnalyzer;
 import com.zjucsc.base.BaseResponse;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -17,42 +23,28 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 
-import static com.zjucsc.application.config.Common.BAD_PACKET_FILTER;
-import static com.zjucsc.application.config.Common.CONFIGURATION_MAP;
+import static com.zjucsc.application.config.Common.*;
 
 @Slf4j
 @RestController
 @RequestMapping(value = "/configuration")
 public class ConfigurationController {
 
-    @Autowired
-    private ConfigurationService configurationService;
+    @Autowired private ConfigurationService configurationService;
+    @Autowired private OperationFilterService operationFilterService;
+    @Autowired private FiveDimensionFilterService fiveDimensionFilterService;
 
-    @ApiOperation(value="配置组态【异常报文规则】")
-    @RequestMapping(value = "/new_packet_rule" , method = RequestMethod.POST)
-    public BaseResponse addPacketRule(@RequestBody @Valid List<ConfigurationSetting.Configuration> configurations){
-        CompletableFuture<Exception> result1 = configurationService.configRule(configurations);
-        CompletableFuture<Exception> result2 = configurationService.saveRule(configurations);
-        try {
-            Exception exception = null;
-            if ((exception = result1.get()) == null && (exception = result2.get()) == null) {
-                return BaseResponse.OK();
-            }else{
-                return BaseResponse.ERROR(500,exception.getMessage());
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            log.error("" , e);
-            return BaseResponse.ERROR(500,e.getMessage());
-        }
+    @ApiOperation(value="配置[功能码]异常报文规则")
+    @RequestMapping(value = "/new_operation_packet_rule" , method = RequestMethod.POST)
+    public BaseResponse configOperationPacketRule(@RequestBody @Valid OperationFilterEntity.OperationFilterForFront configuration){
+        CompletableFuture<Exception> result1 = operationFilterService.configOperationRule(configuration);
+        return validResult(result1,configuration);
     }
 
-    @ApiOperation(value = "查询所有组态【异常报文规则】")
-    @GetMapping(value = "/get_packet_rule")
-    public HashMap<String , List<ConfigurationSetting.ConfigurationContent>> getAllPacketRule(){
-        if (BAD_PACKET_FILTER.size() == 0){
-
-        }
-        return BAD_PACKET_FILTER;
+    @ApiOperation(value = "查询所有异常报文规则")
+    @GetMapping(value = "/get_all_packet_rule")
+    public HashMap<String, Object> getAllPacketRule(@RequestParam String userName) throws ExecutionException, InterruptedException {
+        return configurationService.loadRule(userName);
     }
 
     @ApiOperation(value = "查询所有组态【某协议下功能码对应的含义】")
@@ -60,4 +52,47 @@ public class ConfigurationController {
     public HashMap<String , Map<Integer,String>> getAllConfiguration(){
         return CONFIGURATION_MAP;
     }
+
+    @ApiOperation(value = "配置[五元组]异常报文规则")
+    @PostMapping("/new_fv_packet_rule")
+    public BaseResponse configFvDimensionPacketRule(@RequestBody @Valid FiveDimensionFilterEntity.FiveDimensionFilterForFront configuration){
+        CompletableFuture<Exception> result1 = fiveDimensionFilterService.configFiveDimensionRule(configuration);
+        return validResult(result1,configuration);
+    }
+
+    @ApiOperation(value = "查询[五元组]异常报文规则]")
+    @GetMapping("/get_fv_packet_rule")
+    public List<FiveDimensionFilterEntity.FiveDimensionFilter> loadFvDimensionPacketRule(@RequestParam String userName){
+        return fiveDimensionFilterService.loadRule(userName);
+    }
+
+    @ApiOperation(value = "查询[功能码]异常报文规则]")
+    @GetMapping("/get_operation_packet_rule")
+    public OperationFilterEntity.OperationFilterForFront loadOperationPacketRule(@RequestParam String userName , @RequestParam String protocol){
+        return operationFilterService.loadRule(userName,protocol);
+    }
+
+    @ApiOperation(value = "查询所有[功能码]异常报文规则]")
+    @GetMapping("/get_all_operation_packet_rule")
+    public List<OperationFilterEntity.OperationFilterForFront> loadAllOperationPacketRule(@RequestParam String userName) throws ExecutionException, InterruptedException {
+        return operationFilterService.loadAllRule(userName).get();
+    }
+
+    private <T> BaseResponse validResult(CompletableFuture<Exception> exceptionCompletableFuture , T t){
+        try {
+            Exception exception = null;
+            if ((exception = exceptionCompletableFuture.get()) == null) {
+                log.info(" 更新/保存组态 ： \n {}  -- 成功" , t);
+                return BaseResponse.OK();
+            }else{
+                log.info(" 更新/保存组态 ： \n {}  -- 失败" , t , exception);
+                return BaseResponse.ERROR(500,exception.getMessage());
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            log.info(" 更新/保存组态 ： \n {}  -- 失败" , t , e);
+            return BaseResponse.ERROR(500,e.getMessage());
+        }
+    }
+
+
 }

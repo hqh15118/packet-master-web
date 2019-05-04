@@ -7,6 +7,7 @@ import com.zjucsc.application.system.service.impl.PacketAnalyzeService;
 import com.zjucsc.application.tshark.decode.PipeLine;
 import com.zjucsc.application.tshark.handler.*;
 import com.zjucsc.application.tshark.decode.DefaultPipeLine;
+import com.zjucsc.base.util.SpringContextUtil;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +16,10 @@ import java.io.*;
 import java.util.LinkedList;
 import java.util.Scanner;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.regex.Pattern;
+
+import static com.zjucsc.application.config.Common.COMMON_THREAD_EXCEPTION_HANDLER;
 
 public class PacketMain {
     private static Pattern pattern = Pattern.compile("\\d{1,}");
@@ -159,19 +163,70 @@ public class PacketMain {
         /*
          * main pipeLine handler
          */
-        BasePacketHandler basePacketHandler = new BasePacketHandler(Executors.newSingleThreadExecutor());
-        PacketDecodeHandler packetDecodeHandler = new PacketDecodeHandler(Executors.newFixedThreadPool(10));
-        PacketSendHandler packetSendHandler = new PacketSendHandler(Executors.newSingleThreadExecutor());
+        BasePacketHandler basePacketHandler = new BasePacketHandler(Executors.newSingleThreadExecutor(
+                new ThreadFactory() {
+                    @Override
+                    public Thread newThread(Runnable r) {
+                        Thread thread = new Thread(r);
+                        thread.setName("-base-packet-handler-");
+                        thread.setUncaughtExceptionHandler(COMMON_THREAD_EXCEPTION_HANDLER);
+                        return thread;
+                    }
+                }
+        ));
+
+        PacketDecodeHandler packetDecodeHandler = new PacketDecodeHandler(Executors.newFixedThreadPool(5,
+                new ThreadFactory() {
+                    @Override
+                    public Thread newThread(Runnable r) {
+                        Thread thread = new Thread(r);
+                        thread.setName("-packet-decoder-handler-");
+                        thread.setUncaughtExceptionHandler(COMMON_THREAD_EXCEPTION_HANDLER);
+                        return thread;
+                    }
+                }));
+
+        PacketSendHandler packetSendHandler = new PacketSendHandler(Executors.newSingleThreadExecutor(
+                new ThreadFactory() {
+                    @Override
+                    public Thread newThread(Runnable r) {
+                        Thread thread = new Thread(r);
+                        thread.setName("-packet-sender-handler-");
+                        thread.setUncaughtExceptionHandler(COMMON_THREAD_EXCEPTION_HANDLER);
+                        return thread;
+                    }
+                }
+        ));
         /*
          * packet statistics pipe line
          */
         DefaultPipeLine packetStatisticsPipeLine = new DefaultPipeLine("packet statistics pipeLine");
-        packetStatisticsPipeLine.addLast(new PacketStatisticsHandler(new PacketAnalyzeService() , Executors.newSingleThreadExecutor()));
+        packetStatisticsPipeLine.addLast(new PacketStatisticsHandler(new PacketAnalyzeService() , Executors.newSingleThreadExecutor(
+                new ThreadFactory() {
+                    @Override
+                    public Thread newThread(Runnable r) {
+                        Thread thread = new Thread(r);
+                        thread.setName("-packet-statistics-handler-");
+                        thread.setUncaughtExceptionHandler(COMMON_THREAD_EXCEPTION_HANDLER);
+                        return thread;
+                    }
+                }
+        )));
         /*
          * bad packet pipe line
          */
         DefaultPipeLine badPacketAnalysisPipeLine = new DefaultPipeLine("bad packet pipeLine");
-        badPacketAnalysisPipeLine.addLast(new BadPacketAnalyzeHandler(Executors.newSingleThreadExecutor()));
+        badPacketAnalysisPipeLine.addLast(new BadPacketAnalyzeHandler(Executors.newSingleThreadExecutor(
+                new ThreadFactory() {
+                    @Override
+                    public Thread newThread(Runnable r) {
+                        Thread thread = new Thread(r);
+                        thread.setName("-bad-packet-analyze-");
+                        thread.setUncaughtExceptionHandler(COMMON_THREAD_EXCEPTION_HANDLER);
+                        return thread;
+                    }
+                }
+        )));
         /*
          * connect pipelines
          */

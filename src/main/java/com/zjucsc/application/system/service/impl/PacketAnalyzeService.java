@@ -12,7 +12,7 @@ import static com.zjucsc.application.config.Common.recvPacketNuber;
 
 public class PacketAnalyzeService {
 
-
+    public static boolean is = true;
 
     public void addPacketNumber(){
         recvPacketNuber++;
@@ -25,6 +25,7 @@ public class PacketAnalyzeService {
     public long getRecvPacketNumber(){
         return recvPacketNuber;
     }
+
     public long getRecvPacketFlow(){
         return recvPacketFlow;
     }

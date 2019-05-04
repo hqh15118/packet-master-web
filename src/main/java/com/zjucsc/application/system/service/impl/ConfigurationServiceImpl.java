@@ -1,12 +1,14 @@
 package com.zjucsc.application.system.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zjucsc.application.domain.entity.FiveDimensionFilterEntity;
+import com.zjucsc.application.domain.entity.OperationFilterEntity;
 import com.zjucsc.application.system.dao.ConfigurationMapper;
-import com.zjucsc.application.domain.entity.ConfigurationSetting;
 import com.zjucsc.application.system.service.ConfigurationService;
+import com.zjucsc.application.system.service.filter.FiveDimensionFilterService;
+import com.zjucsc.application.system.service.filter.OperationFilterService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,57 +16,30 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
-import static com.zjucsc.application.config.Common.BAD_PACKET_FILTER;
+import static com.zjucsc.application.config.PACKET_PROTOCOL.FV_DIMENSION;
 
 
 @Slf4j
 @Service("configurationSettingService")
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true, rollbackFor = Exception.class)
-public class ConfigurationServiceImpl extends ServiceImpl<ConfigurationMapper, ConfigurationSetting> implements ConfigurationService {
-    @Async("global_single_thread_executor")
-    public CompletableFuture<Exception> saveRule(List<ConfigurationSetting.Configuration> configurations){
-        for (ConfigurationSetting.Configuration configuration : configurations) {
-            String configurationContent = JSON.toJSONString(configuration.getConfigurations());
-            ConfigurationSetting setting = new ConfigurationSetting();
-            setting.setContent(configurationContent);
-            setting.setProtocol(configuration.getProtocol());
-            save(setting);
-        }
-        return CompletableFuture.completedFuture(null);
-    }
+public class ConfigurationServiceImpl extends ServiceImpl<ConfigurationMapper, OperationFilterEntity> implements ConfigurationService {
+
+    @Autowired private OperationFilterService operationFilterService;
+    @Autowired private FiveDimensionFilterService fiveDimensionFilterService;
 
     @Override
-    public CompletableFuture<Exception> configRule(List<ConfigurationSetting.Configuration> configurations) {
-        HashMap<String,List<ConfigurationSetting.ConfigurationContent>> map = new HashMap<>();
-        for (ConfigurationSetting.Configuration configuration : configurations) {
-            map.put(configuration.getProtocol(),configuration.getConfigurations());
+    public HashMap<String, Object> loadRule(String userName) throws ExecutionException, InterruptedException {
+        CompletableFuture<List<OperationFilterEntity.OperationFilterForFront>> future =
+                operationFilterService.loadAllRule(userName);
+        HashMap<String,Object> map = new HashMap<>();
+        List<OperationFilterEntity.OperationFilterForFront> list = future.get();
+        for (OperationFilterEntity.OperationFilterForFront filterForFront : list) {
+            map.put(filterForFront.getProtocol(),filterForFront.getOperationFilters());
         }
-        BAD_PACKET_FILTER = map;
-        return CompletableFuture.completedFuture(null);
-    }
-
-
-    @Override
-    public List<ConfigurationSetting> doLoadRule() {
-        return this.baseMapper.loadAllRule();
-    }
-
-    private final byte[] LOCK = new byte[1];
-
-    @Override
-    public HashMap<String, List<ConfigurationSetting.ConfigurationContent>> loadRule() {
-        if (BAD_PACKET_FILTER.size() == 0){
-            synchronized (LOCK){
-                if (BAD_PACKET_FILTER.size() == 0) {
-                    List<ConfigurationSetting> configurationSettings = doLoadRule();
-                    for (ConfigurationSetting configurationSetting : configurationSettings) {
-                        BAD_PACKET_FILTER.put(configurationSetting.getProtocol(), JSON.parseArray(configurationSetting.getContent()
-                                , ConfigurationSetting.ConfigurationContent.class));
-                    }
-                }
-            }
-        }
-        return BAD_PACKET_FILTER;
+        List<FiveDimensionFilterEntity.FiveDimensionFilter> list1 = fiveDimensionFilterService.loadRule(userName);
+        map.put(FV_DIMENSION,list1);
+        return map;
     }
 }

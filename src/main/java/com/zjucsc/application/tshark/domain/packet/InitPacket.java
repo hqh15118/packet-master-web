@@ -15,9 +15,13 @@ public class InitPacket {
 
 
     public static class LayersBean {
-        public String[] frame_protocols;
-        public String[] tcp_payload;
-        public String[] frame_cap_len;
+        public String[] frame_protocols = {""};
+        public String[] tcp_payload = {""};
+        public String[] frame_cap_len = {""};
+        /**
+         * S7协议的字段，1表示JOB，3表示ACK_DATA
+         */
+        public String[] s7comm_header_rosctr = {""};
 
         @Override
         public String toString() {

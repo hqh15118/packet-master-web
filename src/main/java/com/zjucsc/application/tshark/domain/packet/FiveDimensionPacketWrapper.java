@@ -3,14 +3,19 @@ package com.zjucsc.application.tshark.domain.packet;
 
 public class FiveDimensionPacketWrapper {
     public FiveDimensionPacket fiveDimensionPacket;
-    public String tcpPayload;
+    public byte[] tcpPayload;
+    public String srcEthAndIp;
+    public String dstEthAndIp;
 
     public FiveDimensionPacketWrapper(String timeStamp,String protocol, String src_ip, String dis_ip, String code,
-                                      String tcpPayload) {
+                                      String dis_port,String src_port,
+                                      byte[] tcpPayload) {
         fiveDimensionPacket = new FiveDimensionPacket(  timeStamp,
                                                         protocol,
                                                         src_ip,
                                                         dis_ip,
+                                                        dis_port,
+                                                        src_port,
                                                         code);
         this.tcpPayload = tcpPayload;
     }
@@ -51,8 +56,28 @@ public class FiveDimensionPacketWrapper {
             return this;
         }
 
-        public Builder tcpPayload(String tcpPayload){
+        public Builder dis_port(String dis_port){
+            wrapper.fiveDimensionPacket.dis_port = dis_port;
+            return this;
+        }
+
+        public Builder src_port(String src_port){
+            wrapper.fiveDimensionPacket.src_port = src_port;
+            return this;
+        }
+
+        public Builder tcpPayload(byte[] tcpPayload){
             wrapper.tcpPayload = tcpPayload;
+            return this;
+        }
+
+        public Builder srcEthAndIp(String srcEthAndIp){
+            wrapper.srcEthAndIp = srcEthAndIp;
+            return this;
+        }
+
+        public Builder dstEthAndIp(String dstEthAndIp){
+            wrapper.dstEthAndIp = dstEthAndIp;
             return this;
         }
 

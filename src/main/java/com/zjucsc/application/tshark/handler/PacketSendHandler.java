@@ -1,15 +1,15 @@
 package com.zjucsc.application.tshark.handler;
 
-import com.alibaba.fastjson.JSON;
 import com.corundumstudio.socketio.SocketIOClient;
+import com.zjucsc.application.config.SocketIoEvent;
+import com.zjucsc.application.socketio.SocketServiceCenter;
 import com.zjucsc.application.tshark.decode.AbstractAsyncHandler;
 import com.zjucsc.application.tshark.domain.packet.FiveDimensionPacketWrapper;
-
+import lombok.extern.slf4j.Slf4j;
 import java.util.concurrent.ExecutorService;
 
+@Slf4j
 public class PacketSendHandler extends AbstractAsyncHandler<Void> {
-
-    public static  SocketIOClient client;
 
     public PacketSendHandler(ExecutorService executor) {
         super(executor);
@@ -18,13 +18,7 @@ public class PacketSendHandler extends AbstractAsyncHandler<Void> {
     @Override
     public Void handle(Object t) {
         FiveDimensionPacketWrapper packet = ((FiveDimensionPacketWrapper) t);
-        System.out.println("send packet handler : " + packet);
-        if (client != null){
-            client.sendEvent("packet_event", JSON.toJSONString(packet.fiveDimensionPacket));
-            System.out.println("send msg successfully");
-        }else{
-           //logger.error("not define client , {} msg send failed" , t);
-        }
+        SocketServiceCenter.updateAllClient(SocketIoEvent.ALL_PACKET,packet.fiveDimensionPacket);
         return null;
     }
 
