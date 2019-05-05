@@ -1,4 +1,4 @@
-package com.zjucsc.application.tshark.analyzer;
+package com.zjucsc.application.domain.analyzer;
 
 import com.zjucsc.application.domain.bean.BadPacket;
 import com.zjucsc.application.domain.filter.FiveDimensionPacketFilter;
@@ -13,6 +13,10 @@ import com.zjucsc.application.util.AbstractAnalyzer;
  * #create_time 2019-05-02 - 21:45
  * be used in BadPacketAnalyzeHandler
  * @see BadPacketAnalyzeHandler
+ */
+
+/*
+ * 五元组分析器
  */
 public class FiveDimensionAnalyzer extends AbstractAnalyzer<FiveDimensionPacketFilter> {
 

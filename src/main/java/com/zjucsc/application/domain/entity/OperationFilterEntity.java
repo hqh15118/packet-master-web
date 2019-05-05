@@ -26,39 +26,45 @@ import java.util.List;
 public class OperationFilterEntity {
     @TableId("device_id")
     private int deviceId;
-    @NotBlank(message = "过滤器种类不能为空")
+   // @NotBlank(message = "过滤器种类不能为空")
     //组态配置内容
-    @TableField("protocol")
-    @NotBlank(message = "协议不能为空")
-    private String protocol;
-    @TableField("content")
-    @NotBlank(message = "组态内容不能为空")
-    private String content;
+    //@TableField("protocol")
+    //@NotBlank(message = "协议不能为空")
+    //private String protocol;
     @NotBlank(message = "用户名不为空")
     @TableField("user_name")
     private String userName;
+    //HashMap<protocol,list<filter>>
+    @TableField("content")
+    @NotBlank(message = "组态内容不能为空")
+    private String content;
 
     //前端应该传递的数据格式
     @Data
     public static class OperationFilterForFront{
         private String userName;
         private int deviceId;
-        private String protocol;
-        private List<OperationFilter> operationFilters;
+        private HashMap<Integer,List<OperationFilter>> protocolToFilterList;
+        //private String protocol;
+        //private List<OperationFilter> operationFilters;
     }
 
     /******************************************************
      * ConfigurationForFront
      * {
      *     userName : xxx   用户名         验证
-     *     protocol ： xxx  协议           该过滤器对应的协议如S7、modbus等
-     *     [
-     *       {
-     *          filterType : 0 / 1        过滤类别：0表示白名单，1表示黑名单
-     *          fun_code : 操作码          操作码，协议对应的功能码
-     *       },
-     *       ...
-     *     ]
+     *     {
+     *      protocol ： xxx  协议           该过滤器对应的协议如S7、modbus等
+     *      [
+     *          {
+     *              filterType : 0 / 1        过滤类别：0表示白名单，1表示黑名单
+     *              fun_code : 操作码          操作码，协议对应的功能码
+     *          },
+     *          ...
+     *      ]
+     *      ,
+     *      ...
+     *     }
      * }
      * ***************************************************/
     //规则实体

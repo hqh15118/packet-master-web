@@ -291,7 +291,7 @@ java.lang.ClassCastException: com.zjucsc.application.tshark.domain.packet.FiveDi
 2019-05-05 19:20:28.607 febs [-bad-packet-analyze-] ERROR c.z.a.handler.ThreadExceptionHandler - thread Thread[-bad-packet-analyze-,5,main] catch a unhandle exception : 
 
 java.lang.ClassCastException: com.zjucsc.application.tshark.domain.packet.FiveDimensionPacketWrapper cannot be cast to java.lang.String
-	at com.zjucsc.application.tshark.analyzer.OtherPacketAnalyzer.analyze(OtherPacketAnalyzer.java:29)
+	at com.zjucsc.application.domain.analyzer.OtherPacketAnalyzer.analyze(OtherPacketAnalyzer.java:29)
 	at com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler.operationAnalyze(BadPacketAnalyzeHandler.java:86)
 	at com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler.handle(BadPacketAnalyzeHandler.java:43)
 	at com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler.handle(BadPacketAnalyzeHandler.java:21)
@@ -302,7 +302,7 @@ java.lang.ClassCastException: com.zjucsc.application.tshark.domain.packet.FiveDi
 2019-05-05 19:20:28.607 febs [-bad-packet-analyze-] ERROR c.z.a.handler.ThreadExceptionHandler - thread Thread[-bad-packet-analyze-,5,main] catch a unhandle exception : 
 
 java.lang.ClassCastException: com.zjucsc.application.tshark.domain.packet.FiveDimensionPacketWrapper cannot be cast to java.lang.String
-	at com.zjucsc.application.tshark.analyzer.OtherPacketAnalyzer.analyze(OtherPacketAnalyzer.java:29)
+	at com.zjucsc.application.domain.analyzer.OtherPacketAnalyzer.analyze(OtherPacketAnalyzer.java:29)
 	at com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler.operationAnalyze(BadPacketAnalyzeHandler.java:86)
 	at com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler.handle(BadPacketAnalyzeHandler.java:43)
 	at com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler.handle(BadPacketAnalyzeHandler.java:21)
@@ -313,7 +313,7 @@ java.lang.ClassCastException: com.zjucsc.application.tshark.domain.packet.FiveDi
 2019-05-05 19:20:28.607 febs [-bad-packet-analyze-] ERROR c.z.a.handler.ThreadExceptionHandler - thread Thread[-bad-packet-analyze-,5,main] catch a unhandle exception : 
 
 java.lang.ClassCastException: com.zjucsc.application.tshark.domain.packet.FiveDimensionPacketWrapper cannot be cast to java.lang.String
-	at com.zjucsc.application.tshark.analyzer.OtherPacketAnalyzer.analyze(OtherPacketAnalyzer.java:29)
+	at com.zjucsc.application.domain.analyzer.OtherPacketAnalyzer.analyze(OtherPacketAnalyzer.java:29)
 	at com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler.operationAnalyze(BadPacketAnalyzeHandler.java:86)
 	at com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler.handle(BadPacketAnalyzeHandler.java:43)
 	at com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler.handle(BadPacketAnalyzeHandler.java:21)

@@ -2,9 +2,7 @@ package com.zjucsc.application.system.controller;
 
 
 import com.zjucsc.application.domain.entity.Device;
-import com.zjucsc.application.domain.entity.Gplot;
-import com.zjucsc.application.system.service.IDeviceService;
-import com.zjucsc.application.system.service.IGplotService;
+import com.zjucsc.application.system.service.iservice.IDeviceService;
 import com.zjucsc.base.BaseResponse;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;

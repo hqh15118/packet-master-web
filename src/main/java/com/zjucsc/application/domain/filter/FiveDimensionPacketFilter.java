@@ -1,6 +1,6 @@
 package com.zjucsc.application.domain.filter;
 
-import com.zjucsc.application.config.BadPacketDangerLevel;
+import com.zjucsc.application.config.DangerLevel;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.bean.BadPacket;
 import com.zjucsc.application.domain.entity.FVDimensionFilterEntity;
@@ -46,13 +46,27 @@ public class FiveDimensionPacketFilter {
     private HashMap<String,String> dstPortWhiteMap = new HashMap<>(0);
     private HashMap<String,String> dstPortBlackMap = new HashMap<>(0);
 
-
+    private String userName;
+    private List<FVDimensionFilterEntity.FiveDimensionFilter> filterList;
     private String filterName;
     public FiveDimensionPacketFilter(String filterName){
         this.filterName = filterName;
     }
 
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public List<FVDimensionFilterEntity.FiveDimensionFilter> getFilterList(){
+        return this.filterList;
+    }
+
     public void setFilterList(List<FVDimensionFilterEntity.FiveDimensionFilter> filterList){
+        this.filterList = filterList;
         HashMap<String,HashMap<String, String>> allMap = new HashMap<>();
         for (FVDimensionFilterEntity.FiveDimensionFilter fiveDimensionFilter : filterList) {
             String str = null;
@@ -207,7 +221,7 @@ public class FiveDimensionPacketFilter {
         }else{
 //            return new BadPacket.Builder(FV_DIMENSION)
 //                    .set_five_Dimension(wrapper.fiveDimensionPacket)
-//                    .setDangerLevel(BadPacketDangerLevel.DANGER)
+//                    .setDangerLevel(DangerLevel.DANGER)
 //                    .setComment("白名单未匹配五元组")
 //                    .build();
             return null;
@@ -220,13 +234,13 @@ public class FiveDimensionPacketFilter {
             badPacketBuilder = new BadPacket();
             badPacketBuilder.setFiveDimensionPacket(wrapper.fiveDimensionPacket);
             badPacketBuilder.addComment("黑名单协议|");
-            badPacketBuilder.setDangerLevel(BadPacketDangerLevel.VERY_DANGER);
+            badPacketBuilder.setDangerLevel(DangerLevel.VERY_DANGER);
         }
         if (srcPortBlackMap.containsKey(wrapper.fiveDimensionPacket.src_port)){
             if (badPacketBuilder == null){
                 badPacketBuilder = new BadPacket();
                 badPacketBuilder.setFiveDimensionPacket(wrapper.fiveDimensionPacket);
-                badPacketBuilder.setDangerLevel(BadPacketDangerLevel.VERY_DANGER);
+                badPacketBuilder.setDangerLevel(DangerLevel.VERY_DANGER);
             }
             badPacketBuilder.addComment("黑名单源端口|");
         }
@@ -234,7 +248,7 @@ public class FiveDimensionPacketFilter {
             if (badPacketBuilder == null){
                 badPacketBuilder = new BadPacket();
                 badPacketBuilder.setFiveDimensionPacket(wrapper.fiveDimensionPacket);
-                badPacketBuilder.setDangerLevel(BadPacketDangerLevel.VERY_DANGER);
+                badPacketBuilder.setDangerLevel(DangerLevel.VERY_DANGER);
             }
             badPacketBuilder.addComment("黑名单目的端口|");
         }
@@ -242,7 +256,7 @@ public class FiveDimensionPacketFilter {
             if (badPacketBuilder == null){
                 badPacketBuilder = new BadPacket();
                 badPacketBuilder.setFiveDimensionPacket(wrapper.fiveDimensionPacket);
-                badPacketBuilder.setDangerLevel(BadPacketDangerLevel.VERY_DANGER);
+                badPacketBuilder.setDangerLevel(DangerLevel.VERY_DANGER);
             }
             badPacketBuilder.addComment("黑名单源IP|");
         }
@@ -250,7 +264,7 @@ public class FiveDimensionPacketFilter {
             if (badPacketBuilder == null){
                 badPacketBuilder = new BadPacket();
                 badPacketBuilder.setFiveDimensionPacket(wrapper.fiveDimensionPacket);
-                badPacketBuilder.setDangerLevel(BadPacketDangerLevel.VERY_DANGER);
+                badPacketBuilder.setDangerLevel(DangerLevel.VERY_DANGER);
             }
             badPacketBuilder.addComment("黑名单目的IP|");
         }

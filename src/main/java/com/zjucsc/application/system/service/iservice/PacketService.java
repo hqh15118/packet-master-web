@@ -1,4 +1,4 @@
-package com.zjucsc.application.system.service;
+package com.zjucsc.application.system.service.iservice;
 
 import com.zjucsc.application.domain.bean.NetworkInterface;
 

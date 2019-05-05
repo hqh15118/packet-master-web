@@ -7,8 +7,8 @@ import com.zjucsc.application.domain.entity.User;
 import com.zjucsc.application.system.controller.ConfigurationController;
 import com.zjucsc.application.system.controller.PacketController;
 import com.zjucsc.application.system.controller.UserOptController;
-import com.zjucsc.application.system.service.impl.PcapMainService;
-import com.zjucsc.application.system.service.impl.TsharkMainService;
+import com.zjucsc.application.system.service.PcapMainService;
+import com.zjucsc.application.system.service.TsharkMainService;
 import com.zjucsc.application.tshark.capture.AbstractPacketService;
 import com.zjucsc.application.tshark.capture.PacketMain;
 import com.zjucsc.application.tshark.decode.DefaultPipeLine;
@@ -22,7 +22,6 @@ import java.util.Arrays;
 
 import static com.zjucsc.application.config.PACKET_PROTOCOL.MODBUS;
 import static com.zjucsc.application.config.PACKET_PROTOCOL.MODBUS_ID;
-import static com.zjucsc.application.config.PACKET_PROTOCOL.S7_Ack_data;
 
 /**
  * #project packet-master-web
@@ -94,7 +93,7 @@ public class ApplicationTest {
                 filter1
         ));
         fiveDimensionFilterForFront.setUserName("hongqianhui");
-        System.out.println(configurationController.configFvDimensionPacketRule(fiveDimensionFilterForFront));
+        //System.out.println(configurationController.configFvDimensionPacketRule(fiveDimensionFilterForFront));
     }
 
     @Test

@@ -1,6 +1,6 @@
-package com.zjucsc.application.tshark.analyzer;
+package com.zjucsc.application.domain.analyzer;
 
-import com.zjucsc.application.config.BadPacketDangerLevel;
+import com.zjucsc.application.config.DangerLevel;
 import com.zjucsc.application.domain.bean.BadPacket;
 import com.zjucsc.application.domain.filter.OperationPacketFilter;
 import com.zjucsc.application.tshark.domain.packet.FiveDimensionPacketWrapper;
@@ -21,7 +21,7 @@ public class OperationAnalyzer extends AbstractAnalyzer<OperationPacketFilter<In
             return new BadPacket.Builder(wrapper.fiveDimensionPacket.protocol)
                     .setComment("黑名单操作")
                     .set_five_Dimension(wrapper.fiveDimensionPacket)
-                    .setDangerLevel(BadPacketDangerLevel.VERY_DANGER)
+                    .setDangerLevel(DangerLevel.VERY_DANGER)
                     .setFun_code(fun_code)
                     //.setOperation(Common.CONFIGURATION_MAP.get(wrapper.fiveDimensionPacket.protocol)
                     //.set(fun_code))
@@ -32,7 +32,7 @@ public class OperationAnalyzer extends AbstractAnalyzer<OperationPacketFilter<In
 //            return new BadPacket.Builder(wrapper.fiveDimensionPacket.protocol)
 //                    .setComment("白名单未指定操作")
 //                    .set_five_Dimension(wrapper.fiveDimensionPacket)
-//                    .setDangerLevel(BadPacketDangerLevel.DANGER)
+//                    .setDangerLevel(DangerLevel.DANGER)
 //                    .setFun_code(fun_code)
 //                    //.setOperation(Common.CONFIGURATION_MAP.get(wrapper.fiveDimensionPacket.protocol)
 //                    //.set(fun_code))

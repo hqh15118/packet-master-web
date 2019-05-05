@@ -3,9 +3,11 @@ package com.zjucsc.application.task;
 import com.zjucsc.IProtocolFuncodeMap;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.PACKET_PROTOCOL;
+import com.zjucsc.application.domain.analyzer.EmptyPacketAnalyzer;
 import com.zjucsc.application.domain.bean.FuncodeStatement;
+import com.zjucsc.application.domain.filter.EmptyFilter;
 import com.zjucsc.application.domain.filter.OtherPacketFilter;
-import com.zjucsc.application.tshark.analyzer.OtherPacketAnalyzer;
+import com.zjucsc.application.domain.analyzer.OtherPacketAnalyzer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -59,7 +61,7 @@ public class InitConfigurationService implements ApplicationRunner {
                  * 也可以统一对这些OTHER的报文作统一分析
                  */
                 if (!Common.BAD_PACKET_FILTER_PRO_1.containsKey(protocol_name)){
-                    Common.BAD_PACKET_FILTER_PRO_1.put(protocol_name,new OtherPacketAnalyzer(new OtherPacketFilter(),protocol_name));
+                    Common.BAD_PACKET_FILTER_PRO_1.put(protocol_name,new EmptyPacketAnalyzer(new EmptyFilter(),protocol_name + "-empty filter"));
                 }
             }
         }

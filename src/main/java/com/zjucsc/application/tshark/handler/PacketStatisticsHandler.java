@@ -1,15 +1,10 @@
 package com.zjucsc.application.tshark.handler;
 
-import com.zjucsc.application.config.Common;
-import com.zjucsc.application.system.service.impl.PacketAnalyzeService;
+import com.zjucsc.application.system.service.PacketAnalyzeService;
 import com.zjucsc.application.tshark.decode.AbstractAsyncHandler;
-import com.zjucsc.application.tshark.domain.beans.PacketInfo;
 import com.zjucsc.application.tshark.domain.packet.FiveDimensionPacketWrapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 
 public class PacketStatisticsHandler extends AbstractAsyncHandler<Void> {

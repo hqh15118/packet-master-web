@@ -3,7 +3,7 @@ package com.zjucsc.application.system.controller;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.base.BaseResponse;
 import com.zjucsc.application.domain.entity.User;
-import com.zjucsc.application.system.service.UserOptService;
+import com.zjucsc.application.system.service.iservice.UserOptService;
 import com.zjucsc.base.util.MD5Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

@@ -1,4 +1,4 @@
-package com.zjucsc.application.tshark.analyzer;
+package com.zjucsc.application.domain.analyzer;
 
 import com.zjucsc.application.domain.filter.OtherPacketFilter;
 import com.zjucsc.application.util.AbstractAnalyzer;

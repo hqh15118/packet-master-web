@@ -1,6 +1,6 @@
 package com.zjucsc.packetmasterweb.spring;
 
-import com.zjucsc.application.system.service.impl.PcapMainService;
+import com.zjucsc.application.system.service.PcapMainService;
 import com.zjucsc.application.tshark.capture.AbstractPacketService;
 import org.junit.Test;
 

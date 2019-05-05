@@ -350,8 +350,8 @@
 2019-05-05 10:50:41.522 febs [http-nio-192.168.0.121-8080-exec-5] INFO  c.z.a.s.c.ConfigurationController -  更新/保存组态 ： 
  FiveDimensionFilterEntity.FiveDimensionFilterForFront(userName=hongqianhui, deviceId=10, fiveDimensionFilters=[FiveDimensionFilterEntity.FiveDimensionFilter(filterType=0, protocol=string, dst_port=string, src_port=string, src_ip=string, dst_ip=string)])  -- 失败
 com.zjucsc.application.domain.exceptions.ConfigurationNotValidException: 用户未登录或不存在
-	at com.zjucsc.application.system.service.filter.FiveDimensionFilterServiceImpl.configFiveDimensionRule(FiveDimensionFilterServiceImpl.java:38)
-	at com.zjucsc.application.system.service.filter.FiveDimensionFilterServiceImpl$$FastClassBySpringCGLIB$$67395698.invoke(<generated>)
+	at com.zjucsc.application.system.service.filter.com.zjucsc.application.system.service.impl.FiveDimensionFilterServiceImpl.configFiveDimensionRule(com.zjucsc.application.system.service.impl.FiveDimensionFilterServiceImpl.java:38)
+	at com.zjucsc.application.system.service.filter.com.zjucsc.application.system.service.impl.FiveDimensionFilterServiceImpl$$FastClassBySpringCGLIB$$67395698.invoke(<generated>)
 	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
 	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:749)
 	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
@@ -521,8 +521,8 @@ Error starting ApplicationContext. To display the conditions report re-run your 
 2019-05-05 13:00:39.691 febs [main] INFO  c.z.a.s.c.ConfigurationController -  更新/保存组态 ： 
  FVDimensionFilterEntity.FiveDimensionFilterForFront(userName=hongqianhui, deviceId=0, fiveDimensionFilters=[FVDimensionFilterEntity.FiveDimensionFilter(filterType=1, protocolId=0, dst_port=502, src_port=1075, src_ip=192.168.254.134, dst_ip=192.168.254.143)])  -- 失败
 com.zjucsc.application.domain.exceptions.ConfigurationNotValidException: 用户未登录或不存在
-	at com.zjucsc.application.system.service.filter.FiveDimensionFilterServiceImpl.configFiveDimensionRule(FiveDimensionFilterServiceImpl.java:39)
-	at com.zjucsc.application.system.service.filter.FiveDimensionFilterServiceImpl$$FastClassBySpringCGLIB$$67395698.invoke(<generated>)
+	at com.zjucsc.application.system.service.filter.com.zjucsc.application.system.service.impl.FiveDimensionFilterServiceImpl.configFiveDimensionRule(com.zjucsc.application.system.service.impl.FiveDimensionFilterServiceImpl.java:39)
+	at com.zjucsc.application.system.service.filter.com.zjucsc.application.system.service.impl.FiveDimensionFilterServiceImpl$$FastClassBySpringCGLIB$$67395698.invoke(<generated>)
 	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
 	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:749)
 	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
@@ -564,8 +564,8 @@ com.zjucsc.application.domain.exceptions.ConfigurationNotValidException: 用户�
 2019-05-05 13:02:24.269 febs [main] INFO  c.z.a.s.c.ConfigurationController -  更新/保存组态 ： 
  FVDimensionFilterEntity.FiveDimensionFilterForFront(userName=hongqianhui, deviceId=0, fiveDimensionFilters=[FVDimensionFilterEntity.FiveDimensionFilter(filterType=1, protocolId=0, dst_port=502, src_port=1075, src_ip=192.168.254.134, dst_ip=192.168.254.143)])  -- 失败
 com.zjucsc.application.domain.exceptions.ConfigurationNotValidException: 用户未登录或不存在
-	at com.zjucsc.application.system.service.filter.FiveDimensionFilterServiceImpl.configFiveDimensionRule(FiveDimensionFilterServiceImpl.java:39)
-	at com.zjucsc.application.system.service.filter.FiveDimensionFilterServiceImpl$$FastClassBySpringCGLIB$$67395698.invoke(<generated>)
+	at com.zjucsc.application.system.service.filter.com.zjucsc.application.system.service.impl.FiveDimensionFilterServiceImpl.configFiveDimensionRule(com.zjucsc.application.system.service.impl.FiveDimensionFilterServiceImpl.java:39)
+	at com.zjucsc.application.system.service.filter.com.zjucsc.application.system.service.impl.FiveDimensionFilterServiceImpl$$FastClassBySpringCGLIB$$67395698.invoke(<generated>)
 	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
 	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:749)
 	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
@@ -606,8 +606,8 @@ com.zjucsc.application.domain.exceptions.ConfigurationNotValidException: 用户�
 2019-05-05 13:03:44.922 febs [main] INFO  c.z.a.s.c.ConfigurationController -  更新/保存组态 ： 
  FVDimensionFilterEntity.FiveDimensionFilterForFront(userName=hongqianhui, deviceId=0, fiveDimensionFilters=[FVDimensionFilterEntity.FiveDimensionFilter(filterType=1, protocolId=0, dst_port=502, src_port=1075, src_ip=192.168.254.134, dst_ip=192.168.254.143)])  -- 失败
 com.zjucsc.application.domain.exceptions.ConfigurationNotValidException: 用户未登录或不存在
-	at com.zjucsc.application.system.service.filter.FiveDimensionFilterServiceImpl.configFiveDimensionRule(FiveDimensionFilterServiceImpl.java:39)
-	at com.zjucsc.application.system.service.filter.FiveDimensionFilterServiceImpl$$FastClassBySpringCGLIB$$67395698.invoke(<generated>)
+	at com.zjucsc.application.system.service.filter.com.zjucsc.application.system.service.impl.FiveDimensionFilterServiceImpl.configFiveDimensionRule(com.zjucsc.application.system.service.impl.FiveDimensionFilterServiceImpl.java:39)
+	at com.zjucsc.application.system.service.filter.com.zjucsc.application.system.service.impl.FiveDimensionFilterServiceImpl$$FastClassBySpringCGLIB$$67395698.invoke(<generated>)
 	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
 	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:749)
 	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
@@ -1241,8 +1241,8 @@ java.util.concurrent.ExecutionException: java.lang.NullPointerException
 Caused by: java.lang.NullPointerException: null
 	at java.util.concurrent.ConcurrentHashMap.get(ConcurrentHashMap.java:936)
 	at java.util.concurrent.ConcurrentHashMap.containsKey(ConcurrentHashMap.java:964)
-	at com.zjucsc.application.system.service.filter.OperationFilterServiceImpl.configOperationRule(OperationFilterServiceImpl.java:69)
-	at com.zjucsc.application.system.service.filter.OperationFilterServiceImpl$$FastClassBySpringCGLIB$$ad5e07e5.invoke(<generated>)
+	at com.zjucsc.application.system.service.filter.com.zjucsc.application.system.service.impl.OperationFilterServiceImpl.configOperationRule(com.zjucsc.application.system.service.impl.OperationFilterServiceImpl.java:69)
+	at com.zjucsc.application.system.service.filter.com.zjucsc.application.system.service.impl.OperationFilterServiceImpl$$FastClassBySpringCGLIB$$ad5e07e5.invoke(<generated>)
 	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
 	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:749)
 	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
@@ -1325,8 +1325,8 @@ java.util.concurrent.ExecutionException: java.lang.NullPointerException
 Caused by: java.lang.NullPointerException: null
 	at java.util.concurrent.ConcurrentHashMap.get(ConcurrentHashMap.java:936)
 	at java.util.concurrent.ConcurrentHashMap.containsKey(ConcurrentHashMap.java:964)
-	at com.zjucsc.application.system.service.filter.OperationFilterServiceImpl.configOperationRule(OperationFilterServiceImpl.java:69)
-	at com.zjucsc.application.system.service.filter.OperationFilterServiceImpl$$FastClassBySpringCGLIB$$ad5e07e5.invoke(<generated>)
+	at com.zjucsc.application.system.service.filter.com.zjucsc.application.system.service.impl.OperationFilterServiceImpl.configOperationRule(com.zjucsc.application.system.service.impl.OperationFilterServiceImpl.java:69)
+	at com.zjucsc.application.system.service.filter.com.zjucsc.application.system.service.impl.OperationFilterServiceImpl$$FastClassBySpringCGLIB$$ad5e07e5.invoke(<generated>)
 	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
 	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:749)
 	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
@@ -1407,8 +1407,8 @@ java.util.concurrent.ExecutionException: java.lang.NullPointerException
 Caused by: java.lang.NullPointerException: null
 	at java.util.concurrent.ConcurrentHashMap.get(ConcurrentHashMap.java:936)
 	at java.util.concurrent.ConcurrentHashMap.containsKey(ConcurrentHashMap.java:964)
-	at com.zjucsc.application.system.service.filter.OperationFilterServiceImpl.configOperationRule(OperationFilterServiceImpl.java:69)
-	at com.zjucsc.application.system.service.filter.OperationFilterServiceImpl$$FastClassBySpringCGLIB$$ad5e07e5.invoke(<generated>)
+	at com.zjucsc.application.system.service.filter.com.zjucsc.application.system.service.impl.OperationFilterServiceImpl.configOperationRule(com.zjucsc.application.system.service.impl.OperationFilterServiceImpl.java:69)
+	at com.zjucsc.application.system.service.filter.com.zjucsc.application.system.service.impl.OperationFilterServiceImpl$$FastClassBySpringCGLIB$$ad5e07e5.invoke(<generated>)
 	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
 	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:749)
 	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
@@ -1455,8 +1455,8 @@ Caused by: java.lang.NullPointerException: null
  OperationFilterEntity.OperationFilterForFront(userName=hongqianhui, deviceId=1, protocol=s7comm_ack_data, operationFilters=[OperationFilterEntity.OperationFilter(filterType=1, fun_code=1)])  -- 失败
 java.util.concurrent.ExecutionException: org.springframework.dao.DataIntegrityViolationException: 
 ### Error updating database.  Cause: java.sql.SQLException: Field 'user_name' doesn't have a default value
-### The error may exist in com/zjucsc/application/system/dao/filter/OperationFilterMapper.java (best guess)
-### The error may involve com.zjucsc.application.system.dao.filter.OperationFilterMapper.insert-Inline
+### The error may exist in com/zjucsc/application/system/dao/filter/com.zjucsc.application.system.dao.OperationFilterMapper.java (best guess)
+### The error may involve com.zjucsc.application.system.dao.filter.com.zjucsc.application.system.dao.OperationFilterMapper.insert-Inline
 ### The error occurred while setting parameters
 ### SQL: INSERT INTO operation_filter  ( device_id, protocol, content )  VALUES  ( ?, ?, ? )
 ### Cause: java.sql.SQLException: Field 'user_name' doesn't have a default value
@@ -1498,8 +1498,8 @@ java.util.concurrent.ExecutionException: org.springframework.dao.DataIntegrityVi
 	at com.intellij.rt.execution.junit.JUnitStarter.main(JUnitStarter.java:70)
 Caused by: org.springframework.dao.DataIntegrityViolationException: 
 ### Error updating database.  Cause: java.sql.SQLException: Field 'user_name' doesn't have a default value
-### The error may exist in com/zjucsc/application/system/dao/filter/OperationFilterMapper.java (best guess)
-### The error may involve com.zjucsc.application.system.dao.filter.OperationFilterMapper.insert-Inline
+### The error may exist in com/zjucsc/application/system/dao/filter/com.zjucsc.application.system.dao.OperationFilterMapper.java (best guess)
+### The error may involve com.zjucsc.application.system.dao.filter.com.zjucsc.application.system.dao.OperationFilterMapper.insert-Inline
 ### The error occurred while setting parameters
 ### SQL: INSERT INTO operation_filter  ( device_id, protocol, content )  VALUES  ( ?, ?, ? )
 ### Cause: java.sql.SQLException: Field 'user_name' doesn't have a default value
@@ -1515,8 +1515,8 @@ Caused by: org.springframework.dao.DataIntegrityViolationException:
 	at com.sun.proxy.$Proxy118.insert(Unknown Source)
 	at com.baomidou.mybatisplus.extension.service.impl.ServiceImpl.save(ServiceImpl.java:105)
 	at com.baomidou.mybatisplus.extension.service.impl.ServiceImpl.saveOrUpdate(ServiceImpl.java:149)
-	at com.zjucsc.application.system.service.filter.OperationFilterServiceImpl.configOperationRule(OperationFilterServiceImpl.java:76)
-	at com.zjucsc.application.system.service.filter.OperationFilterServiceImpl$$FastClassBySpringCGLIB$$ad5e07e5.invoke(<generated>)
+	at com.zjucsc.application.system.service.filter.com.zjucsc.application.system.service.impl.OperationFilterServiceImpl.configOperationRule(com.zjucsc.application.system.service.impl.OperationFilterServiceImpl.java:76)
+	at com.zjucsc.application.system.service.filter.com.zjucsc.application.system.service.impl.OperationFilterServiceImpl$$FastClassBySpringCGLIB$$ad5e07e5.invoke(<generated>)
 	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
 	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:749)
 	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)

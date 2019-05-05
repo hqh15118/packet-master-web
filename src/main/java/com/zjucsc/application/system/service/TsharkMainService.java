@@ -1,4 +1,4 @@
-package com.zjucsc.application.system.service.impl;
+package com.zjucsc.application.system.service;
 
 import com.zjucsc.application.tshark.capture.AbstractPacketService;
 import com.zjucsc.application.tshark.capture.PacketMain;

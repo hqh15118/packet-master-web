@@ -192,8 +192,8 @@
 2019-05-04 15:51:24.165 febs [main] INFO  c.z.a.s.c.ConfigurationController -  更新/保存组态 ： 
  FiveDimensionFilterEntity.FiveDimensionFilterForFront(userName=null, fiveDimensionFilters=[FiveDimensionFilterEntity.FiveDimensionFilter(filterType=0, protocol=null, dst_port=null, src_port=null, src_ip=192.168.254.34, dst_ip=null)])  -- 失败
 com.zjucsc.application.domain.exceptions.ConfigurationNotValidException: 用户未登录或不存在
-	at com.zjucsc.application.system.service.filter.FiveDimensionFilterServiceImpl.configFiveDimensionRule(FiveDimensionFilterServiceImpl.java:38)
-	at com.zjucsc.application.system.service.filter.FiveDimensionFilterServiceImpl$$FastClassBySpringCGLIB$$67395698.invoke(<generated>)
+	at com.zjucsc.application.system.service.filter.com.zjucsc.application.system.service.impl.FiveDimensionFilterServiceImpl.configFiveDimensionRule(com.zjucsc.application.system.service.impl.FiveDimensionFilterServiceImpl.java:38)
+	at com.zjucsc.application.system.service.filter.com.zjucsc.application.system.service.impl.FiveDimensionFilterServiceImpl$$FastClassBySpringCGLIB$$67395698.invoke(<generated>)
 	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
 	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:749)
 	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
@@ -232,8 +232,8 @@ com.zjucsc.application.domain.exceptions.ConfigurationNotValidException: 用户�
 2019-05-04 15:59:47.710 febs [main] INFO  c.z.a.s.c.ConfigurationController -  更新/保存组态 ： 
  FiveDimensionFilterEntity.FiveDimensionFilterForFront(userName=null, fiveDimensionFilters=[FiveDimensionFilterEntity.FiveDimensionFilter(filterType=0, protocol=null, dst_port=null, src_port=null, src_ip=192.168.254.34, dst_ip=null)])  -- 失败
 com.zjucsc.application.domain.exceptions.ConfigurationNotValidException: 用户未登录或不存在
-	at com.zjucsc.application.system.service.filter.FiveDimensionFilterServiceImpl.configFiveDimensionRule(FiveDimensionFilterServiceImpl.java:38)
-	at com.zjucsc.application.system.service.filter.FiveDimensionFilterServiceImpl$$FastClassBySpringCGLIB$$67395698.invoke(<generated>)
+	at com.zjucsc.application.system.service.filter.com.zjucsc.application.system.service.impl.FiveDimensionFilterServiceImpl.configFiveDimensionRule(com.zjucsc.application.system.service.impl.FiveDimensionFilterServiceImpl.java:38)
+	at com.zjucsc.application.system.service.filter.com.zjucsc.application.system.service.impl.FiveDimensionFilterServiceImpl$$FastClassBySpringCGLIB$$67395698.invoke(<generated>)
 	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
 	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:749)
 	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
@@ -273,8 +273,8 @@ com.zjucsc.application.domain.exceptions.ConfigurationNotValidException: 用户�
 2019-05-04 16:06:19.267 febs [main] INFO  c.z.a.s.c.ConfigurationController -  更新/保存组态 ： 
  FiveDimensionFilterEntity.FiveDimensionFilterForFront(userName=null, fiveDimensionFilters=[FiveDimensionFilterEntity.FiveDimensionFilter(filterType=0, protocol=null, dst_port=null, src_port=null, src_ip=192.168.254.34, dst_ip=null)])  -- 失败
 com.zjucsc.application.domain.exceptions.ConfigurationNotValidException: 用户未登录或不存在
-	at com.zjucsc.application.system.service.filter.FiveDimensionFilterServiceImpl.configFiveDimensionRule(FiveDimensionFilterServiceImpl.java:38)
-	at com.zjucsc.application.system.service.filter.FiveDimensionFilterServiceImpl$$FastClassBySpringCGLIB$$67395698.invoke(<generated>)
+	at com.zjucsc.application.system.service.filter.com.zjucsc.application.system.service.impl.FiveDimensionFilterServiceImpl.configFiveDimensionRule(com.zjucsc.application.system.service.impl.FiveDimensionFilterServiceImpl.java:38)
+	at com.zjucsc.application.system.service.filter.com.zjucsc.application.system.service.impl.FiveDimensionFilterServiceImpl$$FastClassBySpringCGLIB$$67395698.invoke(<generated>)
 	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
 	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:749)
 	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
@@ -411,8 +411,8 @@ java.util.concurrent.ExecutionException: java.lang.NullPointerException
 Caused by: java.lang.NullPointerException: null
 	at com.zjucsc.application.domain.bean.FiveDimensionPacketFilter.doSet(FiveDimensionPacketFilter.java:134)
 	at com.zjucsc.application.domain.bean.FiveDimensionPacketFilter.setFilterList(FiveDimensionPacketFilter.java:62)
-	at com.zjucsc.application.system.service.filter.FiveDimensionFilterServiceImpl.configFiveDimensionRule(FiveDimensionFilterServiceImpl.java:72)
-	at com.zjucsc.application.system.service.filter.FiveDimensionFilterServiceImpl$$FastClassBySpringCGLIB$$67395698.invoke(<generated>)
+	at com.zjucsc.application.system.service.filter.com.zjucsc.application.system.service.impl.FiveDimensionFilterServiceImpl.configFiveDimensionRule(com.zjucsc.application.system.service.impl.FiveDimensionFilterServiceImpl.java:72)
+	at com.zjucsc.application.system.service.filter.com.zjucsc.application.system.service.impl.FiveDimensionFilterServiceImpl$$FastClassBySpringCGLIB$$67395698.invoke(<generated>)
 	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
 	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:749)
 	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
@@ -490,8 +490,8 @@ java.util.concurrent.ExecutionException: java.lang.NullPointerException
 Caused by: java.lang.NullPointerException: null
 	at com.zjucsc.application.domain.bean.FiveDimensionPacketFilter.doSet(FiveDimensionPacketFilter.java:134)
 	at com.zjucsc.application.domain.bean.FiveDimensionPacketFilter.setFilterList(FiveDimensionPacketFilter.java:62)
-	at com.zjucsc.application.system.service.filter.FiveDimensionFilterServiceImpl.configFiveDimensionRule(FiveDimensionFilterServiceImpl.java:72)
-	at com.zjucsc.application.system.service.filter.FiveDimensionFilterServiceImpl$$FastClassBySpringCGLIB$$67395698.invoke(<generated>)
+	at com.zjucsc.application.system.service.filter.com.zjucsc.application.system.service.impl.FiveDimensionFilterServiceImpl.configFiveDimensionRule(com.zjucsc.application.system.service.impl.FiveDimensionFilterServiceImpl.java:72)
+	at com.zjucsc.application.system.service.filter.com.zjucsc.application.system.service.impl.FiveDimensionFilterServiceImpl$$FastClassBySpringCGLIB$$67395698.invoke(<generated>)
 	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
 	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:749)
 	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
