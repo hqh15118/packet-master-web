@@ -59,6 +59,13 @@ public class PacketDecodeHandler extends AbstractAsyncHandler<FiveDimensionPacke
     @Override
     public FiveDimensionPacketWrapper handle(Object t) {
         PacketInfo.PacketWrapper wrapper = (PacketInfo.PacketWrapper) t;
+        /*
+         * 这部分是给Pcap准备的，如果检测到收到的fiveDimensionPacketWrapper不为空，
+         * 则表示式从pcapHandler发过来的，那么就直接返回进入下一阶段不需要解析了
+         */
+        if (((PacketInfo.PacketWrapper) t).fiveDimensionPacketWrapper!=null){
+            return ((PacketInfo.PacketWrapper) t).fiveDimensionPacketWrapper;
+        }
         //System.out.println("decode packet handler : " + wrapper);
         final byte[] payload = PacketDecodeUtil.hexStringToByteArray(wrapper.tcpPayload);
         collectorStateChangePool.execute(new Runnable() {
@@ -70,6 +77,7 @@ public class PacketDecodeHandler extends AbstractAsyncHandler<FiveDimensionPacke
                 }
             }
         });
+        //这里的wrapper.packetProtocol都是PACLET_PROTOCOL中定义的标准格式
         switch (wrapper.packetProtocol) {
             case TCP:
                 return decodeTcpPacket(wrapper.packetProtocol,wrapper.json , payload);
@@ -101,6 +109,7 @@ public class PacketDecodeHandler extends AbstractAsyncHandler<FiveDimensionPacke
                 .tcpPayload(payload)
                 .dis_port(layers.tcp_dstport[0])
                 .src_port(layers.tcp_srcport[0])
+                .packetLength(layers.frame_cap_len[0])
                 .build();
     }
 
@@ -120,6 +129,7 @@ public class PacketDecodeHandler extends AbstractAsyncHandler<FiveDimensionPacke
                 .tcpPayload(payload)
                 .dis_port(layers.tcp_dstport[0])
                 .src_port(layers.tcp_srcport[0])
+                .packetLength(layers.frame_cap_len[0])
                 .build();
     }
 
@@ -142,6 +152,7 @@ public class PacketDecodeHandler extends AbstractAsyncHandler<FiveDimensionPacke
                 .tcpPayload(payload)
                 .dis_port(layers.tcp_dstport[0])
                 .src_port(layers.tcp_srcport[0])
+                .packetLength(layers.frame_cap_len[0])
                 .build();
     }
 
@@ -161,6 +172,7 @@ public class PacketDecodeHandler extends AbstractAsyncHandler<FiveDimensionPacke
                 .tcpPayload(blankPayload)
                 .dis_port(layers.tcp_dstport[0])
                 .src_port(layers.tcp_srcport[0])
+                .packetLength(layers.frame_cap_len[0])
                 .build();
     }
 

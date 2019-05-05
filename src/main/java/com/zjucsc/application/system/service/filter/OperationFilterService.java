@@ -18,5 +18,5 @@ public interface OperationFilterService extends IService<OperationFilterEntity> 
     //请求已配置好的组态规则
     OperationFilterEntity.OperationFilterForFront loadRule(String userName , String protocol);
 
-    CompletableFuture<List<OperationFilterEntity.OperationFilterForFront>> loadAllRule(String userName);
+    CompletableFuture<List<OperationFilterEntity.OperationFilterForFront>> loadAllRule(int deviceId);
 }

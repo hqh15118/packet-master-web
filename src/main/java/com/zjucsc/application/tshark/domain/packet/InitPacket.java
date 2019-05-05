@@ -17,7 +17,6 @@ public class InitPacket {
     public static class LayersBean {
         public String[] frame_protocols = {""};
         public String[] tcp_payload = {""};
-        public String[] frame_cap_len = {""};
         /**
          * S7协议的字段，1表示JOB，3表示ACK_DATA
          */
@@ -28,7 +27,7 @@ public class InitPacket {
             return "LayersBean{" +
                     "frame_protocols=" + Arrays.toString(frame_protocols) +
                     ", tcp_payload=" + Arrays.toString(tcp_payload) +
-                    ", frame_cap_len=" + Arrays.toString(frame_cap_len) +
+                    ", s7comm_header_rosctr=" + Arrays.toString(s7comm_header_rosctr) +
                     '}';
         }
     }

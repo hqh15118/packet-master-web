@@ -1,3 +1,8 @@
 /Applications/Wireshark.app/Contents/MacOS/tshark -l -n -Y "tcp" -e frame.protocols -e eth.dst -e frame.cap_len -e eth.src -e ip.src -e ip.dst -e tcp.srcport -e tcp.dstport -e s7comm.param.func -e modbus.func_code -e tcp.payload -T ek  -c 74 -r /Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap/question_1531953261_01.pcap
 
 /Applications/Wireshark.app/Contents/MacOS/tshark -l -n  -T json -c 6 -r /Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap/question_1531953261_01.pcap
+
+
+C:\Users\Administrator\Desktop\tshark_min\tshark.exe -l -n -Y tcp -e frame.protocols -e eth.dst -e frame.cap_len -e eth.src -e ip.src -e ip.dst -e tcp.srcport -e tcp.dstport -e s7comm.param.func -e modbus.func_code -e tcp.payload -e s7comm.header.rosctr -T ek -c 5 -r C:\Users\Administrator\IdeaProjects\packet-master-web\src\main\resources\pcap\question_1531953261_01.pcap
+
+C:\Users\Administrator\Desktop\tshark_min\tshark.exe -l -n -Y tcp -T json -c 5 -r C:\Users\Administrator\IdeaProjects\packet-master-web\src\main\resources\pcap\question_1531953261_01.pcap

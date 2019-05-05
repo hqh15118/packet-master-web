@@ -67,12 +67,13 @@ public class OperationFilterServiceImpl extends ServiceImpl<OperationFilterMappe
         }
         //BAD_PACKET_FILTER.put(FilterType.OPERATION,packetFilter);
         if (!BAD_PACKET_FILTER_PRO_1.containsKey(configuration.getProtocol())){
-            return CompletableFuture.completedFuture(new ConfigurationNotValidException("为定义该协议" + configuration.getProtocol()));
+            return CompletableFuture.completedFuture(new ConfigurationNotValidException("未定义该协议" + configuration.getProtocol()));
         }
         BAD_PACKET_FILTER_PRO_1.get(configuration.getProtocol()).setAnalyzer(packetFilter);
         OperationFilterEntity operationFilterEntity = new OperationFilterEntity();
         operationFilterEntity.setProtocol(configuration.getProtocol());
         operationFilterEntity.setContent(JSON.toJSONString(configuration.getOperationFilters()));
+        operationFilterEntity.setUserName(configuration.getUserName());
         saveOrUpdate(operationFilterEntity);
         return CompletableFuture.completedFuture(null);
     }
@@ -91,12 +92,14 @@ public class OperationFilterServiceImpl extends ServiceImpl<OperationFilterMappe
 
     @Async
     @Override
-    public CompletableFuture<List<OperationFilterEntity.OperationFilterForFront>> loadAllRule(String userName) {
+    public CompletableFuture<List<OperationFilterEntity.OperationFilterForFront>> loadAllRule(int deviceId) {
         List<OperationFilterEntity.OperationFilterForFront> operationFilterForFronts = new ArrayList<>();
         for (OperationFilterEntity entity : list()){
             OperationFilterEntity.OperationFilterForFront filterForFront = new OperationFilterEntity.OperationFilterForFront();
             filterForFront.setProtocol(entity.getProtocol());
+            filterForFront.setDeviceId(deviceId);
             filterForFront.setUserName("");
+            filterForFront.setDeviceId(entity.getDeviceId());
             filterForFront.setOperationFilters(JSON.parseArray(entity.getContent(), OperationFilterEntity.OperationFilter.class));
             operationFilterForFronts.add(filterForFront);
         }

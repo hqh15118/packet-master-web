@@ -3,6 +3,7 @@ package com.zjucsc.application.handler;
 
 import com.alibaba.fastjson.JSONException;
 import com.zjucsc.application.config.Common;
+import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
 import com.zjucsc.application.domain.exceptions.OpenCaptureServiceException;
 import com.zjucsc.base.BaseResponse;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +30,12 @@ public class ControllerExceptionHandler {
     @ResponseBody
     public BaseResponse handlerJSONContentValidException(JSONException e){
         return BaseResponse.ERROR(Common.HTTP_STATUS_CODE.JSON_ERROR,e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseBody
+    public BaseResponse handlerDeviceException(DeviceNotValidException d){
+        return BaseResponse.ERROR(Common.HTTP_STATUS_CODE.DEVICE_ERROR,d.getMessage());
     }
 
 

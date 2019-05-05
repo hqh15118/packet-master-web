@@ -24,19 +24,25 @@ import java.util.List;
  */
 //数据库中保存的数据格式
 public class OperationFilterEntity {
+    @TableId("device_id")
+    private int deviceId;
     @NotBlank(message = "过滤器种类不能为空")
     //组态配置内容
-    @TableId("protocol")
+    @TableField("protocol")
     @NotBlank(message = "协议不能为空")
     private String protocol;
     @TableField("content")
     @NotBlank(message = "组态内容不能为空")
     private String content;
+    @NotBlank(message = "用户名不为空")
+    @TableField("user_name")
+    private String userName;
 
     //前端应该传递的数据格式
     @Data
     public static class OperationFilterForFront{
         private String userName;
+        private int deviceId;
         private String protocol;
         private List<OperationFilter> operationFilters;
     }

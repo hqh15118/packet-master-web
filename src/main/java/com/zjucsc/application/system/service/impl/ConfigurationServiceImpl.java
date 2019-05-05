@@ -1,8 +1,9 @@
 package com.zjucsc.application.system.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.zjucsc.application.domain.entity.FiveDimensionFilterEntity;
+import com.zjucsc.application.domain.entity.FVDimensionFilterEntity;
 import com.zjucsc.application.domain.entity.OperationFilterEntity;
+import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
 import com.zjucsc.application.system.dao.ConfigurationMapper;
 import com.zjucsc.application.system.service.ConfigurationService;
 import com.zjucsc.application.system.service.filter.FiveDimensionFilterService;
@@ -30,15 +31,15 @@ public class ConfigurationServiceImpl extends ServiceImpl<ConfigurationMapper, O
     @Autowired private FiveDimensionFilterService fiveDimensionFilterService;
 
     @Override
-    public HashMap<String, Object> loadRule(String userName) throws ExecutionException, InterruptedException {
+    public HashMap<String, Object> loadRule(int deviceId) throws ExecutionException, InterruptedException, DeviceNotValidException {
         CompletableFuture<List<OperationFilterEntity.OperationFilterForFront>> future =
-                operationFilterService.loadAllRule(userName);
+                operationFilterService.loadAllRule(deviceId);
         HashMap<String,Object> map = new HashMap<>();
         List<OperationFilterEntity.OperationFilterForFront> list = future.get();
         for (OperationFilterEntity.OperationFilterForFront filterForFront : list) {
             map.put(filterForFront.getProtocol(),filterForFront.getOperationFilters());
         }
-        List<FiveDimensionFilterEntity.FiveDimensionFilter> list1 = fiveDimensionFilterService.loadRule(userName);
+        List<FVDimensionFilterEntity.FiveDimensionFilter> list1 = fiveDimensionFilterService.loadRule(deviceId);
         map.put(FV_DIMENSION,list1);
         return map;
     }

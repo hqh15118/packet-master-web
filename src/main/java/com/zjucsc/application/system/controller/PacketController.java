@@ -79,11 +79,9 @@ public class PacketController {
                 }
             }
         });
-
-
     }
 
-    @ApiOperation("连接websocket服务端交互")
+    @ApiOperation("开启websocket服务")
     @RequestMapping(value = "/connect_socketio" , method = RequestMethod.GET)
     public BaseResponse startRecvRealTimePacket(){
         boolean b = MainServer.openWebSocketService("localhost", Common.SOCKET_IO_PORT, new com.corundumstudio.socketio.listener.ConnectListener() {

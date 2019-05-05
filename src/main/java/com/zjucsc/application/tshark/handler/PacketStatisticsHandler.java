@@ -4,6 +4,7 @@ import com.zjucsc.application.config.Common;
 import com.zjucsc.application.system.service.impl.PacketAnalyzeService;
 import com.zjucsc.application.tshark.decode.AbstractAsyncHandler;
 import com.zjucsc.application.tshark.domain.beans.PacketInfo;
+import com.zjucsc.application.tshark.domain.packet.FiveDimensionPacketWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -22,11 +23,10 @@ public class PacketStatisticsHandler extends AbstractAsyncHandler<Void> {
 
     @Override
     public Void handle(Object t) {
-        PacketInfo.PacketWrapper wrapper = ((PacketInfo.PacketWrapper) t);
+        FiveDimensionPacketWrapper wrapper = ((FiveDimensionPacketWrapper) t);
         //System.out.println("statis packet handler : " + wrapper );
         packetAnalyzeService.addPacketFlow(Integer.parseInt(wrapper.packetLength));
         packetAnalyzeService.addPacketNumber();
-
         return null;
     }
 }

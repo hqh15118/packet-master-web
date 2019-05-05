@@ -13,6 +13,7 @@ import com.zjucsc.application.tshark.decode.PipeLine;
 import com.zjucsc.application.util.PcapUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.pcap4j.core.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import static com.zjucsc.application.config.Common.COMMON_THREAD_EXCEPTION_HANDLER;
@@ -23,6 +24,8 @@ import static com.zjucsc.application.config.Common.COMMON_THREAD_EXCEPTION_HANDL
 @Service
 @Slf4j
 public class PcapMainService {
+
+    @Autowired PacketListenHandler packetListenHandler;
 
     private String deviceName;
     private AbstractPacketService.ProcessCallback processCallback;
@@ -45,7 +48,7 @@ public class PcapMainService {
                             processCallback.error(e);
                             return;
                         }
-                        PcapUtils.endlessLoopHandler(handle,new PacketListenHandler());
+                        PcapUtils.endlessLoopHandler(handle,packetListenHandler);
                     }
                 }
         );

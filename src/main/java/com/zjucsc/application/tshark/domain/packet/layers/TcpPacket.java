@@ -20,5 +20,6 @@ public class TcpPacket {
         public String[] ip_addr;
         public String[] tcp_srcport;
         public String[] tcp_dstport;
+        public String[] frame_cap_len = {""};
     }
 }

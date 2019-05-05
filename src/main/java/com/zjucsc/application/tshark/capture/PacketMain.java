@@ -158,8 +158,11 @@ public class PacketMain {
         return process;
     }
 
-    public static PipeLine getDefaultPipeLine(){
+    public static DefaultPipeLine pcapPipeLine;
+
+    public static DefaultPipeLine getDefaultPipeLine(){
         DefaultPipeLine pipeLine = new DefaultPipeLine("main pipe line");
+        pcapPipeLine = new DefaultPipeLine("pcap pipe line");
         /*
          * main pipeLine handler
          */
@@ -230,8 +233,13 @@ public class PacketMain {
         /*
          * connect pipelines
          */
-        basePacketHandler.addPipeLine(packetStatisticsPipeLine);
+        packetDecodeHandler.addPipeLine(packetStatisticsPipeLine);
         packetDecodeHandler.addPipeLine(badPacketAnalysisPipeLine);
+
+        /*
+         * pcap pipelines
+         */
+        pcapPipeLine.addLast(packetDecodeHandler);
 
         pipeLine.addLast(basePacketHandler);
         pipeLine.addLast(packetDecodeHandler);

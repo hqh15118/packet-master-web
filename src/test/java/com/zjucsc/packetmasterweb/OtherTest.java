@@ -1,13 +1,19 @@
 package com.zjucsc.packetmasterweb;
 
 import com.alibaba.fastjson.JSON;
+import com.zjucsc.application.config.PACKET_PROTOCOL;
 import com.zjucsc.application.domain.filter.OperationPacketFilter;
+import com.zjucsc.application.pcap4j.PacketListenHandler;
 import com.zjucsc.application.tshark.handler.BasePacketHandler;
 import com.zjucsc.application.tshark.handler.PacketDecodeHandler;
 import com.zjucsc.application.tshark.handler.PacketSendHandler;
 import com.zjucsc.application.tshark.decode.DefaultPipeLine;
+import com.zjucsc.application.util.PcapUtils;
 import org.junit.Test;
+import org.pcap4j.core.*;
+import org.xmlunit.util.Convert;
 
+import java.lang.reflect.Field;
 import java.util.concurrent.Executors;
 
 /**
@@ -82,6 +88,53 @@ public class OtherTest {
     public void less_test(){
         String str = "{\"index\" : {\"_index\": \"packets-2019-05-04\", \"_type\": \"pcap_file\", \"_score\": null}}";
         System.out.println(str.length());
+    }
+
+    @Test
+    public void check_class_type() throws IllegalAccessException {
+        Field[] fields = PACKET_PROTOCOL.class.getDeclaredFields();
+        for (Field field : fields) {
+            System.out.println(field.get(null));
+        }
+    }
+
+    @Test
+    public void hex_to_int(){
+        String hex = "1";       //modbus
+        long time1 = System.currentTimeMillis();
+        long id = 0;
+        for (int i = 0; i < 400000; i++) {
+            id = Integer.decode(hex);
+        }
+        System.out.println(id);
+        System.out.println(System.currentTimeMillis() - time1);
+
+        System.out.println("*********************");
+        //
+        hex = "0x00000004";
+        time1 = System.currentTimeMillis();
+        for (int i = 0; i < 400000; i++) {
+            id = Integer.decode(hex);
+        }
+        System.out.println(id);
+        System.out.println(System.currentTimeMillis() - time1);
+        System.out.println("*********************");
+        hex = "fafacadadwerq";
+        try{
+            id = Integer.decode(hex);   //java.lang.NumberFormatException: For input string: "fafacadadwerq"
+        }catch (RuntimeException e){
+            System.out.println(e);
+        }
+        System.out.println(id);
+    }
+
+    @Test
+    public void pcap_decode_test() throws PcapNativeException, NotOpenException, InterruptedException {
+        String path = OtherTest.class.getResource("/").getPath() +  "test_pcap.pcap";
+        PcapHandle handle = Pcaps.openOffline("C:\\Users\\Administrator\\IdeaProjects\\packet-master-web\\src\\test\\resource\\test_pcap.pcap");
+        handle.setFilter("not tcp" , BpfProgram.BpfCompileMode.OPTIMIZE);
+        handle.loop(5,new PacketListenHandler());
+        Thread.sleep(100000000);
     }
 
 }

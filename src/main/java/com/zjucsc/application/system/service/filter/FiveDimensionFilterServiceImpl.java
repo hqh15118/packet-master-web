@@ -2,8 +2,9 @@ package com.zjucsc.application.system.service.filter;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zjucsc.application.domain.entity.FVDimensionFilterEntity;
+import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
 import com.zjucsc.application.domain.filter.FiveDimensionPacketFilter;
-import com.zjucsc.application.domain.entity.FiveDimensionFilterEntity;
 import com.zjucsc.application.domain.exceptions.ConfigurationNotValidException;
 import com.zjucsc.application.system.dao.filter.FiveDimensionFilterMapper;
 import com.zjucsc.application.system.service.UserOptService;
@@ -24,7 +25,7 @@ import static com.zjucsc.application.config.PACKET_PROTOCOL.FV_DIMENSION;
  * #create_time 2019-05-02 - 20:23
  */
 @Service
-public class FiveDimensionFilterServiceImpl extends ServiceImpl<FiveDimensionFilterMapper, FiveDimensionFilterEntity> implements FiveDimensionFilterService {
+public class FiveDimensionFilterServiceImpl extends ServiceImpl<FiveDimensionFilterMapper, FVDimensionFilterEntity> implements FiveDimensionFilterService {
 
 
     @Autowired
@@ -33,13 +34,15 @@ public class FiveDimensionFilterServiceImpl extends ServiceImpl<FiveDimensionFil
     @Async
     @Override
     @SuppressWarnings("unchecked")
-    public CompletableFuture<Exception> configFiveDimensionRule(FiveDimensionFilterEntity.FiveDimensionFilterForFront fiveDimensionFilterForFront) {
+    public CompletableFuture<Exception> configFiveDimensionRule(FVDimensionFilterEntity.FiveDimensionFilterForFront fiveDimensionFilterForFront) {
         if (!userOptService.onServer(fiveDimensionFilterForFront.getUserName())){
             return CompletableFuture.completedFuture(new ConfigurationNotValidException("用户未登录或不存在"));
         }
+
         /*-****************************************************
          * FiveDimensionFilterForFront
          * {
+         *     device_id:xxx    设备ID         P_K
          *     userName : xxx   用户名         验证
          *     [
          *       {
@@ -53,32 +56,26 @@ public class FiveDimensionFilterServiceImpl extends ServiceImpl<FiveDimensionFil
          *     ]
          * }
          *-***************************************************/
-        List<FiveDimensionFilterEntity.FiveDimensionFilter> filters = fiveDimensionFilterForFront.getFiveDimensionFilters();
-//        OperationPacketFilter<String,String> packetFilter = new OperationPacketFilter<>("five-dimension filter");//五元组
-//        for (FiveDimensionFilterEntity.FiveDimensionFilter filter : filters) {
-//            if (filter.getFilterType() == 0){
-//                packetFilter.addWhiteRule(filter.getProtocol(),"not support");
-//                //FIXME 这里暂不支持
-////                packetFilter.addWhiteRule(filter.getFun_code(), Common.CONFIGURATION_MAP.get(configuration.getProtocol())
-////                        .get(filter.getFun_code()));
-//            }else{
-//                packetFilter.addBlackRule(filter.getProtocol(),"not support");
-////                packetFilter.addBlackRule(filter.getFun_code(),Common.CONFIGURATION_MAP.get(configuration.getProtocol())
-////                        .get(filter.getFun_code()));
-//            }
-//        }
-        //BAD_PACKET_FILTER.put(FilterType.PROTOCOL,packetFilter);
+        List<FVDimensionFilterEntity.FiveDimensionFilter> filters = fiveDimensionFilterForFront.getFiveDimensionFilters();
+        //修改缓存
         ((FiveDimensionPacketFilter) (BAD_PACKET_FILTER_PRO_1.get(FV_DIMENSION).getAnalyzer()))
-                .setFilterList(filters);
-        FiveDimensionFilterEntity fiveDimensionFilterEntity = new FiveDimensionFilterEntity();
-        fiveDimensionFilterEntity.setUserName(fiveDimensionFilterForFront.getUserName());
-        fiveDimensionFilterEntity.setContent(JSON.toJSONString(fiveDimensionFilterForFront.getFiveDimensionFilters()));
-        saveOrUpdate(fiveDimensionFilterEntity);
+                .setFilterList(filters);//setFilterList，将前端传入的PROTOCOL_ID转换为PROTOCOL字符串
+        //修改数据库
+        FVDimensionFilterEntity FVDimensionFilterEntity = new FVDimensionFilterEntity();
+        FVDimensionFilterEntity.setDeviceId(fiveDimensionFilterForFront.getDeviceId());
+        FVDimensionFilterEntity.setUser_name(fiveDimensionFilterForFront.getUserName());
+        FVDimensionFilterEntity.setContent(JSON.toJSONString(fiveDimensionFilterForFront.getFiveDimensionFilters()));
+        saveOrUpdate(FVDimensionFilterEntity);
         return CompletableFuture.completedFuture(null);
     }
 
     @Override
-    public List<FiveDimensionFilterEntity.FiveDimensionFilter> loadRule(String userName) {
-        return JSON.parseArray(getById(userName).getContent(),FiveDimensionFilterEntity.FiveDimensionFilter.class);
+    public List<FVDimensionFilterEntity.FiveDimensionFilter> loadRule(int deviceId) throws DeviceNotValidException {
+        FVDimensionFilterEntity entity = getById(deviceId);
+        if (entity == null){
+            throw new DeviceNotValidException("未配置设备ID : " + deviceId);
+        }else {
+            return JSON.parseArray(entity.getContent(), FVDimensionFilterEntity.FiveDimensionFilter.class);
+        }
     }
 }

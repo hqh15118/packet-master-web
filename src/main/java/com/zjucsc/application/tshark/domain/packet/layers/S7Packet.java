@@ -24,6 +24,7 @@ public class S7Packet{
         public String[] s7comm_param_func;
         //public String[] tcp_payload;
         //public String[] s7comm_header_rosctr;
+        public String[] frame_cap_len = {""};
     }
 
     public static final String JOB = "1",ACK_DATA = "3";

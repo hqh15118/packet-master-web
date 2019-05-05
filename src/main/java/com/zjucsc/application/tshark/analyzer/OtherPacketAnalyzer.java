@@ -13,13 +13,19 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class OtherPacketAnalyzer extends AbstractAnalyzer<OtherPacketFilter> {
 
+    private String analyzerName;
+
     public OtherPacketAnalyzer(OtherPacketFilter otherPacketFilter) {
         super(otherPacketFilter);
     }
 
+    public OtherPacketAnalyzer(OtherPacketFilter otherPacketFilter , String name) {
+        super(otherPacketFilter);
+        this.analyzerName = name;
+    }
+
     @Override
     public Object analyze(Object... objs) {
-        log.error("not define protocol {} 's analyzer" , (String)objs[1]);
         return null;
     }
 }

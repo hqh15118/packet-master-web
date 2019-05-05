@@ -47,12 +47,14 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
     }
 
     private void artifactAnalyze(byte[] tcpPayload, FiveDimensionPacketWrapper packet) {
-
+        /*
+         * 只有定义了工艺参数分析器的报文才需要分析，其他都不需要直接略过
+         */
     }
 
     private void protocolAnalyze(FiveDimensionPacketWrapper packetWrapper) {
         /*
-         * 调用五元组分析器进行解析
+         * 调用五元组分析器进行解析【所有报文都需要进行五元组分析】
          */
         BadPacket badPacket = ((BadPacket) BAD_PACKET_FILTER_PRO_1.get(FV_DIMENSION).analyze(packetWrapper));
         if (badPacket!=null){
@@ -74,23 +76,24 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
 
 
     private void operationAnalyze(String funCode , FiveDimensionPacketWrapper packetWrapper){
-        //"0x00000004" "4"   -->  fun_code of int
-        int fun_code = PacketDecodeUtil.decodeFuncode(funCode
-                ,packetWrapper.fiveDimensionPacket.protocol);
         /*
          * 根据解析得到的协议，调用相应的分析器进行解析
          */
         AbstractAnalyzer<?> analyzer = BAD_PACKET_FILTER_PRO_1.get(packetWrapper.fiveDimensionPacket.protocol);
-        BadPacket badPacket = null;
         if (analyzer != null){
+            /*
+             * 只有定义了分析器的报文才需要功能码解析，其他的报文直接略过
+             */
+            BadPacket badPacket = null;
+            //"0x00000004" "4"   -->  fun_code of int
+            int fun_code = PacketDecodeUtil.decodeFuncode(funCode
+                    ,packetWrapper.fiveDimensionPacket.protocol);
             badPacket = ((BadPacket) analyzer.analyze(fun_code , packetWrapper));
+            if (badPacket!=null){
+                sendBadPacket(badPacket);
+            }
         }else{
-            BAD_PACKET_FILTER_PRO_1.get(OTHER).analyze(packetWrapper.fiveDimensionPacket.protocol);
-        }
-
-
-        if (badPacket!=null){
-            sendBadPacket(badPacket);
+            //log.error("********************* \n not define {} 's operation analyzer , please check . \n *********************");
         }
     }
 }

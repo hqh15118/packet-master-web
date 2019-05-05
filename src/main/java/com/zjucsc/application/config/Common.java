@@ -1,6 +1,7 @@
 package com.zjucsc.application.config;
 
 import com.zjucsc.application.domain.bean.CollectorState;
+import com.zjucsc.application.domain.bean.FuncodeStatement;
 import com.zjucsc.application.domain.filter.FiveDimensionPacketFilter;
 import com.zjucsc.application.domain.filter.OperationPacketFilter;
 import com.zjucsc.application.domain.filter.OtherPacketFilter;
@@ -46,11 +47,11 @@ public class Common {
      * 协议 --> 功能码 以及 对应的含义 --> 从serviceLoader中加载
      */
 
-    public static final HashMap<String , Map<Integer,String>> CONFIGURATION_MAP = new HashMap<>();
+    public static final HashMap<String , List<FuncodeStatement>> CONFIGURATION_MAP = new HashMap<>();
 
     public static final CopyOnWriteArraySet<String> packetCollectorId = new CopyOnWriteArraySet<>();
 
-    /** 所有要分析的协议
+    /* 所有要分析的协议
      *  过滤器种类 -> [功能码配置组]
      */
     /*public static ConcurrentHashMap<FilterType, OperationPacketFilter> BAD_PACKET_FILTER = new ConcurrentHashMap<FilterType, OperationPacketFilter>(){
@@ -82,15 +83,27 @@ public class Common {
      */
     public static ConcurrentHashMap<String, AbstractAnalyzer> BAD_PACKET_FILTER_PRO_1 = new ConcurrentHashMap<String, AbstractAnalyzer>(){
         {
-            put(PACKET_PROTOCOL.OTHER , new OtherPacketAnalyzer(new OtherPacketFilter()));
-            put(PACKET_PROTOCOL.TCP , new TcpAnalyzer(new TcpPacketFilter()));
-            put(PACKET_PROTOCOL.S7 , new OperationAnalyzer(new OperationPacketFilter<Integer,String>(PACKET_PROTOCOL.S7)));
-            put(PACKET_PROTOCOL.S7_Ack_data , new OperationAnalyzer(new OperationPacketFilter<Integer,String>(PACKET_PROTOCOL.S7_Ack_data)));
-            put(PACKET_PROTOCOL.S7_JOB , new OperationAnalyzer(new OperationPacketFilter<Integer,String>(PACKET_PROTOCOL.S7_JOB)));
-            put(PACKET_PROTOCOL.MODBUS , new OperationAnalyzer(new OperationPacketFilter<Integer,String>(PACKET_PROTOCOL.MODBUS)));
+            put(PACKET_PROTOCOL.S7 , new OperationAnalyzer(new OperationPacketFilter<>(PACKET_PROTOCOL.S7)));
+            put(PACKET_PROTOCOL.S7_Ack_data , new OperationAnalyzer(new OperationPacketFilter<>(PACKET_PROTOCOL.S7_Ack_data)));
+            put(PACKET_PROTOCOL.S7_JOB , new OperationAnalyzer(new OperationPacketFilter<>(PACKET_PROTOCOL.S7_JOB)));
+            put(PACKET_PROTOCOL.MODBUS , new OperationAnalyzer(new OperationPacketFilter<>(PACKET_PROTOCOL.MODBUS)));
             put(PACKET_PROTOCOL.FV_DIMENSION , new FiveDimensionAnalyzer(new FiveDimensionPacketFilter(PACKET_PROTOCOL.FV_DIMENSION)));
         }
     };
+
+    /*
+    public static ConcurrentHashMap<Integer, AbstractAnalyzer> BAD_PACKET_FILTER_PRO_2 = new ConcurrentHashMap<Integer, AbstractAnalyzer>(){
+        {
+            put(PACKET_PROTOCOL.OTHER_ID , new OtherPacketAnalyzer(new OtherPacketFilter()));
+            put(PACKET_PROTOCOL.TCP_ID , new TcpAnalyzer(new TcpPacketFilter()));
+            put(PACKET_PROTOCOL.S7_ID , new OperationAnalyzer(new OperationPacketFilter<Integer,String>(PACKET_PROTOCOL.S7)));
+            put(PACKET_PROTOCOL.S7_Ack_data_ID , new OperationAnalyzer(new OperationPacketFilter<Integer,String>(PACKET_PROTOCOL.S7_Ack_data)));
+            put(PACKET_PROTOCOL.S7_JOB_ID , new OperationAnalyzer(new OperationPacketFilter<Integer,String>(PACKET_PROTOCOL.S7_JOB)));
+            put(PACKET_PROTOCOL.MODBUS_ID , new OperationAnalyzer(new OperationPacketFilter<Integer,String>(PACKET_PROTOCOL.MODBUS)));
+            put(PACKET_PROTOCOL.FV_DIMENSION_ID, new FiveDimensionAnalyzer(new FiveDimensionPacketFilter(PACKET_PROTOCOL.FV_DIMENSION)));
+        }
+    };
+    */
 
     /**
      * BaseResponse的返回状态 - 修改起来比较方便
@@ -99,6 +112,7 @@ public class Common {
         public static final int SYS_ERROR = 500;
         public static final int NOT_FOUND = 403;
         public static final int JSON_ERROR = 1;
+        public static final int DEVICE_ERROR = 201;
     }
 
     //已经登录过的用户
@@ -111,4 +125,9 @@ public class Common {
 
     public static final ThreadExceptionHandler COMMON_THREAD_EXCEPTION_HANDLER = new ThreadExceptionHandler();
 
+    /**
+     *  init in
+     * @see com.zjucsc.application.task.InitConfigurationService
+     */
+    public static final HashMap<Integer,String> PROTOCOL_STR_TO_INT = new HashMap<>();
 }

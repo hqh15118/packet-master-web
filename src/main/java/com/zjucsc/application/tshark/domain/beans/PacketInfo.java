@@ -1,5 +1,7 @@
 package com.zjucsc.application.tshark.domain.beans;
 
+import com.zjucsc.application.tshark.domain.packet.FiveDimensionPacketWrapper;
+
 public class PacketInfo {
     /**
      * base handler --> xxxhandler
@@ -9,11 +11,14 @@ public class PacketInfo {
         public String json;
         public String tcpPayload;
         public String packetLength;
-        public PacketWrapper(String packetProtocol,String json,String tcpPayload,String packetLength){
+        public PacketWrapper(String packetProtocol,String json,String tcpPayload){
             this.packetProtocol = packetProtocol;
             this.json = json;
             this.tcpPayload = tcpPayload;
-            this.packetLength = packetLength;
+        }
+
+        public PacketWrapper(){
+
         }
 
         @Override
@@ -24,6 +29,13 @@ public class PacketInfo {
                     ", tcpPayload='" + tcpPayload + '\'' +
                     ", packetLength='" + packetLength + '\'' +
                     '}';
+        }
+
+        public FiveDimensionPacketWrapper fiveDimensionPacketWrapper;
+
+        public PacketWrapper onFiveDimensionPacketWrapper(FiveDimensionPacketWrapper fiveDimensionPacketWrapper){
+            this.fiveDimensionPacketWrapper = fiveDimensionPacketWrapper;
+            return this;
         }
     }
 

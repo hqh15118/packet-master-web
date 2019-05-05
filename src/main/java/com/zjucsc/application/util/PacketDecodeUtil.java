@@ -1,9 +1,13 @@
 package com.zjucsc.application.util;
 
+import com.sun.tools.javac.util.Convert;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.bean.CollectorState;
 import com.zjucsc.application.tshark.domain.packet.InitPacket;
 import com.zjucsc.application.tshark.domain.packet.layers.S7Packet;
+import io.swagger.models.auth.In;
+import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.index.qual.SameLen;
 
 import static com.zjucsc.application.config.PACKET_PROTOCOL.*;
 
@@ -13,6 +17,7 @@ import static com.zjucsc.application.config.PACKET_PROTOCOL.*;
  * @author hongqianhui
  * #create_time 2019-04-29 - 21:19
  */
+@Slf4j
 public class PacketDecodeUtil {
 
     /*
@@ -90,16 +95,22 @@ public class PacketDecodeUtil {
      * @return 功能码int
      */
     public static int decodeFuncode(String str_fun_code , String protocol){
-        switch (protocol){
-            case MODBUS :
-
-                break;
-            case S7_JOB:
-            case S7_Ack_data:
-
-                break;
+        int fun_code = -1;
+        try {
+            switch (protocol) {
+                case MODBUS:
+                    fun_code = Integer.decode(str_fun_code);
+                    break;
+                case S7:
+                case S7_Ack_data:
+                case S7_JOB:
+                    fun_code = Integer.decode(str_fun_code);
+                    break;
+            }
+        }catch (NumberFormatException e){
+            log.error("exception when decode protocol {} fun_code {}" , protocol , str_fun_code , e);
         }
-        return 0;
+        return fun_code;
     }
 
 

@@ -23,5 +23,6 @@ public class ModbusPacket{
         public String[] tcp_dstport;
         public String[] modbus_func_code;
         public String[] tcp_payload;
+        public String[] frame_cap_len = {""};
     }
 }

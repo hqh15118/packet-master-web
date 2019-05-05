@@ -65,7 +65,8 @@ public class PacketServiceImpl implements PacketService {
      */
     @Scheduled(fixedRate = 10000)
     public void sendPacketStatisticsMsg(){
-        SocketServiceCenter.updateAllClient(SocketIoEvent.STATISTICS_PACKET,new StatisticsDataWrapper(packetAnalyzeService.getRecvPacketFlow(),packetAnalyzeService.getRecvPacketNumber()));
+        SocketServiceCenter.updateAllClient(SocketIoEvent.STATISTICS_PACKET,new StatisticsDataWrapper(packetAnalyzeService.getRecvPacketNumber()
+                ,packetAnalyzeService.getRecvPacketFlow()));
     }
 
     public static class StatisticsDataWrapper{

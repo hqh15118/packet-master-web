@@ -38,4 +38,10 @@ public class User {
                 ", date=" + date +
                 '}';
     }
+
+
+    public static class UserForFront{
+        public String userName;
+        public String password;
+    }
 }

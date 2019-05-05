@@ -18,5 +18,6 @@ public class OtherPacket{
         public String[] tcp_srcport = {""};
         public String[] tcp_dstport = {""};
         public String[] tcp_payload = {""};
+        public String[] frame_cap_len = {""};
     }
 }

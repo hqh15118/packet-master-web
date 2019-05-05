@@ -1,9 +1,9 @@
 package com.zjucsc.application.domain.filter;
 
 import com.zjucsc.application.config.BadPacketDangerLevel;
+import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.bean.BadPacket;
-import com.zjucsc.application.domain.entity.FiveDimensionFilterEntity;
-import com.zjucsc.application.tshark.domain.packet.FiveDimensionPacket;
+import com.zjucsc.application.domain.entity.FVDimensionFilterEntity;
 import com.zjucsc.application.tshark.domain.packet.FiveDimensionPacketWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.zjucsc.application.config.PACKET_PROTOCOL.FV_DIMENSION;
+import static com.zjucsc.application.config.PACKET_PROTOCOL.OTHER;
 
 /**
  * #project packet-master-web
@@ -51,9 +52,9 @@ public class FiveDimensionPacketFilter {
         this.filterName = filterName;
     }
 
-    public void setFilterList(List<FiveDimensionFilterEntity.FiveDimensionFilter> filterList){
+    public void setFilterList(List<FVDimensionFilterEntity.FiveDimensionFilter> filterList){
         HashMap<String,HashMap<String, String>> allMap = new HashMap<>();
-        for (FiveDimensionFilterEntity.FiveDimensionFilter fiveDimensionFilter : filterList) {
+        for (FVDimensionFilterEntity.FiveDimensionFilter fiveDimensionFilter : filterList) {
             String str = null;
             if (fiveDimensionFilter.getFilterType() == 0){
                 if (StringUtils.isNotBlank((str = fiveDimensionFilter.getDst_ip()))){
@@ -68,8 +69,17 @@ public class FiveDimensionPacketFilter {
                 if (StringUtils.isNotBlank((str = fiveDimensionFilter.getSrc_port()))){
                     doSet(allMap,SRC_PORT_WHITE,str);
                 }
-                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getProtocol()))){
-                    doSet(allMap,PROTOCOL_WHITE,str);
+                if (fiveDimensionFilter.getProtocolId()!=0){
+                    String var = Common.PROTOCOL_STR_TO_INT.get(fiveDimensionFilter.getProtocolId());
+                    System.out.println(" ");//这个啥也没做，就是防止IDE自动重构
+                    /*
+                     * 如果添加的协议ID，map中无法找到对应的协议，那么就加other
+                     */
+                    if (var == null){
+                        doSet(allMap,PROTOCOL_WHITE,OTHER);
+                    }else{
+                        doSet(allMap,PROTOCOL_WHITE, var);
+                    }
                 }
             }else{
                 if (StringUtils.isNotBlank((str = fiveDimensionFilter.getDst_ip()))){
@@ -84,8 +94,16 @@ public class FiveDimensionPacketFilter {
                 if (StringUtils.isNotBlank((str = fiveDimensionFilter.getSrc_port()))){
                     doSet(allMap,SRC_PORT_BLACK,str);
                 }
-                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getProtocol()))){
-                    doSet(allMap,PROTOCOL_BLACK,str);
+                if (fiveDimensionFilter.getProtocolId()!=0){
+                    String var = Common.PROTOCOL_STR_TO_INT.get(fiveDimensionFilter.getProtocolId());
+                    /*
+                     * 如果添加的协议ID，map中无法找到对应的协议，那么就加other
+                     */
+                    if (var == null){
+                        doSet(allMap,PROTOCOL_BLACK,OTHER);
+                    }else{
+                        doSet(allMap,PROTOCOL_BLACK, var);
+                    }
                 }
             }
         }

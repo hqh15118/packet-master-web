@@ -16,6 +16,7 @@ public class TcpAnalyzer extends AbstractAnalyzer<TcpPacketFilter> {
 
     @Override
     public Object analyze(Object... objs) {
+
         return null;
     }
 }

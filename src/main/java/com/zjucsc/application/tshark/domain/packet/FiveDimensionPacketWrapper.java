@@ -6,21 +6,9 @@ public class FiveDimensionPacketWrapper {
     public byte[] tcpPayload;
     public String srcEthAndIp;
     public String dstEthAndIp;
+    public String packetLength;
 
-    public FiveDimensionPacketWrapper(String timeStamp,String protocol, String src_ip, String dis_ip, String code,
-                                      String dis_port,String src_port,
-                                      byte[] tcpPayload) {
-        fiveDimensionPacket = new FiveDimensionPacket(  timeStamp,
-                                                        protocol,
-                                                        src_ip,
-                                                        dis_ip,
-                                                        dis_port,
-                                                        src_port,
-                                                        code);
-        this.tcpPayload = tcpPayload;
-    }
-
-    public FiveDimensionPacketWrapper(){
+    private FiveDimensionPacketWrapper(){
 
     }
 
@@ -78,6 +66,11 @@ public class FiveDimensionPacketWrapper {
 
         public Builder dstEthAndIp(String dstEthAndIp){
             wrapper.dstEthAndIp = dstEthAndIp;
+            return this;
+        }
+
+        public Builder packetLength(String packetLength){
+            wrapper.packetLength = packetLength;
             return this;
         }
 
