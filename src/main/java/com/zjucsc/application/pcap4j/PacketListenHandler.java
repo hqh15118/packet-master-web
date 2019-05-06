@@ -128,15 +128,18 @@ public class PacketListenHandler implements PacketListener {
             if (end == null) {
                 continue;
             }
+            boolean t = false;
             if (end instanceof EthernetPacket){
                 protocol = ETHERNET;
                 dst_mac = ((EthernetPacket) end).getHeader().getDstAddr().toString();
                 src_mac = ((EthernetPacket) end).getHeader().getSrcAddr().toString();
+                t = true;
             }
             else if (end instanceof ArpPacket){
                 protocol = ARP;
                 dst_mac = ((ArpPacket) end).getHeader().getDstHardwareAddr().toString();
                 src_mac = ((ArpPacket) end).getHeader().getSrcHardwareAddr().toString();
+                t = true;
             }else if(end instanceof IpV4Packet) {
                 protocol = IPV4;
                 sb.delete(0,sb.length());
@@ -159,6 +162,9 @@ public class PacketListenHandler implements PacketListener {
                 protocol = DNS;
             }else{
                 //protocol = OTHER;
+            }
+            if (!t){
+                System.out.println(packet);
             }
         }
         if (end != null){

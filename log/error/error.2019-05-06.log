@@ -376,3 +376,12 @@ java.io.IOException: 远程主机强迫关闭了一个现有的连接。
 	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
 	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
 	at java.lang.Thread.run(Thread.java:748)
+2019-05-06 23:22:37.044 febs [-pcap-capture-thread] ERROR c.zjucsc.application.util.PcapUtils - can not find the target [name] of 192.168.0.121 , please check ip again
+2019-05-06 23:22:37.051 febs [-pcap-capture-thread] ERROR c.z.a.handler.ThreadExceptionHandler - thread Thread[-pcap-capture-thread,5,main] catch a unhandle exception : 
+
+java.lang.NullPointerException: null
+	at com.zjucsc.application.util.PcapUtils.activeEnerty(PcapUtils.java:354)
+	at com.zjucsc.application.util.PcapUtils.openDeviceByIp(PcapUtils.java:526)
+	at com.zjucsc.application.util.PcapUtils.openDevice(PcapUtils.java:177)
+	at com.zjucsc.application.system.service.PcapMainService$1.run(PcapMainService.java:47)
+	at java.lang.Thread.run(Thread.java:748)

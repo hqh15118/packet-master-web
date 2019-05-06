@@ -28,9 +28,9 @@ public class CodeGenerator {
     // @author 值
     private static final String AUTHOR = "hongqianhui";
     // 包的基础路径
-    private static final String BASE_PACKAGE_URL = "/src/main/java/com/zjucsc/application/system";
+    private static final String BASE_PACKAGE_URL = "/com/zjucsc/application/system";
     // xml文件路径
-    private static final String XML_PACKAGE_URL = "/src/main/resources/mapper/";
+    private static final String XML_PACKAGE_URL = "/resources/mapper/";
     // xml 文件模板
     private static final String XML_MAPPER_TEMPLATE_PATH = "generator/templates/mapper.xml";
     // mapper 文件模板

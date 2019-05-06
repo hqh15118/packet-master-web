@@ -2015,3 +2015,447 @@
 2019-05-06 19:48:02.123 febs [Thread-16] INFO  org.pcap4j.core.PacketListener - packet queue size : 0 , worker queue packet size : 0;;has received 0 no-tcp packets
 2019-05-06 19:50:32.138 febs [Thread-16] INFO  org.pcap4j.core.PacketListener - packet queue size : 0 , worker queue packet size : 0;;has received 0 no-tcp packets
 2019-05-06 19:53:02.140 febs [Thread-16] INFO  org.pcap4j.core.PacketListener - packet queue size : 0 , worker queue packet size : 0;;has received 0 no-tcp packets
+2019-05-06 22:29:26.830 febs [main] INFO  c.z.p.spring.ApplicationTest - Starting ApplicationTest on hongqianhuideMacBook-Pro.local with PID 7357 (started by hongqianhui in /Users/hongqianhui/JavaProjects/packet-master-web)
+2019-05-06 22:29:26.831 febs [main] INFO  c.z.p.spring.ApplicationTest - No active profile set, falling back to default profiles: default
+2019-05-06 22:29:29.387 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'spring.datasource.dynamic-com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties' of type [com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:29:29.392 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration' of type [com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration$$EnhancerBySpringCGLIB$$e023eb20] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:29:29.401 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'dsProcessor' of type [com.baomidou.dynamic.datasource.processor.DsHeaderProcessor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:29:29.408 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'dynamicDatasourceAnnotationAdvisor' of type [com.baomidou.dynamic.datasource.aop.DynamicDataSourceAnnotationAdvisor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:29:29.465 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$76957a4f] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:29:29.770 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 动态数据源-检测到并开启了p6spy
+2019-05-06 22:29:29.803 febs [main] INFO  com.zaxxer.hikari.HikariDataSource - primary - Starting...
+2019-05-06 22:29:30.295 febs [main] INFO  com.zaxxer.hikari.HikariDataSource - primary - Start completed.
+2019-05-06 22:29:30.295 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 初始共加载 1 个数据源
+2019-05-06 22:29:30.295 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 动态数据源-加载 primary 成功
+2019-05-06 22:29:30.295 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 当前的默认数据源是单数据源，数据源名为 primary
+2019-05-06 22:29:32.662 febs [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 2 endpoint(s) beneath base path '/actuator'
+2019-05-06 22:29:32.819 febs [main] INFO  o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService
+2019-05-06 22:29:32.827 febs [main] INFO  o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'global_single_thread_executor'
+2019-05-06 22:29:34.091 febs [main] INFO  o.s.s.c.ThreadPoolTaskScheduler - Initializing ExecutorService 'taskScheduler'
+2019-05-06 22:29:34.219 febs [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Context refreshed
+2019-05-06 22:29:34.240 febs [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Found 1 custom documentation plugin(s)
+2019-05-06 22:29:34.258 febs [main] INFO  s.d.s.w.s.ApiListingReferenceScanner - Scanning for api listing references
+2019-05-06 22:29:34.499 febs [main] INFO  s.d.s.w.r.o.CachingOperationNameGenerator - Generating unique operation named: updateGplotInfoUsingPOST_1
+2019-05-06 22:29:34.589 febs [main] INFO  c.z.p.spring.ApplicationTest - Started ApplicationTest in 8.751 seconds (JVM running for 10.439)
+2019-05-06 22:29:35.022 febs [main] INFO  p6spy - 1557152975022|19|statement|connection 1|url jdbc:mysql://localhost:3306/packet_master_web?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC|SELECT name,password,role,last_login_time AS date,token FROM user WHERE name=?|SELECT name,password,role,last_login_time AS date,token FROM user WHERE name='hongqianhui'
+2019-05-06 22:29:35.299 febs [Thread-4] INFO  o.s.s.c.ThreadPoolTaskScheduler - Shutting down ExecutorService 'taskScheduler'
+2019-05-06 22:29:35.304 febs [Thread-4] INFO  o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'global_single_thread_executor'
+2019-05-06 22:29:35.308 febs [Thread-4] INFO  c.b.d.d.DynamicRoutingDataSource - closing dynamicDatasource  ing....
+2019-05-06 22:29:35.309 febs [Thread-4] INFO  o.s.b.f.s.DisposableBeanAdapter - Invocation of destroy method failed on bean with name 'dataSource': java.lang.NoSuchMethodException: com.p6spy.engine.spy.P6DataSource.close()
+2019-05-06 22:30:09.882 febs [main] INFO  c.z.p.spring.ApplicationTest - Starting ApplicationTest on hongqianhuideMacBook-Pro.local with PID 7362 (started by hongqianhui in /Users/hongqianhui/JavaProjects/packet-master-web)
+2019-05-06 22:30:09.885 febs [main] INFO  c.z.p.spring.ApplicationTest - No active profile set, falling back to default profiles: default
+2019-05-06 22:30:12.177 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'spring.datasource.dynamic-com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties' of type [com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:30:12.181 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration' of type [com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration$$EnhancerBySpringCGLIB$$2aa4c49b] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:30:12.190 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'dsProcessor' of type [com.baomidou.dynamic.datasource.processor.DsHeaderProcessor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:30:12.197 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'dynamicDatasourceAnnotationAdvisor' of type [com.baomidou.dynamic.datasource.aop.DynamicDataSourceAnnotationAdvisor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:30:12.247 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$c11653ca] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:30:12.525 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 动态数据源-检测到并开启了p6spy
+2019-05-06 22:30:12.542 febs [main] INFO  com.zaxxer.hikari.HikariDataSource - primary - Starting...
+2019-05-06 22:30:13.007 febs [main] INFO  com.zaxxer.hikari.HikariDataSource - primary - Start completed.
+2019-05-06 22:30:13.008 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 初始共加载 1 个数据源
+2019-05-06 22:30:13.008 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 动态数据源-加载 primary 成功
+2019-05-06 22:30:13.008 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 当前的默认数据源是单数据源，数据源名为 primary
+2019-05-06 22:30:15.101 febs [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 2 endpoint(s) beneath base path '/actuator'
+2019-05-06 22:30:15.261 febs [main] INFO  o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService
+2019-05-06 22:30:15.274 febs [main] INFO  o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'global_single_thread_executor'
+2019-05-06 22:30:16.621 febs [main] INFO  o.s.s.c.ThreadPoolTaskScheduler - Initializing ExecutorService 'taskScheduler'
+2019-05-06 22:30:16.729 febs [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Context refreshed
+2019-05-06 22:30:16.753 febs [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Found 1 custom documentation plugin(s)
+2019-05-06 22:30:16.767 febs [main] INFO  s.d.s.w.s.ApiListingReferenceScanner - Scanning for api listing references
+2019-05-06 22:30:17.029 febs [main] INFO  s.d.s.w.r.o.CachingOperationNameGenerator - Generating unique operation named: updateGplotInfoUsingPOST_1
+2019-05-06 22:30:17.111 febs [main] INFO  c.z.p.spring.ApplicationTest - Started ApplicationTest in 8.164 seconds (JVM running for 9.387)
+2019-05-06 22:30:17.400 febs [Thread-4] INFO  o.s.s.c.ThreadPoolTaskScheduler - Shutting down ExecutorService 'taskScheduler'
+2019-05-06 22:30:17.404 febs [Thread-4] INFO  o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'global_single_thread_executor'
+2019-05-06 22:30:17.408 febs [Thread-4] INFO  c.b.d.d.DynamicRoutingDataSource - closing dynamicDatasource  ing....
+2019-05-06 22:30:17.409 febs [Thread-4] INFO  o.s.b.f.s.DisposableBeanAdapter - Invocation of destroy method failed on bean with name 'dataSource': java.lang.NoSuchMethodException: com.p6spy.engine.spy.P6DataSource.close()
+2019-05-06 22:36:29.504 febs [main] INFO  c.z.p.spring.ApplicationTest - Starting ApplicationTest on hongqianhuideMacBook-Pro.local with PID 7376 (started by hongqianhui in /Users/hongqianhui/JavaProjects/packet-master-web)
+2019-05-06 22:36:29.508 febs [main] INFO  c.z.p.spring.ApplicationTest - No active profile set, falling back to default profiles: default
+2019-05-06 22:36:31.757 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'spring.datasource.dynamic-com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties' of type [com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:36:31.764 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration' of type [com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration$$EnhancerBySpringCGLIB$$3b10b28e] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:36:31.775 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'dsProcessor' of type [com.baomidou.dynamic.datasource.processor.DsHeaderProcessor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:36:31.807 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'dynamicDatasourceAnnotationAdvisor' of type [com.baomidou.dynamic.datasource.aop.DynamicDataSourceAnnotationAdvisor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:36:31.860 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$d18241bd] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:36:32.165 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 动态数据源-检测到并开启了p6spy
+2019-05-06 22:36:32.183 febs [main] INFO  com.zaxxer.hikari.HikariDataSource - primary - Starting...
+2019-05-06 22:36:32.659 febs [main] INFO  com.zaxxer.hikari.HikariDataSource - primary - Start completed.
+2019-05-06 22:36:32.659 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 初始共加载 1 个数据源
+2019-05-06 22:36:32.659 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 动态数据源-加载 primary 成功
+2019-05-06 22:36:32.660 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 当前的默认数据源是单数据源，数据源名为 primary
+2019-05-06 22:36:34.954 febs [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 2 endpoint(s) beneath base path '/actuator'
+2019-05-06 22:36:35.108 febs [main] INFO  o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService
+2019-05-06 22:36:35.117 febs [main] INFO  o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'global_single_thread_executor'
+2019-05-06 22:36:36.305 febs [main] INFO  o.s.s.c.ThreadPoolTaskScheduler - Initializing ExecutorService 'taskScheduler'
+2019-05-06 22:36:36.422 febs [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Context refreshed
+2019-05-06 22:36:36.442 febs [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Found 1 custom documentation plugin(s)
+2019-05-06 22:36:36.462 febs [main] INFO  s.d.s.w.s.ApiListingReferenceScanner - Scanning for api listing references
+2019-05-06 22:36:36.764 febs [main] INFO  s.d.s.w.r.o.CachingOperationNameGenerator - Generating unique operation named: updateGplotInfoUsingPOST_1
+2019-05-06 22:36:36.848 febs [main] INFO  c.z.p.spring.ApplicationTest - Started ApplicationTest in 8.296 seconds (JVM running for 9.684)
+2019-05-06 22:36:37.440 febs [SimpleAsyncTaskExecutor-1] INFO  p6spy - 1557153397440|21|statement|connection 1|url jdbc:mysql://localhost:3306/packet_master_web?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC|DELETE FROM fv_dimension_filter    WHERE device_id = ?|DELETE FROM fv_dimension_filter    WHERE device_id = 10
+2019-05-06 22:36:37.504 febs [Thread-4] INFO  o.s.s.c.ThreadPoolTaskScheduler - Shutting down ExecutorService 'taskScheduler'
+2019-05-06 22:36:37.508 febs [Thread-4] INFO  o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'global_single_thread_executor'
+2019-05-06 22:36:37.516 febs [Thread-4] INFO  c.b.d.d.DynamicRoutingDataSource - closing dynamicDatasource  ing....
+2019-05-06 22:36:37.517 febs [Thread-4] INFO  o.s.b.f.s.DisposableBeanAdapter - Invocation of destroy method failed on bean with name 'dataSource': java.lang.NoSuchMethodException: com.p6spy.engine.spy.P6DataSource.close()
+2019-05-06 22:37:41.670 febs [main] INFO  c.z.p.spring.ApplicationTest - Starting ApplicationTest on hongqianhuideMacBook-Pro.local with PID 7380 (started by hongqianhui in /Users/hongqianhui/JavaProjects/packet-master-web)
+2019-05-06 22:37:41.673 febs [main] INFO  c.z.p.spring.ApplicationTest - No active profile set, falling back to default profiles: default
+2019-05-06 22:37:43.804 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'spring.datasource.dynamic-com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties' of type [com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:37:43.809 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration' of type [com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration$$EnhancerBySpringCGLIB$$58fe4e7c] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:37:43.817 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'dsProcessor' of type [com.baomidou.dynamic.datasource.processor.DsHeaderProcessor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:37:43.823 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'dynamicDatasourceAnnotationAdvisor' of type [com.baomidou.dynamic.datasource.aop.DynamicDataSourceAnnotationAdvisor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:37:43.878 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$ef6fddab] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:37:44.064 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 动态数据源-检测到并开启了p6spy
+2019-05-06 22:37:44.083 febs [main] INFO  com.zaxxer.hikari.HikariDataSource - primary - Starting...
+2019-05-06 22:37:44.643 febs [main] INFO  com.zaxxer.hikari.HikariDataSource - primary - Start completed.
+2019-05-06 22:37:44.643 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 初始共加载 1 个数据源
+2019-05-06 22:37:44.644 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 动态数据源-加载 primary 成功
+2019-05-06 22:37:44.644 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 当前的默认数据源是单数据源，数据源名为 primary
+2019-05-06 22:37:46.862 febs [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 2 endpoint(s) beneath base path '/actuator'
+2019-05-06 22:37:47.016 febs [main] INFO  o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService
+2019-05-06 22:37:47.030 febs [main] INFO  o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'global_single_thread_executor'
+2019-05-06 22:37:48.284 febs [main] INFO  o.s.s.c.ThreadPoolTaskScheduler - Initializing ExecutorService 'taskScheduler'
+2019-05-06 22:37:48.399 febs [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Context refreshed
+2019-05-06 22:37:48.418 febs [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Found 1 custom documentation plugin(s)
+2019-05-06 22:37:48.431 febs [main] INFO  s.d.s.w.s.ApiListingReferenceScanner - Scanning for api listing references
+2019-05-06 22:37:48.668 febs [main] INFO  s.d.s.w.r.o.CachingOperationNameGenerator - Generating unique operation named: updateGplotInfoUsingPOST_1
+2019-05-06 22:37:48.747 febs [main] INFO  c.z.p.spring.ApplicationTest - Started ApplicationTest in 8.103 seconds (JVM running for 9.357)
+2019-05-06 22:37:49.139 febs [SimpleAsyncTaskExecutor-1] INFO  p6spy - 1557153469139|1|statement|connection 1|url jdbc:mysql://localhost:3306/packet_master_web?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC|DELETE FROM operation_filter    WHERE device_id = ?|DELETE FROM operation_filter    WHERE device_id = 10
+2019-05-06 22:37:49.190 febs [Thread-4] INFO  o.s.s.c.ThreadPoolTaskScheduler - Shutting down ExecutorService 'taskScheduler'
+2019-05-06 22:37:49.192 febs [Thread-4] INFO  o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'global_single_thread_executor'
+2019-05-06 22:37:49.199 febs [Thread-4] INFO  c.b.d.d.DynamicRoutingDataSource - closing dynamicDatasource  ing....
+2019-05-06 22:37:49.200 febs [Thread-4] INFO  o.s.b.f.s.DisposableBeanAdapter - Invocation of destroy method failed on bean with name 'dataSource': java.lang.NoSuchMethodException: com.p6spy.engine.spy.P6DataSource.close()
+2019-05-06 22:38:56.361 febs [main] INFO  c.z.p.spring.ApplicationTest - Starting ApplicationTest on hongqianhuideMacBook-Pro.local with PID 7384 (started by hongqianhui in /Users/hongqianhui/JavaProjects/packet-master-web)
+2019-05-06 22:38:56.363 febs [main] INFO  c.z.p.spring.ApplicationTest - No active profile set, falling back to default profiles: default
+2019-05-06 22:38:58.538 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'spring.datasource.dynamic-com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties' of type [com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:38:58.542 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration' of type [com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration$$EnhancerBySpringCGLIB$$8dc39ca4] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:38:58.552 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'dsProcessor' of type [com.baomidou.dynamic.datasource.processor.DsHeaderProcessor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:38:58.561 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'dynamicDatasourceAnnotationAdvisor' of type [com.baomidou.dynamic.datasource.aop.DynamicDataSourceAnnotationAdvisor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:38:58.601 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$24352bd3] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:38:58.872 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 动态数据源-检测到并开启了p6spy
+2019-05-06 22:38:58.888 febs [main] INFO  com.zaxxer.hikari.HikariDataSource - primary - Starting...
+2019-05-06 22:38:59.343 febs [main] INFO  com.zaxxer.hikari.HikariDataSource - primary - Start completed.
+2019-05-06 22:38:59.344 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 初始共加载 1 个数据源
+2019-05-06 22:38:59.344 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 动态数据源-加载 primary 成功
+2019-05-06 22:38:59.344 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 当前的默认数据源是单数据源，数据源名为 primary
+2019-05-06 22:39:01.580 febs [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 2 endpoint(s) beneath base path '/actuator'
+2019-05-06 22:39:01.730 febs [main] INFO  o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService
+2019-05-06 22:39:01.739 febs [main] INFO  o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'global_single_thread_executor'
+2019-05-06 22:39:02.936 febs [main] INFO  o.s.s.c.ThreadPoolTaskScheduler - Initializing ExecutorService 'taskScheduler'
+2019-05-06 22:39:03.048 febs [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Context refreshed
+2019-05-06 22:39:03.065 febs [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Found 1 custom documentation plugin(s)
+2019-05-06 22:39:03.080 febs [main] INFO  s.d.s.w.s.ApiListingReferenceScanner - Scanning for api listing references
+2019-05-06 22:39:03.308 febs [main] INFO  s.d.s.w.r.o.CachingOperationNameGenerator - Generating unique operation named: updateGplotInfoUsingPOST_1
+2019-05-06 22:39:03.386 febs [main] INFO  c.z.p.spring.ApplicationTest - Started ApplicationTest in 8.046 seconds (JVM running for 9.328)
+2019-05-06 22:39:03.862 febs [SimpleAsyncTaskExecutor-1] INFO  p6spy - 1557153543862|10|statement|connection 1|url jdbc:mysql://localhost:3306/packet_master_web?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC|DELETE FROM operation_filter    WHERE device_id = ?|DELETE FROM operation_filter    WHERE device_id = 10
+2019-05-06 22:39:03.889 febs [Thread-4] INFO  o.s.s.c.ThreadPoolTaskScheduler - Shutting down ExecutorService 'taskScheduler'
+2019-05-06 22:39:03.892 febs [Thread-4] INFO  o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'global_single_thread_executor'
+2019-05-06 22:39:03.898 febs [Thread-4] INFO  c.b.d.d.DynamicRoutingDataSource - closing dynamicDatasource  ing....
+2019-05-06 22:39:03.899 febs [Thread-4] INFO  o.s.b.f.s.DisposableBeanAdapter - Invocation of destroy method failed on bean with name 'dataSource': java.lang.NoSuchMethodException: com.p6spy.engine.spy.P6DataSource.close()
+2019-05-06 22:41:19.570 febs [main] INFO  c.z.p.spring.ApplicationTest - Starting ApplicationTest on hongqianhuideMacBook-Pro.local with PID 7389 (started by hongqianhui in /Users/hongqianhui/JavaProjects/packet-master-web)
+2019-05-06 22:41:19.572 febs [main] INFO  c.z.p.spring.ApplicationTest - No active profile set, falling back to default profiles: default
+2019-05-06 22:41:21.798 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'spring.datasource.dynamic-com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties' of type [com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:41:21.803 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration' of type [com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration$$EnhancerBySpringCGLIB$$3ae870c7] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:41:21.813 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'dsProcessor' of type [com.baomidou.dynamic.datasource.processor.DsHeaderProcessor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:41:21.825 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'dynamicDatasourceAnnotationAdvisor' of type [com.baomidou.dynamic.datasource.aop.DynamicDataSourceAnnotationAdvisor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:41:21.897 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$d159fff6] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:41:22.179 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 动态数据源-检测到并开启了p6spy
+2019-05-06 22:41:22.195 febs [main] INFO  com.zaxxer.hikari.HikariDataSource - primary - Starting...
+2019-05-06 22:41:22.600 febs [main] INFO  com.zaxxer.hikari.HikariDataSource - primary - Start completed.
+2019-05-06 22:41:22.600 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 初始共加载 1 个数据源
+2019-05-06 22:41:22.600 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 动态数据源-加载 primary 成功
+2019-05-06 22:41:22.601 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 当前的默认数据源是单数据源，数据源名为 primary
+2019-05-06 22:41:24.791 febs [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 2 endpoint(s) beneath base path '/actuator'
+2019-05-06 22:41:24.951 febs [main] INFO  o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService
+2019-05-06 22:41:24.959 febs [main] INFO  o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'global_single_thread_executor'
+2019-05-06 22:41:26.110 febs [main] INFO  o.s.s.c.ThreadPoolTaskScheduler - Initializing ExecutorService 'taskScheduler'
+2019-05-06 22:41:26.239 febs [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Context refreshed
+2019-05-06 22:41:26.256 febs [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Found 1 custom documentation plugin(s)
+2019-05-06 22:41:26.272 febs [main] INFO  s.d.s.w.s.ApiListingReferenceScanner - Scanning for api listing references
+2019-05-06 22:41:26.499 febs [main] INFO  s.d.s.w.r.o.CachingOperationNameGenerator - Generating unique operation named: updateGplotInfoUsingPOST_1
+2019-05-06 22:41:26.582 febs [main] INFO  c.z.p.spring.ApplicationTest - Started ApplicationTest in 8.19 seconds (JVM running for 9.345)
+2019-05-06 22:41:27.169 febs [SimpleAsyncTaskExecutor-1] INFO  p6spy - 1557153687169|2|statement|connection 1|url jdbc:mysql://localhost:3306/packet_master_web?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC|DELETE FROM operation_filter    WHERE device_id = ?|DELETE FROM operation_filter    WHERE device_id = 10
+2019-05-06 22:41:28.333 febs [SimpleAsyncTaskExecutor-2] INFO  p6spy - 1557153688333|0|statement|connection 2|url jdbc:mysql://localhost:3306/packet_master_web?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC|SELECT  id,user_name,device_id,filter_type,fun_code,protocol_id  FROM operation_filter     WHERE device_id = ?|SELECT  id,user_name,device_id,filter_type,fun_code,protocol_id  FROM operation_filter     WHERE device_id = 10
+2019-05-06 22:41:29.369 febs [SimpleAsyncTaskExecutor-4] INFO  p6spy - 1557153689368|0|statement|connection 3|url jdbc:mysql://localhost:3306/packet_master_web?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC|SELECT  id,user_name,device_id,filter_type,fun_code,protocol_id  FROM operation_filter     WHERE device_id = ?|SELECT  id,user_name,device_id,filter_type,fun_code,protocol_id  FROM operation_filter     WHERE device_id = 11
+2019-05-06 22:41:29.400 febs [Thread-4] INFO  o.s.s.c.ThreadPoolTaskScheduler - Shutting down ExecutorService 'taskScheduler'
+2019-05-06 22:41:29.404 febs [Thread-4] INFO  o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'global_single_thread_executor'
+2019-05-06 22:41:29.412 febs [Thread-4] INFO  c.b.d.d.DynamicRoutingDataSource - closing dynamicDatasource  ing....
+2019-05-06 22:41:29.413 febs [Thread-4] INFO  o.s.b.f.s.DisposableBeanAdapter - Invocation of destroy method failed on bean with name 'dataSource': java.lang.NoSuchMethodException: com.p6spy.engine.spy.P6DataSource.close()
+2019-05-06 22:44:59.006 febs [main] INFO  c.z.p.spring.ApplicationTest - Starting ApplicationTest on hongqianhuideMacBook-Pro.local with PID 7398 (started by hongqianhui in /Users/hongqianhui/JavaProjects/packet-master-web)
+2019-05-06 22:44:59.008 febs [main] INFO  c.z.p.spring.ApplicationTest - No active profile set, falling back to default profiles: default
+2019-05-06 22:45:01.149 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'spring.datasource.dynamic-com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties' of type [com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:45:01.164 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration' of type [com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration$$EnhancerBySpringCGLIB$$3ae870c7] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:45:01.172 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'dsProcessor' of type [com.baomidou.dynamic.datasource.processor.DsHeaderProcessor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:45:01.179 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'dynamicDatasourceAnnotationAdvisor' of type [com.baomidou.dynamic.datasource.aop.DynamicDataSourceAnnotationAdvisor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:45:01.234 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$d159fff6] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:45:01.426 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 动态数据源-检测到并开启了p6spy
+2019-05-06 22:45:01.447 febs [main] INFO  com.zaxxer.hikari.HikariDataSource - primary - Starting...
+2019-05-06 22:45:01.986 febs [main] INFO  com.zaxxer.hikari.HikariDataSource - primary - Start completed.
+2019-05-06 22:45:01.986 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 初始共加载 1 个数据源
+2019-05-06 22:45:01.986 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 动态数据源-加载 primary 成功
+2019-05-06 22:45:01.986 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 当前的默认数据源是单数据源，数据源名为 primary
+2019-05-06 22:45:04.197 febs [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 2 endpoint(s) beneath base path '/actuator'
+2019-05-06 22:45:04.349 febs [main] INFO  o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService
+2019-05-06 22:45:04.359 febs [main] INFO  o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'global_single_thread_executor'
+2019-05-06 22:45:05.610 febs [main] INFO  o.s.s.c.ThreadPoolTaskScheduler - Initializing ExecutorService 'taskScheduler'
+2019-05-06 22:45:05.714 febs [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Context refreshed
+2019-05-06 22:45:05.732 febs [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Found 1 custom documentation plugin(s)
+2019-05-06 22:45:05.747 febs [main] INFO  s.d.s.w.s.ApiListingReferenceScanner - Scanning for api listing references
+2019-05-06 22:45:05.978 febs [main] INFO  s.d.s.w.r.o.CachingOperationNameGenerator - Generating unique operation named: updateGplotInfoUsingPOST_1
+2019-05-06 22:45:06.054 febs [main] INFO  c.z.p.spring.ApplicationTest - Started ApplicationTest in 8.173 seconds (JVM running for 9.608)
+2019-05-06 22:45:06.410 febs [SimpleAsyncTaskExecutor-1] INFO  p6spy - 1557153906409|2|statement|connection 1|url jdbc:mysql://localhost:3306/packet_master_web?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC|DELETE FROM operation_filter    WHERE device_id = ?|DELETE FROM operation_filter    WHERE device_id = 10
+2019-05-06 22:45:07.749 febs [SimpleAsyncTaskExecutor-2] INFO  p6spy - 1557153907749|0|statement|connection 2|url jdbc:mysql://localhost:3306/packet_master_web?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC|SELECT  id,user_name,device_id,filter_type,fun_code,protocol_id  FROM operation_filter     WHERE device_id = ?|SELECT  id,user_name,device_id,filter_type,fun_code,protocol_id  FROM operation_filter     WHERE device_id = 10
+2019-05-06 22:45:08.779 febs [SimpleAsyncTaskExecutor-4] INFO  p6spy - 1557153908779|0|statement|connection 3|url jdbc:mysql://localhost:3306/packet_master_web?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC|SELECT  id,user_name,device_id,filter_type,fun_code,protocol_id  FROM operation_filter     WHERE device_id = ?|SELECT  id,user_name,device_id,filter_type,fun_code,protocol_id  FROM operation_filter     WHERE device_id = 11
+2019-05-06 22:45:08.804 febs [Thread-4] INFO  o.s.s.c.ThreadPoolTaskScheduler - Shutting down ExecutorService 'taskScheduler'
+2019-05-06 22:45:08.810 febs [Thread-4] INFO  o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'global_single_thread_executor'
+2019-05-06 22:45:08.821 febs [Thread-4] INFO  c.b.d.d.DynamicRoutingDataSource - closing dynamicDatasource  ing....
+2019-05-06 22:45:08.821 febs [Thread-4] INFO  o.s.b.f.s.DisposableBeanAdapter - Invocation of destroy method failed on bean with name 'dataSource': java.lang.NoSuchMethodException: com.p6spy.engine.spy.P6DataSource.close()
+2019-05-06 22:46:59.846 febs [main] INFO  c.z.p.spring.ApplicationTest - Starting ApplicationTest on hongqianhuideMacBook-Pro.local with PID 7410 (started by hongqianhui in /Users/hongqianhui/JavaProjects/packet-master-web)
+2019-05-06 22:46:59.851 febs [main] INFO  c.z.p.spring.ApplicationTest - No active profile set, falling back to default profiles: default
+2019-05-06 22:47:02.063 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'spring.datasource.dynamic-com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties' of type [com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:47:02.068 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration' of type [com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration$$EnhancerBySpringCGLIB$$2daa16fc] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:47:02.077 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'dsProcessor' of type [com.baomidou.dynamic.datasource.processor.DsHeaderProcessor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:47:02.083 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'dynamicDatasourceAnnotationAdvisor' of type [com.baomidou.dynamic.datasource.aop.DynamicDataSourceAnnotationAdvisor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:47:02.129 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$c41ba62b] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:47:02.415 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 动态数据源-检测到并开启了p6spy
+2019-05-06 22:47:02.431 febs [main] INFO  com.zaxxer.hikari.HikariDataSource - primary - Starting...
+2019-05-06 22:47:02.904 febs [main] INFO  com.zaxxer.hikari.HikariDataSource - primary - Start completed.
+2019-05-06 22:47:02.905 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 初始共加载 1 个数据源
+2019-05-06 22:47:02.905 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 动态数据源-加载 primary 成功
+2019-05-06 22:47:02.905 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 当前的默认数据源是单数据源，数据源名为 primary
+2019-05-06 22:47:05.028 febs [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 2 endpoint(s) beneath base path '/actuator'
+2019-05-06 22:47:05.176 febs [main] INFO  o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService
+2019-05-06 22:47:05.185 febs [main] INFO  o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'global_single_thread_executor'
+2019-05-06 22:47:06.357 febs [main] INFO  o.s.s.c.ThreadPoolTaskScheduler - Initializing ExecutorService 'taskScheduler'
+2019-05-06 22:47:06.491 febs [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Context refreshed
+2019-05-06 22:47:06.517 febs [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Found 1 custom documentation plugin(s)
+2019-05-06 22:47:06.545 febs [main] INFO  s.d.s.w.s.ApiListingReferenceScanner - Scanning for api listing references
+2019-05-06 22:47:06.811 febs [main] INFO  s.d.s.w.r.o.CachingOperationNameGenerator - Generating unique operation named: updateGplotInfoUsingPOST_1
+2019-05-06 22:47:06.894 febs [main] INFO  c.z.p.spring.ApplicationTest - Started ApplicationTest in 8.323 seconds (JVM running for 9.713)
+2019-05-06 22:47:06.902 febs [main] INFO  c.z.a.task.InitConfigurationService - load configuration : s7comm 
+ {0=CPU服务, 240=建立通信, 4=读取值, 5=写入值, 40=程序调用服务, 41=关闭PLC, 26=请求下载, 27=下载块, 28=下载结束, 29=开始上传, 30=上传, 31=上传结束} 
+2019-05-06 22:47:06.903 febs [main] INFO  c.z.a.task.InitConfigurationService - load configuration : modbus 
+ {1=读线圈, 2=读输入离散量, 3=读多个寄存器, 4=读输入寄存器, 5=写单个线圈, 6=写单个寄存器, 43=读设备识别码, 15=写多个线圈, 16=写多个寄存器, 20=读文件记录, 21=写文件记录, 22=屏蔽写寄存器, 23=读/写多个寄存器} 
+2019-05-06 22:47:07.470 febs [SimpleAsyncTaskExecutor-1] INFO  p6spy - 1557154027470|2|statement|connection 1|url jdbc:mysql://localhost:3306/packet_master_web?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC|DELETE FROM operation_filter    WHERE device_id = ?|DELETE FROM operation_filter    WHERE device_id = 10
+2019-05-06 22:47:08.634 febs [SimpleAsyncTaskExecutor-2] INFO  p6spy - 1557154028634|0|statement|connection 2|url jdbc:mysql://localhost:3306/packet_master_web?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC|SELECT  id,user_name,device_id,filter_type,fun_code,protocol_id  FROM operation_filter     WHERE device_id = ?|SELECT  id,user_name,device_id,filter_type,fun_code,protocol_id  FROM operation_filter     WHERE device_id = 10
+2019-05-06 22:47:09.666 febs [SimpleAsyncTaskExecutor-4] INFO  p6spy - 1557154029666|1|statement|connection 3|url jdbc:mysql://localhost:3306/packet_master_web?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC|SELECT  id,user_name,device_id,filter_type,fun_code,protocol_id  FROM operation_filter     WHERE device_id = ?|SELECT  id,user_name,device_id,filter_type,fun_code,protocol_id  FROM operation_filter     WHERE device_id = 11
+2019-05-06 22:47:09.697 febs [Thread-4] INFO  o.s.s.c.ThreadPoolTaskScheduler - Shutting down ExecutorService 'taskScheduler'
+2019-05-06 22:47:09.701 febs [Thread-4] INFO  o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'global_single_thread_executor'
+2019-05-06 22:47:09.711 febs [Thread-4] INFO  c.b.d.d.DynamicRoutingDataSource - closing dynamicDatasource  ing....
+2019-05-06 22:47:09.712 febs [Thread-4] INFO  o.s.b.f.s.DisposableBeanAdapter - Invocation of destroy method failed on bean with name 'dataSource': java.lang.NoSuchMethodException: com.p6spy.engine.spy.P6DataSource.close()
+2019-05-06 22:47:43.966 febs [main] INFO  c.z.p.spring.ApplicationTest - Starting ApplicationTest on hongqianhuideMacBook-Pro.local with PID 7414 (started by hongqianhui in /Users/hongqianhui/JavaProjects/packet-master-web)
+2019-05-06 22:47:43.972 febs [main] INFO  c.z.p.spring.ApplicationTest - No active profile set, falling back to default profiles: default
+2019-05-06 22:47:46.171 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'spring.datasource.dynamic-com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties' of type [com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:47:46.177 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration' of type [com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration$$EnhancerBySpringCGLIB$$2daa16fc] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:47:46.187 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'dsProcessor' of type [com.baomidou.dynamic.datasource.processor.DsHeaderProcessor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:47:46.194 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'dynamicDatasourceAnnotationAdvisor' of type [com.baomidou.dynamic.datasource.aop.DynamicDataSourceAnnotationAdvisor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:47:46.244 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$c41ba62b] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 22:47:46.531 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 动态数据源-检测到并开启了p6spy
+2019-05-06 22:47:46.552 febs [main] INFO  com.zaxxer.hikari.HikariDataSource - primary - Starting...
+2019-05-06 22:47:47.025 febs [main] INFO  com.zaxxer.hikari.HikariDataSource - primary - Start completed.
+2019-05-06 22:47:47.025 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 初始共加载 1 个数据源
+2019-05-06 22:47:47.026 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 动态数据源-加载 primary 成功
+2019-05-06 22:47:47.026 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 当前的默认数据源是单数据源，数据源名为 primary
+2019-05-06 22:47:49.148 febs [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 2 endpoint(s) beneath base path '/actuator'
+2019-05-06 22:47:49.303 febs [main] INFO  o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService
+2019-05-06 22:47:49.311 febs [main] INFO  o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'global_single_thread_executor'
+2019-05-06 22:47:50.546 febs [main] INFO  o.s.s.c.ThreadPoolTaskScheduler - Initializing ExecutorService 'taskScheduler'
+2019-05-06 22:47:50.671 febs [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Context refreshed
+2019-05-06 22:47:50.689 febs [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Found 1 custom documentation plugin(s)
+2019-05-06 22:47:50.703 febs [main] INFO  s.d.s.w.s.ApiListingReferenceScanner - Scanning for api listing references
+2019-05-06 22:47:50.919 febs [main] INFO  s.d.s.w.r.o.CachingOperationNameGenerator - Generating unique operation named: updateGplotInfoUsingPOST_1
+2019-05-06 22:47:50.999 febs [main] INFO  c.z.p.spring.ApplicationTest - Started ApplicationTest in 8.107 seconds (JVM running for 9.417)
+2019-05-06 22:47:51.007 febs [main] INFO  c.z.a.task.InitConfigurationService - load configuration : s7comm 
+ {0=CPU服务, 240=建立通信, 4=读取值, 5=写入值, 40=程序调用服务, 41=关闭PLC, 26=请求下载, 27=下载块, 28=下载结束, 29=开始上传, 30=上传, 31=上传结束} 
+2019-05-06 22:47:51.008 febs [main] INFO  c.z.a.task.InitConfigurationService - load configuration : modbus 
+ {1=读线圈, 2=读输入离散量, 3=读多个寄存器, 4=读输入寄存器, 5=写单个线圈, 6=写单个寄存器, 43=读设备识别码, 15=写多个线圈, 16=写多个寄存器, 20=读文件记录, 21=写文件记录, 22=屏蔽写寄存器, 23=读/写多个寄存器} 
+2019-05-06 22:47:51.518 febs [SimpleAsyncTaskExecutor-1] INFO  p6spy - 1557154071518|1|statement|connection 1|url jdbc:mysql://localhost:3306/packet_master_web?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC|DELETE FROM operation_filter    WHERE device_id = ?|DELETE FROM operation_filter    WHERE device_id = 10
+2019-05-06 22:47:52.682 febs [SimpleAsyncTaskExecutor-2] INFO  p6spy - 1557154072682|0|statement|connection 2|url jdbc:mysql://localhost:3306/packet_master_web?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC|SELECT  id,user_name,device_id,filter_type,fun_code,protocol_id  FROM operation_filter     WHERE device_id = ?|SELECT  id,user_name,device_id,filter_type,fun_code,protocol_id  FROM operation_filter     WHERE device_id = 10
+2019-05-06 22:47:53.713 febs [SimpleAsyncTaskExecutor-4] INFO  p6spy - 1557154073712|1|statement|connection 3|url jdbc:mysql://localhost:3306/packet_master_web?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC|SELECT  id,user_name,device_id,filter_type,fun_code,protocol_id  FROM operation_filter     WHERE device_id = ?|SELECT  id,user_name,device_id,filter_type,fun_code,protocol_id  FROM operation_filter     WHERE device_id = 11
+2019-05-06 22:47:53.733 febs [Thread-4] INFO  o.s.s.c.ThreadPoolTaskScheduler - Shutting down ExecutorService 'taskScheduler'
+2019-05-06 22:47:53.738 febs [Thread-4] INFO  o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'global_single_thread_executor'
+2019-05-06 22:47:53.750 febs [Thread-4] INFO  c.b.d.d.DynamicRoutingDataSource - closing dynamicDatasource  ing....
+2019-05-06 22:47:53.752 febs [Thread-4] INFO  o.s.b.f.s.DisposableBeanAdapter - Invocation of destroy method failed on bean with name 'dataSource': java.lang.NoSuchMethodException: com.p6spy.engine.spy.P6DataSource.close()
+2019-05-06 23:20:09.533 febs [main] INFO  c.z.p.spring.ApplicationTest - Starting ApplicationTest on hongqianhuideMacBook-Pro.local with PID 7532 (started by hongqianhui in /Users/hongqianhui/JavaProjects/packet-master-web)
+2019-05-06 23:20:09.535 febs [main] INFO  c.z.p.spring.ApplicationTest - No active profile set, falling back to default profiles: default
+2019-05-06 23:20:11.767 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'spring.datasource.dynamic-com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties' of type [com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 23:20:11.771 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration' of type [com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration$$EnhancerBySpringCGLIB$$147d469d] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 23:20:11.781 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'dsProcessor' of type [com.baomidou.dynamic.datasource.processor.DsHeaderProcessor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 23:20:11.788 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'dynamicDatasourceAnnotationAdvisor' of type [com.baomidou.dynamic.datasource.aop.DynamicDataSourceAnnotationAdvisor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 23:20:11.842 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$aaeed5cc] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 23:20:12.147 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 动态数据源-检测到并开启了p6spy
+2019-05-06 23:20:12.171 febs [main] INFO  com.zaxxer.hikari.HikariDataSource - primary - Starting...
+2019-05-06 23:20:12.668 febs [main] INFO  com.zaxxer.hikari.HikariDataSource - primary - Start completed.
+2019-05-06 23:20:12.668 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 初始共加载 1 个数据源
+2019-05-06 23:20:12.668 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 动态数据源-加载 primary 成功
+2019-05-06 23:20:12.669 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 当前的默认数据源是单数据源，数据源名为 primary
+2019-05-06 23:20:14.813 febs [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 2 endpoint(s) beneath base path '/actuator'
+2019-05-06 23:20:14.982 febs [main] INFO  o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService
+2019-05-06 23:20:14.995 febs [main] INFO  o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'global_single_thread_executor'
+2019-05-06 23:20:16.249 febs [main] INFO  o.s.s.c.ThreadPoolTaskScheduler - Initializing ExecutorService 'taskScheduler'
+2019-05-06 23:20:16.366 febs [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Context refreshed
+2019-05-06 23:20:16.387 febs [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Found 1 custom documentation plugin(s)
+2019-05-06 23:20:16.402 febs [main] INFO  s.d.s.w.s.ApiListingReferenceScanner - Scanning for api listing references
+2019-05-06 23:20:16.639 febs [main] INFO  s.d.s.w.r.o.CachingOperationNameGenerator - Generating unique operation named: updateGplotInfoUsingPOST_1
+2019-05-06 23:20:16.716 febs [main] INFO  c.z.p.spring.ApplicationTest - Started ApplicationTest in 8.158 seconds (JVM running for 9.724)
+2019-05-06 23:20:16.729 febs [main] INFO  c.z.a.task.InitConfigurationService - load configuration : s7comm 
+ {0=CPU服务, 240=建立通信, 4=读取值, 5=写入值, 40=程序调用服务, 41=关闭PLC, 26=请求下载, 27=下载块, 28=下载结束, 29=开始上传, 30=上传, 31=上传结束} 
+2019-05-06 23:20:16.730 febs [main] INFO  c.z.a.task.InitConfigurationService - load configuration : modbus 
+ {1=读线圈, 2=读输入离散量, 3=读多个寄存器, 4=读输入寄存器, 5=写单个线圈, 6=写单个寄存器, 43=读设备识别码, 15=写多个线圈, 16=写多个寄存器, 20=读文件记录, 21=写文件记录, 22=屏蔽写寄存器, 23=读/写多个寄存器} 
+2019-05-06 23:20:17.261 febs [SimpleAsyncTaskExecutor-1] INFO  p6spy - 1557156017261|183|statement|connection 1|url jdbc:mysql://localhost:3306/packet_master_web?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC|SELECT id,device_id,user_name,filter_type,src_ip,dst_ip,src_mac,dst_mac,src_port,dst_port,protocol AS protocol_id FROM fv_dimension_filter WHERE id=?|SELECT id,device_id,user_name,filter_type,src_ip,dst_ip,src_mac,dst_mac,src_port,dst_port,protocol AS protocol_id FROM fv_dimension_filter WHERE id=0
+2019-05-06 23:20:17.337 febs [Thread-4] INFO  o.s.s.c.ThreadPoolTaskScheduler - Shutting down ExecutorService 'taskScheduler'
+2019-05-06 23:20:17.340 febs [Thread-4] INFO  o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'global_single_thread_executor'
+2019-05-06 23:20:17.344 febs [Thread-4] INFO  c.b.d.d.DynamicRoutingDataSource - closing dynamicDatasource  ing....
+2019-05-06 23:20:17.345 febs [Thread-4] INFO  o.s.b.f.s.DisposableBeanAdapter - Invocation of destroy method failed on bean with name 'dataSource': java.lang.NoSuchMethodException: com.p6spy.engine.spy.P6DataSource.close()
+2019-05-06 23:22:29.201 febs [main] INFO  c.z.p.spring.ApplicationTest - Starting ApplicationTest on hongqianhuideMacBook-Pro.local with PID 7542 (started by hongqianhui in /Users/hongqianhui/JavaProjects/packet-master-web)
+2019-05-06 23:22:29.202 febs [main] INFO  c.z.p.spring.ApplicationTest - No active profile set, falling back to default profiles: default
+2019-05-06 23:22:31.283 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'spring.datasource.dynamic-com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties' of type [com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 23:22:31.298 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration' of type [com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration$$EnhancerBySpringCGLIB$$7204a0fe] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 23:22:31.308 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'dsProcessor' of type [com.baomidou.dynamic.datasource.processor.DsHeaderProcessor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 23:22:31.315 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'dynamicDatasourceAnnotationAdvisor' of type [com.baomidou.dynamic.datasource.aop.DynamicDataSourceAnnotationAdvisor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 23:22:31.368 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$876302d] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 23:22:31.641 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 动态数据源-检测到并开启了p6spy
+2019-05-06 23:22:31.657 febs [main] INFO  com.zaxxer.hikari.HikariDataSource - primary - Starting...
+2019-05-06 23:22:32.099 febs [main] INFO  com.zaxxer.hikari.HikariDataSource - primary - Start completed.
+2019-05-06 23:22:32.099 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 初始共加载 1 个数据源
+2019-05-06 23:22:32.099 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 动态数据源-加载 primary 成功
+2019-05-06 23:22:32.099 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 当前的默认数据源是单数据源，数据源名为 primary
+2019-05-06 23:22:34.361 febs [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 2 endpoint(s) beneath base path '/actuator'
+2019-05-06 23:22:34.535 febs [main] INFO  o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService
+2019-05-06 23:22:34.546 febs [main] INFO  o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'global_single_thread_executor'
+2019-05-06 23:22:35.860 febs [main] INFO  o.s.s.c.ThreadPoolTaskScheduler - Initializing ExecutorService 'taskScheduler'
+2019-05-06 23:22:35.982 febs [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Context refreshed
+2019-05-06 23:22:36.005 febs [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Found 1 custom documentation plugin(s)
+2019-05-06 23:22:36.020 febs [main] INFO  s.d.s.w.s.ApiListingReferenceScanner - Scanning for api listing references
+2019-05-06 23:22:36.257 febs [main] INFO  s.d.s.w.r.o.CachingOperationNameGenerator - Generating unique operation named: updateGplotInfoUsingPOST_1
+2019-05-06 23:22:36.340 febs [main] INFO  c.z.p.spring.ApplicationTest - Started ApplicationTest in 8.486 seconds (JVM running for 9.779)
+2019-05-06 23:22:36.349 febs [main] INFO  c.z.a.task.InitConfigurationService - load configuration : s7comm 
+ {0=CPU服务, 240=建立通信, 4=读取值, 5=写入值, 40=程序调用服务, 41=关闭PLC, 26=请求下载, 27=下载块, 28=下载结束, 29=开始上传, 30=上传, 31=上传结束} 
+2019-05-06 23:22:36.350 febs [main] INFO  c.z.a.task.InitConfigurationService - load configuration : modbus 
+ {1=读线圈, 2=读输入离散量, 3=读多个寄存器, 4=读输入寄存器, 5=写单个线圈, 6=写单个寄存器, 43=读设备识别码, 15=写多个线圈, 16=写多个寄存器, 20=读文件记录, 21=写文件记录, 22=屏蔽写寄存器, 23=读/写多个寄存器} 
+2019-05-06 23:22:36.651 febs [-pcap-capture-thread] INFO  c.zjucsc.application.util.PcapUtils - 192.168.0.121 is ip
+2019-05-06 23:22:36.651 febs [-pcap-capture-thread] INFO  c.zjucsc.application.util.PcapUtils - 192.168.0.121 is ip
+2019-05-06 23:22:36.651 febs [-pcap-capture-thread] INFO  c.zjucsc.application.util.PcapUtils - 192.168.0.121 is ip
+2019-05-06 23:22:36.711 febs [-pcap-capture-thread] INFO  org.pcap4j.core.NativeMappings - Pcap4J successfully loaded a native pcap library: libpcap version 1.8.1 -- Apple version 79.250.1
+2019-05-06 23:22:37.002 febs [-pcap-capture-thread] INFO  org.pcap4j.util.PropertiesLoader - [org/pcap4j/pcap4j.properties] Could not get value by org.pcap4j.af.inet, use default value: 2
+2019-05-06 23:22:37.002 febs [-pcap-capture-thread] INFO  org.pcap4j.util.PropertiesLoader - [org/pcap4j/pcap4j.properties] Could not get value by org.pcap4j.af.inet6, use default value: 30
+2019-05-06 23:22:37.002 febs [-pcap-capture-thread] INFO  org.pcap4j.util.PropertiesLoader - [org/pcap4j/pcap4j.properties] Could not get value by org.pcap4j.af.packet, use default value: 17
+2019-05-06 23:22:37.002 febs [-pcap-capture-thread] INFO  org.pcap4j.util.PropertiesLoader - [org/pcap4j/pcap4j.properties] Could not get value by org.pcap4j.af.link, use default value: 18
+2019-05-06 23:22:37.020 febs [-pcap-capture-thread] INFO  org.pcap4j.core.Pcaps - 12 NIF(s) found.
+2019-05-06 23:22:37.020 febs [-pcap-capture-thread] INFO  c.zjucsc.application.util.PcapUtils - get 12 interfaces successfully
+2019-05-06 23:22:37.043 febs [-pcap-capture-thread] INFO  org.pcap4j.core.Pcaps - 12 NIF(s) found.
+2019-05-06 23:22:46.445 febs [Thread-3] INFO  org.pcap4j.core.PacketListener - packet queue size : 0 , worker queue packet size : 0;;has received 0 no-tcp packets
+2019-05-06 23:23:01.455 febs [Thread-3] INFO  org.pcap4j.core.PacketListener - packet queue size : 0 , worker queue packet size : 0;;has received 0 no-tcp packets
+2019-05-06 23:23:16.468 febs [Thread-3] INFO  org.pcap4j.core.PacketListener - packet queue size : 0 , worker queue packet size : 0;;has received 0 no-tcp packets
+2019-05-06 23:23:17.857 febs [Thread-4] INFO  o.s.s.c.ThreadPoolTaskScheduler - Shutting down ExecutorService 'taskScheduler'
+2019-05-06 23:23:17.861 febs [Thread-4] INFO  o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'global_single_thread_executor'
+2019-05-06 23:23:17.868 febs [Thread-4] INFO  c.b.d.d.DynamicRoutingDataSource - closing dynamicDatasource  ing....
+2019-05-06 23:23:17.870 febs [Thread-4] INFO  o.s.b.f.s.DisposableBeanAdapter - Invocation of destroy method failed on bean with name 'dataSource': java.lang.NoSuchMethodException: com.p6spy.engine.spy.P6DataSource.close()
+2019-05-06 23:23:41.164 febs [main] INFO  c.z.p.spring.ApplicationTest - Starting ApplicationTest on hongqianhuideMacBook-Pro.local with PID 7559 (started by hongqianhui in /Users/hongqianhui/JavaProjects/packet-master-web)
+2019-05-06 23:23:41.178 febs [main] INFO  c.z.p.spring.ApplicationTest - No active profile set, falling back to default profiles: default
+2019-05-06 23:23:51.765 febs [main] INFO  c.z.p.spring.ApplicationTest - Starting ApplicationTest on hongqianhuideMacBook-Pro.local with PID 7564 (started by hongqianhui in /Users/hongqianhui/JavaProjects/packet-master-web)
+2019-05-06 23:23:51.768 febs [main] INFO  c.z.p.spring.ApplicationTest - No active profile set, falling back to default profiles: default
+2019-05-06 23:23:53.878 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'spring.datasource.dynamic-com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties' of type [com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 23:23:53.883 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration' of type [com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration$$EnhancerBySpringCGLIB$$fb1e4818] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 23:23:53.896 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'dsProcessor' of type [com.baomidou.dynamic.datasource.processor.DsHeaderProcessor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 23:23:53.904 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'dynamicDatasourceAnnotationAdvisor' of type [com.baomidou.dynamic.datasource.aop.DynamicDataSourceAnnotationAdvisor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 23:23:53.964 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$918fd747] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 23:23:54.230 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 动态数据源-检测到并开启了p6spy
+2019-05-06 23:23:54.246 febs [main] INFO  com.zaxxer.hikari.HikariDataSource - primary - Starting...
+2019-05-06 23:23:54.708 febs [main] INFO  com.zaxxer.hikari.HikariDataSource - primary - Start completed.
+2019-05-06 23:23:54.708 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 初始共加载 1 个数据源
+2019-05-06 23:23:54.708 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 动态数据源-加载 primary 成功
+2019-05-06 23:23:54.708 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 当前的默认数据源是单数据源，数据源名为 primary
+2019-05-06 23:23:56.876 febs [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 2 endpoint(s) beneath base path '/actuator'
+2019-05-06 23:23:57.046 febs [main] INFO  o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService
+2019-05-06 23:23:57.059 febs [main] INFO  o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'global_single_thread_executor'
+2019-05-06 23:23:58.245 febs [main] INFO  o.s.s.c.ThreadPoolTaskScheduler - Initializing ExecutorService 'taskScheduler'
+2019-05-06 23:23:58.358 febs [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Context refreshed
+2019-05-06 23:23:58.378 febs [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Found 1 custom documentation plugin(s)
+2019-05-06 23:23:58.396 febs [main] INFO  s.d.s.w.s.ApiListingReferenceScanner - Scanning for api listing references
+2019-05-06 23:23:58.636 febs [main] INFO  s.d.s.w.r.o.CachingOperationNameGenerator - Generating unique operation named: updateGplotInfoUsingPOST_1
+2019-05-06 23:23:58.720 febs [main] INFO  c.z.p.spring.ApplicationTest - Started ApplicationTest in 7.947 seconds (JVM running for 8.969)
+2019-05-06 23:23:58.729 febs [main] INFO  c.z.a.task.InitConfigurationService - load configuration : s7comm 
+ {0=CPU服务, 240=建立通信, 4=读取值, 5=写入值, 40=程序调用服务, 41=关闭PLC, 26=请求下载, 27=下载块, 28=下载结束, 29=开始上传, 30=上传, 31=上传结束} 
+2019-05-06 23:23:58.730 febs [main] INFO  c.z.a.task.InitConfigurationService - load configuration : modbus 
+ {1=读线圈, 2=读输入离散量, 3=读多个寄存器, 4=读输入寄存器, 5=写单个线圈, 6=写单个寄存器, 43=读设备识别码, 15=写多个线圈, 16=写多个寄存器, 20=读文件记录, 21=写文件记录, 22=屏蔽写寄存器, 23=读/写多个寄存器} 
+2019-05-06 23:23:59.028 febs [-pcap-capture-thread] INFO  c.zjucsc.application.util.PcapUtils - 192.168.1.104 is ip
+2019-05-06 23:23:59.028 febs [-pcap-capture-thread] INFO  c.zjucsc.application.util.PcapUtils - 192.168.1.104 is ip
+2019-05-06 23:23:59.029 febs [-pcap-capture-thread] INFO  c.zjucsc.application.util.PcapUtils - 192.168.1.104 is ip
+2019-05-06 23:23:59.091 febs [-pcap-capture-thread] INFO  org.pcap4j.core.NativeMappings - Pcap4J successfully loaded a native pcap library: libpcap version 1.8.1 -- Apple version 79.250.1
+2019-05-06 23:23:59.118 febs [-pcap-capture-thread] INFO  org.pcap4j.util.PropertiesLoader - [org/pcap4j/pcap4j.properties] Could not get value by org.pcap4j.af.inet, use default value: 2
+2019-05-06 23:23:59.118 febs [-pcap-capture-thread] INFO  org.pcap4j.util.PropertiesLoader - [org/pcap4j/pcap4j.properties] Could not get value by org.pcap4j.af.inet6, use default value: 30
+2019-05-06 23:23:59.118 febs [-pcap-capture-thread] INFO  org.pcap4j.util.PropertiesLoader - [org/pcap4j/pcap4j.properties] Could not get value by org.pcap4j.af.packet, use default value: 17
+2019-05-06 23:23:59.118 febs [-pcap-capture-thread] INFO  org.pcap4j.util.PropertiesLoader - [org/pcap4j/pcap4j.properties] Could not get value by org.pcap4j.af.link, use default value: 18
+2019-05-06 23:23:59.272 febs [-pcap-capture-thread] INFO  org.pcap4j.core.Pcaps - 12 NIF(s) found.
+2019-05-06 23:23:59.272 febs [-pcap-capture-thread] INFO  c.zjucsc.application.util.PcapUtils - get 12 interfaces successfully
+2019-05-06 23:23:59.301 febs [-pcap-capture-thread] INFO  org.pcap4j.core.Pcaps - 12 NIF(s) found.
+2019-05-06 23:23:59.305 febs [-pcap-capture-thread] INFO  c.zjucsc.application.util.PcapUtils - 192.168.1.104 is ip
+2019-05-06 23:23:59.307 febs [-pcap-capture-thread] INFO  c.zjucsc.application.util.PcapUtils - 192.168.1.104 is ip
+2019-05-06 23:23:59.333 febs [-pcap-capture-thread] INFO  org.pcap4j.core.Pcaps - 12 NIF(s) found.
+2019-05-06 23:23:59.343 febs [-pcap-capture-thread] INFO  org.pcap4j.util.PropertiesLoader - [org/pcap4j/pcap4j.properties] Could not get value by org.pcap4j.dlt.raw, use default value: 12
+2019-05-06 23:23:59.343 febs [-pcap-capture-thread] INFO  c.zjucsc.application.util.PcapUtils - 192.168.1.104 is ip
+2019-05-06 23:23:59.351 febs [-pcap-capture-thread] INFO  org.pcap4j.core.PcapHandle - Starting loop.
+2019-05-06 23:24:02.547 febs [-pcap-capture-thread] INFO  o.p.packet.factory.PacketFactories - Succeeded in FactoryBinder.getInstance()
+2019-05-06 23:24:09.046 febs [Thread-3] INFO  org.pcap4j.core.PacketListener - packet queue size : 0 , worker queue packet size : 0;;has received 6 no-tcp packets
+2019-05-06 23:24:24.049 febs [Thread-3] INFO  org.pcap4j.core.PacketListener - packet queue size : 0 , worker queue packet size : 0;;has received 11 no-tcp packets
+2019-05-06 23:24:39.059 febs [Thread-3] INFO  org.pcap4j.core.PacketListener - packet queue size : 0 , worker queue packet size : 0;;has received 38 no-tcp packets
+2019-05-06 23:24:49.032 febs [main] INFO  org.pcap4j.core.PcapHandle - Break loop.
+2019-05-06 23:24:50.614 febs [-pcap-capture-thread] INFO  org.pcap4j.core.PcapHandle - Broken.
+2019-05-06 23:24:50.615 febs [-pcap-capture-thread] INFO  c.zjucsc.application.util.PcapUtils - Link type: [1 (Ethernet)] handle: [native@0x7fb7f3063000] Open: [false] Filtering Expression: [not tcp] closed
+2019-05-06 23:24:50.615 febs [main] INFO  org.pcap4j.core.PcapHandle - Closed.
+2019-05-06 23:24:50.616 febs [main] INFO  c.zjucsc.application.util.PcapUtils - 192.168.1.104 close now
+2019-05-06 23:24:50.616 febs [main] INFO  c.zjucsc.application.util.PcapUtils - 192.168.1.104 is ip
+2019-05-06 23:24:50.616 febs [main] INFO  c.zjucsc.application.util.PcapUtils - 192.168.1.104 is ip
+2019-05-06 23:24:54.067 febs [Thread-3] INFO  org.pcap4j.core.PacketListener - packet queue size : 0 , worker queue packet size : 0;;has received 43 no-tcp packets
+2019-05-06 23:24:56.241 febs [Thread-4] INFO  o.s.s.c.ThreadPoolTaskScheduler - Shutting down ExecutorService 'taskScheduler'
+2019-05-06 23:24:56.244 febs [Thread-4] INFO  o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'global_single_thread_executor'
+2019-05-06 23:24:56.252 febs [Thread-4] INFO  c.b.d.d.DynamicRoutingDataSource - closing dynamicDatasource  ing....
+2019-05-06 23:24:56.253 febs [Thread-4] INFO  o.s.b.f.s.DisposableBeanAdapter - Invocation of destroy method failed on bean with name 'dataSource': java.lang.NoSuchMethodException: com.p6spy.engine.spy.P6DataSource.close()
+2019-05-06 23:25:38.800 febs [main] INFO  c.z.p.spring.ApplicationTest - Starting ApplicationTest on hongqianhuideMacBook-Pro.local with PID 7570 (started by hongqianhui in /Users/hongqianhui/JavaProjects/packet-master-web)
+2019-05-06 23:25:38.802 febs [main] INFO  c.z.p.spring.ApplicationTest - No active profile set, falling back to default profiles: default
+2019-05-06 23:25:41.022 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'spring.datasource.dynamic-com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties' of type [com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 23:25:41.026 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration' of type [com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration$$EnhancerBySpringCGLIB$$4aac4ea1] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 23:25:41.035 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'dsProcessor' of type [com.baomidou.dynamic.datasource.processor.DsHeaderProcessor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 23:25:41.041 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'dynamicDatasourceAnnotationAdvisor' of type [com.baomidou.dynamic.datasource.aop.DynamicDataSourceAnnotationAdvisor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 23:25:41.097 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$e11dddd0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-06 23:25:41.376 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 动态数据源-检测到并开启了p6spy
+2019-05-06 23:25:41.394 febs [main] INFO  com.zaxxer.hikari.HikariDataSource - primary - Starting...
+2019-05-06 23:25:41.837 febs [main] INFO  com.zaxxer.hikari.HikariDataSource - primary - Start completed.
+2019-05-06 23:25:41.837 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 初始共加载 1 个数据源
+2019-05-06 23:25:41.837 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 动态数据源-加载 primary 成功
+2019-05-06 23:25:41.837 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 当前的默认数据源是单数据源，数据源名为 primary
+2019-05-06 23:25:43.977 febs [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 2 endpoint(s) beneath base path '/actuator'
+2019-05-06 23:25:44.119 febs [main] INFO  o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService
+2019-05-06 23:25:44.127 febs [main] INFO  o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'global_single_thread_executor'
+2019-05-06 23:25:45.199 febs [main] INFO  o.s.s.c.ThreadPoolTaskScheduler - Initializing ExecutorService 'taskScheduler'
+2019-05-06 23:25:45.381 febs [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Context refreshed
+2019-05-06 23:25:45.404 febs [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Found 1 custom documentation plugin(s)
+2019-05-06 23:25:45.422 febs [main] INFO  s.d.s.w.s.ApiListingReferenceScanner - Scanning for api listing references
+2019-05-06 23:25:45.651 febs [main] INFO  s.d.s.w.r.o.CachingOperationNameGenerator - Generating unique operation named: updateGplotInfoUsingPOST_1
+2019-05-06 23:25:45.735 febs [main] INFO  c.z.p.spring.ApplicationTest - Started ApplicationTest in 7.983 seconds (JVM running for 9.22)
+2019-05-06 23:25:45.743 febs [main] INFO  c.z.a.task.InitConfigurationService - load configuration : s7comm 
+ {0=CPU服务, 240=建立通信, 4=读取值, 5=写入值, 40=程序调用服务, 41=关闭PLC, 26=请求下载, 27=下载块, 28=下载结束, 29=开始上传, 30=上传, 31=上传结束} 
+2019-05-06 23:25:45.744 febs [main] INFO  c.z.a.task.InitConfigurationService - load configuration : modbus 
+ {1=读线圈, 2=读输入离散量, 3=读多个寄存器, 4=读输入寄存器, 5=写单个线圈, 6=写单个寄存器, 43=读设备识别码, 15=写多个线圈, 16=写多个寄存器, 20=读文件记录, 21=写文件记录, 22=屏蔽写寄存器, 23=读/写多个寄存器} 
+2019-05-06 23:25:46.034 febs [-pcap-capture-thread] INFO  c.zjucsc.application.util.PcapUtils - 192.168.1.104 is ip
+2019-05-06 23:25:46.035 febs [-pcap-capture-thread] INFO  c.zjucsc.application.util.PcapUtils - 192.168.1.104 is ip
+2019-05-06 23:25:46.035 febs [-pcap-capture-thread] INFO  c.zjucsc.application.util.PcapUtils - 192.168.1.104 is ip
+2019-05-06 23:25:46.085 febs [-pcap-capture-thread] INFO  org.pcap4j.core.NativeMappings - Pcap4J successfully loaded a native pcap library: libpcap version 1.8.1 -- Apple version 79.250.1
+2019-05-06 23:25:46.115 febs [-pcap-capture-thread] INFO  org.pcap4j.util.PropertiesLoader - [org/pcap4j/pcap4j.properties] Could not get value by org.pcap4j.af.inet, use default value: 2
+2019-05-06 23:25:46.115 febs [-pcap-capture-thread] INFO  org.pcap4j.util.PropertiesLoader - [org/pcap4j/pcap4j.properties] Could not get value by org.pcap4j.af.inet6, use default value: 30
+2019-05-06 23:25:46.116 febs [-pcap-capture-thread] INFO  org.pcap4j.util.PropertiesLoader - [org/pcap4j/pcap4j.properties] Could not get value by org.pcap4j.af.packet, use default value: 17
+2019-05-06 23:25:46.116 febs [-pcap-capture-thread] INFO  org.pcap4j.util.PropertiesLoader - [org/pcap4j/pcap4j.properties] Could not get value by org.pcap4j.af.link, use default value: 18
+2019-05-06 23:25:46.291 febs [-pcap-capture-thread] INFO  org.pcap4j.core.Pcaps - 12 NIF(s) found.
+2019-05-06 23:25:46.291 febs [-pcap-capture-thread] INFO  c.zjucsc.application.util.PcapUtils - get 12 interfaces successfully
+2019-05-06 23:25:46.319 febs [-pcap-capture-thread] INFO  org.pcap4j.core.Pcaps - 12 NIF(s) found.
+2019-05-06 23:25:46.320 febs [-pcap-capture-thread] INFO  c.zjucsc.application.util.PcapUtils - 192.168.1.104 is ip
+2019-05-06 23:25:46.320 febs [-pcap-capture-thread] INFO  c.zjucsc.application.util.PcapUtils - 192.168.1.104 is ip
+2019-05-06 23:25:46.347 febs [-pcap-capture-thread] INFO  org.pcap4j.core.Pcaps - 12 NIF(s) found.
+2019-05-06 23:25:46.356 febs [-pcap-capture-thread] INFO  org.pcap4j.util.PropertiesLoader - [org/pcap4j/pcap4j.properties] Could not get value by org.pcap4j.dlt.raw, use default value: 12
+2019-05-06 23:25:46.356 febs [-pcap-capture-thread] INFO  c.zjucsc.application.util.PcapUtils - 192.168.1.104 is ip
+2019-05-06 23:25:46.358 febs [-pcap-capture-thread] INFO  org.pcap4j.core.PcapHandle - Starting loop.
+2019-05-06 23:25:49.516 febs [-pcap-capture-thread] INFO  o.p.packet.factory.PacketFactories - Succeeded in FactoryBinder.getInstance()
+2019-05-06 23:25:56.175 febs [Thread-3] INFO  org.pcap4j.core.PacketListener - packet queue size : 0 , worker queue packet size : 0;;has received 6 no-tcp packets
+2019-05-06 23:26:11.176 febs [Thread-3] INFO  org.pcap4j.core.PacketListener - packet queue size : 0 , worker queue packet size : 0;;has received 10 no-tcp packets
+2019-05-06 23:26:23.585 febs [Thread-4] INFO  o.s.s.c.ThreadPoolTaskScheduler - Shutting down ExecutorService 'taskScheduler'
+2019-05-06 23:26:23.587 febs [Thread-4] INFO  o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'global_single_thread_executor'
+2019-05-06 23:26:23.598 febs [Thread-4] INFO  c.b.d.d.DynamicRoutingDataSource - closing dynamicDatasource  ing....
+2019-05-06 23:26:23.598 febs [Thread-4] INFO  o.s.b.f.s.DisposableBeanAdapter - Invocation of destroy method failed on bean with name 'dataSource': java.lang.NoSuchMethodException: com.p6spy.engine.spy.P6DataSource.close()

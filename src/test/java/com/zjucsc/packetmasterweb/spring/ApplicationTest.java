@@ -1,19 +1,15 @@
 package com.zjucsc.packetmasterweb.spring;
 
 import com.alibaba.fastjson.JSON;
-import com.zjucsc.application.config.Common;
-import com.zjucsc.application.config.PACKET_PROTOCOL;
 import com.zjucsc.application.domain.bean.CaptureService;
-import com.zjucsc.application.domain.entity.FVDimensionFilterEntity;
-import com.zjucsc.application.domain.entity.OperationFilterEntity;
+import com.zjucsc.application.domain.entity.FvDimensionFilter;
+import com.zjucsc.application.domain.entity.OptFilter;
 import com.zjucsc.application.domain.entity.User;
 import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.application.system.controller.*;
 import com.zjucsc.application.system.service.PcapMainService;
 import com.zjucsc.application.system.service.TsharkMainService;
-import com.zjucsc.application.system.service.iservice.IFiveDimensionFilterService;
-import com.zjucsc.application.system.service.iservice.IOperationFilterService;
 import com.zjucsc.application.tshark.capture.AbstractPacketService;
 import com.zjucsc.application.tshark.capture.PacketMain;
 import com.zjucsc.application.tshark.decode.DefaultPipeLine;
@@ -24,13 +20,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 
-import static com.zjucsc.application.config.PACKET_PROTOCOL.MODBUS;
 import static com.zjucsc.application.config.PACKET_PROTOCOL.MODBUS_ID;
-import static com.zjucsc.application.config.PACKET_PROTOCOL.S7_Ack_data_ID;
 
 /**
  * #project packet-master-web
@@ -44,6 +37,8 @@ public class ApplicationTest {
 
     @Autowired private TsharkMainService tsharkMainService;
     @Autowired private PacketController packetController;
+    @Autowired private OptFilterController optFilterController;
+    @Autowired private FvDimensionFilterController fvDimensionFilterController;
 
     @Test
     public void fv_dimension_packet_filter_test(){
@@ -102,9 +97,6 @@ public class ApplicationTest {
         Thread.sleep(30000000);
     }
 
-    @Autowired private IOperationFilterService iOperationFilterService;
-    @Autowired private IFiveDimensionFilterService iFiveDimensionFilterService;
-    @Autowired private OperationFilterController operationFilterController;
 
     /**
      * 添加五元组过滤器
@@ -113,22 +105,19 @@ public class ApplicationTest {
      */
     @Test
     public void config_fv_filter_test() throws ExecutionException, InterruptedException {
-        login();
-        FVDimensionFilterEntity.FiveDimensionFilter filter1 = new FVDimensionFilterEntity.FiveDimensionFilter();
-        filter1.setFilterType(1);
+        //login();
+        FvDimensionFilter filter1 = new FvDimensionFilter();
+        filter1.setFilter_type(1);
         filter1.setSrc_ip("192.168.254.134");
         filter1.setDst_port("502");
         filter1.setSrc_port("1075");
-        filter1.setProtocolId(MODBUS_ID);
+        filter1.setProtocol_id(MODBUS_ID);
         filter1.setDst_ip("192.168.254.143");
-        FVDimensionFilterEntity.FiveDimensionFilterForFront fiveDimensionFilterForFront
-                = new FVDimensionFilterEntity.FiveDimensionFilterForFront();
-        fiveDimensionFilterForFront.setFiveDimensionFilters(Arrays.asList(
-                filter1
+        filter1.setDeviceId(10);
+        filter1.setUser_name("hongqianhui");
+        System.out.println(fvDimensionFilterController.addFvDimensionFilterRules(
+                Arrays.asList(filter1)
         ));
-        fiveDimensionFilterForFront.setDeviceId(10);
-        fiveDimensionFilterForFront.setUserName("hongqianhui");
-        //System.out.println(fiveDimensionFilterController.addFvDimensionFilterRules(fiveDimensionFilterForFront));
     }
 
     /**
@@ -136,32 +125,33 @@ public class ApplicationTest {
      */
     @Test
     public void config_fun_code_filter_test() throws ProtocolIdNotValidException, InterruptedException, DeviceNotValidException, ExecutionException {
-        login();
-        OperationFilterEntity.OperationFilter filter1 = new OperationFilterEntity.OperationFilter();
-        OperationFilterEntity.OperationFilter filter2 = new OperationFilterEntity.OperationFilter();
-        filter1.setFilterType(1);
+        //login();
+        OptFilter filter1 = new OptFilter();
+        OptFilter filter2 = new OptFilter();
         filter1.setFun_code(1);
+        filter1.setFilterType(1);
         filter2.setFun_code(4);
         filter2.setFilterType(0);
-        OperationFilterEntity.OperationFilterForFront operationFilterForFront
-                = new  OperationFilterEntity.OperationFilterForFront();
-        operationFilterForFront.setUserName("hongqianhui");
-        operationFilterForFront.setDeviceId(10);
-        HashMap<Integer, List<OperationFilterEntity.OperationFilter>> map = new
-                HashMap<>();
-        map.put(MODBUS_ID,Arrays.asList(
+        filter1.setDeviceId(10);
+        filter2.setDeviceId(10);
+
+        OptFilter.OptFilterForFront operationFilterForFront
+                = new OptFilter.OptFilterForFront();
+        operationFilterForFront.setProtocolId(MODBUS_ID);
+
+        operationFilterForFront.setOptFilterList(Arrays.asList(
                 filter1 , filter2
         ));
-        operationFilterForFront.setProtocolToFilterList(map);
-        System.out.println(JSON.toJSON(operationFilterController.configOperationPacketRule(operationFilterForFront)));
+        System.out.println(JSON.toJSON(optFilterController.addNewOptFilter(Collections.singletonList(operationFilterForFront))));
         Thread.sleep(1000);
         System.out.println("cached operation rules :");
-        System.out.println(JSON.toJSON(operationFilterController.getOperationPacketRuleCached(10)));
+        System.out.println(JSON.toJSON(optFilterController.getOptFilter(10 , 0 , 0)));
         System.out.println("operation rules :");
-        System.out.println(JSON.toJSON(operationFilterController.getOperationPacketRule(10)));
+        System.out.println(JSON.toJSON(optFilterController.getOptFilter(10 , 0 , 1)));
         Thread.sleep(1000);
         System.out.println("operation rules [not config device id]:");
-        System.out.println(JSON.toJSON(operationFilterController.getOperationPacketRule(1)));
+        System.out.println(JSON.toJSON(optFilterController.getOptFilter(11 , 0 , 0)));
+        System.out.println(JSON.toJSON(optFilterController.getOptFilter(11 , 0 , 1)));
     }
 
     @Test
@@ -198,15 +188,15 @@ public class ApplicationTest {
         Thread.sleep(30000000);
     }
 
-    @Autowired private PcapMainService service;
+    @Autowired private PcapMainService pcapMainService;
 
     @Test
     public void pcap_data_test() throws InterruptedException {
         DefaultPipeLine pipeLine = PacketMain.getDefaultPipeLine();
         System.out.println(pipeLine);
         System.out.println(PacketMain.pcapPipeLine);
-        String ip = "192.168.0.121";
-        service.start(ip, new AbstractPacketService.ProcessCallback() {
+        String ip = "192.168.1.104";
+        pcapMainService.start(ip, new AbstractPacketService.ProcessCallback() {
             @Override
             public void error(Exception e) {
                 System.out.println(e);
@@ -222,8 +212,8 @@ public class ApplicationTest {
                 System.out.println("end");
             }
         });
-        Thread.sleep(5000);
-        service.stop();
+        Thread.sleep(50000);
+        pcapMainService.stop();
         Thread.sleep(100000000);
     }
 

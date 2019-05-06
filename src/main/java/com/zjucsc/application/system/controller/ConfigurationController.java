@@ -35,9 +35,9 @@ public class ConfigurationController {
 
     @ApiOperation(value = "查询所有已配置异常报文规则")
     @GetMapping(value = "/get_all_packet_rule_cached")
-    public BaseResponse getAllPacketRuleCached(@RequestParam int deviceId) throws ExecutionException, InterruptedException, DeviceNotValidException {
-        HashMap map = configurationService.loadRule(deviceId).get();
-        return BaseResponse.OK(map);
+    public BaseResponse getAllPacketRuleCached(@RequestParam int deviceId) {
+        //HashMap map = configurationService.loadRule(deviceId).get();
+        return BaseResponse.OK(deviceId);
     }
 
     @ApiOperation(value = "查询所有组态")
@@ -58,7 +58,7 @@ public class ConfigurationController {
     @ApiOperation(value = "查询所有已配置或数据库中未配置的异常报文规则")
     @GetMapping(value = "/get_all_packet_rule")
     public BaseResponse getAllPacketRule(@RequestParam int deviceId) throws ExecutionException, InterruptedException, DeviceNotValidException {
-        HashMap map = configurationService.loadRuleAll(deviceId).get();
-        return BaseResponse.OK(map);
+        //HashMap map = configurationService.loadRuleAll(deviceId).get();
+        return BaseResponse.OK(null);
     }
 }

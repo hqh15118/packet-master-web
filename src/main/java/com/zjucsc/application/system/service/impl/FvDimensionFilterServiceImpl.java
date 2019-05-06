@@ -4,20 +4,15 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.analyzer.FiveDimensionAnalyzer;
-import com.zjucsc.application.domain.entity.FVDimensionFilterEntity;
 import com.zjucsc.application.domain.entity.FvDimensionFilter;
-import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
 import com.zjucsc.application.domain.filter.FiveDimensionPacketFilter;
 import com.zjucsc.application.system.dao.FvDimensionFilterMapper;
 import com.zjucsc.application.system.service.iservice.IFvDimensionFilterService;
-import org.apache.ibatis.annotations.ResultMap;
-import org.apache.ibatis.annotations.Select;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import static com.zjucsc.application.config.PACKET_PROTOCOL.FV_DIMENSION;
 

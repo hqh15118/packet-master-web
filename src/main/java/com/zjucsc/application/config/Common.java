@@ -1,5 +1,7 @@
 package com.zjucsc.application.config;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.zjucsc.application.domain.analyzer.FiveDimensionAnalyzer;
 import com.zjucsc.application.domain.analyzer.OperationAnalyzer;
 import com.zjucsc.application.domain.bean.CollectorState;
@@ -136,7 +138,6 @@ public class Common {
      *  init in
      * @see com.zjucsc.application.task.InitConfigurationService
      */
-    public static final HashMap<Integer,String> PROTOCOL_STR_TO_INT = new HashMap<>();
-
+    public static final BiMap<Integer,String> PROTOCOL_STR_TO_INT = HashBiMap.create();
 
 }
