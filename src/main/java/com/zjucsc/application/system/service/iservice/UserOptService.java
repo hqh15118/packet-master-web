@@ -16,4 +16,6 @@ public interface UserOptService extends IService<User> {
     boolean onServer(String userName);
 
     List<String> getAllLogginedUsers();
+
+    void saveToken(User user , String token);
 }

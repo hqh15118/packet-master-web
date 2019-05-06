@@ -54,5 +54,11 @@ public class UserOptServiceImpl extends ServiceImpl<UserOptMapper, User> impleme
         return Common.LOGGINED_USERS;
     }
 
+    @Override
+    public void saveToken(User user , String token) {
+        user.setToken(token);
+        updateById(user);
+    }
+
 
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Date;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/user/")
@@ -26,7 +27,11 @@ public class UserOptController {
         }else{
             if (loginUser.getPassword().equals(MD5Util.encrypt(user.password))){
                 userOptService.login(user.userName);
-                return BaseResponse.OK(Common.SOCKET_IO_PORT);
+                //HashMap<String,String[]> token = new HashMap<>();
+                //token.put("roles",new String[]{"admin"});
+                String token = MD5Util.encrypt(user.toString()) + "_token";
+                userOptService.saveToken(loginUser,token);
+                return BaseResponse.OK(token);
             }else{
                 return BaseResponse.ERROR(401,"密码错误");
             }

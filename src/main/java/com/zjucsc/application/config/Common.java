@@ -1,26 +1,24 @@
 package com.zjucsc.application.config;
 
+import com.zjucsc.application.domain.analyzer.FiveDimensionAnalyzer;
+import com.zjucsc.application.domain.analyzer.OperationAnalyzer;
 import com.zjucsc.application.domain.bean.CollectorState;
-import com.zjucsc.application.domain.bean.FuncodeStatement;
 import com.zjucsc.application.domain.filter.FiveDimensionPacketFilter;
 import com.zjucsc.application.domain.filter.OperationPacketFilter;
 import com.zjucsc.application.handler.ThreadExceptionHandler;
-import com.zjucsc.application.domain.analyzer.FiveDimensionAnalyzer;
-import com.zjucsc.application.domain.analyzer.OperationAnalyzer;
 import com.zjucsc.application.util.AbstractAnalyzer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 
 public class Common {
 
     public static final int SOCKET_IO_PORT = 8081;
 
-    public static final String CAPTURE_COMMAND_WIN = "C:\\Users\\Administrator\\Desktop\\tshark_min_win\\tshark.exe -l -n -e frame.protocols -e eth.dst -e eth.src -e ip.src -e ip.addr -e tcp.srcport -e tcp.dstport -e s7comm.param.func -e modbus.func_code -T ek -c 5 -r C:\\Users\\Administrator\\Desktop\\pcap_files\\question_1531953285_02.pcap4j";
+    public static final String CAPTURE_COMMAND_WIN = "C:\\Users\\Administrator\\Desktop\\tshark_min_win\\tshark.exe -l -n -Y tcp -e frame.protocols -e eth.dst -e frame.cap_len -e eth.src -e ip.src -e ip.dst -e tcp.srcport -e tcp.dstport -e s7comm.param.func -e modbus.func_code -e tcp.payload -e s7comm.header.rosctr -T ek -c 5 -r C:\\Users\\Administrator\\IdeaProjects\\packet-master-web\\src\\main\\resources\\pcap\\question_1531953261_01.pcap";
 
     public static final String CAPTURE_COMMAND_MAC = "/Applications/Wireshark.app/Contents/MacOS/tshark -l -n -Y tcp -e frame.protocols -e eth.dst -e frame.cap_len -e eth.src -e ip.src -e ip.dst -e tcp.srcport -e tcp.dstport -e s7comm.param.func -e modbus.func_code -e tcp.payload -e s7comm.header.rosctr -T ek  -c 1000 -r /Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap4j/question_1531953261_01.pcap4j";
 
@@ -42,9 +40,7 @@ public class Common {
      * 协议 --> 功能码 以及 对应的含义 --> 从serviceLoader中加载
      */
 
-    public static final HashMap<String , List<FuncodeStatement>> CONFIGURATION_MAP = new HashMap<>();
-
-    public static final CopyOnWriteArraySet<String> packetCollectorId = new CopyOnWriteArraySet<>();
+    public static final HashMap<String , HashMap<Integer,String>> CONFIGURATION_MAP = new HashMap<>();
 
     /* 所有要分析的协议
      *  过滤器种类 -> [功能码配置组]
@@ -93,7 +89,6 @@ public class Common {
      */
     public static ConcurrentHashMap<Integer,ConcurrentHashMap<String, OperationAnalyzer>> OPERATION_FILTER =
             new ConcurrentHashMap<>();
-
     /**
      * 设备ID
      */
@@ -123,6 +118,8 @@ public class Common {
         public static final int NOT_FOUND = 403;
         public static final int JSON_ERROR = 1;
         public static final int DEVICE_ERROR = 201;
+        public static final int PROTOCOL_ID_ERROR = 202;
+        public static final int COMMAND_NOT_VALID = 203;
     }
 
     //已经登录过的用户
@@ -140,4 +137,6 @@ public class Common {
      * @see com.zjucsc.application.task.InitConfigurationService
      */
     public static final HashMap<Integer,String> PROTOCOL_STR_TO_INT = new HashMap<>();
+
+
 }

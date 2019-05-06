@@ -217,7 +217,7 @@ public class PacketMain {
          * bad packet pipe line
          */
         DefaultPipeLine badPacketAnalysisPipeLine = new DefaultPipeLine("bad packet pipeLine");
-        badPacketAnalysisPipeLine.addLast(new BadPacketAnalyzeHandler(Executors.newSingleThreadExecutor(
+        badPacketAnalysisPipeLine.addLast(new BadPacketAnalyzeHandler(Executors.newFixedThreadPool(5,
                 new ThreadFactory() {
                     @Override
                     public Thread newThread(Runnable r) {

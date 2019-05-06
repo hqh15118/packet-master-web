@@ -15,6 +15,7 @@ import com.zjucsc.application.socketio.MainServer;
 import com.zjucsc.application.domain.bean.CaptureService;
 import com.zjucsc.application.domain.exceptions.OpenCaptureServiceException;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +24,10 @@ import java.net.SocketException;
 import java.util.List;
 
 import static com.zjucsc.application.config.Common.CAPTURE_COMMAND_MAC;
+import static com.zjucsc.application.config.Common.CAPTURE_COMMAND_WIN;
 import static com.zjucsc.application.config.Common.HTTP_STATUS_CODE.SYS_ERROR;
 
+@Slf4j
 @RestController
 @RequestMapping("/service")
 public class PacketController {
@@ -59,7 +62,7 @@ public class PacketController {
             }
         }
 
-        tsharkMainService.start(CAPTURE_COMMAND_MAC, service.getService_name(),new AbstractPacketService.ProcessCallback() {
+        tsharkMainService.start(CAPTURE_COMMAND_WIN, service.getService_name(),new AbstractPacketService.ProcessCallback() {
             @Override
             public void error(Exception e) {
 
@@ -75,6 +78,23 @@ public class PacketController {
                 synchronized (lock1){
                     Common.hasStartedHost.remove((String)objects[1]);
                 }
+            }
+        });
+
+        pcapMainService.start(service.getService_name(), new AbstractPacketService.ProcessCallback() {
+            @Override
+            public void error(Exception e) {
+
+            }
+
+            @Override
+            public void start() {
+                log.info("pcap start in device : {} ip : {} " , service.getService_name() , service.getService_ip());
+            }
+
+            @Override
+            public void end(Object... objs) {
+
             }
         });
     }

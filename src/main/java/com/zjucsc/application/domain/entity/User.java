@@ -22,6 +22,8 @@ public class User {
     private String role;
     @TableField(value = "last_login_time")
     private String date;
+    @TableField("token")
+    private String token;
 
     public static final class ROLE {
         public static final String ADMINISTRACOR = "ADMINISTRACTOR";

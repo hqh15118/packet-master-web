@@ -15,6 +15,8 @@ public class Device implements Serializable {
 
     @TableField("device_type")
     private Integer deviceType;
+    @TableField("device_ip")
+    private String deviceIp;
     @TableField("device_info")
     private String deviceInfo;
 }

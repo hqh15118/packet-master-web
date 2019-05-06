@@ -46,13 +46,13 @@ public class OperationFilterEntity {
         private int deviceId;
         private HashMap<Integer,List<OperationFilter>> protocolToFilterList;
         //private String protocol;
-        //private List<OperationFilter> operationFilters;
+        //private List<OptFilter> operationFilters;
     }
 
     /******************************************************
-     * ConfigurationForFront
+     * OperationFilterForFront
      * {
-     *     userName : xxx   用户名         验证
+     *     userName : xxx   用户名
      *     {
      *      protocol ： xxx  协议           该过滤器对应的协议如S7、modbus等
      *      [

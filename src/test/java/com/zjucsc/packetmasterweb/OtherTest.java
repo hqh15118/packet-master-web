@@ -13,7 +13,11 @@ import org.junit.Test;
 import org.pcap4j.core.*;
 import org.xmlunit.util.Convert;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.Executors;
 
 /**
@@ -131,9 +135,10 @@ public class OtherTest {
     @Test
     public void pcap_decode_test() throws PcapNativeException, NotOpenException, InterruptedException {
         String path = OtherTest.class.getResource("/").getPath() +  "test_pcap.pcap";
-        PcapHandle handle = Pcaps.openOffline("C:\\Users\\Administrator\\IdeaProjects\\packet-master-web\\src\\test\\resource\\test_pcap.pcap");
-        handle.setFilter("not tcp" , BpfProgram.BpfCompileMode.OPTIMIZE);
-        handle.loop(5,new PacketListenHandler());
+        //PcapHandle handle = Pcaps.openOffline("C:\\Users\\Administrator\\IdeaProjects\\packet-master-web\\src\\test\\resource\\test_pcap.pcap");
+        PcapHandle handle = Pcaps.openOffline("C:\\Users\\Administrator\\Desktop\\packets.pcap");
+        handle.setFilter("tcp" , BpfProgram.BpfCompileMode.OPTIMIZE);
+        handle.loop(50,new PacketListenHandler());
         Thread.sleep(100000000);
     }
 

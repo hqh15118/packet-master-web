@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 /**
@@ -19,11 +20,12 @@ import java.util.List;
 @TableName("five_dimension_filter")
 public class FVDimensionFilterEntity {
     @TableId("device_id")
+    @NotBlank
     private int deviceId;
-    @TableField("content")
-    private String content;
     @TableField("user_name")
     private String user_name;
+    @TableField("content")
+    private String content;
 
     @Data
     public static class FiveDimensionFilterForFront{

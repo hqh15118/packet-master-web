@@ -32,6 +32,10 @@ public class PcapMainService {
     private PipeLine pipeLine;
 
     public void start(String deviceName , AbstractPacketService.ProcessCallback processCallback){
+        start(deviceName , "not tcp" , processCallback);
+    }
+
+    public void start(String deviceName , String filter , AbstractPacketService.ProcessCallback processCallback){
         assert processCallback!=null;
         this.processCallback = processCallback;
         this.deviceName = deviceName;
@@ -42,7 +46,7 @@ public class PcapMainService {
                         processCallback.start();
                         PcapHandle handle = PcapUtils.openDevice(deviceName,65536,3000);
                         try {
-                            handle.setFilter("not tcp" , BpfProgram.BpfCompileMode.OPTIMIZE);
+                            handle.setFilter( filter, BpfProgram.BpfCompileMode.OPTIMIZE);
                         } catch (PcapNativeException | NotOpenException e) {
                             log.error("exception when set pcap handle filter " , e);
                             processCallback.error(e);

@@ -1,5 +1,6 @@
 package com.zjucsc.application.domain.analyzer;
 
+import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.DangerLevel;
 import com.zjucsc.application.domain.bean.BadPacket;
 import com.zjucsc.application.domain.filter.OperationPacketFilter;
@@ -23,22 +24,9 @@ public class OperationAnalyzer extends AbstractAnalyzer<OperationPacketFilter<In
                     .set_five_Dimension(wrapper.fiveDimensionPacket)
                     .setDangerLevel(DangerLevel.VERY_DANGER)
                     .setFun_code(fun_code)
-                    //.setOperation(Common.CONFIGURATION_MAP.get(wrapper.fiveDimensionPacket.protocol)
-                    //.set(fun_code))
-                    .setOperation("not support")
+                    .setOperation(getOperation(wrapper.fiveDimensionPacket.protocol,fun_code))
                     .build();
         }
-//        if (!getAnalyzer().getWhiteMap().containsKey(fun_code)){
-//            return new BadPacket.Builder(wrapper.fiveDimensionPacket.protocol)
-//                    .setComment("白名单未指定操作")
-//                    .set_five_Dimension(wrapper.fiveDimensionPacket)
-//                    .setDangerLevel(DangerLevel.DANGER)
-//                    .setFun_code(fun_code)
-//                    //.setOperation(Common.CONFIGURATION_MAP.get(wrapper.fiveDimensionPacket.protocol)
-//                    //.set(fun_code))
-//                    .setOperation("not support")
-//                    .build();
-//        }
         return null;
     }
 
@@ -46,6 +34,9 @@ public class OperationAnalyzer extends AbstractAnalyzer<OperationPacketFilter<In
         super(integerStringPacketFilter);
     }
 
-
+    private String getOperation(String protocol , int fun_code){
+        String str = Common.CONFIGURATION_MAP.get(protocol).get(fun_code);
+        return str==null?"unknown operation" : str;
+    }
 
 }

@@ -14,10 +14,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.ServiceLoader;
+import java.util.*;
 
 /**
  * 加载组态配置到内存中 + 保存到本地数据库
@@ -36,12 +33,12 @@ public class InitConfigurationService implements ApplicationRunner {
          */
         ServiceLoader<IProtocolFuncodeMap> serviceLoader = ServiceLoader.load(IProtocolFuncodeMap.class);
         for (IProtocolFuncodeMap iProtocolFuncodeMap : serviceLoader) {
-            List<FuncodeStatement> funcodeStatements = new ArrayList<>();
+            HashMap<Integer,String> funcodeStatements = new HashMap<>();
             String protocolName = iProtocolFuncodeMap.protocolAnalyzerName();
             Map<Integer,String> map = iProtocolFuncodeMap.initProtocol();
             log.info("load configuration : {} \n {} " , protocolName , map);
             for (int fun_code : map.keySet()){
-                funcodeStatements.add(new FuncodeStatement(fun_code,map.get(fun_code)));
+                funcodeStatements.put(fun_code,map.get(fun_code));
             }
             Common.CONFIGURATION_MAP.put(protocolName,funcodeStatements);
         }

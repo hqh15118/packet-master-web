@@ -33,7 +33,6 @@ public class PacketListenHandler implements PacketListener {
      */
     private ThreadPoolExecutor executorService = (ThreadPoolExecutor)Executors.newFixedThreadPool(10);
     private static long id = 0;
-    private static AtomicLong tcpId = new AtomicLong(0);
 
     {
         //单个reactor线程从Queue中抓取报文
@@ -70,13 +69,13 @@ public class PacketListenHandler implements PacketListener {
             public void run() {
                 for (;;){
                     try {
-                        Thread.sleep(100000);
+                        Thread.sleep(15000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                     logger.info("packet queue size : {} , worker queue packet size : {}" +
-                            ";;has received {} packets  ; has receive {} tcp packet"  , packetLinkedBlockingQueue.size() , executorService.getQueue().size(),
-                            id , tcpId.longValue());
+                            ";;has received {} no-tcp packets"  , packetLinkedBlockingQueue.size() , executorService.getQueue().size(),
+                            id );
                 }
             }
         });
@@ -136,8 +135,8 @@ public class PacketListenHandler implements PacketListener {
             }
             else if (end instanceof ArpPacket){
                 protocol = ARP;
-                //dst_mac = ((ArpPacket) end).getHeader().getDstHardwareAddr().toString();
-                //src_mac = ((ArpPacket) end).getHeader().getSrcHardwareAddr().toString();
+                dst_mac = ((ArpPacket) end).getHeader().getDstHardwareAddr().toString();
+                src_mac = ((ArpPacket) end).getHeader().getSrcHardwareAddr().toString();
             }else if(end instanceof IpV4Packet) {
                 protocol = IPV4;
                 sb.delete(0,sb.length());
@@ -167,15 +166,16 @@ public class PacketListenHandler implements PacketListener {
                     .protocol(protocol)
                     .srcEthAndIp(sb.delete(0,sb.length()).append(src_mac).append(":").append(src_ip).toString())
                     .dstEthAndIp(sb.delete(0,sb.length()).append(dst_mac).append(":").append(dst_ip).toString())
-                    .tcpPayload(end.getRawData())
-                    .timeStamp(PacketDecodeUtil.decodeTimeStamp(end.getRawData(), 20))
-                    .packetLength(String.valueOf(end.getRawData().length))
+                    .tcpPayload(packet.getRawData())
+                    .timeStamp(PacketDecodeUtil.decodeTimeStamp(packet.getRawData(), 20))
+                    .packetLength(String.valueOf(packet.getRawData().length))
                     .src_Ip(src_ip)
                     .dst_Ip(dst_ip)
                     .src_port(src_port)
                     .dis_port(dst_port)
                     .fun_code("")
                     .build();
+            //System.out.println(PacketDecodeUtil.decodeTimeStamp(packet.getRawData(), 20));
             PacketMain.pcapPipeLine.pushDataAtHead(new PacketInfo.PacketWrapper().onFiveDimensionPacketWrapper(fiveDimensionPacketWrapper));
         }
     }

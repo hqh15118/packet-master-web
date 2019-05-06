@@ -4,6 +4,7 @@ import com.zjucsc.application.config.DangerLevel;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.bean.BadPacket;
 import com.zjucsc.application.domain.entity.FVDimensionFilterEntity;
+import com.zjucsc.application.domain.entity.FvDimensionFilter;
 import com.zjucsc.application.tshark.domain.packet.FiveDimensionPacketWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +35,10 @@ public class FiveDimensionPacketFilter {
     public static final String DST_PORT_BLACK = "dst_port_black";
     public static final String SRC_PORT_BLACK = "src_port_black";
     public static final String PROTOCOL_BLACK = "protocol_black";
+    public static final String SRC_MAC_ADDRESS_WHITE = "src_mac_address_white";
+    public static final String SRC_MAC_ADDRESS_BLACK = "src_mac_address_black";
+    public static final String DST_MAC_ADDRESS_WHITE = "dst_mac_address_white";
+    public static final String DST_MAC_ADDRESS_BLACK = "dst_mac_address_black";
 
     private HashMap<String,String> srcIpWhiteMap = new HashMap<>(0);
     private HashMap<String,String> srcIpBlackMap = new HashMap<>(0);
@@ -45,9 +50,13 @@ public class FiveDimensionPacketFilter {
     private HashMap<String,String> dstIpBlackMap = new HashMap<>(0);
     private HashMap<String,String> dstPortWhiteMap = new HashMap<>(0);
     private HashMap<String,String> dstPortBlackMap = new HashMap<>(0);
+    private HashMap<String,String> srcMacAddressWhite = new HashMap<>(0);
+    private HashMap<String,String> srcMacAddressBlack = new HashMap<>(0);
+    private HashMap<String,String> dstMacAddressWhite = new HashMap<>(0);
+    private HashMap<String,String> dstMacAddressBlack = new HashMap<>(0);
 
     private String userName;
-    private List<FVDimensionFilterEntity.FiveDimensionFilter> filterList;
+    private List<FvDimensionFilter> filterList;
     private String filterName;
     public FiveDimensionPacketFilter(String filterName){
         this.filterName = filterName;
@@ -61,16 +70,16 @@ public class FiveDimensionPacketFilter {
         this.userName = userName;
     }
 
-    public List<FVDimensionFilterEntity.FiveDimensionFilter> getFilterList(){
+    public List<FvDimensionFilter> getFilterList(){
         return this.filterList;
     }
 
-    public void setFilterList(List<FVDimensionFilterEntity.FiveDimensionFilter> filterList){
+    public void setFilterList(List<FvDimensionFilter> filterList){
         this.filterList = filterList;
         HashMap<String,HashMap<String, String>> allMap = new HashMap<>();
-        for (FVDimensionFilterEntity.FiveDimensionFilter fiveDimensionFilter : filterList) {
+        for (FvDimensionFilter fiveDimensionFilter : filterList) {
             String str = null;
-            if (fiveDimensionFilter.getFilterType() == 0){
+            if (fiveDimensionFilter.getFilter_type() == 0){
                 if (StringUtils.isNotBlank((str = fiveDimensionFilter.getDst_ip()))){
                     doSet(allMap,DST_IP_WHITE,str);
                 }
@@ -83,9 +92,15 @@ public class FiveDimensionPacketFilter {
                 if (StringUtils.isNotBlank((str = fiveDimensionFilter.getSrc_port()))){
                     doSet(allMap,SRC_PORT_WHITE,str);
                 }
-                if (fiveDimensionFilter.getProtocolId()!=0){
-                    String var = Common.PROTOCOL_STR_TO_INT.get(fiveDimensionFilter.getProtocolId());
-                    System.out.println(" ");//这个啥也没做，就是防止IDE自动重构
+                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getDst_mac()))){
+                    doSet(allMap,DST_MAC_ADDRESS_WHITE,str);
+                }
+                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getSrc_mac()))){
+                    doSet(allMap,SRC_MAC_ADDRESS_WHITE,str);
+                }
+                if (fiveDimensionFilter.getProtocol_id() != 0){
+                    String var = Common.PROTOCOL_STR_TO_INT.get(fiveDimensionFilter.getProtocol_id());
+                    System.out.print(" ");
                     /*
                      * 如果添加的协议ID，map中无法找到对应的协议，那么就加other
                      */
@@ -108,8 +123,14 @@ public class FiveDimensionPacketFilter {
                 if (StringUtils.isNotBlank((str = fiveDimensionFilter.getSrc_port()))){
                     doSet(allMap,SRC_PORT_BLACK,str);
                 }
-                if (fiveDimensionFilter.getProtocolId()!=0){
-                    String var = Common.PROTOCOL_STR_TO_INT.get(fiveDimensionFilter.getProtocolId());
+                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getDst_mac()))){
+                    doSet(allMap,DST_MAC_ADDRESS_BLACK,str);
+                }
+                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getSrc_mac()))){
+                    doSet(allMap,SRC_MAC_ADDRESS_BLACK,str);
+                }
+                if (fiveDimensionFilter.getProtocol_id() != 0){
+                    String var = Common.PROTOCOL_STR_TO_INT.get(fiveDimensionFilter.getProtocol_id());
                     /*
                      * 如果添加的协议ID，map中无法找到对应的协议，那么就加other
                      */
@@ -125,35 +146,44 @@ public class FiveDimensionPacketFilter {
         Set<String> stringSet = allMap.keySet();
         for (String s : stringSet) {
             switch (s) {
-                case "dst_ip_white":
-                    dstIpWhiteMap = allMap.get("dst_ip_white");
+                case DST_IP_WHITE:
+                    dstIpWhiteMap = allMap.get(DST_IP_WHITE);
                     break;
-                case "src_ip_white":
-                    srcIpWhiteMap = allMap.get("src_ip_white");
+                case SRC_IP_WHITE:
+                    srcIpWhiteMap = allMap.get(SRC_IP_WHITE);
                     break;
-                case "dst_port_white":
-                    dstPortWhiteMap = allMap.get("dst_port_white");
+                case DST_PORT_WHITE:
+                    dstPortWhiteMap = allMap.get(DST_PORT_WHITE);
                     break;
-                case "src_port_white":
-                    srcPortWhiteMap = allMap.get("src_port_white");
+                case SRC_PORT_WHITE:
+                    srcPortWhiteMap = allMap.get(SRC_PORT_WHITE);
                     break;
-                case "protocol_white":
-                    protocolWhiteMap = allMap.get("protocol_white");
+                case PROTOCOL_WHITE:
+                    protocolWhiteMap = allMap.get(PROTOCOL_WHITE);
                     break;
-                case "dst_ip_black":
-                    dstIpBlackMap = allMap.get("dst_ip_black");
+                case SRC_MAC_ADDRESS_WHITE:
+                    srcMacAddressWhite = allMap.get(SRC_MAC_ADDRESS_WHITE);
                     break;
-                case "src_ip_black":
-                    srcIpBlackMap = allMap.get("src_ip_black");
+                case DST_IP_BLACK:
+                    dstIpBlackMap = allMap.get(DST_IP_BLACK);
                     break;
-                case "dst_port_black":
-                    dstPortBlackMap = allMap.get("dst_port_black");
+                case SRC_IP_BLACK:
+                    srcIpBlackMap = allMap.get(SRC_IP_BLACK);
                     break;
-                case "src_port_black":
-                    srcPortBlackMap = allMap.get("src_port_black");
+                case DST_PORT_BLACK:
+                    dstPortBlackMap = allMap.get(DST_PORT_BLACK);
                     break;
-                case "protocol_black":
-                    protocolBlackMap = allMap.get("protocol_black");
+                case SRC_PORT_BLACK:
+                    srcPortBlackMap = allMap.get(SRC_PORT_BLACK);
+                    break;
+                case PROTOCOL_BLACK:
+                    protocolBlackMap = allMap.get(PROTOCOL_BLACK);
+                    break;
+                case SRC_MAC_ADDRESS_BLACK:
+                    srcMacAddressBlack = allMap.get(SRC_MAC_ADDRESS_BLACK);
+                    break;
+                case DST_MAC_ADDRESS_BLACK:
+                    dstMacAddressBlack = allMap.get(DST_MAC_ADDRESS_BLACK);
                     break;
                 default:
                     log.error("code error in five dimension filter , not define {}", s);
@@ -205,6 +235,22 @@ public class FiveDimensionPacketFilter {
 
     public HashMap<String, String> getDstPortBlackMap() {
         return dstPortBlackMap;
+    }
+
+    public HashMap<String, String> getSrcMacAddressWhite() {
+        return srcMacAddressWhite;
+    }
+
+    public HashMap<String, String> getSrcMacAddressBlack() {
+        return srcMacAddressBlack;
+    }
+
+    public HashMap<String, String> getDstMacAddressWhite() {
+        return dstMacAddressWhite;
+    }
+
+    public HashMap<String, String> getDstMacAddressBlack() {
+        return dstMacAddressBlack;
     }
 
     public BadPacket OK(FiveDimensionPacketWrapper wrapper){

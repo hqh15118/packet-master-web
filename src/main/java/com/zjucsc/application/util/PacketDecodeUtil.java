@@ -50,6 +50,7 @@ public class PacketDecodeUtil {
      * @param offset offset from payload end
      * @return
      */
+    //  0000 0000/0000 0000/0000 1001/0011 1101/0010 0011/0111 0110/1010 0000/0000 0000
     public static String decodeTimeStamp(byte[] payload , int offset){
         if (offset == 20) {
             return "not support now";
@@ -69,7 +70,7 @@ public class PacketDecodeUtil {
         var2 = ((payload[offset + 3] & 0b10000000)) >>> 7;
         int minute =  var1 + var2;
         int second = ((payload[offset + 3] & 0b01111110)) >>> 1 ;
-        var1 = ((payload[offset + 3] & 0b00000001)) << 10;
+        var1 = ((payload[offset + 3] & 0b00000001)) << 9;
         var2 = (payload[offset + 4]) << 1;
         int var3 = ((payload[offset + 5] & 0b10000000)) >>> 7;
         int millsecond =  var1 + var2 + var3;
