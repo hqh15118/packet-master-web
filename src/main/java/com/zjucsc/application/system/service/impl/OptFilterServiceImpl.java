@@ -44,6 +44,8 @@ public class OptFilterServiceImpl extends ServiceImpl<OptFilterMapper, OptFilter
             if (optFilters.size() == 0){
                 continue;
             }
+            //更新数据库
+            saveOrUpdateBatch(optFilters);
             if (first) {
                  deviceId = optFilters.get(0).getDeviceId();
                  userName = optFilters.get(0).getUser_name();
@@ -66,12 +68,15 @@ public class OptFilterServiceImpl extends ServiceImpl<OptFilterMapper, OptFilter
             analyzerMap.put(Common.PROTOCOL_STR_TO_INT.get(protocolId) , new OperationAnalyzer(operationPacketFilter));
         }
         Common.OPERATION_FILTER.put(deviceId,analyzerMap);
-
-
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override
-    public CompletableFuture<List<OptFilter>> getTargetExistIdFilter(int deviceId, boolean cached) throws DeviceNotValidException {
+    public CompletableFuture<List<OptFilter>> getTargetExistIdFilter(int deviceId, int type , boolean cached) throws DeviceNotValidException {
+        if (cached){
+            ConcurrentHashMap<String, OperationAnalyzer> map = Common.OPERATION_FILTER.get(deviceId);
+
+        }
         return null;
     }
 }

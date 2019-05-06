@@ -15,5 +15,5 @@ import java.util.concurrent.CompletableFuture;
  */
 public interface IOptFilterService extends IService<OptFilter> {
     CompletableFuture<Exception> addOperationFilter(HashMap<Integer,List<OptFilter>> optFiltersMap) throws ProtocolIdNotValidException;
-    CompletableFuture<List<OptFilter>> getTargetExistIdFilter(int deviceId , boolean cached) throws DeviceNotValidException;
+    CompletableFuture<List<OptFilter>> getTargetExistIdFilter(int deviceId , int type , boolean cached) throws DeviceNotValidException;
 }
