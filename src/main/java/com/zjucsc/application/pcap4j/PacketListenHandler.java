@@ -109,6 +109,8 @@ public class PacketListenHandler implements PacketListener {
                 }
             };
 
+    private boolean layered = false;
+
     private void decodePacket(Packet packet){
         Iterator<Packet> packetIterator = packet.iterator();
         Packet end = null;
@@ -124,54 +126,66 @@ public class PacketListenHandler implements PacketListener {
         String dst_port = "";
         StringBuilder sb = stringBuilderThreadLocal0.get();
         while(packetIterator.hasNext()){
+            layered = false;
             end = packetIterator.next();
             if (end == null) {
-                continue;
+                break;
             }
-            boolean t = false;
             if (end instanceof EthernetPacket){
                 protocol = ETHERNET;
-                dst_mac = ((EthernetPacket) end).getHeader().getDstAddr().toString();
-                src_mac = ((EthernetPacket) end).getHeader().getSrcAddr().toString();
-                t = true;
+                dst_mac = toStandMacAddress(((EthernetPacket) end).getHeader().getDstAddr().getAddress() , sb);
+                src_mac = toStandMacAddress(((EthernetPacket) end).getHeader().getSrcAddr().getAddress() , sb);
+                layered = true;
+                continue;
             }
-            else if (end instanceof ArpPacket){
+            if (end instanceof ArpPacket){
                 protocol = ARP;
                 dst_mac = ((ArpPacket) end).getHeader().getDstHardwareAddr().toString();
                 src_mac = ((ArpPacket) end).getHeader().getSrcHardwareAddr().toString();
-                t = true;
-            }else if(end instanceof IpV4Packet) {
+                layered = true;
+                continue;
+            }
+
+            if(end instanceof IpV4Packet) {
                 protocol = IPV4;
                 sb.delete(0,sb.length());
                 src_ip = toStandardIPString(((IpV4Packet) end).getHeader().getSrcAddr().getAddress(),sb , 4);
                 sb.delete(0,sb.length());
                 dst_ip = toStandardIPString(((IpV4Packet) end).getHeader().getDstAddr().getAddress(),sb , 4);
-            }else if(end instanceof IpV6Packet){
+                layered = true;
+                continue;
+            }
+            if(end instanceof IpV6Packet){
                 protocol = IPV6;
                 sb.delete(0,sb.length());
                 src_ip = toStandardIPString(((IpV6Packet) end).getHeader().getSrcAddr().getAddress(),sb , 6);
                 sb.delete(0,sb.length());
                 dst_ip = toStandardIPString(((IpV6Packet) end).getHeader().getDstAddr().getAddress(),sb , 6);
-            }else if (end instanceof UdpPacket){
+                layered = true;
+                continue;
+            }
+            if (end instanceof UdpPacket){
                 protocol = UDP;
                 sb.delete(0,sb.length());
                 dst_port = ((UdpPacket) end).getHeader().getDstPort().valueAsString();
                 sb.delete(0,sb.length());
                 src_port = ((UdpPacket) end).getHeader().getSrcPort().valueAsString();
-            }else if (end instanceof DnsPacket){
+                layered = true;
+                continue;
+            }
+            if (end instanceof DnsPacket){
                 protocol = DNS;
             }else{
-                //protocol = OTHER;
-            }
-            if (!t){
-                System.out.println(packet);
+                if (!layered){
+                    protocol = OTHER;
+                }
             }
         }
         if (end != null){
             FiveDimensionPacketWrapper fiveDimensionPacketWrapper = new FiveDimensionPacketWrapper.Builder()
                     .protocol(protocol)
-                    .srcEthAndIp(sb.delete(0,sb.length()).append(src_mac).append(":").append(src_ip).toString())
-                    .dstEthAndIp(sb.delete(0,sb.length()).append(dst_mac).append(":").append(dst_ip).toString())
+                    .srcEthAndIp(sb.delete(0,sb.length()).append(src_mac).append(" - ").append(src_ip).toString())
+                    .dstEthAndIp(sb.delete(0,sb.length()).append(dst_mac).append(" - ").append(dst_ip).toString())
                     .tcpPayload(packet.getRawData())
                     .timeStamp(PacketDecodeUtil.decodeTimeStamp(packet.getRawData(), 20))
                     .packetLength(String.valueOf(packet.getRawData().length))
@@ -194,5 +208,14 @@ public class PacketListenHandler implements PacketListener {
         }
         sb.append(Byte.toUnsignedInt(ipAddress[i]));
         return sb.toString();
+    }
+
+    private String toStandMacAddress(byte[] macAddress , StringBuilder sb){
+        sb.delete(0 , sb.length());
+        int i = 0;
+        for (int len = macAddress.length - 1; i < len; i++) {
+            sb.append(String.format("%02X ", macAddress[i])).append(":");
+        }
+        return sb.append(macAddress[i]).toString();
     }
 }
