@@ -1,6 +1,6 @@
 package com.zjucsc.application.domain.bean;
 
-import com.zjucsc.application.config.BadPacketDangerLevel;
+import com.zjucsc.application.config.DangerLevel;
 import com.zjucsc.application.tshark.domain.packet.FiveDimensionPacket;
 import lombok.Data;
 import lombok.ToString;
@@ -24,7 +24,7 @@ public class BadPacket {
     private String artifactParam;
     private int badArtifactValue;
     private String comment;
-    private BadPacketDangerLevel dangerLevel;
+    private DangerLevel dangerLevel;
     @ToString.Exclude
     private StringBuilder sb;
 
@@ -82,7 +82,7 @@ public class BadPacket {
             return this;
         }
 
-        public Builder setDangerLevel(BadPacketDangerLevel dangerLevel) {
+        public Builder setDangerLevel(DangerLevel dangerLevel) {
             badPacket.dangerLevel = dangerLevel;
             return this;
         }

@@ -27,7 +27,7 @@ public class MainServer {
             }else{
                 hasStartedService = true;
                 //FIXME 只是简陋地这样写了一下
-                new Thread(new Runnable() {
+                Thread thread = new Thread(new Runnable() {
                     @Override
                     public void run() {
                         Configuration config = new Configuration();
@@ -36,12 +36,14 @@ public class MainServer {
                         final SocketIOServer server = new SocketIOServer(config);
                         server.addConnectListener(connectListener);
                         server.addDisconnectListener(disconnectListener);
+                        /*
                         server.addListeners(new DataListener<String>() {
                             @Override
                             public void onData(SocketIOClient socketIOClient, String s, AckRequest ackRequest) throws Exception {
                                 //System.out.println(s);
                             }
                         });
+                        */
                         server.start();
                         try {
                             Thread.sleep(Integer.MAX_VALUE);
@@ -49,7 +51,9 @@ public class MainServer {
                         }
                         server.stop();
                     }
-                }).start();
+                });
+                thread.setName("-websocket-server-");
+                thread.start();
             }
         }
         return true;

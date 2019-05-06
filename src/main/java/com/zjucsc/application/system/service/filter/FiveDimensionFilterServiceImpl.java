@@ -7,7 +7,7 @@ import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
 import com.zjucsc.application.domain.filter.FiveDimensionPacketFilter;
 import com.zjucsc.application.domain.exceptions.ConfigurationNotValidException;
 import com.zjucsc.application.system.dao.filter.FiveDimensionFilterMapper;
-import com.zjucsc.application.system.service.UserOptService;
+import com.zjucsc.application.system.service.iservice.UserOptService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -42,12 +42,12 @@ public class FiveDimensionFilterServiceImpl extends ServiceImpl<FiveDimensionFil
         /*-****************************************************
          * FiveDimensionFilterForFront
          * {
-         *     device_id:xxx    设备ID         P_K
+         *     device_id : xxx   设备ID         P_K
          *     userName : xxx   用户名         验证
          *     [
          *       {
          *          filterType : 0 / 1        过滤类别：0表示白名单，1表示黑名单
-         *          protocol : 协议           过滤的协议
+         *          protocolID : 协议ID        过滤的协议，需要转换为String
          *          port ： 端口
          *          src_ip ：
          *          dst_ip ：
@@ -59,7 +59,7 @@ public class FiveDimensionFilterServiceImpl extends ServiceImpl<FiveDimensionFil
         List<FVDimensionFilterEntity.FiveDimensionFilter> filters = fiveDimensionFilterForFront.getFiveDimensionFilters();
         //修改缓存
         ((FiveDimensionPacketFilter) (BAD_PACKET_FILTER_PRO_1.get(FV_DIMENSION).getAnalyzer()))
-                .setFilterList(filters);//setFilterList，将前端传入的PROTOCOL_ID转换为PROTOCOL字符串
+                .setFilterList(filters);//setFilterList，将前端传入的PROTOCOL_ID转换为PROTOCOL字符串，替换掉<五元组分析器>的过滤器
         //修改数据库
         FVDimensionFilterEntity FVDimensionFilterEntity = new FVDimensionFilterEntity();
         FVDimensionFilterEntity.setDeviceId(fiveDimensionFilterForFront.getDeviceId());

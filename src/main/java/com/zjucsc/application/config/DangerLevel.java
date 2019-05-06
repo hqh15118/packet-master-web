@@ -10,7 +10,7 @@ package com.zjucsc.application.config;
 /**
  * 报文的危险等级
  */
-public enum BadPacketDangerLevel {
+public enum DangerLevel {
     SAFE,
     DANGER,
     VERY_DANGER

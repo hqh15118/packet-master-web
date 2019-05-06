@@ -1,4 +1,4 @@
-package com.zjucsc.application.system.service.impl;
+package com.zjucsc.application.system.service;
 
 /**
  * #project packet-master-web

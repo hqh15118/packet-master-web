@@ -6,7 +6,7 @@ import com.zjucsc.application.domain.filter.OperationPacketFilter;
 import com.zjucsc.application.domain.entity.OperationFilterEntity;
 import com.zjucsc.application.domain.exceptions.ConfigurationNotValidException;
 import com.zjucsc.application.system.dao.filter.OperationFilterMapper;
-import com.zjucsc.application.system.service.UserOptService;
+import com.zjucsc.application.system.service.iservice.UserOptService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -65,7 +65,6 @@ public class OperationFilterServiceImpl extends ServiceImpl<OperationFilterMappe
 //                        .get(filter.getFun_code()));
             }
         }
-        //BAD_PACKET_FILTER.put(FilterType.OPERATION,packetFilter);
         if (!BAD_PACKET_FILTER_PRO_1.containsKey(configuration.getProtocol())){
             return CompletableFuture.completedFuture(new ConfigurationNotValidException("未定义该协议" + configuration.getProtocol()));
         }

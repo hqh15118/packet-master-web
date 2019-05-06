@@ -3,10 +3,9 @@ package com.zjucsc.application.system.controller;
 
 import com.zjucsc.application.domain.bean.FuncodeStatement;
 import com.zjucsc.application.domain.entity.FVDimensionFilterEntity;
-import com.zjucsc.application.domain.entity.Gplot;
 import com.zjucsc.application.domain.entity.OperationFilterEntity;
 import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
-import com.zjucsc.application.system.service.ConfigurationService;
+import com.zjucsc.application.system.service.iservice.ConfigurationService;
 import com.zjucsc.application.system.service.filter.FiveDimensionFilterService;
 import com.zjucsc.application.system.service.filter.OperationFilterService;
 import com.zjucsc.base.BaseResponse;
@@ -51,18 +50,18 @@ public class ConfigurationController {
         return CONFIGURATION_MAP;
     }
 
-    @ApiOperation(value = "配置五元组异常报文规则")
-    @PostMapping("/new_fv_packet_rule")
-    public BaseResponse configFvDimensionPacketRule(@RequestBody @Valid FVDimensionFilterEntity.FiveDimensionFilterForFront configuration){
-        CompletableFuture<Exception> result1 = fiveDimensionFilterService.configFiveDimensionRule(configuration);
-        return validResult(result1,configuration);
-    }
+//    @ApiOperation(value = "配置五元组异常报文规则")
+//    @PostMapping("/new_fv_packet_rule")
+//    public BaseResponse configFvDimensionPacketRule(@RequestBody @Valid FVDimensionFilterEntity.FiveDimensionFilterForFront configuration){
+//        CompletableFuture<Exception> result1 = fiveDimensionFilterService.configFiveDimensionRule(configuration);
+//        return validResult(result1,configuration);
+//    }
 
-    @ApiOperation(value = "查询五元组异常报文规则]")
-    @GetMapping("/get_fv_packet_rule")
-    public List<FVDimensionFilterEntity.FiveDimensionFilter> loadFvDimensionPacketRule(@RequestParam int deviceId) throws DeviceNotValidException {
-        return fiveDimensionFilterService.loadRule(deviceId);
-    }
+//    @ApiOperation(value = "查询五元组异常报文规则]")
+//    @GetMapping("/get_fv_packet_rule")
+//    public List<FVDimensionFilterEntity.FiveDimensionFilter> loadFvDimensionPacketRule(@RequestParam int deviceId) throws DeviceNotValidException {
+//        return fiveDimensionFilterService.loadRule(deviceId);
+//    }
 
     @ApiOperation(value = "查询功能码异常报文规则]")
     @GetMapping("/get_operation_packet_rule")

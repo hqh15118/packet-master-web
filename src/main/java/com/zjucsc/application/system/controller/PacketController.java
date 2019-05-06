@@ -5,8 +5,8 @@ import com.zjucsc.application.domain.bean.NetworkInterface;
 import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
 import com.zjucsc.application.socketio.SocketServiceCenter;
 import com.zjucsc.application.system.service.impl.PacketServiceImpl;
-import com.zjucsc.application.system.service.impl.PcapMainService;
-import com.zjucsc.application.system.service.impl.TsharkMainService;
+import com.zjucsc.application.system.service.PcapMainService;
+import com.zjucsc.application.system.service.TsharkMainService;
 import com.zjucsc.application.tshark.capture.AbstractPacketService;
 import com.zjucsc.application.util.PcapUtils;
 import com.zjucsc.base.BaseResponse;
@@ -14,7 +14,6 @@ import com.zjucsc.application.config.Common;
 import com.zjucsc.application.socketio.MainServer;
 import com.zjucsc.application.domain.bean.CaptureService;
 import com.zjucsc.application.domain.exceptions.OpenCaptureServiceException;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.SocketException;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import static com.zjucsc.application.config.Common.CAPTURE_COMMAND_MAC;
 import static com.zjucsc.application.config.Common.HTTP_STATUS_CODE.SYS_ERROR;

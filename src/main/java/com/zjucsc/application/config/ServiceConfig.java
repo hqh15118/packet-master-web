@@ -1,9 +1,7 @@
 package com.zjucsc.application.config;
 
-import com.zjucsc.application.system.service.impl.PacketAnalyzeService;
-import com.zjucsc.application.system.service.impl.TsharkMainService;
-import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizer;
-import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
+import com.zjucsc.application.system.service.PacketAnalyzeService;
+import com.zjucsc.application.system.service.TsharkMainService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -44,8 +42,8 @@ public class ServiceConfig {
             }
         });
         taskExecutor.setCorePoolSize(1);
-        taskExecutor.setMaxPoolSize(1);
-        taskExecutor.setThreadGroupName("global-single-thread-");
+        taskExecutor.setMaxPoolSize(5);
+        taskExecutor.setThreadGroupName("-global-single-thread-");
         taskExecutor.initialize();
         return taskExecutor;
     }

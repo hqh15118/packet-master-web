@@ -4,19 +4,14 @@ import com.zjucsc.application.domain.bean.CollectorState;
 import com.zjucsc.application.domain.bean.FuncodeStatement;
 import com.zjucsc.application.domain.filter.FiveDimensionPacketFilter;
 import com.zjucsc.application.domain.filter.OperationPacketFilter;
-import com.zjucsc.application.domain.filter.OtherPacketFilter;
-import com.zjucsc.application.domain.filter.TcpPacketFilter;
 import com.zjucsc.application.handler.ThreadExceptionHandler;
-import com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer;
-import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
-import com.zjucsc.application.tshark.analyzer.OtherPacketAnalyzer;
-import com.zjucsc.application.tshark.analyzer.TcpAnalyzer;
+import com.zjucsc.application.domain.analyzer.FiveDimensionAnalyzer;
+import com.zjucsc.application.domain.analyzer.OperationAnalyzer;
 import com.zjucsc.application.util.AbstractAnalyzer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -63,7 +58,7 @@ public class Common {
         }
     */
 
-    /** 所有要分析的协议
+    /*  所有要分析的协议
      *  过滤器种类 -> [分析器]
      */
     /*
@@ -89,6 +84,21 @@ public class Common {
             put(PACKET_PROTOCOL.MODBUS , new OperationAnalyzer(new OperationPacketFilter<>(PACKET_PROTOCOL.MODBUS)));
             put(PACKET_PROTOCOL.FV_DIMENSION , new FiveDimensionAnalyzer(new FiveDimensionPacketFilter(PACKET_PROTOCOL.FV_DIMENSION)));
         }
+    };
+
+    /**
+     * Integer 设备ID
+     * String -> 协议
+     * OperationAnalyzer -> 报文操作分析器
+     */
+    public static ConcurrentHashMap<Integer,ConcurrentHashMap<String, OperationAnalyzer>> OPERATION_FILTER =
+            new ConcurrentHashMap<>();
+
+    /**
+     * 设备ID
+     */
+    public static ConcurrentHashMap<Integer,FiveDimensionAnalyzer> FV_DIMENSION_FILTER = new ConcurrentHashMap<Integer,FiveDimensionAnalyzer>(){
+
     };
 
     /*

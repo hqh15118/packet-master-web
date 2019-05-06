@@ -5,7 +5,7 @@ import com.zjucsc.application.domain.entity.FVDimensionFilterEntity;
 import com.zjucsc.application.domain.entity.OperationFilterEntity;
 import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
 import com.zjucsc.application.system.dao.ConfigurationMapper;
-import com.zjucsc.application.system.service.ConfigurationService;
+import com.zjucsc.application.system.service.iservice.ConfigurationService;
 import com.zjucsc.application.system.service.filter.FiveDimensionFilterService;
 import com.zjucsc.application.system.service.filter.OperationFilterService;
 import lombok.extern.slf4j.Slf4j;

@@ -3,8 +3,7 @@ package com.zjucsc.application.system.controller;
 
 
 import com.zjucsc.application.domain.entity.AttackInfo;
-import com.zjucsc.application.system.service.IAttackInfoService;
-import com.zjucsc.application.system.service.impl.AttackInfoServiceImpl;
+import com.zjucsc.application.system.service.iservice.IAttackInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 
