@@ -2,4 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="/src/main/java/com/zjucsc/application/system.gen.mapper.OptFilterMapper">
 
+    <delete id="deleteFilterByDeviceId" parameterType="int">
+        delete * from opt_filter where device_id = #{deviceId}
+    </delete>
 </mapper>

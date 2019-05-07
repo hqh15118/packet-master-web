@@ -64,5 +64,6 @@ public class InitConfigurationService implements ApplicationRunner {
         }
         System.out.println("bad packet filter pro map : \n" + Common.BAD_PACKET_FILTER_PRO_1);
         System.out.println("load Common.PROTOCOL_STR_TO_INT : \n" + Common.PROTOCOL_STR_TO_INT);
+        System.out.println("load Common.CONFIGURATION_MAP : \n" + Common.CONFIGURATION_MAP);
     }
 }

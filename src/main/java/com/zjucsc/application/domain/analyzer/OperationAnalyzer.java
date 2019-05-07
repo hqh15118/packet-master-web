@@ -13,6 +13,8 @@ import com.zjucsc.application.util.AbstractAnalyzer;
  * @author hongqianhui
  * #create_time 2019-05-02 - 21:49
  */
+
+//OperationPacketFilter<Integer,String> <fun_code , fun_code_meaning>
 public class OperationAnalyzer extends AbstractAnalyzer<OperationPacketFilter<Integer,String>> {
     @Override
     public Object analyze(Object... objs) {

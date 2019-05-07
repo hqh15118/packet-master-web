@@ -6,9 +6,10 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 @Data
-@TableName("fv_dimension_filter")
+@TableName("operation_filter")
 public class OptFilter {
     @TableId("id")
     private int id;
@@ -23,5 +24,12 @@ public class OptFilter {
     private int fun_code;
     @TableField("protocol_id")
     private int protocol_id;
+
+    @Data
+    public static class OptFilterForFront{
+        private int protocolId;
+        private String userName;
+        private List<OptFilter> optFilterList;
+    }
 
 }
