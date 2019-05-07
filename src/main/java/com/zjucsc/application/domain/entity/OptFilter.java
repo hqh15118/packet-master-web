@@ -1,5 +1,6 @@
 package com.zjucsc.application.domain.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -9,15 +10,16 @@ import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Data
-@TableName("operation_filter")
+@TableName("opt_filter")
 public class OptFilter {
-    @TableId("id")
+    @TableId(value = "id" , type = IdType.AUTO)
     private int id;
     @TableField("user_name")
     private String user_name;
     @TableField("device_id")
     @NotBlank
     private int deviceId;
+    @NotBlank
     @TableField("filter_type")
     private int filterType;
     @TableField("fun_code")
@@ -27,6 +29,7 @@ public class OptFilter {
 
     @Data
     public static class OptFilterForFront{
+        @NotBlank
         private int protocolId;
         private String userName;
         private List<OptFilter> optFilterList;

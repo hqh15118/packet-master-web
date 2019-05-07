@@ -9,6 +9,9 @@ import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.index.qual.SameLen;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import static com.zjucsc.application.config.PACKET_PROTOCOL.*;
 
 /**
@@ -50,10 +53,19 @@ public class PacketDecodeUtil {
      * @param offset offset from payload end
      * @return
      */
+
+
+    private static ThreadLocal<SimpleDateFormat> simpleDateFormatThreadLocal = new ThreadLocal<SimpleDateFormat>(){
+        @Override
+        protected SimpleDateFormat initialValue() {
+            return new SimpleDateFormat("yyyy-MM-dd-hh:mm:ss:SSS");
+        }
+    };
+
     //  0000 0000/0000 0000/0000 1001/0011 1101/0010 0011/0111 0110/1010 0000/0000 0000
     public static String decodeTimeStamp(byte[] payload , int offset){
         if (offset == 20) {
-            return "not support now";
+            return simpleDateFormatThreadLocal.get().format(new Date());
         }
         StringBuilder sb = stringBuilderThreadLocal.get();
         sb.delete(0,sb.length());

@@ -48,23 +48,21 @@ public class OptFilterServiceImpl extends ServiceImpl<OptFilterMapper, OptFilter
         for (OptFilter.OptFilterForFront optFilterForFront : optFilterForFronts) {
             String protocol = Common.PROTOCOL_STR_TO_INT.get(optFilterForFront.getProtocolId());
             if (protocol == null){
+                //协议的ID传的不对
                 throw new ProtocolIdNotValidException("can not find protocol id : " + optFilterForFront.getProtocolId());
             }
             List<OptFilter> optFilters = optFilterForFront.getOptFilterList(); //该协议下的所有过滤规则
             if (first) {
+                //将
                 deviceId = optFilters.get(0).getDeviceId();
                 first = false;
                 removeMap = new HashMap<>();
                 removeMap.put("device_id" , deviceId);
-            }
-            if (optFilters.size() == 0){
-                continue;
+                //先删除数据库中该设备已有的配置
+                removeByMap(removeMap);
             }
             //更新数据库
-            //先删除数据库中已有的配置
-            removeByMap(removeMap);
             saveBatch(optFilters);                           //将新的过滤规则保存到数据库
-
             OperationPacketFilter<Integer,String> operationPacketFilter = new OperationPacketFilter<>
                     (sb.append(deviceId).append(" : ").append(userName).append(protocol).toString());//该协议对应的分析器的报文过滤器
 
@@ -111,6 +109,11 @@ public class OptFilterServiceImpl extends ServiceImpl<OptFilterMapper, OptFilter
             List<OptFilter> list = list(queryWrapper);
             return CompletableFuture.completedFuture(list);
         }
+    }
+
+    @Override
+    public CompletableFuture<Exception> deleteTargetDeviceFilters(int deviceId) {
+        return null;
     }
 
 

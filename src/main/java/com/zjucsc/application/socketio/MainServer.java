@@ -7,6 +7,8 @@ import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
+import com.zjucsc.application.config.Common;
+import com.zjucsc.base.BaseResponse;
 
 import java.io.IOException;
 import java.util.EventObject;
@@ -15,7 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class MainServer {
 
     private static boolean hasStartedService = false;
-
+    private static SocketIOServer server = null;
     public static boolean openWebSocketService(String ip , int port, ConnectListener connectListener,
                                             DisconnectListener disconnectListener){
         if (hasStartedService){
@@ -33,7 +35,7 @@ public class MainServer {
                         Configuration config = new Configuration();
                         config.setHostname(ip);
                         config.setPort(port);
-                        final SocketIOServer server = new SocketIOServer(config);
+                        server = new SocketIOServer(config);
                         server.addConnectListener(connectListener);
                         server.addDisconnectListener(disconnectListener);
                         /*
@@ -50,6 +52,7 @@ public class MainServer {
                         } catch (InterruptedException ignored) {
                         }
                         server.stop();
+                        server = null;
                     }
                 });
                 thread.setName("-websocket-server-");
@@ -57,5 +60,17 @@ public class MainServer {
             }
         }
         return true;
+    }
+
+    public static BaseResponse close(){
+        if (!hasStartedService){
+            return BaseResponse.ERROR(Common.HTTP_STATUS_CODE.SYS_ERROR,"服务未打开");
+        }else{
+            if (server!=null){
+                return BaseResponse.OK();
+            }else{
+                return BaseResponse.ERROR(Common.HTTP_STATUS_CODE.SYS_ERROR,"程序错误");
+            }
+        }
     }
 }

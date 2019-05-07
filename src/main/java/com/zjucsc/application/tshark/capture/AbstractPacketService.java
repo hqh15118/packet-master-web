@@ -46,12 +46,13 @@ public abstract class AbstractPacketService {
                 callback.start();
             }
             try (InputStream is = process.getInputStream(); BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
-                for (; ; ) {
+                for (; ;) {
                     String str = "";
                     if ((str = reader.readLine()) != null && keep_running) {
                         if (str.length() > 85) {
                             pipeLine.pushDataAtHead(str);
                             i++;
+                            Thread.sleep(1000);
                         }
                     } else {
                         break;
@@ -61,15 +62,18 @@ public abstract class AbstractPacketService {
                     System.out.println("quit by finish reading stream");
                 }else {
                     System.out.println("quit by stop service");
+                    keep_running = true;
                 }
                 if (callback!=null) {
                     callback.end(i , inetAddress);
                 }
             } catch (RuntimeException | IOException e) {
                 throw new OpenCaptureServiceException("can not get pipe output of tshark");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             } finally {
                 process.destroy();
-                System.out.println("process exit value : {} " +  process.exitValue());
+                System.out.println("process exit value :  " +  process.exitValue());
             }
         });
         thread.setName("-packet-service-");

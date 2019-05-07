@@ -14,11 +14,13 @@ import com.zjucsc.application.config.Common;
 import com.zjucsc.application.socketio.MainServer;
 import com.zjucsc.application.domain.bean.CaptureService;
 import com.zjucsc.application.domain.exceptions.OpenCaptureServiceException;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
+import sun.applet.Main;
 
 import java.net.SocketException;
 import java.util.List;
@@ -42,8 +44,9 @@ public class PacketController {
 
     @ApiOperation(value="开始抓包")
     @RequestMapping(value = "/start_service" , method = RequestMethod.POST)
-    public void startCaptureService(@RequestBody CaptureService service) throws DeviceNotValidException {
+    public BaseResponse startCaptureService(@RequestBody CaptureService service) throws DeviceNotValidException {
         doStartService(service);
+        return BaseResponse.OK();
     }
 
     private final byte[] lock1 = new byte[]{};
@@ -81,36 +84,37 @@ public class PacketController {
             }
         });
 
-        pcapMainService.start(service.getService_name(), new AbstractPacketService.ProcessCallback() {
-            @Override
-            public void error(Exception e) {
-
-            }
-
-            @Override
-            public void start() {
-                log.info("pcap start in device : {} ip : {} " , service.getService_name() , service.getService_ip());
-            }
-
-            @Override
-            public void end(Object... objs) {
-
-            }
-        });
+//        pcapMainService.start(service.getService_name(), new AbstractPacketService.ProcessCallback() {
+//            @Override
+//            public void error(Exception e) {
+//
+//            }
+//
+//            @Override
+//            public void start() {
+//                log.info("pcap start in device : {} ip : {} " , service.getService_name() , service.getService_ip());
+//            }
+//
+//            @Override
+//            public void end(Object... objs) {
+//
+//            }
+//        });
     }
 
     @ApiOperation("开启websocket服务")
     @RequestMapping(value = "/connect_socketio" , method = RequestMethod.GET)
     public BaseResponse startRecvRealTimePacket(){
-        boolean b = MainServer.openWebSocketService("localhost", Common.SOCKET_IO_PORT, new com.corundumstudio.socketio.listener.ConnectListener() {
+        boolean b = MainServer.openWebSocketService("192.168.0.121", Common.SOCKET_IO_PORT, new com.corundumstudio.socketio.listener.ConnectListener() {
             @Override
             public void onConnect(SocketIOClient socketIOClient) {
-                System.out.println("connected...");
+                log.info(socketIOClient.getRemoteAddress().toString() + "connected...");
                 SocketServiceCenter.addConnectedClient(socketIOClient);
             }
         }, new com.corundumstudio.socketio.listener.DisconnectListener() {
             @Override
             public void onDisconnect(SocketIOClient socketIOClient) {
+                log.info(socketIOClient.getRemoteAddress().toString() + "disconnect...");
                 SocketServiceCenter.removeConnectedClient(socketIOClient);
             }
         });
@@ -121,25 +125,31 @@ public class PacketController {
         }
     }
 
+    @ApiOperation("关闭websocket服务")
+    @GetMapping(value = "/close_socketio")
+    public BaseResponse closeWebSocket(){
+        return MainServer.close();
+    }
+
     @ApiOperation("获取抓包主机所有网卡接口信息")
     @GetMapping("get_all_interface")
-    public List<NetworkInterface> getAllNetworkInterfaces() throws SocketException {
-        return packetService.getAllNetworkInterface();
+    public BaseResponse getAllNetworkInterfaces() throws SocketException {
+        return BaseResponse.OK(packetService.getAllNetworkInterface());
     }
 
     @ApiOperation("更新并获取抓包主机所有网卡接口信息")
     @GetMapping("get_all_interface_flush")
-    public List<NetworkInterface> getAllNetworkInterfacesFlush() throws SocketException {
-        return packetService.getAllNetworkInterfaceFlush();
+    public BaseResponse getAllNetworkInterfacesFlush() throws SocketException {
+        return BaseResponse.OK(packetService.getAllNetworkInterfaceFlush());
     }
 
     @ApiOperation("停止抓包")
     @GetMapping("stop_service")
     public BaseResponse stopService(String deviceName){
         synchronized (lock1){
-            if (!Common.hasStartedHost.contains(deviceName)){
-                return BaseResponse.ERROR(500,deviceName + " not open");
-            }
+//            if (!Common.hasStartedHost.contains(deviceName)){
+//                return BaseResponse.ERROR(500,deviceName + " not open");
+//            }
             Common.hasStartedHost.remove(deviceName);
         }
         tsharkMainService.stop();

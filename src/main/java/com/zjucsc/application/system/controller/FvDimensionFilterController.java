@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -17,34 +18,32 @@ import java.util.concurrent.ExecutionException;
 /**
  * @author hongqianhui
  */
+/*-****************************************************
+ * FiveDimensionFilterForFront
+ * {
+ *     device_id : xxx   设备ID         P_K
+ *     userName : xxx   用户名         验证
+ *     [
+ *       {
+ *          filterType : 0 / 1        过滤类别：0表示白名单，1表示黑名单
+ *          protocolID : 协议ID        过滤的协议，需要转换为String
+ *          port ： 端口
+ *          src_ip ：
+ *          dst_ip ：
+ *       },
+ *       ...
+ *     ]
+ * }
+ *-***************************************************/
 @RestController
 @RequestMapping("/gen/fv-dimension-filter")
 public class FvDimensionFilterController {
 
-    @Autowired
-    private IFvDimensionFilterService iFvDimensionFilterService;
+    @Autowired private IFvDimensionFilterService iFvDimensionFilterService;
 
-
-    /*-****************************************************
-     * FiveDimensionFilterForFront
-     * {
-     *     device_id : xxx   设备ID         P_K
-     *     userName : xxx   用户名         验证
-     *     [
-     *       {
-     *          filterType : 0 / 1        过滤类别：0表示白名单，1表示黑名单
-     *          protocolID : 协议ID        过滤的协议，需要转换为String
-     *          port ： 端口
-     *          src_ip ：
-     *          dst_ip ：
-     *       },
-     *       ...
-     *     ]
-     * }
-     *-***************************************************/
     @ApiOperation("添加/更新五元组过滤规则")
     @PostMapping("new_fv_packet_rule")
-    public BaseResponse addFvDimensionFilterRules(@RequestBody @Valid List<FvDimensionFilter> list) throws ExecutionException, InterruptedException {
+    public BaseResponse addFvDimensionFilterRules(@RequestBody @Valid @NotEmpty List<FvDimensionFilter> list) throws ExecutionException, InterruptedException {
         CompletableFuture<Exception> future =  iFvDimensionFilterService.addFvDimensionFilter(list);
         if (future.get() == null){
             return BaseResponse.OK();
@@ -60,7 +59,7 @@ public class FvDimensionFilterController {
         return BaseResponse.OK(future.get());
     }
 
-    @ApiOperation(value = "查询五元组异常报文规则[缓存]")
+    @ApiOperation(value = "查询已经成功挂载的五元组异常报文规则[确认是否已经将规则下载到服务器]")
     @GetMapping("/get_fv_packet_rule_cached")
     public BaseResponse loadFvDimensionPacketRuleCached(@RequestParam int deviceId , @RequestParam String name) throws DeviceNotValidException, ExecutionException, InterruptedException {
         CompletableFuture<List<FvDimensionFilter>> future =  iFvDimensionFilterService.getTargetExistIdFilter(deviceId , true);

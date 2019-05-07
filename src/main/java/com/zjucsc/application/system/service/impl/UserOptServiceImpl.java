@@ -1,5 +1,6 @@
 package com.zjucsc.application.system.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.system.dao.UserOptMapper;
@@ -18,13 +19,11 @@ import java.util.List;
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true, rollbackFor = Exception.class)
 public class UserOptServiceImpl extends ServiceImpl<UserOptMapper, User> implements UserOptService {
 
-    @Transactional
     @Override
     public List<User> getAllUsers() {
         return baseMapper.getAllUserInfo();
     }
 
-    @Transactional
     @Override
     public BaseResponse logout(String userName) {
         if (Common.LOGGINED_USERS.contains(userName)){
@@ -36,7 +35,6 @@ public class UserOptServiceImpl extends ServiceImpl<UserOptMapper, User> impleme
         }
     }
 
-    @Transactional
     @Override
     public void login(String userName) {
         Common.LOGGINED_USERS.add(userName);
@@ -60,5 +58,14 @@ public class UserOptServiceImpl extends ServiceImpl<UserOptMapper, User> impleme
         updateById(user);
     }
 
-
+    @Override
+    public String getTokenRole(String token) {
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.eq("token" , token);
+        User user1 = getOne(userQueryWrapper);
+        if (user1!=null)
+            return user1.getRole();
+        else
+            return null;
+    }
 }

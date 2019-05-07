@@ -1,5 +1,6 @@
 package com.zjucsc.application.domain.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -10,7 +11,7 @@ import javax.validation.constraints.NotBlank;
 @Data
 @TableName("fv_dimension_filter")
 public class FvDimensionFilter {
-    @TableId("id")
+    @TableId(value = "id" , type = IdType.AUTO)
     private int id;
     @TableField("device_id")
     @NotBlank

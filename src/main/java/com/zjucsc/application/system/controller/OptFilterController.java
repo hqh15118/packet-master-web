@@ -12,6 +12,7 @@ import org.dom4j.tree.BaseElement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -25,10 +26,13 @@ public class OptFilterController {
 
     @Autowired private IOptFilterService iOptFilterService;
 
-
+    //OptFilterForFront
+    //      int protocolId;
+    //      String userName;
+    //      List<OptFilter> optFilterList;
     @ApiOperation("添加功能码规则")
-    @PostMapping("new_opt_filter")
-    public BaseResponse addNewOptFilter(@RequestBody List<OptFilter.OptFilterForFront> optFilterForFronts) throws ProtocolIdNotValidException, ExecutionException, InterruptedException {
+    @PostMapping("new_opt_filter")          //至少传一个OptFilterForFront表明设备ID
+    public BaseResponse addNewOptFilter(@RequestBody @NotEmpty List<OptFilter.OptFilterForFront> optFilterForFronts) throws ProtocolIdNotValidException, ExecutionException, InterruptedException {
         CompletableFuture<Exception> future =  iOptFilterService.addOperationFilter(optFilterForFronts);
         return BaseResponse.OK(future.get());
     }

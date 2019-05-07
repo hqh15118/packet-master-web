@@ -18,4 +18,6 @@ public interface UserOptService extends IService<User> {
     List<String> getAllLogginedUsers();
 
     void saveToken(User user , String token);
+
+    String getTokenRole(String token);
 }

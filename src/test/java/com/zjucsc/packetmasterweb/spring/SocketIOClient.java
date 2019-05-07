@@ -19,7 +19,7 @@ public class SocketIOClient {
 
     @Test
     public void getMsgFromServer() throws URISyntaxException, InterruptedException {
-        Socket socket = IO.socket("http://localhost:8081");
+        Socket socket = IO.socket("http://192.168.0.121:8081");
         socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
             @Override
             public void call(Object... args) {

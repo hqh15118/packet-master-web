@@ -3,12 +3,18 @@ package com.zjucsc.application.task;
 import com.zjucsc.IProtocolFuncodeMap;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.PACKET_PROTOCOL;
+import com.zjucsc.application.config.auth.Auth;
 import com.zjucsc.application.domain.analyzer.EmptyPacketAnalyzer;
+import com.zjucsc.application.domain.bean.ConfigurationForFront;
 import com.zjucsc.application.domain.bean.FuncodeStatement;
+import com.zjucsc.application.domain.entity.Configuration;
 import com.zjucsc.application.domain.filter.EmptyFilter;
 import com.zjucsc.application.domain.filter.OtherPacketFilter;
 import com.zjucsc.application.domain.analyzer.OtherPacketAnalyzer;
+import com.zjucsc.application.system.controller.ConfigurationController;
+import com.zjucsc.application.system.service.iservice.ConfigurationService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
@@ -26,22 +32,15 @@ public class InitConfigurationService implements ApplicationRunner {
     private final String str_name = "java.lang.String";
     private final String int_name = "int";
 
+    @Autowired private ConfigurationController configurationController;
+    @Autowired private ConfigurationService configurationService;
+
     @Override
     public void run(ApplicationArguments args) throws IllegalAccessException, NoSuchFieldException {
         /*
          * INIT ALL FUN_CODE MAP
          */
         ServiceLoader<IProtocolFuncodeMap> serviceLoader = ServiceLoader.load(IProtocolFuncodeMap.class);
-        for (IProtocolFuncodeMap iProtocolFuncodeMap : serviceLoader) {
-            HashMap<Integer,String> funcodeStatements = new HashMap<>();
-            String protocolName = iProtocolFuncodeMap.protocolAnalyzerName();
-            Map<Integer,String> map = iProtocolFuncodeMap.initProtocol();
-            log.info("load configuration : {} \n {} " , protocolName , map);
-            for (int fun_code : map.keySet()){
-                funcodeStatements.put(fun_code,map.get(fun_code));
-            }
-            Common.CONFIGURATION_MAP.put(protocolName,funcodeStatements);
-        }
 
         /*
          * INIT PROTOCOL STR TO INT
@@ -62,8 +61,43 @@ public class InitConfigurationService implements ApplicationRunner {
                 }
             }
         }
+
+        if(configurationService.list().size() == 0) {
+            log.info("no configuration in database and readty to ");
+            ArrayList<ConfigurationForFront> list = new ArrayList<>();
+            for (IProtocolFuncodeMap iProtocolFuncodeMap : serviceLoader) {
+                HashMap<Integer, String> funcodeStatements = new HashMap<>();
+                String protocolName = iProtocolFuncodeMap.protocolAnalyzerName();
+                Map<Integer, String> map = iProtocolFuncodeMap.initProtocol();
+                log.info("load configuration : {} \n {} ", protocolName, map);
+                ConfigurationForFront configurationForFront = new ConfigurationForFront();
+                List<ConfigurationForFront.ConfigurationWrapper> wrappers = new ArrayList<>();
+                for (int fun_code : map.keySet()) {
+                    funcodeStatements.put(fun_code, map.get(fun_code));
+                    wrappers.add(new ConfigurationForFront.ConfigurationWrapper(fun_code , map.get(fun_code)));
+                }
+                configurationForFront.setConfigurationWrappers(wrappers);
+                configurationForFront.setProtocol(protocolName);
+                list.add(configurationForFront);
+                Common.CONFIGURATION_MAP.put(protocolName, funcodeStatements);
+            }
+            configurationController.addConfiguration(list);
+        }
+        /*
+         * INIT AUTH
+         */
+        Class<Auth> authClass = Auth.class;
+        allField = authClass.getDeclaredFields();
+        for (Field field : allField) {
+            if (field.getType().getTypeName().equals(str_name)){
+                String authName = (String) field.get(null);
+                int auth = (int) authClass.getDeclaredField(field.getName() + "_ID").get(null);
+                Common.AUTH_MAP.put(auth,authName);
+            }
+        }
         System.out.println("bad packet filter pro map : \n" + Common.BAD_PACKET_FILTER_PRO_1);
         System.out.println("load Common.PROTOCOL_STR_TO_INT : \n" + Common.PROTOCOL_STR_TO_INT);
         System.out.println("load Common.CONFIGURATION_MAP : \n" + Common.CONFIGURATION_MAP);
+        System.out.println("load Common.AUTH_MAP : \n" + Common.AUTH_MAP);
     }
 }

@@ -37,7 +37,7 @@ public class FvDimensionFilterServiceImpl extends ServiceImpl<FvDimensionFilterM
             FiveDimensionAnalyzer analyzer = new FiveDimensionAnalyzer(filter);
             Common.FV_DIMENSION_FILTER.put(deviceId,analyzer);
         }else{
-            //已经添加过该设备，缓存中有分析器，需要替换掉该分析器中的filter
+            //已经添加过该设备，缓存中有分析器，需要替换掉该分析器中的过滤器
             Common.FV_DIMENSION_FILTER.get(deviceId).getAnalyzer().setFilterList(fvDimensionFilters);
         }
         //更新数据库

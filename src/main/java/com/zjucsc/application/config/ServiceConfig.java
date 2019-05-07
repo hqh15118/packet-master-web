@@ -35,6 +35,15 @@ public class ServiceConfig {
 
     @Bean("global_single_thread_executor")
     public Executor asyncThreadPoolConfig(){
+        return getNewExecutor("global_single_thread_executor");
+    }
+
+    @Bean("attack_info_thread_pool")
+    public Executor async_attack_info(){
+        return getNewExecutor("attack_info_thread_pool");
+    }
+
+    private Executor getNewExecutor(String name){
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
         taskExecutor.setQueueCapacity(100);
         taskExecutor.setRejectedExecutionHandler(new RejectedExecutionHandler() {
@@ -45,7 +54,7 @@ public class ServiceConfig {
         });
         taskExecutor.setCorePoolSize(1);
         taskExecutor.setMaxPoolSize(5);
-        taskExecutor.setThreadGroupName("-global-single-thread-");
+        taskExecutor.setThreadGroupName(name);
         taskExecutor.initialize();
         return taskExecutor;
     }
@@ -54,13 +63,6 @@ public class ServiceConfig {
     public Executor taskExecutor() {
         return new SimpleAsyncTaskExecutor();
     }
-//    @Bean
-//    public CacheManagerCustomizer<ConcurrentMapCacheManager> cacheManagerCustomizer() {
-//        return new CacheManagerCustomizer<ConcurrentMapCacheManager>() {
-//            @Override
-//            public void customize(ConcurrentMapCacheManager cacheManager) {
-//                cacheManager.setAllowNullValues(false);
-//            }
-//        };
-//    }
+
+
 }

@@ -9,6 +9,7 @@ import com.zjucsc.application.domain.filter.FiveDimensionPacketFilter;
 import com.zjucsc.application.domain.filter.OperationPacketFilter;
 import com.zjucsc.application.handler.ThreadExceptionHandler;
 import com.zjucsc.application.util.AbstractAnalyzer;
+import org.apache.poi.sl.draw.BitmapImageRenderer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +21,7 @@ public class Common {
 
     public static final int SOCKET_IO_PORT = 8081;
 
-    public static final String CAPTURE_COMMAND_WIN = "C:\\Users\\Administrator\\Desktop\\tshark_min_win\\tshark.exe -l -n -Y tcp -e frame.protocols -e eth.dst -e frame.cap_len -e eth.src -e ip.src -e ip.dst -e tcp.srcport -e tcp.dstport -e s7comm.param.func -e modbus.func_code -e tcp.payload -e s7comm.header.rosctr -T ek -c 5 -r C:\\Users\\Administrator\\IdeaProjects\\packet-master-web\\src\\main\\resources\\pcap\\question_1531953261_01.pcap";
+    public static final String CAPTURE_COMMAND_WIN = "C:\\Users\\Administrator\\Desktop\\tshark_min_win\\tshark.exe -l -n -Y tcp -e frame.protocols -e eth.dst -e frame.cap_len -e eth.src -e ip.src -e ip.dst -e tcp.srcport -e tcp.dstport -e s7comm.param.func -e modbus.func_code -e tcp.payload -e s7comm.header.rosctr -T ek -c 10000 -r C:\\Users\\Administrator\\IdeaProjects\\packet-master-web\\src\\main\\resources\\pcap\\question_1531953261_01.pcap";
 
     public static final String CAPTURE_COMMAND_MAC = "/Applications/Wireshark.app/Contents/MacOS/tshark -l -n -Y tcp -e frame.protocols -e eth.dst -e frame.cap_len -e eth.src -e ip.src -e ip.dst -e tcp.srcport -e tcp.dstport -e s7comm.param.func -e modbus.func_code -e tcp.payload -e s7comm.header.rosctr -T ek  -c 1000 -r /Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap4j/question_1531953261_01.pcap4j";
 
@@ -122,6 +123,8 @@ public class Common {
         public static final int DEVICE_ERROR = 201;
         public static final int PROTOCOL_ID_ERROR = 202;
         public static final int COMMAND_NOT_VALID = 203;
+        public static final int SQL_ERROR = 204;
+        public static final int TOKEN_NOT_VALID = 205;
     }
 
     //已经登录过的用户
@@ -140,4 +143,6 @@ public class Common {
      */
     public static final BiMap<Integer,String> PROTOCOL_STR_TO_INT = HashBiMap.create();
 
+
+    public static final BiMap<Integer,String> AUTH_MAP = HashBiMap.create();
 }

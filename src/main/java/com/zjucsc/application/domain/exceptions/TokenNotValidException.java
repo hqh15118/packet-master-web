@@ -1,8 +1,8 @@
 package com.zjucsc.application.domain.exceptions;
 
-public class ProtocolIdNotValidException extends Exception{
+public class TokenNotValidException extends Exception {
     private String msg;
-    public ProtocolIdNotValidException(String msg){
+    public TokenNotValidException(String msg){
         super(msg);
         this.msg = msg;
     }

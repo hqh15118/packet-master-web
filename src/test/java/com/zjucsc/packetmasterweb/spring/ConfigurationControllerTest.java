@@ -17,9 +17,4 @@ public class ConfigurationControllerTest {
 
     @Autowired private ConfigurationController configurationController;
 
-    @Test
-    public void get_all_packet_config() throws InterruptedException, ExecutionException, DeviceNotValidException {
-        System.out.println(JSON.toJSONString(configurationController.getAllPacketRule(10)));
-        Thread.sleep(100000);
-    }
 }

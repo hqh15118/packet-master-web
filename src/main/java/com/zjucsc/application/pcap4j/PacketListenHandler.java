@@ -176,9 +176,9 @@ public class PacketListenHandler implements PacketListener {
             if (end instanceof DnsPacket){
                 protocol = DNS;
             }else{
-                if (!layered){
-                    protocol = OTHER;
-                }
+//                if (!layered){
+//                    protocol = OTHER;
+//                }
             }
         }
         if (end != null){

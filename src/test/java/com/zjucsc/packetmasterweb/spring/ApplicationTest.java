@@ -1,6 +1,7 @@
 package com.zjucsc.packetmasterweb.spring;
 
 import com.alibaba.fastjson.JSON;
+import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.bean.CaptureService;
 import com.zjucsc.application.domain.entity.FvDimensionFilter;
 import com.zjucsc.application.domain.entity.OptFilter;
@@ -23,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 
+import static com.zjucsc.application.config.Common.CAPTURE_COMMAND_WIN;
 import static com.zjucsc.application.config.PACKET_PROTOCOL.MODBUS_ID;
 
 /**
@@ -66,11 +68,12 @@ public class ApplicationTest {
      * 登录测试
      */
     @Test
-    public void login(){
+    public void login() throws InterruptedException {
         User.UserForFront user = new User.UserForFront();
         user.userName = "hongqianhui";
         user.password = "123";
-        System.out.println(userOptController.login(user));
+        System.out.println(JSON.toJSONString(userOptController.login(user)));
+        Thread.sleep(1000000);
     }
 
     /**
@@ -149,9 +152,9 @@ public class ApplicationTest {
         System.out.println("operation rules :");
         System.out.println(JSON.toJSON(optFilterController.getOptFilter(10 , 0 , 1)));
         Thread.sleep(1000);
-        System.out.println("operation rules [not config device id]:");
-        System.out.println(JSON.toJSON(optFilterController.getOptFilter(11 , 0 , 0)));
-        System.out.println(JSON.toJSON(optFilterController.getOptFilter(11 , 0 , 1)));
+//        System.out.println("operation rules [not config device id]:");
+//        System.out.println(JSON.toJSON(optFilterController.getOptFilter(11 , 0 , 0)));
+//        System.out.println(JSON.toJSON(optFilterController.getOptFilter(11 , 0 , 1)));
     }
 
     @Test
@@ -159,7 +162,7 @@ public class ApplicationTest {
         packetController.startRecvRealTimePacket();
         Thread.sleep(5000);
         config_fun_code_filter_test();      //配置功能码过滤器      S7_Ack_data 为黑名单
-        tsharkMainService.start(CAPTURE_COMMAND_WIN_FV);
+        tsharkMainService.start(CAPTURE_COMMAND_WIN);
         Thread.sleep(30000000);
     }
 
@@ -169,7 +172,7 @@ public class ApplicationTest {
      */
     @Test
     public void all_packet_number() throws InterruptedException {
-        tsharkMainService.start(CAPTURE_COMMAND_MAC_FV, new AbstractPacketService.ProcessCallback() {
+        tsharkMainService.start(CAPTURE_COMMAND_WIN, new AbstractPacketService.ProcessCallback() {
             @Override
             public void error(Exception e) {
 

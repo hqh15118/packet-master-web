@@ -10,16 +10,16 @@ import lombok.Data;
 @Data
 @TableName("gplot")
 public class Gplot {
-    @TableId(value = "device_id",type = IdType.AUTO)
-    private int device_id;
-    @TableField("device_name")
-    private String device_name;
+    @TableId(value = "id",type = IdType.AUTO)
+    private int id;
+    @TableField("name")
+    private String name;
     @TableField("info")
     private String info;
 
 
     public static class GplotForFront{
-        public String device_name;
+        public String name;
         public String info;
     }
 }

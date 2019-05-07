@@ -1,8 +1,6 @@
 package com.zjucsc.application.system.service.impl;
 
-import com.zjucsc.application.config.SocketIoEvent;
 import com.zjucsc.application.domain.bean.NetworkInterface;
-import com.zjucsc.application.socketio.SocketServiceCenter;
 import com.zjucsc.application.system.service.PacketAnalyzeService;
 import com.zjucsc.application.system.service.iservice.PacketService;
 import com.zjucsc.application.util.NetworkInterfaceUtil;
@@ -11,7 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.net.InetAddress;
@@ -29,15 +26,15 @@ public class PacketServiceImpl implements PacketService {
     @Cacheable("network_interfaces")
     @Override
     public List<NetworkInterface> getAllNetworkInterface() throws SocketException {
-        return dogetAllNetworkInterface();
+        return doGetAllNetworkInterface();
     }
     @CachePut("network_interfaces")
     @Override
     public List<NetworkInterface> getAllNetworkInterfaceFlush() throws SocketException {
-        return dogetAllNetworkInterface();
+        return doGetAllNetworkInterface();
     }
 
-    private List<NetworkInterface> dogetAllNetworkInterface() throws SocketException {
+    private List<NetworkInterface> doGetAllNetworkInterface() throws SocketException {
         List<NetworkInterface> all = new ArrayList<>();
         try {
             Enumeration<java.net.NetworkInterface> networkInterfaces  = java.net.NetworkInterface.getNetworkInterfaces();
@@ -76,15 +73,6 @@ public class PacketServiceImpl implements PacketService {
             throw new SocketException("can not capture network interface");
         }
         return all;
-    }
-
-    /**
-     * 10秒钟发送一次统计信息，发送总报文数、总流量
-     */
-    @Scheduled(fixedRate = 10000)
-    public void sendPacketStatisticsMsg(){
-        SocketServiceCenter.updateAllClient(SocketIoEvent.STATISTICS_PACKET,new StatisticsDataWrapper(packetAnalyzeService.getRecvPacketNumber()
-                ,packetAnalyzeService.getRecvPacketFlow()));
     }
 
     public static class StatisticsDataWrapper{

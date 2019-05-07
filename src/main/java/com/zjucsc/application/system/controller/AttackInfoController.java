@@ -1,16 +1,12 @@
 package com.zjucsc.application.system.controller;
 
 
-
-import com.zjucsc.application.domain.entity.AttackInfo;
 import com.zjucsc.application.system.service.iservice.IAttackInfoService;
+import com.zjucsc.base.BaseResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 /**
  * @author hongqianhui
@@ -23,9 +19,8 @@ public class AttackInfoController {
     private IAttackInfoService service;
 
     @RequestMapping(value = "/get_all_attack_info" , method = RequestMethod.GET)
-    public List<AttackInfo> getAttackInfo(){
-        return service.list();
+    public BaseResponse getAttackInfo(){
+        return BaseResponse.OK(service.list());
     }
-
 
 }

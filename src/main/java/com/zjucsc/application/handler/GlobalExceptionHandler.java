@@ -22,7 +22,7 @@ public class GlobalExceptionHandler implements HandlerExceptionResolver {
     @ResponseBody
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.addObject(ex);
+        modelAndView.addObject(ex.getMessage());
         modelAndView.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
         return modelAndView;
     }

@@ -6,10 +6,16 @@ import com.zjucsc.application.system.dao.filter.AttackInfoMapper;
 import com.zjucsc.application.system.service.iservice.IAttackInfoService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @author hongqianhui
  */
 @Service
 public class AttackInfoServiceImpl extends ServiceImpl<AttackInfoMapper, AttackInfo> implements IAttackInfoService {
 
+    @Override
+    public void saveAttackInfo(List<AttackInfo> infoList) {
+        saveBatch(infoList);
+    }
 }

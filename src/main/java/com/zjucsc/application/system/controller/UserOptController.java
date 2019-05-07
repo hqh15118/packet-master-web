@@ -1,16 +1,20 @@
 package com.zjucsc.application.system.controller;
 
-import com.zjucsc.application.config.Common;
-import com.zjucsc.base.BaseResponse;
+import com.zjucsc.application.config.auth.Auth;
+import com.zjucsc.application.config.auth.Token;
 import com.zjucsc.application.domain.entity.User;
 import com.zjucsc.application.system.service.iservice.UserOptService;
+import com.zjucsc.base.BaseResponse;
 import com.zjucsc.base.util.MD5Util;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.List;
 
 @RestController
 @RequestMapping("/user/")
@@ -29,7 +33,7 @@ public class UserOptController {
                 userOptService.login(user.userName);
                 //HashMap<String,String[]> token = new HashMap<>();
                 //token.put("roles",new String[]{"admin"});
-                String token = MD5Util.encrypt(user.toString()) + "_token";
+                String token = MD5Util.encrypt(user.userName + user.password) + "_token";
                 userOptService.saveToken(loginUser,token);
                 return BaseResponse.OK(token);
             }else{
@@ -38,6 +42,7 @@ public class UserOptController {
         }
     }
 
+    //@Token(Auth.ADMIN_ID)
     @PostMapping("register")
     public BaseResponse register(@RequestBody @Valid User.UserForFront user){
         User loginUser = userOptService.getById(user.password);
@@ -48,12 +53,13 @@ public class UserOptController {
             user1.setName(user.userName);
             user1.setPassword(MD5Util.encrypt(user.password));
             user1.setDate(new Date().toString());
-            user1.setRole(User.ROLE.ADMINISTRACOR);
+            user1.setRole(Auth.ADMIN);
             userOptService.save(user1);
             return BaseResponse.OK();
         }
     }
-    //TODO quanxian
+
+    @Token(Auth.ADMIN_ID)
     @GetMapping("all_user")
     public BaseResponse getAllUser(){
         return BaseResponse.OK(userOptService.getAllUsers());
@@ -64,14 +70,29 @@ public class UserOptController {
         return userOptService.logout(userName);
     }
 
+    @Token(Auth.ADMIN_ID)
     @PostMapping("add_user")
     public BaseResponse addUser(@RequestBody @Valid User.UserForFront user){
         return register(user);
     }
 
-    //TODO quanxian
+    @Token(Auth.ADMIN_ID)
     @GetMapping("all_loginned_user")
     public BaseResponse getAllLogginedUser(){
         return BaseResponse.OK(userOptService.getAllLogginedUsers());
+    }
+
+    @GetMapping("get_user_info")
+    public BaseResponse getUseInfo(@RequestParam String token){
+        return BaseResponse.OK(new Wrapper(Collections.singletonList(userOptService.getTokenRole(token))));
+    }
+
+    @Data
+    private static class Wrapper{
+        private List<String> role;
+
+        public Wrapper(List<String> role) {
+            this.role = role;
+        }
     }
 }
