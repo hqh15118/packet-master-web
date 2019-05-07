@@ -1,9 +1,12 @@
 package com.zjucsc.packetmasterweb;
 
 import com.alibaba.fastjson.JSON;
+import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.PACKET_PROTOCOL;
+import com.zjucsc.application.domain.exceptions.OpenCaptureServiceException;
 import com.zjucsc.application.domain.filter.OperationPacketFilter;
 import com.zjucsc.application.pcap4j.PacketListenHandler;
+import com.zjucsc.application.tshark.capture.PacketMain;
 import com.zjucsc.application.tshark.handler.BasePacketHandler;
 import com.zjucsc.application.tshark.handler.PacketDecodeHandler;
 import com.zjucsc.application.tshark.handler.PacketSendHandler;
@@ -13,6 +16,10 @@ import org.junit.Test;
 import org.pcap4j.core.*;
 import org.xmlunit.util.Convert;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -140,6 +147,34 @@ public class OtherTest {
         handle.setFilter("tcp" , BpfProgram.BpfCompileMode.OPTIMIZE);
         handle.loop(50,new PacketListenHandler());
         Thread.sleep(100000000);
+    }
+
+
+    @Test
+    public void stream_speed_test(){
+        //String command = "/Applications/Wireshark.app/Contents/MacOS/tshark -T ek -l  -n -V  -r /Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap/question_1531953261_01.pcap";
+        Process process = PacketMain.runTargetCommand(Common.CAPTURE_COMMAND_MAC);
+        int packetNum = 0;
+        long startTime = System.currentTimeMillis();
+        try (InputStream is = process.getInputStream(); BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+            for (; ; ) {
+                String str;
+                if ((str = reader.readLine()) != null) {
+                    if (str.length() > 100)
+                        packetNum ++;
+                } else {
+                    break;
+                }
+            }
+            System.out.println(packetNum);
+            System.out.println("quit");
+            System.out.println(System.currentTimeMillis() - startTime);
+        } catch (RuntimeException | IOException e) {
+            throw new OpenCaptureServiceException("can not get pipe input of tshark");
+        } finally {
+            process.destroy();
+            System.out.println("process exit value : {} " +  process.exitValue());
+        }
     }
 
 }
