@@ -78,12 +78,20 @@ public class ByteUtils {
         }
     }
 
-    public static byte[] hexStringToByteArray(String s) {
+    public static byte[] hexStringToByteArray(String s){
+        return hexStringToByteArray(s,0);
+    }
+
+    public static byte[] hexStringToByteArray(String s , int offset) {
         int len = s.length();
-        byte[] data = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
-            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+        //注意：s.length - offset应该是2的倍数...
+        int new_len = len - offset;
+        byte[] data = new byte[new_len >>> 1];
+        int j = 0;
+        for (int i = offset; i < len; i += 2) {
+            data[j] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
                     + Character.digit(s.charAt(i+1), 16));
+            j++;
         }
         return data;
     }

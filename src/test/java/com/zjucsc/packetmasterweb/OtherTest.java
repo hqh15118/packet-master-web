@@ -3,6 +3,7 @@ package com.zjucsc.packetmasterweb;
 import com.alibaba.fastjson.JSON;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.PACKET_PROTOCOL;
+import com.zjucsc.application.domain.bean.TsharkCommand;
 import com.zjucsc.application.domain.exceptions.OpenCaptureServiceException;
 import com.zjucsc.application.domain.filter.OperationPacketFilter;
 import com.zjucsc.application.pcap4j.PacketListenHandler;
@@ -11,7 +12,9 @@ import com.zjucsc.application.tshark.handler.BasePacketHandler;
 import com.zjucsc.application.tshark.handler.PacketDecodeHandler;
 import com.zjucsc.application.tshark.handler.PacketSendHandler;
 import com.zjucsc.application.tshark.decode.DefaultPipeLine;
+import com.zjucsc.application.util.ByteUtils;
 import com.zjucsc.application.util.PcapUtils;
+import com.zjucsc.packetmasterweb.new_format_test.TimeStampBean;
 import org.junit.Test;
 import org.pcap4j.core.*;
 import org.xmlunit.util.Convert;
@@ -151,17 +154,34 @@ public class OtherTest {
 
 
     @Test
-    public void stream_speed_test(){
+    public void stream_speed_test() throws PcapNativeException {
         //String command = "/Applications/Wireshark.app/Contents/MacOS/tshark -T ek -l  -n -V  -r /Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap/question_1531953261_01.pcap";
-        Process process = PacketMain.runTargetCommand(Common.CAPTURE_COMMAND_MAC);
+        String command = new TsharkCommand.Builder()
+                .tsharkPath("tshark")
+                .outputType(TsharkCommand.OutputType.EK)
+                .ek_E("eth.trailer")
+                .ek_E("-e eth.fcs")
+                .pcapFilePath("/Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap/question_1531953261_01.pcap")
+                .build();
+        Process process = PacketMain.runTargetCommand(command);
         int packetNum = 0;
         long startTime = System.currentTimeMillis();
+        TimeStampBean timeStampBean = null;
+        //PcapHandle handle = Pcaps.openOffline("/Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap/question_1531953261_01.pcap");
         try (InputStream is = process.getInputStream(); BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
             for (; ; ) {
                 String str;
                 if ((str = reader.readLine()) != null) {
                     if (str.length() > 100)
+                    {
+                        timeStampBean = JSON.parseObject(str , TimeStampBean.class);
                         packetNum ++;
+                        byte[] lastTFByte = ByteUtils.contractBytes(24,
+                                ByteUtils.hexStringToByteArray(timeStampBean.layers.eth_trailer[0]),
+                                ByteUtils.hexStringToByteArray(timeStampBean.layers.eth_fcs[0] , 2)
+                        );
+                    }
+
                 } else {
                     break;
                 }
@@ -176,5 +196,22 @@ public class OtherTest {
             System.out.println("process exit value : {} " +  process.exitValue());
         }
     }
+
+    @Test
+    public void time_stamp_test() throws PcapNativeException {
+        String timeStampStr = "{\"timestamp\":\"1557129889030\",\"layers\":{\"eth_trailer\":[\"00020d040000369b8027a8000000369b8027c400\"],\"eth_fcs\":[\"0x00000061\"]}}";
+        TimeStampBean timeStampBean = JSON.parseObject(timeStampStr , TimeStampBean.class);
+
+        byte[] lastTFByte = ByteUtils.contractBytes(24,
+                ByteUtils.hexStringToByteArray(timeStampBean.layers.eth_trailer[0]),
+                ByteUtils.hexStringToByteArray(timeStampBean.layers.eth_fcs[0] , 2)
+        );
+
+        for (byte b : lastTFByte) {
+            System.out.println(Integer.toHexString(Byte.toUnsignedInt(b)));
+        }
+    }
+
+
 
 }
