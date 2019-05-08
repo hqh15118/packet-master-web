@@ -28,7 +28,7 @@ public class CodeGenerator {
     // @author 值
     private static final String AUTHOR = "hongqianhui";
     // 包的基础路径
-    private static final String BASE_PACKAGE_URL = "/com/zjucsc/application/system";
+    private static final String BASE_PACKAGE_URL = "/com/zjucsc/application";
     // xml文件路径
     private static final String XML_PACKAGE_URL = "/resources/mapper/";
     // xml 文件模板
@@ -66,7 +66,8 @@ public class CodeGenerator {
 
         // 包配置
         PackageConfig packageConfig = new PackageConfig();
-        packageConfig.setModuleName("gen");
+        packageConfig.setModuleName("system");
+        BASE_PACKAGE_URL.replace("/" , ".");
         packageConfig.setParent(BASE_PACKAGE_URL);
         generator.setPackageInfo(packageConfig);
 

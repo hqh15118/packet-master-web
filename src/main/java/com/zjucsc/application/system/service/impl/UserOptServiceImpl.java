@@ -3,8 +3,8 @@ package com.zjucsc.application.system.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zjucsc.application.config.Common;
-import com.zjucsc.application.system.dao.UserOptMapper;
-import com.zjucsc.application.domain.entity.User;
+import com.zjucsc.application.system.mapper.UserOptMapper;
+import com.zjucsc.application.system.entity.User;
 import com.zjucsc.application.system.service.iservice.UserOptService;
 import com.zjucsc.base.BaseResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Slf4j
-@Service("userManagementService")
+@Service
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true, rollbackFor = Exception.class)
 public class UserOptServiceImpl extends ServiceImpl<UserOptMapper, User> implements UserOptService {
 

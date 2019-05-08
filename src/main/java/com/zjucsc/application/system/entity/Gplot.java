@@ -1,4 +1,4 @@
-package com.zjucsc.application.domain.entity;
+package com.zjucsc.application.system.entity;
 
 
 import com.baomidou.mybatisplus.annotation.IdType;

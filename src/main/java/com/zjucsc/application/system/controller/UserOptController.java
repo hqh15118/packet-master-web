@@ -2,7 +2,7 @@ package com.zjucsc.application.system.controller;
 
 import com.zjucsc.application.config.auth.Auth;
 import com.zjucsc.application.config.auth.Token;
-import com.zjucsc.application.domain.entity.User;
+import com.zjucsc.application.system.entity.User;
 import com.zjucsc.application.system.service.iservice.UserOptService;
 import com.zjucsc.base.BaseResponse;
 import com.zjucsc.base.util.MD5Util;
@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;

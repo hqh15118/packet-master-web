@@ -1,7 +1,7 @@
 package com.zjucsc.application.system.service.iservice;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.zjucsc.application.domain.entity.FvDimensionFilter;
+import com.zjucsc.application.system.entity.FvDimensionFilter;
 import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
 
 import java.util.List;

@@ -3,7 +3,7 @@ package com.zjucsc.application.domain.filter;
 import com.zjucsc.application.config.DangerLevel;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.bean.BadPacket;
-import com.zjucsc.application.domain.entity.FvDimensionFilter;
+import com.zjucsc.application.system.entity.FvDimensionFilter;
 import com.zjucsc.application.tshark.domain.packet.FiveDimensionPacketWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

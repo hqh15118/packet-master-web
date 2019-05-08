@@ -8,19 +8,16 @@ import com.zjucsc.application.domain.bean.BadPacket;
 import com.zjucsc.application.socketio.SocketServiceCenter;
 import com.zjucsc.application.tshark.decode.AbstractAsyncHandler;
 import com.zjucsc.application.tshark.domain.packet.FiveDimensionPacketWrapper;
-import com.zjucsc.application.util.AbstractAnalyzer;
 import com.zjucsc.application.util.PacketDecodeUtil;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Set;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.BiConsumer;
 
-import static com.zjucsc.application.config.Common.BAD_PACKET_FILTER_PRO_1;
 import static com.zjucsc.application.config.Common.FV_DIMENSION_FILTER;
-import static com.zjucsc.application.config.Common.OPERATION_FILTER;
-import static com.zjucsc.application.config.PACKET_PROTOCOL.FV_DIMENSION;
-import static com.zjucsc.application.config.PACKET_PROTOCOL.OTHER;
 
 @Slf4j
 public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {

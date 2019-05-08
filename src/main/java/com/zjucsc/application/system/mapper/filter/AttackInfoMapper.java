@@ -1,7 +1,7 @@
-package com.zjucsc.application.system.dao.filter;
+package com.zjucsc.application.system.mapper.filter;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.zjucsc.application.domain.entity.AttackInfo;
+import com.zjucsc.application.system.entity.AttackInfo;
 
 /**
  * @author hongqianhui

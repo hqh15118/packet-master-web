@@ -1,6 +1,6 @@
-package com.zjucsc.application.system.dao;
+package com.zjucsc.application.system.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.zjucsc.application.domain.entity.Device;
+import com.zjucsc.application.system.entity.Device;
 
 /**
  * @author hongqianhui
