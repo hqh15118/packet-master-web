@@ -156,39 +156,40 @@ public class OtherTest {
     @Test
     public void stream_speed_test() throws PcapNativeException {
         //String command = "/Applications/Wireshark.app/Contents/MacOS/tshark -T ek -l  -n -V  -r /Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap/question_1531953261_01.pcap";
-        String command = new TsharkCommand.Builder()
-                .tsharkPath("tshark")
-                .outputType(TsharkCommand.OutputType.EK)
-                .ek_E("eth.trailer")
-                .ek_E("-e eth.fcs")
-                .pcapFilePath("/Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap/question_1531953261_01.pcap")
-                .build();
-        Process process = PacketMain.runTargetCommand(command);
+//        String command = new TsharkCommand.Builder()
+//                .tsharkPath("tshark")
+//                .outputType(TsharkCommand.OutputType.EK)
+//                .ek_E("eth.trailer")
+//                .ek_E("-e eth.fcs")
+//                .pcapFilePath("/Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap/question_1531953261_01.pcap")
+//                .build();
+        Process process = PacketMain.runTargetCommand(Common.CAPTURE_COMMAND_MAC);
+        //0 packet --> 526
+        //2000 packets --> 942
         int packetNum = 0;
-        long startTime = System.currentTimeMillis();
         TimeStampBean timeStampBean = null;
         //PcapHandle handle = Pcaps.openOffline("/Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap/question_1531953261_01.pcap");
-        try (InputStream is = process.getInputStream(); BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+        try (InputStream is = process.getInputStream(); BufferedReader reader = new BufferedReader(new InputStreamReader(is) , 16 * 1024)) {
+            long startTime = System.currentTimeMillis();
             for (; ; ) {
                 String str;
                 if ((str = reader.readLine()) != null) {
-                    if (str.length() > 100)
+                    if (str.length() > 85)
                     {
-                        timeStampBean = JSON.parseObject(str , TimeStampBean.class);
+                        //timeStampBean = JSON.parseObject(str , TimeStampBean.class);
                         packetNum ++;
-                        byte[] lastTFByte = ByteUtils.contractBytes(24,
-                                ByteUtils.hexStringToByteArray(timeStampBean.layers.eth_trailer[0]),
-                                ByteUtils.hexStringToByteArray(timeStampBean.layers.eth_fcs[0] , 2)
-                        );
+//                        byte[] lastTFByte = ByteUtils.contractBytes(24,
+//                                ByteUtils.hexStringToByteArray(timeStampBean.layers.eth_trailer[0]),
+//                                ByteUtils.hexStringToByteArray(timeStampBean.layers.eth_fcs[0] , 2)
+//                        );
                     }
-
                 } else {
+                    System.out.println(System.currentTimeMillis() - startTime);
                     break;
                 }
             }
             System.out.println(packetNum);
             System.out.println("quit");
-            System.out.println(System.currentTimeMillis() - startTime);
         } catch (RuntimeException | IOException e) {
             throw new OpenCaptureServiceException("can not get pipe input of tshark");
         } finally {
