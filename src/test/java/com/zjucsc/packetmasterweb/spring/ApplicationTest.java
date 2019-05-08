@@ -1,11 +1,10 @@
 package com.zjucsc.packetmasterweb.spring;
 
 import com.alibaba.fastjson.JSON;
-import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.bean.CaptureService;
-import com.zjucsc.application.domain.entity.FvDimensionFilter;
-import com.zjucsc.application.domain.entity.OptFilter;
-import com.zjucsc.application.domain.entity.User;
+import com.zjucsc.application.system.entity.FvDimensionFilter;
+import com.zjucsc.application.system.entity.OptFilter;
+import com.zjucsc.application.system.entity.User;
 import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.application.system.controller.*;
@@ -43,7 +42,7 @@ public class ApplicationTest {
     @Autowired private FvDimensionFilterController fvDimensionFilterController;
 
     @Test
-    public void fv_dimension_packet_filter_test(){
+    public void initSpringTest() throws ExecutionException, InterruptedException {
 
     }
 
@@ -219,6 +218,9 @@ public class ApplicationTest {
         pcapMainService.stop();
         Thread.sleep(100000000);
     }
+
+
+
 
 
 }

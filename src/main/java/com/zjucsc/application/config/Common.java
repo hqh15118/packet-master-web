@@ -72,20 +72,6 @@ public class Common {
     */
 
     /**
-     *  String --> 对应的协议字符串
-     *  AbstractAnalyzer --> 分析器<过滤器>
-     */
-    public static ConcurrentHashMap<String, AbstractAnalyzer> BAD_PACKET_FILTER_PRO_1 = new ConcurrentHashMap<String, AbstractAnalyzer>(){
-        {
-            put(PACKET_PROTOCOL.S7 , new OperationAnalyzer(new OperationPacketFilter<>(PACKET_PROTOCOL.S7)));
-            put(PACKET_PROTOCOL.S7_Ack_data , new OperationAnalyzer(new OperationPacketFilter<>(PACKET_PROTOCOL.S7_Ack_data)));
-            put(PACKET_PROTOCOL.S7_JOB , new OperationAnalyzer(new OperationPacketFilter<>(PACKET_PROTOCOL.S7_JOB)));
-            put(PACKET_PROTOCOL.MODBUS , new OperationAnalyzer(new OperationPacketFilter<>(PACKET_PROTOCOL.MODBUS)));
-            put(PACKET_PROTOCOL.FV_DIMENSION , new FiveDimensionAnalyzer(new FiveDimensionPacketFilter(PACKET_PROTOCOL.FV_DIMENSION)));
-        }
-    };
-
-    /**
      * Integer 设备ID
      * String -> 协议
      * OperationAnalyzer -> 报文操作分析器

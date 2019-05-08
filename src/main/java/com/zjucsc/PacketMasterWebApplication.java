@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @EnableScheduling
 @EnableAsync
-@MapperScan(basePackages = {"com.zjucsc.application.system.dao"})
+@MapperScan(basePackages = {"com.zjucsc.application.system.mapper"})
 @EnableCaching
 public class PacketMasterWebApplication {
 

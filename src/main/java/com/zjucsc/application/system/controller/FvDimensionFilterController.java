@@ -1,7 +1,7 @@
 package com.zjucsc.application.system.controller;
 
 import com.zjucsc.application.config.Common;
-import com.zjucsc.application.domain.entity.FvDimensionFilter;
+import com.zjucsc.application.system.entity.FvDimensionFilter;
 import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
 import com.zjucsc.application.system.service.iservice.IFvDimensionFilterService;
 import com.zjucsc.base.BaseResponse;

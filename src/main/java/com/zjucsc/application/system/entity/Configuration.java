@@ -1,4 +1,4 @@
-package com.zjucsc.application.domain.entity;
+package com.zjucsc.application.system.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -19,10 +19,9 @@ public class Configuration {
     @TableId(value = "id" , type = IdType.AUTO)
     private int id;
     @TableField("protocol_id")
-    private int protocolId;
+    private int protocol_id;
     @TableField("fun_code")
     private int fun_code;
     @TableField("opt")
     private String opt;
-
 }

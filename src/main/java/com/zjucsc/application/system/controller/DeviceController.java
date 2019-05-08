@@ -1,12 +1,11 @@
 package com.zjucsc.application.system.controller;
 
 
-import com.zjucsc.application.domain.entity.Device;
+import com.zjucsc.application.system.entity.Device;
 import com.zjucsc.application.system.service.iservice.IDeviceService;
 import com.zjucsc.base.BaseResponse;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;

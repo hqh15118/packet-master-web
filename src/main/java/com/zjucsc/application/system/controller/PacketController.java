@@ -144,16 +144,17 @@ public class PacketController {
     }
 
     @ApiOperation("停止抓包")
-    @GetMapping("stop_service")
-    public BaseResponse stopService(String deviceName){
+    @PostMapping("stop_service")
+    public BaseResponse stopService(@RequestBody CaptureService service){
         synchronized (lock1){
-//            if (!Common.hasStartedHost.contains(deviceName)){
-//                return BaseResponse.ERROR(500,deviceName + " not open");
-//            }
-            Common.hasStartedHost.remove(deviceName);
+            if (!Common.hasStartedHost.contains(service.getService_name())){
+                return BaseResponse.ERROR(500,service.getService_name() + " not open");
+            }
+            Common.hasStartedHost.remove(service.getService_name());
         }
+        log.info("close device : {} all device : {} " , service.getService_name() , Common.hasStartedHost);
         tsharkMainService.stop();
-        pcapMainService.stop();
+        //pcapMainService.stop();
         return BaseResponse.OK();
     }
 }

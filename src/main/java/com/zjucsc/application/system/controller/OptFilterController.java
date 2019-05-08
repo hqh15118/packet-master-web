@@ -1,14 +1,12 @@
 package com.zjucsc.application.system.controller;
 
 
-import com.zjucsc.application.domain.entity.OptFilter;
+import com.zjucsc.application.system.entity.OptFilter;
 import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.application.system.service.iservice.IOptFilterService;
 import com.zjucsc.base.BaseResponse;
-import io.netty.util.concurrent.CompleteFuture;
 import io.swagger.annotations.ApiOperation;
-import org.dom4j.tree.BaseElement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

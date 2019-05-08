@@ -1,8 +1,7 @@
-package com.zjucsc.application.system.dao.filter;
+package com.zjucsc.application.system.mapper.filter;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.zjucsc.application.domain.entity.ArtifactFilterEntity;
-import com.zjucsc.application.domain.entity.AttackInfo;
+import com.zjucsc.application.system.entity.ArtifactFilterEntity;
 
 /**
  * #project packet-master-web

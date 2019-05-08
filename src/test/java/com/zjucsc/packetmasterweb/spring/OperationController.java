@@ -1,8 +1,8 @@
 package com.zjucsc.packetmasterweb.spring;
 
 import com.alibaba.fastjson.JSON;
-import com.zjucsc.application.domain.entity.FvDimensionFilter;
-import com.zjucsc.application.domain.entity.OptFilter;
+import com.zjucsc.application.system.entity.FvDimensionFilter;
+import com.zjucsc.application.system.entity.OptFilter;
 import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.application.system.controller.FvDimensionFilterController;
@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
