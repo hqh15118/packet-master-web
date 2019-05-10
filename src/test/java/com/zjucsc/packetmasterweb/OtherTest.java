@@ -19,10 +19,7 @@ import org.junit.Test;
 import org.pcap4j.core.*;
 import org.xmlunit.util.Convert;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -169,6 +166,54 @@ public class OtherTest {
         int packetNum = 0;
         TimeStampBean timeStampBean = null;
         //PcapHandle handle = Pcaps.openOffline("/Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap/question_1531953261_01.pcap");
+        try (InputStream is = process.getInputStream(); BufferedInputStream bufferedInputStream = new BufferedInputStream(is)) {
+            long startTime = System.currentTimeMillis();
+            byte[] buffered = new byte[1024];
+            while((bufferedInputStream.read(buffered))>0){
+                    packetNum++;
+            }
+            System.out.println(packetNum);
+            System.out.println(System.currentTimeMillis() - startTime);
+            System.out.println("quit");
+        } catch (RuntimeException | IOException e) {
+            throw new OpenCaptureServiceException("can not get pipe input of tshark");
+        } finally {
+            process.destroy();
+            System.out.println("process exit value : {} " +  process.exitValue());
+        }
+    }
+
+    @Test
+    public void time_stamp_test() throws PcapNativeException {
+        String timeStampStr = "{\"timestamp\":\"1557129889030\",\"layers\":{\"eth_trailer\":[\"00020d040000369b8027a8000000369b8027c400\"],\"eth_fcs\":[\"0x00000061\"]}}";
+        TimeStampBean timeStampBean = JSON.parseObject(timeStampStr , TimeStampBean.class);
+
+        byte[] lastTFByte = ByteUtils.contractBytes(24,
+                ByteUtils.hexStringToByteArray(timeStampBean.layers.eth_trailer[0]),
+                ByteUtils.hexStringToByteArray(timeStampBean.layers.eth_fcs[0] , 2)
+        );
+
+        for (byte b : lastTFByte) {
+            System.out.println(Integer.toHexString(Byte.toUnsignedInt(b)));
+        }
+    }
+
+    @Test
+    public void stream_speed_test1() throws PcapNativeException {
+        //String command = "/Applications/Wireshark.app/Contents/MacOS/tshark -T ek -l  -n -V  -r /Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap/question_1531953261_01.pcap";
+//        String command = new TsharkCommand.Builder()
+//                .tsharkPath("tshark")
+//                .outputType(TsharkCommand.OutputType.EK)
+//                .ek_E("eth.trailer")
+//                .ek_E("-e eth.fcs")
+//                .pcapFilePath("/Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap/question_1531953261_01.pcap")
+//                .build();
+        Process process = PacketMain.runTargetCommand(Common.CAPTURE_COMMAND_MAC);
+        //0 packet --> 526
+        //2000 packets --> 942
+        int packetNum = 0;
+        TimeStampBean timeStampBean = null;
+        //PcapHandle handle = Pcaps.openOffline("/Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap/question_1531953261_01.pcap");
         try (InputStream is = process.getInputStream(); BufferedReader reader = new BufferedReader(new InputStreamReader(is) , 16 * 1024)) {
             long startTime = System.currentTimeMillis();
             for (; ; ) {
@@ -197,22 +242,5 @@ public class OtherTest {
             System.out.println("process exit value : {} " +  process.exitValue());
         }
     }
-
-    @Test
-    public void time_stamp_test() throws PcapNativeException {
-        String timeStampStr = "{\"timestamp\":\"1557129889030\",\"layers\":{\"eth_trailer\":[\"00020d040000369b8027a8000000369b8027c400\"],\"eth_fcs\":[\"0x00000061\"]}}";
-        TimeStampBean timeStampBean = JSON.parseObject(timeStampStr , TimeStampBean.class);
-
-        byte[] lastTFByte = ByteUtils.contractBytes(24,
-                ByteUtils.hexStringToByteArray(timeStampBean.layers.eth_trailer[0]),
-                ByteUtils.hexStringToByteArray(timeStampBean.layers.eth_fcs[0] , 2)
-        );
-
-        for (byte b : lastTFByte) {
-            System.out.println(Integer.toHexString(Byte.toUnsignedInt(b)));
-        }
-    }
-
-
 
 }
