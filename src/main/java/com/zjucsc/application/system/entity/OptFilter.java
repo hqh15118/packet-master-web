@@ -29,9 +29,9 @@ public class OptFilter {
 
     @Data
     public static class OptFilterForFront{
-        @NotBlank
         private int protocolId;
         private String userName;
+        private int deviceId;
         private List<OptFilter> optFilterList;
     }
 

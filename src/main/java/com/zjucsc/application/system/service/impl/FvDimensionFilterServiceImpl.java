@@ -1,11 +1,10 @@
 package com.zjucsc.application.system.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.analyzer.FiveDimensionAnalyzer;
-import com.zjucsc.application.system.entity.FvDimensionFilter;
 import com.zjucsc.application.domain.filter.FiveDimensionPacketFilter;
+import com.zjucsc.application.system.entity.FvDimensionFilter;
 import com.zjucsc.application.system.mapper.FvDimensionFilterMapper;
 import com.zjucsc.application.system.service.iservice.IFvDimensionFilterService;
 import org.springframework.scheduling.annotation.Async;
@@ -27,7 +26,7 @@ public class FvDimensionFilterServiceImpl extends ServiceImpl<FvDimensionFilterM
     public CompletableFuture<Exception> addFvDimensionFilter(List<FvDimensionFilter> fvDimensionFilters) {
         //更新缓存
         int deviceId = fvDimensionFilters.get(0).getDeviceId();
-        String userName = fvDimensionFilters.get(0).getUser_name();
+        String userName = fvDimensionFilters.get(0).getUserName();
         if (Common.FV_DIMENSION_FILTER.get(deviceId) == null){
             //未添加过该设备，缓存中没有该分析器，需要新加一个
             FiveDimensionPacketFilter filter =
@@ -51,9 +50,7 @@ public class FvDimensionFilterServiceImpl extends ServiceImpl<FvDimensionFilterM
         if (cached){
             return CompletableFuture.completedFuture(Common.FV_DIMENSION_FILTER.get(deviceId).getAnalyzer().getFilterList());
         }
-        QueryWrapper<FvDimensionFilter> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(FvDimensionFilter::getDeviceId , deviceId);
-        List<FvDimensionFilter> list = list(queryWrapper);
+        List<FvDimensionFilter> list = this.baseMapper.selectByDeviceId(deviceId);
         return CompletableFuture.completedFuture(list);
     }
 }

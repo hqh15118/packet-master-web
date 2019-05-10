@@ -3,7 +3,7 @@ package com.zjucsc.application.system.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zjucsc.application.system.entity.ProtocolId;
 import com.zjucsc.application.system.mapper.ProtocolIdMapper;
-import com.zjucsc.application.system.service.IProtocolIdService;
+import com.zjucsc.application.system.service.iservice.IProtocolIdService;
 import org.springframework.stereotype.Service;
 
 /**
@@ -12,4 +12,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProtocolIdServiceImpl extends ServiceImpl<ProtocolIdMapper, ProtocolId> implements IProtocolIdService {
 
+    @Override
+    public int getMax() {
+        return this.baseMapper.getMax();
+    }
 }

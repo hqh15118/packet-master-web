@@ -19,4 +19,6 @@ public abstract class AbstractAnalyzer<T> implements Analyzed {
     public T getAnalyzer(){
         return analyzer;
     }
+
+
 }

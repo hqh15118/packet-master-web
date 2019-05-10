@@ -5,6 +5,7 @@ import com.zjucsc.application.config.SocketIoEvent;
 import com.zjucsc.application.domain.analyzer.FiveDimensionAnalyzer;
 import com.zjucsc.application.domain.analyzer.OperationAnalyzer;
 import com.zjucsc.application.domain.bean.BadPacket;
+import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.application.socketio.SocketServiceCenter;
 import com.zjucsc.application.tshark.decode.AbstractAsyncHandler;
 import com.zjucsc.application.tshark.domain.packet.FiveDimensionPacketWrapper;
@@ -77,7 +78,11 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
                 //"0x00000004" "4"   -->  fun_code of int
                 int fun_code = PacketDecodeUtil.decodeFuncode(funCode
                         ,packetWrapper.fiveDimensionPacket.protocol);
-                badPacket = (BadPacket) operationAnalyzer.analyze(fun_code,packetWrapper);
+                try {
+                    badPacket = (BadPacket) operationAnalyzer.analyze(fun_code,packetWrapper);
+                } catch (ProtocolIdNotValidException e) {
+                    log.error(" " , e);
+                }
                 if (badPacket!=null){
                     badPacket.setDeviceId(integer);
                     sendBadPacket(badPacket);

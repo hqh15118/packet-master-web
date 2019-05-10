@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="/src/main/java/com/zjucsc/application/system.gen.mapper.FvDimensionFilterMapper">
-
+<mapper namespace="com.zjucsc.application.system.mapper.FvDimensionFilterMapper">
+    <select id="selectByDeviceId" resultType="com.zjucsc.application.system.entity.FvDimensionFilter">
+        SELECT * FROM fv_dimension_filter WHERE device_id = #{device_id}
+    </select>
 </mapper>

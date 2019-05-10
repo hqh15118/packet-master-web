@@ -78,27 +78,27 @@ public class FiveDimensionPacketFilter {
         HashMap<String,HashMap<String, String>> allMap = new HashMap<>();
         for (FvDimensionFilter fiveDimensionFilter : filterList) {
             String str = null;
-            if (fiveDimensionFilter.getFilter_type() == 0){
-                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getDst_ip()))){
+            if (fiveDimensionFilter.getFilterType() == 0){
+                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getDstIp()))){
                     doSet(allMap,DST_IP_WHITE,str);
                 }
-                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getSrc_ip()))){
+                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getSrcIp()))){
                     doSet(allMap,SRC_IP_WHITE,str);
                 }
-                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getDst_port()))){
+                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getDstPort()))){
                     doSet(allMap,DST_PORT_WHITE,str);
                 }
-                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getSrc_port()))){
+                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getSrcPort()))){
                     doSet(allMap,SRC_PORT_WHITE,str);
                 }
-                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getDst_mac()))){
+                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getDstMac()))){
                     doSet(allMap,DST_MAC_ADDRESS_WHITE,str);
                 }
-                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getSrc_mac()))){
+                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getSrcMac()))){
                     doSet(allMap,SRC_MAC_ADDRESS_WHITE,str);
                 }
-                if (fiveDimensionFilter.getProtocol_id() != 0){
-                    String var = Common.PROTOCOL_STR_TO_INT.get(fiveDimensionFilter.getProtocol_id());
+                if (fiveDimensionFilter.getProtocolId() != 0){
+                    String var = Common.PROTOCOL_STR_TO_INT.get(fiveDimensionFilter.getProtocolId());
                     System.out.print(" ");
                     /*
                      * 如果添加的协议ID，map中无法找到对应的协议，那么就加other
@@ -110,26 +110,26 @@ public class FiveDimensionPacketFilter {
                     }
                 }
             }else{
-                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getDst_ip()))){
+                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getDstIp()))){
                     doSet(allMap,DST_IP_BLACK,str);
                 }
-                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getSrc_ip()))){
+                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getSrcIp()))){
                     doSet(allMap,SRC_IP_BLACK,str);
                 }
-                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getDst_port()))){
+                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getDstPort()))){
                     doSet(allMap,DST_PORT_BLACK,str);
                 }
-                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getSrc_port()))){
+                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getSrcPort()))){
                     doSet(allMap,SRC_PORT_BLACK,str);
                 }
-                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getDst_mac()))){
+                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getDstMac()))){
                     doSet(allMap,DST_MAC_ADDRESS_BLACK,str);
                 }
-                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getSrc_mac()))){
+                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getSrcMac()))){
                     doSet(allMap,SRC_MAC_ADDRESS_BLACK,str);
                 }
-                if (fiveDimensionFilter.getProtocol_id() != 0){
-                    String var = Common.PROTOCOL_STR_TO_INT.get(fiveDimensionFilter.getProtocol_id());
+                if (fiveDimensionFilter.getProtocolId() != 0){
+                    String var = Common.PROTOCOL_STR_TO_INT.get(fiveDimensionFilter.getProtocolId());
                     /*
                      * 如果添加的协议ID，map中无法找到对应的协议，那么就加other
                      */
