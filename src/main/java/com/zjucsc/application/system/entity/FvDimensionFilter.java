@@ -1,5 +1,6 @@
 package com.zjucsc.application.system.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -15,23 +16,23 @@ public class FvDimensionFilter {
     private int id;
     @TableField("device_id")
     @NotBlank
-    private int deviceId;
+    private String deviceId;
     @TableField("user_name")
-    private String user_name;
+    private String userName;
     @TableField("filter_type")
-    private int filter_type;
+    private int filterType;
     @TableField("src_ip")
-    private String src_ip;
+    private String srcIp;
     @TableField("dst_ip")
-    private String dst_ip;
+    private String dstIp;
     @TableField("src_mac")
-    private String src_mac;
+    private String srcMac;
     @TableField("dst_mac")
-    private String dst_mac;
+    private String dstMac;
     @TableField("src_port")
-    private String src_port;
+    private String srcPort;
     @TableField("dst_port")
-    private String dst_port;
+    private String dstPort;
     @TableField("protocol")
-    private int protocol_id;
+    private int protocolId;
 }

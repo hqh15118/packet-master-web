@@ -15,4 +15,12 @@ public class FuncodeStatement {
         this.id = id;
         this.label = label;
     }
+
+    @Override
+    public String toString() {
+        return "FuncodeStatement{" +
+                "id=" + id +
+                ", label='" + label + '\'' +
+                '}';
+    }
 }

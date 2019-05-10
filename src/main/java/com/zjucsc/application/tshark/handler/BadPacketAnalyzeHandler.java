@@ -5,6 +5,7 @@ import com.zjucsc.application.config.SocketIoEvent;
 import com.zjucsc.application.domain.analyzer.FiveDimensionAnalyzer;
 import com.zjucsc.application.domain.analyzer.OperationAnalyzer;
 import com.zjucsc.application.domain.bean.BadPacket;
+import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.application.socketio.SocketServiceCenter;
 import com.zjucsc.application.tshark.decode.AbstractAsyncHandler;
 import com.zjucsc.application.tshark.domain.packet.FiveDimensionPacketWrapper;
@@ -61,13 +62,13 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
         Common.OPERATION_FILTER.forEach(analyzerThreadlocalForOperation.get().setPacketWrapper(packetWrapper,funCode));
     }
 
-    private static class AnalyzerConsumerForOperation extends AbstractAnalyzerConsumer implements BiConsumer<Integer, ConcurrentHashMap<String, OperationAnalyzer>>{
+    private static class AnalyzerConsumerForOperation extends AbstractAnalyzerConsumer implements BiConsumer<String, ConcurrentHashMap<String, OperationAnalyzer>>{
 
         private FiveDimensionPacketWrapper packetWrapper;
         private String funCode = null;
 
         @Override
-        public void accept(Integer integer, ConcurrentHashMap<String, OperationAnalyzer> stringOperationAnalyzerConcurrentHashMap) {
+        public void accept(String integer, ConcurrentHashMap<String, OperationAnalyzer> stringOperationAnalyzerConcurrentHashMap) {
             OperationAnalyzer operationAnalyzer = null;
             if ((operationAnalyzer = stringOperationAnalyzerConcurrentHashMap.get(packetWrapper.fiveDimensionPacket.protocol))!=null){
                 /*
@@ -77,7 +78,11 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
                 //"0x00000004" "4"   -->  fun_code of int
                 int fun_code = PacketDecodeUtil.decodeFuncode(funCode
                         ,packetWrapper.fiveDimensionPacket.protocol);
-                badPacket = (BadPacket) operationAnalyzer.analyze(fun_code,packetWrapper);
+                try {
+                    badPacket = (BadPacket) operationAnalyzer.analyze(fun_code,packetWrapper);
+                } catch (ProtocolIdNotValidException e) {
+                    log.error(" " , e);
+                }
                 if (badPacket!=null){
                     badPacket.setDeviceId(integer);
                     sendBadPacket(badPacket);
@@ -94,7 +99,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
         }
     }
 
-    private static class AnalyzerConsumerForFVDimension extends AbstractAnalyzerConsumer implements BiConsumer<Integer, FiveDimensionAnalyzer>{
+    private static class AnalyzerConsumerForFVDimension extends AbstractAnalyzerConsumer implements BiConsumer<String, FiveDimensionAnalyzer>{
 
         private FiveDimensionPacketWrapper packetWrapper;
         public AnalyzerConsumerForFVDimension setPacketWrapper(FiveDimensionPacketWrapper packetWrapper){
@@ -102,7 +107,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
             return this;
         }
         @Override
-        public void accept(Integer integer, FiveDimensionAnalyzer fiveDimensionAnalyzer) {
+        public void accept(String integer, FiveDimensionAnalyzer fiveDimensionAnalyzer) {
             BadPacket badPacket = ((BadPacket)fiveDimensionAnalyzer.analyze(packetWrapper));
             if (badPacket!=null){
                 sendBadPacket(badPacket);

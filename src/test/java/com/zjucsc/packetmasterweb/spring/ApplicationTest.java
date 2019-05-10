@@ -60,7 +60,7 @@ public class ApplicationTest {
 
     public static final String CAPTURE_COMMAND_MAC_FV = "/Applications/Wireshark.app/Contents/MacOS/tshark -l -n -Y tcp -e frame.protocols -e eth.dst -e frame.cap_len -e eth.src -e ip.src -e ip.dst -e tcp.srcport -e tcp.dstport -e s7comm.param.func -e modbus.func_code -e tcp.payload -e s7comm.header.rosctr -T ek -r /Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap4j/question_1531953261_01.pcap4j";
 
-    @Autowired private ConfigurationController configurationController;
+    @Autowired private ConfigurationSettingController configurationSettingController;
     @Autowired private UserOptController userOptController;
 
     /**
@@ -94,33 +94,12 @@ public class ApplicationTest {
     public void fv_packet_filter_test() throws InterruptedException, ExecutionException {
         packetController.startRecvRealTimePacket();
         Thread.sleep(5000);
-        config_fv_filter_test();
         tsharkMainService.start(CAPTURE_COMMAND_WIN_FV);
         Thread.sleep(30000000);
     }
 
 
-    /**
-     * 添加五元组过滤器
-     * @throws ExecutionException
-     * @throws InterruptedException
-     */
-    @Test
-    public void config_fv_filter_test() throws ExecutionException, InterruptedException {
-        //login();
-        FvDimensionFilter filter1 = new FvDimensionFilter();
-        filter1.setFilter_type(1);
-        filter1.setSrc_ip("192.168.254.134");
-        filter1.setDst_port("502");
-        filter1.setSrc_port("1075");
-        filter1.setProtocol_id(MODBUS_ID);
-        filter1.setDst_ip("192.168.254.143");
-        filter1.setDeviceId(10);
-        filter1.setUser_name("hongqianhui");
-        System.out.println(fvDimensionFilterController.addFvDimensionFilterRules(
-                Arrays.asList(filter1)
-        ));
-    }
+
 
     /**
      * 功能码配置测试
@@ -134,9 +113,8 @@ public class ApplicationTest {
         filter1.setFilterType(1);
         filter2.setFun_code(4);
         filter2.setFilterType(0);
-        filter1.setDeviceId(10);
-        filter2.setDeviceId(10);
-
+        filter1.setDeviceId("10");
+        filter2.setDeviceId("10");
         OptFilter.OptFilterForFront operationFilterForFront
                 = new OptFilter.OptFilterForFront();
         operationFilterForFront.setProtocolId(MODBUS_ID);
@@ -144,12 +122,12 @@ public class ApplicationTest {
         operationFilterForFront.setOptFilterList(Arrays.asList(
                 filter1 , filter2
         ));
-        System.out.println(JSON.toJSON(optFilterController.addNewOptFilter(Collections.singletonList(operationFilterForFront))));
+        //System.out.println(JSON.toJSON(optFilterController.addNewOptFilter(Collections.singletonList(operationFilterForFront))));
         Thread.sleep(1000);
         System.out.println("cached operation rules :");
-        System.out.println(JSON.toJSON(optFilterController.getOptFilter(10 , 0 , 0)));
+        //System.out.println(JSON.toJSON(optFilterController.getOptFilter(10 , 0 , 0 , 1)));
         System.out.println("operation rules :");
-        System.out.println(JSON.toJSON(optFilterController.getOptFilter(10 , 0 , 1)));
+        //System.out.println(JSON.toJSON(optFilterController.getOptFilter(10 , 0 , 1 , 1)));
         Thread.sleep(1000);
 //        System.out.println("operation rules [not config device id]:");
 //        System.out.println(JSON.toJSON(optFilterController.getOptFilter(11 , 0 , 0)));

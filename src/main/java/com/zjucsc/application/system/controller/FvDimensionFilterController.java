@@ -54,14 +54,14 @@ public class FvDimensionFilterController {
 
     @ApiOperation(value = "查询五元组异常报文规则")
     @GetMapping("/get_fv_packet_rule")
-    public BaseResponse loadFvDimensionPacketRule(@RequestParam int deviceId , @RequestParam String name) throws DeviceNotValidException, ExecutionException, InterruptedException {
+    public BaseResponse loadFvDimensionPacketRule(@RequestParam String deviceId , @RequestParam String name) throws DeviceNotValidException, ExecutionException, InterruptedException {
         CompletableFuture<List<FvDimensionFilter>> future =  iFvDimensionFilterService.getTargetExistIdFilter(deviceId , false);
         return BaseResponse.OK(future.get());
     }
 
     @ApiOperation(value = "查询已经成功挂载的五元组异常报文规则[确认是否已经将规则下载到服务器]")
     @GetMapping("/get_fv_packet_rule_cached")
-    public BaseResponse loadFvDimensionPacketRuleCached(@RequestParam int deviceId , @RequestParam String name) throws DeviceNotValidException, ExecutionException, InterruptedException {
+    public BaseResponse loadFvDimensionPacketRuleCached(@RequestParam String deviceId , @RequestParam String name) throws DeviceNotValidException, ExecutionException, InterruptedException {
         CompletableFuture<List<FvDimensionFilter>> future =  iFvDimensionFilterService.getTargetExistIdFilter(deviceId , true);
         return BaseResponse.OK(future.get());
     }

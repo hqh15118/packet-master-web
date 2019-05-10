@@ -1,5 +1,6 @@
 package com.zjucsc.application.system.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -10,6 +11,8 @@ import javax.validation.constraints.NotBlank;
 @Data
 @TableName("attack_info")
 public class AttackInfo {
+    @TableId(value = "id" , type = IdType.AUTO)
+    private int id;
     @NotBlank
     @TableField("time")
     private String time;

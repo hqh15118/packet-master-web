@@ -4,15 +4,14 @@ import com.zjucsc.IProtocolFuncodeMap;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.PACKET_PROTOCOL;
 import com.zjucsc.application.config.auth.Auth;
-import com.zjucsc.application.domain.analyzer.EmptyPacketAnalyzer;
-import com.zjucsc.application.domain.bean.ConfigurationForNewProtocol;
-import com.zjucsc.application.domain.bean.ConfigurationForFront;
-import com.zjucsc.application.domain.filter.EmptyFilter;
-import com.zjucsc.application.system.controller.ConfigurationController;
-import com.zjucsc.application.system.entity.Configuration;
+import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
+import com.zjucsc.application.system.controller.ConfigurationSettingController;
+import com.zjucsc.application.system.entity.ConfigurationSetting;
 import com.zjucsc.application.system.entity.ProtocolId;
-import com.zjucsc.application.system.service.IProtocolIdService;
-import com.zjucsc.application.system.service.iservice.ConfigurationService;
+import com.zjucsc.application.system.service.iservice.IConfigurationSettingService;
+import com.zjucsc.application.system.service.iservice.IProtocolIdService;
+import com.zjucsc.application.util.CommonCacheUtil;
+import com.zjucsc.application.util.CommonConfigUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -21,7 +20,9 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.function.Function;
+
+import static com.zjucsc.application.util.CommonCacheUtil.convertIdToName;
+import static com.zjucsc.application.util.CommonConfigUtil.addProtocolFuncodeMeaning;
 
 /**
  * 加载组态配置到内存中 + 保存到本地数据库
@@ -31,14 +32,13 @@ import java.util.function.Function;
 public class InitConfigurationService implements ApplicationRunner {
 
     private final String str_name = "java.lang.String";
-    private final String int_name = "int";
 
-    @Autowired private ConfigurationController configurationController;
-    @Autowired private ConfigurationService configurationService;
+    @Autowired private ConfigurationSettingController configurationSettingController;
+    @Autowired private IConfigurationSettingService iConfigurationSettingService;
     @Autowired private IProtocolIdService iProtocolIdService;
 
     @Override
-    public void run(ApplicationArguments args) throws IllegalAccessException, NoSuchFieldException {
+    public void run(ApplicationArguments args) throws IllegalAccessException, NoSuchFieldException, ProtocolIdNotValidException {
 
         /*
          * INIT PROTOCOL STR TO INT
@@ -54,6 +54,7 @@ public class InitConfigurationService implements ApplicationRunner {
                     String protocol_name = (String) field.get(null);
                     int protocol_id = (int) packet_protocolClass.getDeclaredField(field.getName() + "_ID").get(null);
                     Common.PROTOCOL_STR_TO_INT.put(protocol_id,protocol_name);
+                    CommonConfigUtil.addProtocolFuncodeMeaning(protocol_name,new HashMap<>());
                     protocolIds.add(new ProtocolId(protocol_id , protocol_name));
                 }
             }
@@ -62,48 +63,40 @@ public class InitConfigurationService implements ApplicationRunner {
             List<ProtocolId> list = iProtocolIdService.list();
             for (ProtocolId protocolId : list) {
                 Common.PROTOCOL_STR_TO_INT.put(protocolId.getProtocolId() , protocolId.getProtocolName());
+                CommonConfigUtil.addProtocolFuncodeMeaning(protocolId.getProtocolName(),new HashMap<>());
             }
         }
-
-        if(configurationService.list().size() == 0) {
+        if(iConfigurationSettingService.list().size() == 0) {
             log.info("no configuration in database and ready to load from libs ... ");
             /*
              * INIT ALL FUN_CODE MAP
              */
             ServiceLoader<IProtocolFuncodeMap> serviceLoader = ServiceLoader.load(IProtocolFuncodeMap.class);
-            ArrayList<ConfigurationForNewProtocol> list = new ArrayList<>();
             for (IProtocolFuncodeMap iProtocolFuncodeMap : serviceLoader) {
                 HashMap<Integer, String> funcodeStatements = new HashMap<>();
                 String protocolName = iProtocolFuncodeMap.protocolAnalyzerName();
                 Map<Integer, String> map = iProtocolFuncodeMap.initProtocol();
-                log.info("load configuration : {} \n {} ", protocolName, map);
-                ConfigurationForNewProtocol configurationForNewProtocol = new ConfigurationForNewProtocol();
-                List<ConfigurationForFront.ConfigurationWrapper> wrappers = new ArrayList<>();
+                List<ConfigurationSetting> configurationSettings = new ArrayList<>();
                 for (int fun_code : map.keySet()) {
                     funcodeStatements.put(fun_code, map.get(fun_code));
-                    wrappers.add(new ConfigurationForFront.ConfigurationWrapper(fun_code , map.get(fun_code)));
+                    //添加到protocol_id表
+                    ConfigurationSetting configurationSetting = new ConfigurationSetting();
+                    int protocolId = CommonCacheUtil.convertNameToId(protocolName);
+                    configurationSetting.setProtocolId(protocolId);
+                    configurationSetting.setOpt(map.get(fun_code));
+                    configurationSetting.setFunCode(fun_code);
+                    configurationSettings.add(configurationSetting);
                 }
-                configurationForNewProtocol.setConfigurationWrappers(wrappers);
-                configurationForNewProtocol.setProtocolName(protocolName);
-                list.add(configurationForNewProtocol);
-                Common.CONFIGURATION_MAP.put(protocolName, funcodeStatements);
+                iConfigurationSettingService.saveBatch(configurationSettings);
+                addProtocolFuncodeMeaning(protocolName,funcodeStatements);
             }
-            log.info(" load from libs successfully : \n {} " , Common.CONFIGURATION_MAP);
-            configurationController.addConfiguration(list);
+            log.info(" load CONFIGURATION_MAP from libs successfully : \n {} " , Common.CONFIGURATION_MAP);
         }else{
-            for (Configuration configuration : configurationService.list()) {
-                Common.CONFIGURATION_MAP.computeIfAbsent(Common.PROTOCOL_STR_TO_INT.get(configuration.getProtocol_id()),
-                        new Function<String, HashMap<Integer, String>>() {
-                            @Override
-                            public HashMap<Integer, String> apply(String s) {
-                                HashMap<Integer,String> map = new HashMap<>();
-                                map.put(configuration.getProtocol_id(),s);
-                                return map;
-                            }
-                        });
-                Common.CONFIGURATION_MAP.get(Common.PROTOCOL_STR_TO_INT.get(configuration.getProtocol_id()))
-                        .put(configuration.getProtocol_id() , configuration.getOpt());
+            for (ConfigurationSetting configuration : iConfigurationSettingService.list()) {
+                addProtocolFuncodeMeaning(convertIdToName(configuration.getProtocolId()),
+                        configuration.getFunCode(),configuration.getOpt());
             }
+            log.info(" load CONFIGURATION_MAP from db successfully : \n {} " , Common.CONFIGURATION_MAP);
         }
         /*
          * INIT AUTH
@@ -118,7 +111,6 @@ public class InitConfigurationService implements ApplicationRunner {
                 Common.AUTH_MAP.put(auth,authName);
             }
         }
-        System.out.println("load Common.PROTOCOL_STR_TO_INT : \n" + Common.PROTOCOL_STR_TO_INT);
-        System.out.println("load Common.AUTH_MAP : \n" + Common.AUTH_MAP);
+        log.info("AUTH_MAP : {} " , Common.AUTH_MAP);
     }
 }
