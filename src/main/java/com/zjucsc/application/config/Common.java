@@ -76,12 +76,12 @@ public class Common {
      * String -> 协议
      * OperationAnalyzer -> 报文操作分析器
      */
-    public static ConcurrentHashMap<Integer,ConcurrentHashMap<String, OperationAnalyzer>> OPERATION_FILTER =
+    public static ConcurrentHashMap<String,ConcurrentHashMap<String, OperationAnalyzer>> OPERATION_FILTER =
             new ConcurrentHashMap<>();
     /**
      * 设备ID
      */
-    public static ConcurrentHashMap<Integer,FiveDimensionAnalyzer> FV_DIMENSION_FILTER = new ConcurrentHashMap<Integer,FiveDimensionAnalyzer>(){
+    public static ConcurrentHashMap<String,FiveDimensionAnalyzer> FV_DIMENSION_FILTER = new ConcurrentHashMap<String,FiveDimensionAnalyzer>(){
 
     };
 

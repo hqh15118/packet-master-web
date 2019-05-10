@@ -16,7 +16,7 @@ public class FvDimensionFilter {
     private int id;
     @TableField("device_id")
     @NotBlank
-    private int deviceId;
+    private String deviceId;
     @TableField("user_name")
     private String userName;
     @TableField("filter_type")

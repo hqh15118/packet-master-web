@@ -13,7 +13,7 @@ import static com.zjucsc.application.util.CommonCacheUtil.convertIdToName;
 @Slf4j
 public class CommonOptFilterUtil {
 
-    public static void addOrUpdateAnalyzer(int deviceId, String protocolName, OperationAnalyzer analyzer) throws OptFilterNotValidException {
+    public static void addOrUpdateAnalyzer(String deviceId, String protocolName, OperationAnalyzer analyzer) throws OptFilterNotValidException {
         if (analyzer == null || analyzer.getAnalyzer() == null){
             throw new OptFilterNotValidException("OperationAnalyzer为空");
         }

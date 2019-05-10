@@ -18,7 +18,7 @@ public class OptFilter {
     private String user_name;
     @TableField("device_id")
     @NotBlank
-    private int deviceId;
+    private String deviceId;
     @NotBlank
     @TableField("filter_type")
     private int filterType;

@@ -10,5 +10,5 @@ import java.util.List;
  * @author hongqianhui
  */
 public interface FvDimensionFilterMapper extends BaseMapper<FvDimensionFilter> {
-    List<FvDimensionFilter> selectByDeviceId(@Param("device_id") int deviceId);
+    List<FvDimensionFilter> selectByDeviceId(@Param("device_id") String deviceId);
 }

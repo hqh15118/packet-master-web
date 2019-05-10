@@ -62,13 +62,13 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
         Common.OPERATION_FILTER.forEach(analyzerThreadlocalForOperation.get().setPacketWrapper(packetWrapper,funCode));
     }
 
-    private static class AnalyzerConsumerForOperation extends AbstractAnalyzerConsumer implements BiConsumer<Integer, ConcurrentHashMap<String, OperationAnalyzer>>{
+    private static class AnalyzerConsumerForOperation extends AbstractAnalyzerConsumer implements BiConsumer<String, ConcurrentHashMap<String, OperationAnalyzer>>{
 
         private FiveDimensionPacketWrapper packetWrapper;
         private String funCode = null;
 
         @Override
-        public void accept(Integer integer, ConcurrentHashMap<String, OperationAnalyzer> stringOperationAnalyzerConcurrentHashMap) {
+        public void accept(String integer, ConcurrentHashMap<String, OperationAnalyzer> stringOperationAnalyzerConcurrentHashMap) {
             OperationAnalyzer operationAnalyzer = null;
             if ((operationAnalyzer = stringOperationAnalyzerConcurrentHashMap.get(packetWrapper.fiveDimensionPacket.protocol))!=null){
                 /*
@@ -99,7 +99,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
         }
     }
 
-    private static class AnalyzerConsumerForFVDimension extends AbstractAnalyzerConsumer implements BiConsumer<Integer, FiveDimensionAnalyzer>{
+    private static class AnalyzerConsumerForFVDimension extends AbstractAnalyzerConsumer implements BiConsumer<String, FiveDimensionAnalyzer>{
 
         private FiveDimensionPacketWrapper packetWrapper;
         public AnalyzerConsumerForFVDimension setPacketWrapper(FiveDimensionPacketWrapper packetWrapper){
@@ -107,7 +107,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
             return this;
         }
         @Override
-        public void accept(Integer integer, FiveDimensionAnalyzer fiveDimensionAnalyzer) {
+        public void accept(String integer, FiveDimensionAnalyzer fiveDimensionAnalyzer) {
             BadPacket badPacket = ((BadPacket)fiveDimensionAnalyzer.analyze(packetWrapper));
             if (badPacket!=null){
                 sendBadPacket(badPacket);

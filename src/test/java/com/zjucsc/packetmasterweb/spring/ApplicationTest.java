@@ -113,8 +113,8 @@ public class ApplicationTest {
         filter1.setFilterType(1);
         filter2.setFun_code(4);
         filter2.setFilterType(0);
-        filter1.setDeviceId(10);
-        filter2.setDeviceId(10);
+        filter1.setDeviceId("10");
+        filter2.setDeviceId("10");
         OptFilter.OptFilterForFront operationFilterForFront
                 = new OptFilter.OptFilterForFront();
         operationFilterForFront.setProtocolId(MODBUS_ID);

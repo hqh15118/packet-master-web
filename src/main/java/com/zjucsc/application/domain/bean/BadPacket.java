@@ -27,7 +27,7 @@ public class BadPacket {
     private DangerLevel dangerLevel;
     @ToString.Exclude
     private StringBuilder sb;
-    private int deviceId;
+    private String deviceId;
 
 
     public void addComment(String comment) {

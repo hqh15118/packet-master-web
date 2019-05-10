@@ -48,7 +48,7 @@ public class OptFilterServiceImpl extends ServiceImpl<OptFilterMapper, OptFilter
     @Override
     public CompletableFuture<Exception> addOperationFilter(OptFilterForFront optFilterForFront) throws ProtocolIdNotValidException, OptFilterNotValidException {
         StringBuilder sb = new StringBuilder();
-        int deviceId = optFilterForFront.getDeviceId();
+        String deviceId = optFilterForFront.getDeviceId();
         String userName = optFilterForFront.getUserName();
         int protocolId = optFilterForFront.getProtocolId();
 
@@ -138,7 +138,7 @@ public class OptFilterServiceImpl extends ServiceImpl<OptFilterMapper, OptFilter
 
 
     private void addOptFilter(List<OptFilter> optFilterList , int type ,
-                              HashMap<Integer,String> filterMap , int deviceId ,
+                              HashMap<Integer,String> filterMap , String deviceId ,
                               String protocolName){
         filterMap.forEach(new BiConsumer<Integer, String>() {
             @Override

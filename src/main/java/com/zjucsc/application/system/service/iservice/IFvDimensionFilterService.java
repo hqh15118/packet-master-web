@@ -12,5 +12,5 @@ import java.util.concurrent.CompletableFuture;
  */
 public interface IFvDimensionFilterService extends IService<FvDimensionFilter> {
     CompletableFuture<Exception> addFvDimensionFilter(List<FvDimensionFilter> fvDimensionFilters);
-    CompletableFuture<List<FvDimensionFilter>> getTargetExistIdFilter(int deviceId , boolean cached) throws DeviceNotValidException;
+    CompletableFuture<List<FvDimensionFilter>> getTargetExistIdFilter(String deviceId , boolean cached) throws DeviceNotValidException;
 }
