@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zjucsc.application.system.mapper.ConfigurationSettingMapper">
+    <resultMap id="configuration" type="com.zjucsc.application.system.entity.ConfigurationSetting">
+        <id column="protocol_id" property="protocolId" jdbcType="NUMERIC"/>
+        <id column="fun_code" property="funCode" jdbcType="NUMERIC"/>
+        <id column="opt" property="opt" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- 查询分页总数 -->
+    <select id="selectLikeCount" resultType="java.lang.Integer" parameterType="java.lang.String">
+        SELECT COUNT(*) FROM configuration_setting
+        <where>
+            <if test="codeDes!=null and codeDes!=''" >
+                <bind name="zz1" value="'%' + codeDes + '%'" />
+                opt like #{zz1} AND protocol_id=#{protocolId}
+            </if>
+            <if test="codeDes==null or codeDes=''">
+                protocol_id=#{protocolId}
+            </if>
+        </where>
+    </select>
+
+    <!--规则查询-->
+    <select id="selectPageInfo"  resultMap="configuration" parameterType="java.lang.String">
+        SELECT * FROM configuration_setting
+        <where>
+            <if test="codeDes!=null and codeDes!=''">
+                <bind name="zz" value="'%' + codeDes + '%'"/>
+                opt LIKE #{zz}  AND protocol_id= #{protocolId}
+            </if>
+            <if test="codeDes==null or codeDes=''">
+                protocol_id=#{protocolId}
+            </if>
+        </where>
+        LIMIT #{startIndex} , #{endIndex}
+    </select>
+
+    <update id="updateFuncode" >
+        UPDATE configuration_setting SET opt=#{opt} WHERE protocol_id=#{protocol_id} AND fun_code=#{fun_code};
+    </update>
+
+
+
+</mapper>

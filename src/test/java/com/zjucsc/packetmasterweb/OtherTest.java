@@ -3,7 +3,6 @@ package com.zjucsc.packetmasterweb;
 import com.alibaba.fastjson.JSON;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.PACKET_PROTOCOL;
-import com.zjucsc.application.domain.bean.TsharkCommand;
 import com.zjucsc.application.domain.exceptions.OpenCaptureServiceException;
 import com.zjucsc.application.domain.filter.OperationPacketFilter;
 import com.zjucsc.application.pcap4j.PacketListenHandler;
@@ -13,18 +12,12 @@ import com.zjucsc.application.tshark.handler.PacketDecodeHandler;
 import com.zjucsc.application.tshark.handler.PacketSendHandler;
 import com.zjucsc.application.tshark.decode.DefaultPipeLine;
 import com.zjucsc.application.util.ByteUtils;
-import com.zjucsc.application.util.PcapUtils;
 import com.zjucsc.packetmasterweb.new_format_test.TimeStampBean;
 import org.junit.Test;
 import org.pcap4j.core.*;
-import org.xmlunit.util.Convert;
 
 import java.io.*;
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.Executors;
 
 /**
@@ -157,16 +150,17 @@ public class OtherTest {
 //                .tsharkPath("tshark")
 //                .outputType(TsharkCommand.OutputType.EK)
 //                .ek_E("eth.trailer")
-//                .ek_E("-e eth.fcs")
+//                .ek_E(" eth.fcs")
 //                .pcapFilePath("/Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap/question_1531953261_01.pcap")
 //                .build();
-        Process process = PacketMain.runTargetCommand(Common.CAPTURE_COMMAND_MAC);
+        Process process = PacketMain.runTargetCommand(Common.CAPTURE_COMMAND_WIN);
         //0 packet --> 526
         //2000 packets --> 942
         int packetNum = 0;
         TimeStampBean timeStampBean = null;
         //PcapHandle handle = Pcaps.openOffline("/Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap/question_1531953261_01.pcap");
-        try (InputStream is = process.getInputStream(); BufferedInputStream bufferedInputStream = new BufferedInputStream(is)) {
+        try (InputStream is = process.getInputStream();
+             BufferedInputStream bufferedInputStream = new BufferedInputStream(is)) {
             long startTime = System.currentTimeMillis();
             byte[] buffered = new byte[1024];
             while((bufferedInputStream.read(buffered))>0){
@@ -214,7 +208,7 @@ public class OtherTest {
         int packetNum = 0;
         TimeStampBean timeStampBean = null;
         //PcapHandle handle = Pcaps.openOffline("/Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap/question_1531953261_01.pcap");
-        try (InputStream is = process.getInputStream(); BufferedReader reader = new BufferedReader(new InputStreamReader(is) , 16 * 1024)) {
+        try (InputStream is = process.getInputStream(); BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
             long startTime = System.currentTimeMillis();
             for (; ; ) {
                 String str;

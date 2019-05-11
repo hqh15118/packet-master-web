@@ -64,24 +64,24 @@ public class PacketListenHandler implements PacketListener {
         /*
          * 探测线程，每隔一段时间
          */
-        Thread taskAndPacketDetectThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for (;;){
-                    try {
-                        Thread.sleep(15000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    logger.info("packet queue size : {} , worker queue packet size : {}" +
-                            ";;has received {} no-tcp packets"  , packetLinkedBlockingQueue.size() , executorService.getQueue().size(),
-                            id );
-                }
-            }
-        });
-
+//        Thread taskAndPacketDetectThread = new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                for (;;){
+//                    try {
+//                        Thread.sleep(15000);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                    logger.info("packet queue size : {} , worker queue packet size : {}" +
+//                            ";;has received {} no-tcp packets"  , packetLinkedBlockingQueue.size() , executorService.getQueue().size(),
+//                            id );
+//                }
+//            }
+//        });
+//
         packetCollectThread.start();
-        taskAndPacketDetectThread.start();
+//        taskAndPacketDetectThread.start();
     }
 
     @Override

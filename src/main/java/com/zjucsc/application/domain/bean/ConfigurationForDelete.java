@@ -7,5 +7,5 @@ import java.util.List;
 @Data
 public class ConfigurationForDelete {
     private List<Integer> funCodes;
-    private String protocolName;
+    private int protocolId;
 }
