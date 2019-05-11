@@ -243,4 +243,13 @@ public class OtherTest {
         }
     }
 
+
+    @Test
+    public void string_test(){
+        String s = "";
+        String s1 = "";
+        assert s1 == s;
+        assert s1.equals(s);
+    }
+
 }
