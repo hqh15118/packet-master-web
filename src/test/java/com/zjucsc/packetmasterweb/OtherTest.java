@@ -12,9 +12,11 @@ import com.zjucsc.application.tshark.handler.PacketDecodeHandler;
 import com.zjucsc.application.tshark.handler.PacketSendHandler;
 import com.zjucsc.application.tshark.decode.DefaultPipeLine;
 import com.zjucsc.application.util.ByteUtils;
+import com.zjucsc.application.util.PcapUtils;
 import com.zjucsc.packetmasterweb.new_format_test.TimeStampBean;
 import org.junit.Test;
 import org.pcap4j.core.*;
+import org.pcap4j.packet.Packet;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -244,6 +246,22 @@ public class OtherTest {
         String s1 = "";
         assert s1 == s;
         assert s1.equals(s);
+    }
+
+    @Test
+    public void pcapsend() throws PcapNativeException, NotOpenException, InterruptedException {
+        PcapHandle handle = Pcaps.openOffline("/Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap/question_1531953261_01.pcap");
+        PcapHandle sendHandler = PcapUtils.openDevice("en0",65536,1000);
+        handle.loop(-1, new PacketListener() {
+            @Override
+            public void gotPacket(Packet packet) {
+                try {
+                    sendHandler.sendPacket(packet);
+                } catch (PcapNativeException | NotOpenException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
 }

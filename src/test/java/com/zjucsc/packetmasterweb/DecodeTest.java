@@ -1,6 +1,7 @@
 package com.zjucsc.packetmasterweb;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.annotation.JSONField;
 import com.zjucsc.application.domain.exceptions.OpenCaptureServiceException;
 import com.zjucsc.application.tshark.capture.PacketMain;
 import com.zjucsc.application.tshark.domain.packet.InitPacket;
@@ -8,13 +9,13 @@ import com.zjucsc.application.tshark.domain.packet.layers.ModbusPacket;
 import com.zjucsc.application.tshark.domain.packet.layers.S7Packet;
 import com.zjucsc.application.util.ByteUtils;
 import com.zjucsc.application.util.PacketDecodeUtil;
+import com.zjucsc.packetmasterweb.tshark_test.demos.packets.S7CommPacket;
 import org.junit.Test;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Scanner;
 
 public class DecodeTest {
     public String modbus_json = "{\"timestamp\" : \"946695632201\", \"layers\" : {\"frame_protocols\": [\"eth:ethertype:ip:tcp:mbtcp:modbus\"],\"eth_dst\": [\"00:0c:29:9e:7a:44\"],\"eth_src\": [\"00:0c:29:75:b2:38\"],\"ip_src\": [\"192.168.254.134\"],\"ip_addr\": [\"192.168.254.134\",\"192.168.254.143\"],\"tcp_srcport\": [\"1075\"],\"tcp_dstport\": [\"502\"],\"modbus_func_code\": [\"2\"],\"tcp_payload\": [\"d9:04:00:00:00:06:01:02:00:00:00:0b\"]}}";
@@ -85,4 +86,36 @@ public class DecodeTest {
         System.out.println(System.currentTimeMillis() - time1);
     }
 
+
+    @Test
+    public void decodeS7Packet(){
+        //20000 --> 500ms
+        String str = "{\"timestamp\":\"1557129889033\",\"layers\":{\"frame_protocols\":[\"eth:ethertype:ip:tcp:tpkt:cotp:s7comm\"],\"eth_dst\":[\"00:0c:29:49:7e:9f\"],\"frame_cap_len\":[\"109\"],\"eth_src\":[\"00:0c:29:75:b2:38\"],\"ip_src\":[\"192.168.254.134\"],\"ip_dst\":[\"192.168.254.34\"],\"tcp_srcport\":[\"1073\"],\"tcp_dstport\":[\"102\"],\"s7comm_param_func\":[\"0x00000004\"],\"tcp_payload\":[\"0300001f02f08032010000ccc1000e00000401120a10020011000184000020\"],\"s7comm_header_rosctr\":[\"1\"]}}";
+        S7CommPacket s7Packet;
+        long time1 = System.currentTimeMillis();
+        for (int i = 0; i < 20000; i++) {
+            s7Packet = JSON.parseObject(str,S7CommPacket.class);
+        }
+        System.out.println(System.currentTimeMillis() - time1);
+    }
+
+    public static class TestBean{
+        @JSONField(name = "layers")
+        public String frame_protocols;
+
+        @Override
+        public String toString() {
+            return "TestBean{" +
+                    "frame_protocols='" + frame_protocols + '\'' +
+                    '}';
+        }
+    }
+
+    @Test
+    public void decodeS7Packet1(){
+        //20000 --> 500ms
+        String str = "{\"timestamp\":\"1557129889033\",\"layers\":{\"frame_protocols\":[\"eth:ethertype:ip:tcp:tpkt:cotp:s7comm\"],\"eth_dst\":[\"00:0c:29:49:7e:9f\"],\"frame_cap_len\":[\"109\"],\"eth_src\":[\"00:0c:29:75:b2:38\"],\"ip_src\":[\"192.168.254.134\"],\"ip_dst\":[\"192.168.254.34\"],\"tcp_srcport\":[\"1073\"],\"tcp_dstport\":[\"102\"],\"s7comm_param_func\":[\"0x00000004\"],\"tcp_payload\":[\"0300001f02f08032010000ccc1000e00000401120a10020011000184000020\"],\"s7comm_header_rosctr\":[\"1\"]}}";
+        TestBean s7Packet = JSON.parseObject(str,TestBean.class);
+        System.out.println(s7Packet);
+    }
 }
