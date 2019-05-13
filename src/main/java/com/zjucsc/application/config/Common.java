@@ -2,14 +2,8 @@ package com.zjucsc.application.config;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.zjucsc.application.domain.analyzer.FiveDimensionAnalyzer;
-import com.zjucsc.application.domain.analyzer.OperationAnalyzer;
 import com.zjucsc.application.domain.bean.CollectorState;
-import com.zjucsc.application.domain.filter.FiveDimensionPacketFilter;
-import com.zjucsc.application.domain.filter.OperationPacketFilter;
 import com.zjucsc.application.handler.ThreadExceptionHandler;
-import com.zjucsc.application.util.AbstractAnalyzer;
-import org.apache.poi.sl.draw.BitmapImageRenderer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -71,19 +65,19 @@ public class Common {
     };
     */
 
+
     /**
      * Integer 设备ID
      * String -> 协议
      * OperationAnalyzer -> 报文操作分析器
      */
-    public static ConcurrentHashMap<String,ConcurrentHashMap<String, OperationAnalyzer>> OPERATION_FILTER =
+    public static ConcurrentHashMap<String,ConcurrentHashMap<String, com.zjucsc.application.tshark.analyzer.OperationAnalyzer>> OPERATION_FILTER_PRO =
             new ConcurrentHashMap<>();
+
     /**
      * 设备ID
      */
-    public static ConcurrentHashMap<String,FiveDimensionAnalyzer> FV_DIMENSION_FILTER = new ConcurrentHashMap<String,FiveDimensionAnalyzer>(){
-
-    };
+    public static ConcurrentHashMap<String,com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer> FV_DIMENSION_FILTER_PRO = new ConcurrentHashMap<>();
 
     /*
     public static ConcurrentHashMap<Integer, AbstractAnalyzer> BAD_PACKET_FILTER_PRO_2 = new ConcurrentHashMap<Integer, AbstractAnalyzer>(){

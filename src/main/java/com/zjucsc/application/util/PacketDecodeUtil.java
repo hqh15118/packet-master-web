@@ -123,7 +123,7 @@ public class PacketDecodeUtil {
      * @param protocol 协议
      * @return 功能码int
      */
-    public static int decodeFuncode(String str_fun_code , String protocol){
+    public static int decodeFuncode(String protocol , String str_fun_code ){
         int fun_code = -1;
         try {
             switch (protocol) {
@@ -165,6 +165,40 @@ public class PacketDecodeUtil {
             return MODBUS;
         }else if(protocolStack.endsWith("s7comm")){
             String rosctr = initPacket.layers.s7comm_header_rosctr[0];
+            if (S7Packet.ACK_DATA.equals(rosctr)){
+                return S7_Ack_data;
+            }else if (S7Packet.JOB.equals(rosctr)) {
+                return S7_JOB;
+            }else{
+                return S7;
+            }
+        }else{
+            return protocolStack;
+        }
+    }
+
+    /**
+     * 用于识别报文协议
+     * @param protocolStack 协议栈
+     * @param otherInfo 用于识别具体协议的其他信息
+     * @return 系统格式的协议信息
+     * @see com.zjucsc.application.config.PACKET_PROTOCOL
+     */
+    public static String discernPacket(String protocolStack ,  Object...otherInfo){
+        /*
+        switch (protocolStack.substring(protocolStack.length() - 3)){
+            case "bus": return PacketInfo.PACKET_PROTOCOL.MODBUS;
+            case "omm" : return PacketInfo.PACKET_PROTOCOL.S7;
+            default: return PacketInfo.PACKET_PROTOCOL.OTHER;
+        }
+        */
+        if (protocolStack.endsWith("tcp")){
+            return TCP;
+        }
+        if (protocolStack.endsWith("modbus")){
+            return MODBUS;
+        }else if(protocolStack.endsWith("s7comm")){
+            String rosctr = ((String) otherInfo[0]);
             if (S7Packet.ACK_DATA.equals(rosctr)){
                 return S7_Ack_data;
             }else if (S7Packet.JOB.equals(rosctr)) {

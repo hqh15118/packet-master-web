@@ -1,32 +1,23 @@
 package com.zjucsc.application.system.controller;
 
 import com.corundumstudio.socketio.SocketIOClient;
-import com.zjucsc.application.domain.bean.NetworkInterface;
 import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
 import com.zjucsc.application.socketio.SocketServiceCenter;
 import com.zjucsc.application.system.service.impl.PacketServiceImpl;
-import com.zjucsc.application.system.service.PcapMainService;
-import com.zjucsc.application.system.service.TsharkMainService;
-import com.zjucsc.application.tshark.capture.AbstractPacketService;
 import com.zjucsc.application.util.PcapUtils;
 import com.zjucsc.base.BaseResponse;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.socketio.MainServer;
 import com.zjucsc.application.domain.bean.CaptureService;
 import com.zjucsc.application.domain.exceptions.OpenCaptureServiceException;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
-import sun.applet.Main;
 
 import java.net.SocketException;
-import java.util.List;
 
-import static com.zjucsc.application.config.Common.CAPTURE_COMMAND_MAC;
-import static com.zjucsc.application.config.Common.CAPTURE_COMMAND_WIN;
 import static com.zjucsc.application.config.Common.HTTP_STATUS_CODE.SYS_ERROR;
 
 @Slf4j
@@ -36,11 +27,6 @@ public class PacketController {
 
     @Qualifier("packet_service")
     @Autowired private PacketServiceImpl packetService;
-
-    @Qualifier("tshark_main_service")
-    @Autowired private TsharkMainService tsharkMainService;
-
-    @Autowired private PcapMainService pcapMainService;
 
     @ApiOperation(value="开始抓包")
     @RequestMapping(value = "/start_service" , method = RequestMethod.POST)
@@ -65,41 +51,6 @@ public class PacketController {
             }
         }
 
-        tsharkMainService.start(CAPTURE_COMMAND_WIN, service.getService_name(),new AbstractPacketService.ProcessCallback() {
-            @Override
-            public void error(Exception e) {
-
-            }
-
-            @Override
-            public void start() {
-
-            }
-
-            @Override
-            public void end(Object...objects) {
-                synchronized (lock1){
-                    Common.hasStartedHost.remove((String)objects[1]);
-                }
-            }
-        });
-
-//        pcapMainService.start(service.getService_name(), new AbstractPacketService.ProcessCallback() {
-//            @Override
-//            public void error(Exception e) {
-//
-//            }
-//
-//            @Override
-//            public void start() {
-//                log.info("pcap start in device : {} ip : {} " , service.getService_name() , service.getService_ip());
-//            }
-//
-//            @Override
-//            public void end(Object... objs) {
-//
-//            }
-//        });
     }
 
     @ApiOperation("开启websocket服务")
@@ -153,8 +104,7 @@ public class PacketController {
             Common.hasStartedHost.remove(service.getService_name());
         }
         log.info("close device : {} all device : {} " , service.getService_name() , Common.hasStartedHost);
-        tsharkMainService.stop();
-        //pcapMainService.stop();
+
         return BaseResponse.OK();
     }
 }

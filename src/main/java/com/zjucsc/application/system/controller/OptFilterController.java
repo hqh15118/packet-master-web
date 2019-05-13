@@ -62,7 +62,7 @@ public class OptFilterController {
      */
     @ApiOperation("删除功能码规则[分别根据device/protocolId/funcode删除]")
     @DeleteMapping("/delete_opt_filter")
-    public BaseResponse deleteOptFilter(@RequestParam int deviceId , @RequestParam int funcode , @RequestParam int protocolId) throws ProtocolIdNotValidException {
+    public BaseResponse deleteOptFilter(@RequestParam String deviceId , @RequestParam int funcode , @RequestParam int protocolId) throws ProtocolIdNotValidException {
         HashMap<String,Object> map = new HashMap<>();
         map.put("device_id" , deviceId);
         if (funcode > 0 ){

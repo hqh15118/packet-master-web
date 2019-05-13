@@ -2,7 +2,6 @@ package com.zjucsc.packetmasterweb.tshark_test.demos.packets;
 
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.zjucsc.packetmasterweb.tshark_test.demos.packets.FvDimensionLayer;
 
 import java.util.Arrays;
 

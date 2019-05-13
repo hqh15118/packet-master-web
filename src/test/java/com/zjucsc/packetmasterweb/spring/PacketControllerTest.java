@@ -5,6 +5,9 @@ import com.zjucsc.application.domain.bean.CaptureService;
 import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
 import com.zjucsc.application.system.controller.PacketController;
 import com.zjucsc.application.system.service.iservice.PacketService;
+import com.zjucsc.application.tshark.capture.CapturePacketService;
+import com.zjucsc.application.tshark.capture.CapturePacketServiceImpl;
+import com.zjucsc.application.tshark.capture.ProcessCallback;
 import com.zjucsc.packetmasterweb.util.Util;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +22,7 @@ import java.net.SocketException;
 public class PacketControllerTest {
 
     @Autowired private PacketController packetController;
+    @Autowired private CapturePacketServiceImpl capturePacketService;
 
     @Test
     public void getAllDevice() throws SocketException {
@@ -26,21 +30,29 @@ public class PacketControllerTest {
     }
 
     @Test
-    public void startCapture() throws InterruptedException, DeviceNotValidException {
-        CaptureService service = new CaptureService();
-        service.setService_name("\\Device\\NPF_{8E98ECE7-BD55-4074-B5B8-2D357F85491A}");
-        service.setService_ip("192.168.0.121");
-        packetController.startCaptureService(service);
+    public void startCapture() throws InterruptedException {
+        //modbus set -c 1 ok
+        //s7 set -c 2   ok
+        capturePacketService.start(new ProcessCallback<String, String>() {
+            @Override
+            public void error(Exception e) {
+
+            }
+
+            @Override
+            public void start(String start) {
+                System.out.println("start : ");
+                System.out.println(start);
+            }
+
+            @Override
+            public void end(String end) {
+
+            }
+        });
         Thread.sleep(10000);
     }
 
-    @Test
-    public void stopCapture() throws InterruptedException, DeviceNotValidException {
-        startCapture();
-        CaptureService service = new CaptureService();
-        service.setService_name("\\Device\\NPF_{8E98ECE7-BD55-4074-B5B8-2D357F85491A}");
-        //service.setService_ip("192.168.0.121");
-        packetController.stopService(service);
-        Thread.sleep(10000000);
-    }
+
+
 }

@@ -1,17 +1,15 @@
 package com.zjucsc.application.system.service.impl;
 
-
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zjucsc.application.config.Common;
-import com.zjucsc.application.domain.analyzer.OperationAnalyzer;
 import com.zjucsc.application.domain.bean.OptFilterForFront;
 import com.zjucsc.application.domain.exceptions.OptFilterNotValidException;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
-import com.zjucsc.application.domain.filter.OperationPacketFilter;
 import com.zjucsc.application.system.entity.OptFilter;
 import com.zjucsc.application.system.mapper.OptFilterMapper;
 import com.zjucsc.application.system.service.iservice.IOptFilterService;
+import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
+import com.zjucsc.application.tshark.filter.OperationPacketFilter;
 import com.zjucsc.application.util.CommonConfigUtil;
 import com.zjucsc.application.util.CommonOptFilterUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -87,15 +85,15 @@ public class OptFilterServiceImpl extends ServiceImpl<OptFilterMapper, OptFilter
         CommonOptFilterUtil.addOrUpdateAnalyzer(deviceId,convertIdToName(protocolId),new OperationAnalyzer(operationPacketFilter));  //替换旧的过滤规则
         log.info("addOperationFilter [device id :  {} ; protocol id : {} protocol name {} ] : new operation filter of {} \n" +
                         "and OPERATION_FILTER is {} " ,
-                deviceId , protocolId , convertIdToName(protocolId) , operationPacketFilter , Common.OPERATION_FILTER);
+                deviceId , protocolId , convertIdToName(protocolId) , operationPacketFilter , Common.OPERATION_FILTER_PRO);
         return CompletableFuture.completedFuture(null);
     }
 
     @Async
     @Override
-    public CompletableFuture<List<Integer>> getTargetExistIdFilter(int deviceId, int type , boolean cached , int protocolId) throws ProtocolIdNotValidException {
+    public CompletableFuture<List<Integer>> getTargetExistIdFilter(String deviceId, int type , boolean cached , int protocolId) throws ProtocolIdNotValidException {
         if (cached){
-            ConcurrentHashMap<String, OperationAnalyzer> map = Common.OPERATION_FILTER.get(deviceId);
+            ConcurrentHashMap<String, OperationAnalyzer> map = Common.OPERATION_FILTER_PRO.get(deviceId);
             if (map == null){
                 throw new ProtocolIdNotValidException("缓存中不存在ID为 " + deviceId + " 的规则");
             }
@@ -132,7 +130,7 @@ public class OptFilterServiceImpl extends ServiceImpl<OptFilterMapper, OptFilter
     }
 
     @Override
-    public List<Integer> selectTargetOptFilter(int device, int type, int protocolId) {
+    public List<Integer> selectTargetOptFilter(String device, int type, int protocolId) {
         return this.baseMapper.selectTargetOptFilter(device,type,protocolId);
     }
 

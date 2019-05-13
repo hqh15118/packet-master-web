@@ -1,6 +1,6 @@
 package com.zjucsc.packetmasterweb;
 
-import com.zjucsc.application.domain.filter.OperationPacketFilter;
+import com.zjucsc.application.tshark.filter.OperationPacketFilter;
 import com.zjucsc.application.util.AbstractAnalyzer;
 
 /**

@@ -1,7 +1,6 @@
 package com.zjucsc.packetmasterweb.tshark_test.demos.packets;
 
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * #project packet-master-web
@@ -18,7 +17,7 @@ public class ModbusPacket {
 
     public LayersBean layers;
 
-    public static class LayersBean extends FvDimensionLayer{
+    public static class LayersBean extends FvDimensionLayer {
         public String[] modbus_func_code;
 
         @Override

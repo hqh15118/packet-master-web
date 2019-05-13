@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class OptRulePullForFront {
-    private int deviceId;
+    private String deviceId;
     private int type;
     private int cached;
     private int protocolId;

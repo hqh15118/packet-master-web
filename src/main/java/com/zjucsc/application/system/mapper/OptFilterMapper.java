@@ -10,6 +10,6 @@ import java.util.List;
  */
 public interface OptFilterMapper extends BaseMapper<OptFilter> {
 
-    List<Integer> selectTargetOptFilter(@Param("device_id") int device, @Param("type") int type,
+    List<Integer> selectTargetOptFilter(@Param("device_id") String device, @Param("type") int type,
                                           @Param("protocolId") int protocolId);
 }
