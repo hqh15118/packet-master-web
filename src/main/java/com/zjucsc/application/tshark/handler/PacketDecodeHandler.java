@@ -67,7 +67,7 @@ public class PacketDecodeHandler extends AbstractAsyncHandler<FiveDimensionPacke
             return ((PacketInfo.PacketWrapper) t).fiveDimensionPacketWrapper;
         }
         //System.out.println("decode packet handler : " + wrapper);
-        final byte[] payload = PacketDecodeUtil.hexStringToByteArray(wrapper.tcpPayload);
+        final byte[] payload = PacketDecodeUtil.hexStringToByteArray2(wrapper.tcpPayload);
         collectorStateChangePool.execute(new Runnable() {
             @Override
             public void run() {

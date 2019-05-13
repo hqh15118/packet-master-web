@@ -8261,3 +8261,133 @@ and OPERATION_FILTER is {715580186={modbus=OperationPacketFilter{whiteMap={0=unk
 2019-05-10 16:31:08.176 febs [SimpleAsyncTaskExecutor-25] INFO  p6spy - 1557477068176|0|statement|connection 307|url jdbc:mysql://localhost:3306/packet_master_web?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC|SELECT fun_code from  opt_filter where device_id=? AND filter_type=? AND protocol_id=?|SELECT fun_code from  opt_filter where device_id=479768296 AND filter_type=1 AND protocol_id=9
 2019-05-10 16:31:08.201 febs [SimpleAsyncTaskExecutor-26] INFO  p6spy - 1557477068201|0|statement|connection 308|url jdbc:mysql://localhost:3306/packet_master_web?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC|SELECT fun_code from  opt_filter where device_id=? AND filter_type=? AND protocol_id=?|SELECT fun_code from  opt_filter where device_id=479768296 AND filter_type=1 AND protocol_id=40
 2019-05-10 16:31:08.232 febs [SimpleAsyncTaskExecutor-27] INFO  p6spy - 1557477068232|0|statement|connection 309|url jdbc:mysql://localhost:3306/packet_master_web?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC|SELECT fun_code from  opt_filter where device_id=? AND filter_type=? AND protocol_id=?|SELECT fun_code from  opt_filter where device_id=479768296 AND filter_type=1 AND protocol_id=11
+2019-05-10 17:18:30.520 febs [main] INFO  c.zjucsc.PacketMasterWebApplication - Starting PacketMasterWebApplication on SC-201705181836 with PID 6828 (C:\Users\Administrator\IdeaProjects\packet-master-web\target\classes started by Administrator in C:\Users\Administrator\IdeaProjects\packet-master-web)
+2019-05-10 17:18:30.528 febs [main] INFO  c.zjucsc.PacketMasterWebApplication - No active profile set, falling back to default profiles: default
+2019-05-10 17:18:32.977 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'spring.datasource.dynamic-com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties' of type [com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-10 17:18:33.076 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration' of type [com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration$$EnhancerBySpringCGLIB$$5b2c2da3] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-10 17:18:33.085 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'dsProcessor' of type [com.baomidou.dynamic.datasource.processor.DsHeaderProcessor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-10 17:18:33.089 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'dynamicDatasourceAnnotationAdvisor' of type [com.baomidou.dynamic.datasource.aop.DynamicDataSourceAnnotationAdvisor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-10 17:18:33.135 febs [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$f19dbcd2] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-05-10 17:18:33.535 febs [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port(s): 8080 (http)
+2019-05-10 17:18:33.650 febs [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-192.168.0.121-8080"]
+2019-05-10 17:18:33.661 febs [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2019-05-10 17:18:33.662 febs [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.17]
+2019-05-10 17:18:33.847 febs [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2019-05-10 17:18:33.847 febs [main] INFO  o.s.web.context.ContextLoader - Root WebApplicationContext: initialization completed in 3094 ms
+2019-05-10 17:18:34.133 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 动态数据源-检测到并开启了p6spy
+2019-05-10 17:18:34.143 febs [main] INFO  com.zaxxer.hikari.HikariDataSource - primary - Starting...
+2019-05-10 17:18:34.824 febs [main] INFO  com.zaxxer.hikari.HikariDataSource - primary - Start completed.
+2019-05-10 17:18:34.824 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 初始共加载 1 个数据源
+2019-05-10 17:18:34.824 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 动态数据源-加载 primary 成功
+2019-05-10 17:18:34.824 febs [main] INFO  c.b.d.d.DynamicRoutingDataSource - 当前的默认数据源是单数据源，数据源名为 primary
+2019-05-10 17:18:35.108 febs [main] INFO  o.s.b.a.e.w.ServletEndpointRegistrar - Registered '/actuator/jolokia' to jolokia-actuator-endpoint
+2019-05-10 17:18:36.805 febs [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 16 endpoint(s) beneath base path '/actuator'
+2019-05-10 17:18:36.933 febs [main] INFO  o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService
+2019-05-10 17:18:36.934 febs [main] INFO  o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'global_single_thread_executor'
+2019-05-10 17:18:36.939 febs [main] INFO  o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService
+2019-05-10 17:18:36.940 febs [main] INFO  o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'attack_info_thread_pool'
+2019-05-10 17:18:37.457 febs [main] INFO  o.s.s.c.ThreadPoolTaskScheduler - Initializing ExecutorService
+2019-05-10 17:18:37.705 febs [main] INFO  o.s.s.c.ThreadPoolTaskScheduler - Initializing ExecutorService 'taskScheduler'
+2019-05-10 17:18:37.771 febs [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Context refreshed
+2019-05-10 17:18:37.786 febs [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Found 1 custom documentation plugin(s)
+2019-05-10 17:18:37.804 febs [main] INFO  s.d.s.w.s.ApiListingReferenceScanner - Scanning for api listing references
+2019-05-10 17:18:38.188 febs [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-192.168.0.121-8080"]
+2019-05-10 17:18:38.219 febs [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port(s): 8080 (http) with context path ''
+2019-05-10 17:18:38.223 febs [main] INFO  c.zjucsc.PacketMasterWebApplication - Started PacketMasterWebApplication in 9.35 seconds (JVM running for 12.28)
+2019-05-10 17:18:38.305 febs [main] INFO  p6spy - 1557479918305|3|statement|connection 1|url jdbc:mysql://localhost:3306/packet_master_web?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC|SELECT  id,protocol_id,protocol_name  FROM protocol_id|SELECT  id,protocol_id,protocol_name  FROM protocol_id
+2019-05-10 17:18:38.319 febs [main] INFO  p6spy - 1557479918319|1|statement|connection 2|url jdbc:mysql://localhost:3306/packet_master_web?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC|SELECT  id,protocol_id,protocol_name  FROM protocol_id|SELECT  id,protocol_id,protocol_name  FROM protocol_id
+2019-05-10 17:18:38.322 febs [main] INFO  c.z.a.util.CommonConfigUtil - ******* new protocol [modbus] funcode meaning : 
+  {} 
+2019-05-10 17:18:38.323 febs [main] INFO  c.z.a.util.CommonConfigUtil - ******* new protocol [s7comm] funcode meaning : 
+  {} 
+2019-05-10 17:18:38.323 febs [main] INFO  c.z.a.util.CommonConfigUtil - ******* new protocol [s7comm_job] funcode meaning : 
+  {} 
+2019-05-10 17:18:38.323 febs [main] INFO  c.z.a.util.CommonConfigUtil - ******* new protocol [s7comm_ack_data] funcode meaning : 
+  {} 
+2019-05-10 17:18:38.323 febs [main] INFO  c.z.a.util.CommonConfigUtil - ******* new protocol [tcp] funcode meaning : 
+  {} 
+2019-05-10 17:18:38.323 febs [main] INFO  c.z.a.util.CommonConfigUtil - ******* new protocol [ipv4] funcode meaning : 
+  {} 
+2019-05-10 17:18:38.323 febs [main] INFO  c.z.a.util.CommonConfigUtil - ******* new protocol [udp] funcode meaning : 
+  {} 
+2019-05-10 17:18:38.323 febs [main] INFO  c.z.a.util.CommonConfigUtil - ******* new protocol [unknown packet] funcode meaning : 
+  {} 
+2019-05-10 17:18:38.323 febs [main] INFO  c.z.a.util.CommonConfigUtil - ******* new protocol [arp] funcode meaning : 
+  {} 
+2019-05-10 17:18:38.323 febs [main] INFO  c.z.a.util.CommonConfigUtil - ******* new protocol [ipv6] funcode meaning : 
+  {} 
+2019-05-10 17:18:38.323 febs [main] INFO  c.z.a.util.CommonConfigUtil - ******* new protocol [five_dimension] funcode meaning : 
+  {} 
+2019-05-10 17:18:38.323 febs [main] INFO  c.z.a.util.CommonConfigUtil - ******* new protocol [dns] funcode meaning : 
+  {} 
+2019-05-10 17:18:38.323 febs [main] INFO  c.z.a.util.CommonConfigUtil - ******* new protocol [ethernet] funcode meaning : 
+  {} 
+2019-05-10 17:18:38.323 febs [main] INFO  c.z.a.util.CommonConfigUtil - ******* new protocol [rfweafwef] funcode meaning : 
+  {} 
+2019-05-10 17:18:38.328 febs [main] INFO  p6spy - 1557479918328|1|statement|connection 3|url jdbc:mysql://localhost:3306/packet_master_web?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC|SELECT  id,protocol_id,fun_code,opt  FROM configuration_setting|SELECT  id,protocol_id,fun_code,opt  FROM configuration_setting
+2019-05-10 17:18:38.333 febs [main] INFO  p6spy - 1557479918333|1|statement|connection 4|url jdbc:mysql://localhost:3306/packet_master_web?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC|SELECT  id,protocol_id,fun_code,opt  FROM configuration_setting|SELECT  id,protocol_id,fun_code,opt  FROM configuration_setting
+2019-05-10 17:18:38.336 febs [main] INFO  c.z.a.util.CommonConfigUtil - add NEW funcode meaning 
+ protocol : s7comm / funcode 0 / optMeaning CPU服务 /CONFIGURATION_MAP : {tcp={}, udp={}, s7comm_ack_data={}, s7comm={0=CPU服务}, rfweafwef={}, s7comm_job={}, dns={}, five_dimension={}, ethernet={}, ipv4={}, modbus={}, ipv6={}, unknown packet={}, arp={}}
+2019-05-10 17:18:38.337 febs [main] INFO  c.z.a.util.CommonConfigUtil - add NEW funcode meaning 
+ protocol : s7comm / funcode 240 / optMeaning 建立通信 /CONFIGURATION_MAP : {tcp={}, udp={}, s7comm_ack_data={}, s7comm={0=CPU服务, 240=建立通信}, rfweafwef={}, s7comm_job={}, dns={}, five_dimension={}, ethernet={}, ipv4={}, modbus={}, ipv6={}, unknown packet={}, arp={}}
+2019-05-10 17:18:38.337 febs [main] INFO  c.z.a.util.CommonConfigUtil - add NEW funcode meaning 
+ protocol : s7comm / funcode 4 / optMeaning 读取值 /CONFIGURATION_MAP : {tcp={}, udp={}, s7comm_ack_data={}, s7comm={0=CPU服务, 240=建立通信, 4=读取值}, rfweafwef={}, s7comm_job={}, dns={}, five_dimension={}, ethernet={}, ipv4={}, modbus={}, ipv6={}, unknown packet={}, arp={}}
+2019-05-10 17:18:38.337 febs [main] INFO  c.z.a.util.CommonConfigUtil - add NEW funcode meaning 
+ protocol : s7comm / funcode 5 / optMeaning 写入值 /CONFIGURATION_MAP : {tcp={}, udp={}, s7comm_ack_data={}, s7comm={0=CPU服务, 240=建立通信, 4=读取值, 5=写入值}, rfweafwef={}, s7comm_job={}, dns={}, five_dimension={}, ethernet={}, ipv4={}, modbus={}, ipv6={}, unknown packet={}, arp={}}
+2019-05-10 17:18:38.337 febs [main] INFO  c.z.a.util.CommonConfigUtil - add NEW funcode meaning 
+ protocol : s7comm / funcode 40 / optMeaning 程序调用服务 /CONFIGURATION_MAP : {tcp={}, udp={}, s7comm_ack_data={}, s7comm={0=CPU服务, 240=建立通信, 4=读取值, 5=写入值, 40=程序调用服务}, rfweafwef={}, s7comm_job={}, dns={}, five_dimension={}, ethernet={}, ipv4={}, modbus={}, ipv6={}, unknown packet={}, arp={}}
+2019-05-10 17:18:38.337 febs [main] INFO  c.z.a.util.CommonConfigUtil - add NEW funcode meaning 
+ protocol : s7comm / funcode 41 / optMeaning 关闭PLC /CONFIGURATION_MAP : {tcp={}, udp={}, s7comm_ack_data={}, s7comm={0=CPU服务, 240=建立通信, 4=读取值, 5=写入值, 40=程序调用服务, 41=关闭PLC}, rfweafwef={}, s7comm_job={}, dns={}, five_dimension={}, ethernet={}, ipv4={}, modbus={}, ipv6={}, unknown packet={}, arp={}}
+2019-05-10 17:18:38.337 febs [main] INFO  c.z.a.util.CommonConfigUtil - add NEW funcode meaning 
+ protocol : s7comm / funcode 26 / optMeaning 请求下载 /CONFIGURATION_MAP : {tcp={}, udp={}, s7comm_ack_data={}, s7comm={0=CPU服务, 240=建立通信, 4=读取值, 5=写入值, 40=程序调用服务, 41=关闭PLC, 26=请求下载}, rfweafwef={}, s7comm_job={}, dns={}, five_dimension={}, ethernet={}, ipv4={}, modbus={}, ipv6={}, unknown packet={}, arp={}}
+2019-05-10 17:18:38.337 febs [main] INFO  c.z.a.util.CommonConfigUtil - add NEW funcode meaning 
+ protocol : s7comm / funcode 27 / optMeaning 下载块 /CONFIGURATION_MAP : {tcp={}, udp={}, s7comm_ack_data={}, s7comm={0=CPU服务, 240=建立通信, 4=读取值, 5=写入值, 40=程序调用服务, 41=关闭PLC, 26=请求下载, 27=下载块}, rfweafwef={}, s7comm_job={}, dns={}, five_dimension={}, ethernet={}, ipv4={}, modbus={}, ipv6={}, unknown packet={}, arp={}}
+2019-05-10 17:18:38.338 febs [main] INFO  c.z.a.util.CommonConfigUtil - add NEW funcode meaning 
+ protocol : s7comm / funcode 28 / optMeaning 下载结束 /CONFIGURATION_MAP : {tcp={}, udp={}, s7comm_ack_data={}, s7comm={0=CPU服务, 240=建立通信, 4=读取值, 5=写入值, 40=程序调用服务, 41=关闭PLC, 26=请求下载, 27=下载块, 28=下载结束}, rfweafwef={}, s7comm_job={}, dns={}, five_dimension={}, ethernet={}, ipv4={}, modbus={}, ipv6={}, unknown packet={}, arp={}}
+2019-05-10 17:18:38.338 febs [main] INFO  c.z.a.util.CommonConfigUtil - add NEW funcode meaning 
+ protocol : s7comm / funcode 29 / optMeaning 开始上传 /CONFIGURATION_MAP : {tcp={}, udp={}, s7comm_ack_data={}, s7comm={0=CPU服务, 240=建立通信, 4=读取值, 5=写入值, 40=程序调用服务, 41=关闭PLC, 26=请求下载, 27=下载块, 28=下载结束, 29=开始上传}, rfweafwef={}, s7comm_job={}, dns={}, five_dimension={}, ethernet={}, ipv4={}, modbus={}, ipv6={}, unknown packet={}, arp={}}
+2019-05-10 17:18:38.338 febs [main] INFO  c.z.a.util.CommonConfigUtil - add NEW funcode meaning 
+ protocol : s7comm / funcode 30 / optMeaning 上传 /CONFIGURATION_MAP : {tcp={}, udp={}, s7comm_ack_data={}, s7comm={0=CPU服务, 240=建立通信, 4=读取值, 5=写入值, 40=程序调用服务, 41=关闭PLC, 26=请求下载, 27=下载块, 28=下载结束, 29=开始上传, 30=上传}, rfweafwef={}, s7comm_job={}, dns={}, five_dimension={}, ethernet={}, ipv4={}, modbus={}, ipv6={}, unknown packet={}, arp={}}
+2019-05-10 17:18:38.338 febs [main] INFO  c.z.a.util.CommonConfigUtil - add NEW funcode meaning 
+ protocol : s7comm / funcode 31 / optMeaning 上传结束 /CONFIGURATION_MAP : {tcp={}, udp={}, s7comm_ack_data={}, s7comm={0=CPU服务, 240=建立通信, 4=读取值, 5=写入值, 40=程序调用服务, 41=关闭PLC, 26=请求下载, 27=下载块, 28=下载结束, 29=开始上传, 30=上传, 31=上传结束}, rfweafwef={}, s7comm_job={}, dns={}, five_dimension={}, ethernet={}, ipv4={}, modbus={}, ipv6={}, unknown packet={}, arp={}}
+2019-05-10 17:18:38.338 febs [main] INFO  c.z.a.util.CommonConfigUtil - add NEW funcode meaning 
+ protocol : modbus / funcode 1 / optMeaning 读线圈 /CONFIGURATION_MAP : {tcp={}, udp={}, s7comm_ack_data={}, s7comm={0=CPU服务, 240=建立通信, 4=读取值, 5=写入值, 40=程序调用服务, 41=关闭PLC, 26=请求下载, 27=下载块, 28=下载结束, 29=开始上传, 30=上传, 31=上传结束}, rfweafwef={}, s7comm_job={}, dns={}, five_dimension={}, ethernet={}, ipv4={}, modbus={1=读线圈}, ipv6={}, unknown packet={}, arp={}}
+2019-05-10 17:18:38.339 febs [main] INFO  c.z.a.util.CommonConfigUtil - add NEW funcode meaning 
+ protocol : modbus / funcode 2 / optMeaning 读输入离散量 /CONFIGURATION_MAP : {tcp={}, udp={}, s7comm_ack_data={}, s7comm={0=CPU服务, 240=建立通信, 4=读取值, 5=写入值, 40=程序调用服务, 41=关闭PLC, 26=请求下载, 27=下载块, 28=下载结束, 29=开始上传, 30=上传, 31=上传结束}, rfweafwef={}, s7comm_job={}, dns={}, five_dimension={}, ethernet={}, ipv4={}, modbus={1=读线圈, 2=读输入离散量}, ipv6={}, unknown packet={}, arp={}}
+2019-05-10 17:18:38.339 febs [main] INFO  c.z.a.util.CommonConfigUtil - add NEW funcode meaning 
+ protocol : modbus / funcode 3 / optMeaning 读多个寄存器 /CONFIGURATION_MAP : {tcp={}, udp={}, s7comm_ack_data={}, s7comm={0=CPU服务, 240=建立通信, 4=读取值, 5=写入值, 40=程序调用服务, 41=关闭PLC, 26=请求下载, 27=下载块, 28=下载结束, 29=开始上传, 30=上传, 31=上传结束}, rfweafwef={}, s7comm_job={}, dns={}, five_dimension={}, ethernet={}, ipv4={}, modbus={1=读线圈, 2=读输入离散量, 3=读多个寄存器}, ipv6={}, unknown packet={}, arp={}}
+2019-05-10 17:18:38.339 febs [main] INFO  c.z.a.util.CommonConfigUtil - add NEW funcode meaning 
+ protocol : modbus / funcode 4 / optMeaning 读输入寄存器 /CONFIGURATION_MAP : {tcp={}, udp={}, s7comm_ack_data={}, s7comm={0=CPU服务, 240=建立通信, 4=读取值, 5=写入值, 40=程序调用服务, 41=关闭PLC, 26=请求下载, 27=下载块, 28=下载结束, 29=开始上传, 30=上传, 31=上传结束}, rfweafwef={}, s7comm_job={}, dns={}, five_dimension={}, ethernet={}, ipv4={}, modbus={1=读线圈, 2=读输入离散量, 3=读多个寄存器, 4=读输入寄存器}, ipv6={}, unknown packet={}, arp={}}
+2019-05-10 17:18:38.340 febs [main] INFO  c.z.a.util.CommonConfigUtil - add NEW funcode meaning 
+ protocol : modbus / funcode 5 / optMeaning 写单个线圈 /CONFIGURATION_MAP : {tcp={}, udp={}, s7comm_ack_data={}, s7comm={0=CPU服务, 240=建立通信, 4=读取值, 5=写入值, 40=程序调用服务, 41=关闭PLC, 26=请求下载, 27=下载块, 28=下载结束, 29=开始上传, 30=上传, 31=上传结束}, rfweafwef={}, s7comm_job={}, dns={}, five_dimension={}, ethernet={}, ipv4={}, modbus={1=读线圈, 2=读输入离散量, 3=读多个寄存器, 4=读输入寄存器, 5=写单个线圈}, ipv6={}, unknown packet={}, arp={}}
+2019-05-10 17:18:38.340 febs [main] INFO  c.z.a.util.CommonConfigUtil - add NEW funcode meaning 
+ protocol : modbus / funcode 6 / optMeaning 写单个寄存器 /CONFIGURATION_MAP : {tcp={}, udp={}, s7comm_ack_data={}, s7comm={0=CPU服务, 240=建立通信, 4=读取值, 5=写入值, 40=程序调用服务, 41=关闭PLC, 26=请求下载, 27=下载块, 28=下载结束, 29=开始上传, 30=上传, 31=上传结束}, rfweafwef={}, s7comm_job={}, dns={}, five_dimension={}, ethernet={}, ipv4={}, modbus={1=读线圈, 2=读输入离散量, 3=读多个寄存器, 4=读输入寄存器, 5=写单个线圈, 6=写单个寄存器}, ipv6={}, unknown packet={}, arp={}}
+2019-05-10 17:18:38.340 febs [main] INFO  c.z.a.util.CommonConfigUtil - add NEW funcode meaning 
+ protocol : modbus / funcode 43 / optMeaning 读设备识别码 /CONFIGURATION_MAP : {tcp={}, udp={}, s7comm_ack_data={}, s7comm={0=CPU服务, 240=建立通信, 4=读取值, 5=写入值, 40=程序调用服务, 41=关闭PLC, 26=请求下载, 27=下载块, 28=下载结束, 29=开始上传, 30=上传, 31=上传结束}, rfweafwef={}, s7comm_job={}, dns={}, five_dimension={}, ethernet={}, ipv4={}, modbus={1=读线圈, 2=读输入离散量, 3=读多个寄存器, 4=读输入寄存器, 5=写单个线圈, 6=写单个寄存器, 43=读设备识别码}, ipv6={}, unknown packet={}, arp={}}
+2019-05-10 17:18:38.340 febs [main] INFO  c.z.a.util.CommonConfigUtil - add NEW funcode meaning 
+ protocol : modbus / funcode 15 / optMeaning 写多个线圈 /CONFIGURATION_MAP : {tcp={}, udp={}, s7comm_ack_data={}, s7comm={0=CPU服务, 240=建立通信, 4=读取值, 5=写入值, 40=程序调用服务, 41=关闭PLC, 26=请求下载, 27=下载块, 28=下载结束, 29=开始上传, 30=上传, 31=上传结束}, rfweafwef={}, s7comm_job={}, dns={}, five_dimension={}, ethernet={}, ipv4={}, modbus={1=读线圈, 2=读输入离散量, 3=读多个寄存器, 4=读输入寄存器, 5=写单个线圈, 6=写单个寄存器, 43=读设备识别码, 15=写多个线圈}, ipv6={}, unknown packet={}, arp={}}
+2019-05-10 17:18:38.340 febs [main] INFO  c.z.a.util.CommonConfigUtil - add NEW funcode meaning 
+ protocol : modbus / funcode 16 / optMeaning 写多个寄存器 /CONFIGURATION_MAP : {tcp={}, udp={}, s7comm_ack_data={}, s7comm={0=CPU服务, 240=建立通信, 4=读取值, 5=写入值, 40=程序调用服务, 41=关闭PLC, 26=请求下载, 27=下载块, 28=下载结束, 29=开始上传, 30=上传, 31=上传结束}, rfweafwef={}, s7comm_job={}, dns={}, five_dimension={}, ethernet={}, ipv4={}, modbus={16=写多个寄存器, 1=读线圈, 2=读输入离散量, 3=读多个寄存器, 4=读输入寄存器, 5=写单个线圈, 6=写单个寄存器, 43=读设备识别码, 15=写多个线圈}, ipv6={}, unknown packet={}, arp={}}
+2019-05-10 17:18:38.340 febs [main] INFO  c.z.a.util.CommonConfigUtil - add NEW funcode meaning 
+ protocol : modbus / funcode 20 / optMeaning 读文件记录 /CONFIGURATION_MAP : {tcp={}, udp={}, s7comm_ack_data={}, s7comm={0=CPU服务, 240=建立通信, 4=读取值, 5=写入值, 40=程序调用服务, 41=关闭PLC, 26=请求下载, 27=下载块, 28=下载结束, 29=开始上传, 30=上传, 31=上传结束}, rfweafwef={}, s7comm_job={}, dns={}, five_dimension={}, ethernet={}, ipv4={}, modbus={16=写多个寄存器, 1=读线圈, 2=读输入离散量, 3=读多个寄存器, 4=读输入寄存器, 20=读文件记录, 5=写单个线圈, 6=写单个寄存器, 43=读设备识别码, 15=写多个线圈}, ipv6={}, unknown packet={}, arp={}}
+2019-05-10 17:18:38.341 febs [main] INFO  c.z.a.util.CommonConfigUtil - add NEW funcode meaning 
+ protocol : modbus / funcode 21 / optMeaning 写文件记录 /CONFIGURATION_MAP : {tcp={}, udp={}, s7comm_ack_data={}, s7comm={0=CPU服务, 240=建立通信, 4=读取值, 5=写入值, 40=程序调用服务, 41=关闭PLC, 26=请求下载, 27=下载块, 28=下载结束, 29=开始上传, 30=上传, 31=上传结束}, rfweafwef={}, s7comm_job={}, dns={}, five_dimension={}, ethernet={}, ipv4={}, modbus={16=写多个寄存器, 1=读线圈, 2=读输入离散量, 3=读多个寄存器, 4=读输入寄存器, 20=读文件记录, 5=写单个线圈, 21=写文件记录, 6=写单个寄存器, 43=读设备识别码, 15=写多个线圈}, ipv6={}, unknown packet={}, arp={}}
+2019-05-10 17:18:38.341 febs [main] INFO  c.z.a.util.CommonConfigUtil - add NEW funcode meaning 
+ protocol : modbus / funcode 22 / optMeaning 屏蔽写寄存器 /CONFIGURATION_MAP : {tcp={}, udp={}, s7comm_ack_data={}, s7comm={0=CPU服务, 240=建立通信, 4=读取值, 5=写入值, 40=程序调用服务, 41=关闭PLC, 26=请求下载, 27=下载块, 28=下载结束, 29=开始上传, 30=上传, 31=上传结束}, rfweafwef={}, s7comm_job={}, dns={}, five_dimension={}, ethernet={}, ipv4={}, modbus={16=写多个寄存器, 1=读线圈, 2=读输入离散量, 3=读多个寄存器, 4=读输入寄存器, 20=读文件记录, 5=写单个线圈, 21=写文件记录, 6=写单个寄存器, 22=屏蔽写寄存器, 43=读设备识别码, 15=写多个线圈}, ipv6={}, unknown packet={}, arp={}}
+2019-05-10 17:18:38.341 febs [main] INFO  c.z.a.util.CommonConfigUtil - add NEW funcode meaning 
+ protocol : modbus / funcode 23 / optMeaning 读/写多个寄存器 /CONFIGURATION_MAP : {tcp={}, udp={}, s7comm_ack_data={}, s7comm={0=CPU服务, 240=建立通信, 4=读取值, 5=写入值, 40=程序调用服务, 41=关闭PLC, 26=请求下载, 27=下载块, 28=下载结束, 29=开始上传, 30=上传, 31=上传结束}, rfweafwef={}, s7comm_job={}, dns={}, five_dimension={}, ethernet={}, ipv4={}, modbus={1=读线圈, 2=读输入离散量, 3=读多个寄存器, 4=读输入寄存器, 5=写单个线圈, 6=写单个寄存器, 43=读设备识别码, 15=写多个线圈, 16=写多个寄存器, 20=读文件记录, 21=写文件记录, 22=屏蔽写寄存器, 23=读/写多个寄存器}, ipv6={}, unknown packet={}, arp={}}
+2019-05-10 17:18:38.341 febs [main] INFO  c.z.a.util.CommonConfigUtil - add NEW funcode meaning 
+ protocol : s7comm / funcode 1000 / optMeaning test /CONFIGURATION_MAP : {tcp={}, udp={}, s7comm_ack_data={}, s7comm={0=CPU服务, 4=读取值, 5=写入值, 40=程序调用服务, 1000=test, 41=关闭PLC, 240=建立通信, 26=请求下载, 27=下载块, 28=下载结束, 29=开始上传, 30=上传, 31=上传结束}, rfweafwef={}, s7comm_job={}, dns={}, five_dimension={}, ethernet={}, ipv4={}, modbus={1=读线圈, 2=读输入离散量, 3=读多个寄存器, 4=读输入寄存器, 5=写单个线圈, 6=写单个寄存器, 43=读设备识别码, 15=写多个线圈, 16=写多个寄存器, 20=读文件记录, 21=写文件记录, 22=屏蔽写寄存器, 23=读/写多个寄存器}, ipv6={}, unknown packet={}, arp={}}
+2019-05-10 17:18:38.341 febs [main] INFO  c.z.a.util.CommonConfigUtil - add NEW funcode meaning 
+ protocol : s7comm / funcode 1000 / optMeaning test /CONFIGURATION_MAP : {tcp={}, udp={}, s7comm_ack_data={}, s7comm={0=CPU服务, 4=读取值, 5=写入值, 40=程序调用服务, 1000=test, 41=关闭PLC, 240=建立通信, 26=请求下载, 27=下载块, 28=下载结束, 29=开始上传, 30=上传, 31=上传结束}, rfweafwef={}, s7comm_job={}, dns={}, five_dimension={}, ethernet={}, ipv4={}, modbus={1=读线圈, 2=读输入离散量, 3=读多个寄存器, 4=读输入寄存器, 5=写单个线圈, 6=写单个寄存器, 43=读设备识别码, 15=写多个线圈, 16=写多个寄存器, 20=读文件记录, 21=写文件记录, 22=屏蔽写寄存器, 23=读/写多个寄存器}, ipv6={}, unknown packet={}, arp={}}
+2019-05-10 17:18:38.342 febs [main] INFO  c.z.a.util.CommonConfigUtil - add NEW funcode meaning 
+ protocol : ethernet / funcode 1000 / optMeaning test /CONFIGURATION_MAP : {tcp={}, udp={}, s7comm_ack_data={}, s7comm={0=CPU服务, 4=读取值, 5=写入值, 40=程序调用服务, 1000=test, 41=关闭PLC, 240=建立通信, 26=请求下载, 27=下载块, 28=下载结束, 29=开始上传, 30=上传, 31=上传结束}, rfweafwef={}, s7comm_job={}, dns={}, five_dimension={}, ethernet={1000=test}, ipv4={}, modbus={1=读线圈, 2=读输入离散量, 3=读多个寄存器, 4=读输入寄存器, 5=写单个线圈, 6=写单个寄存器, 43=读设备识别码, 15=写多个线圈, 16=写多个寄存器, 20=读文件记录, 21=写文件记录, 22=屏蔽写寄存器, 23=读/写多个寄存器}, ipv6={}, unknown packet={}, arp={}}
+2019-05-10 17:18:38.342 febs [main] INFO  c.z.a.util.CommonConfigUtil - add NEW funcode meaning 
+ protocol : ethernet / funcode 1000 / optMeaning test /CONFIGURATION_MAP : {tcp={}, udp={}, s7comm_ack_data={}, s7comm={0=CPU服务, 4=读取值, 5=写入值, 40=程序调用服务, 1000=test, 41=关闭PLC, 240=建立通信, 26=请求下载, 27=下载块, 28=下载结束, 29=开始上传, 30=上传, 31=上传结束}, rfweafwef={}, s7comm_job={}, dns={}, five_dimension={}, ethernet={1000=test}, ipv4={}, modbus={1=读线圈, 2=读输入离散量, 3=读多个寄存器, 4=读输入寄存器, 5=写单个线圈, 6=写单个寄存器, 43=读设备识别码, 15=写多个线圈, 16=写多个寄存器, 20=读文件记录, 21=写文件记录, 22=屏蔽写寄存器, 23=读/写多个寄存器}, ipv6={}, unknown packet={}, arp={}}
+2019-05-10 17:18:38.342 febs [main] INFO  c.z.a.task.InitConfigurationService -  load CONFIGURATION_MAP from db successfully : 
+ {tcp={}, udp={}, s7comm_ack_data={}, s7comm={0=CPU服务, 4=读取值, 5=写入值, 40=程序调用服务, 1000=test, 41=关闭PLC, 240=建立通信, 26=请求下载, 27=下载块, 28=下载结束, 29=开始上传, 30=上传, 31=上传结束}, rfweafwef={}, s7comm_job={}, dns={}, five_dimension={}, ethernet={1000=test}, ipv4={}, modbus={1=读线圈, 2=读输入离散量, 3=读多个寄存器, 4=读输入寄存器, 5=写单个线圈, 6=写单个寄存器, 43=读设备识别码, 15=写多个线圈, 16=写多个寄存器, 20=读文件记录, 21=写文件记录, 22=屏蔽写寄存器, 23=读/写多个寄存器}, ipv6={}, unknown packet={}, arp={}} 
+2019-05-10 17:18:38.344 febs [main] INFO  c.z.a.task.InitConfigurationService - AUTH_MAP : {2147483647=admin, 0=visitor, 100=operator} 
+2019-05-10 17:18:38.478 febs [http-nio-192.168.0.121-8080-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2019-05-10 17:18:38.478 febs [http-nio-192.168.0.121-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2019-05-10 17:18:38.489 febs [http-nio-192.168.0.121-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 11 ms
+2019-05-10 17:18:38.912 febs [RMI TCP Connection(4)-127.0.0.1] INFO  p6spy - 1557479918912|0|statement|connection 6|url jdbc:mysql://localhost:3306/packet_master_web?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC|select 1|select 1
