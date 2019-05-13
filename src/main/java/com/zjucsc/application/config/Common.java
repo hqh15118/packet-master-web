@@ -4,6 +4,8 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.zjucsc.application.domain.bean.CollectorState;
 import com.zjucsc.application.handler.ThreadExceptionHandler;
+import com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer;
+import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -67,17 +69,17 @@ public class Common {
 
 
     /**
-     * Integer 设备ID
+     * String 设备ID
      * String -> 协议
      * OperationAnalyzer -> 报文操作分析器
      */
-    public static ConcurrentHashMap<String,ConcurrentHashMap<String, com.zjucsc.application.tshark.analyzer.OperationAnalyzer>> OPERATION_FILTER_PRO =
+    public static ConcurrentHashMap<String,ConcurrentHashMap<String, OperationAnalyzer>> OPERATION_FILTER_PRO =
             new ConcurrentHashMap<>();
 
     /**
      * 设备ID
      */
-    public static ConcurrentHashMap<String,com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer> FV_DIMENSION_FILTER_PRO = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String, FiveDimensionAnalyzer> FV_DIMENSION_FILTER_PRO = new ConcurrentHashMap<>();
 
     /*
     public static ConcurrentHashMap<Integer, AbstractAnalyzer> BAD_PACKET_FILTER_PRO_2 = new ConcurrentHashMap<Integer, AbstractAnalyzer>(){

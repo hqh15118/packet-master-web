@@ -1,7 +1,7 @@
 package com.zjucsc.application.tshark.analyzer;
 
-import com.zjucsc.application.tshark.domain.beans.BadPacket;
-import com.zjucsc.application.tshark.domain.packets_2.FvDimensionLayer;
+import com.zjucsc.application.tshark.domain.bean.BadPacket;
+import com.zjucsc.application.tshark.domain.packet.FvDimensionLayer;
 import com.zjucsc.application.tshark.filter.FiveDimensionPacketFilter;
 import com.zjucsc.application.util.AbstractAnalyzer;
 

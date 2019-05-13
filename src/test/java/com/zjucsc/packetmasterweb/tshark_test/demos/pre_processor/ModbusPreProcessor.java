@@ -1,6 +1,6 @@
 package com.zjucsc.packetmasterweb.tshark_test.demos.pre_processor;
 
-import com.zjucsc.application.tshark.domain.packets_2.ModbusPacket;
+import com.zjucsc.application.tshark.domain.packet.ModbusPacket;
 
 import java.util.ArrayList;
 import java.util.List;

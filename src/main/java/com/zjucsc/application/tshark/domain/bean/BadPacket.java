@@ -1,16 +1,9 @@
-package com.zjucsc.application.domain.bean;
+package com.zjucsc.application.tshark.domain.bean;
 
 import com.zjucsc.application.config.DangerLevel;
-import com.zjucsc.application.tshark.domain.packet.FiveDimensionPacket;
+import com.zjucsc.application.tshark.domain.packet.FvDimensionLayer;
 import lombok.Data;
 import lombok.ToString;
-
-/**
- * #project packet-master-web
- *
- * @author hongqianhui
- * #create_time 2019-04-29 - 23:01
- */
 
 @Data
 public class BadPacket {
@@ -18,7 +11,7 @@ public class BadPacket {
      * badType -- 具体的协议，还是五元组？
      */
     private String badType;
-    private FiveDimensionPacket fiveDimensionPacket;
+    private FvDimensionLayer layer;
     private int fun_code;
     private String operation;
     private String artifactParam;
@@ -53,8 +46,8 @@ public class BadPacket {
             this.badPacket.badType = badType;
         }
 
-        public Builder set_five_Dimension(FiveDimensionPacket packet) {
-            badPacket.fiveDimensionPacket = packet;
+        public Builder set_five_Dimension(FvDimensionLayer layer) {
+            badPacket.layer = layer;
             return this;
         }
 
@@ -92,6 +85,5 @@ public class BadPacket {
             return badPacket;
         }
     }
-
 
 }

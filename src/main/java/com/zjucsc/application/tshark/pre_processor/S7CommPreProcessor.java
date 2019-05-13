@@ -1,9 +1,7 @@
 package com.zjucsc.application.tshark.pre_processor;
 
-import com.zjucsc.application.tshark.decode.AbstractAsyncHandler;
-import com.zjucsc.application.tshark.domain.packets_2.FvDimensionLayer;
-import com.zjucsc.application.tshark.domain.packets_2.S7CommPacket;
-import com.zjucsc.application.util.PacketDecodeUtil;
+import com.zjucsc.application.tshark.domain.packet.FvDimensionLayer;
+import com.zjucsc.application.tshark.domain.packet.S7CommPacket;
 
 import java.util.ArrayList;
 import java.util.List;

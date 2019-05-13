@@ -2,8 +2,8 @@ package com.zjucsc.application.tshark.analyzer;
 
 import com.zjucsc.application.config.DangerLevel;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
-import com.zjucsc.application.tshark.domain.beans.BadPacket;
-import com.zjucsc.application.tshark.domain.packets_2.FvDimensionLayer;
+import com.zjucsc.application.tshark.domain.bean.BadPacket;
+import com.zjucsc.application.tshark.domain.packet.FvDimensionLayer;
 import com.zjucsc.application.tshark.filter.OperationPacketFilter;
 import com.zjucsc.application.util.AbstractAnalyzer;
 import com.zjucsc.application.util.CommonConfigUtil;

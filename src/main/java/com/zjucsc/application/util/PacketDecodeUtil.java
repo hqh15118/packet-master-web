@@ -1,13 +1,9 @@
 package com.zjucsc.application.util;
 
-import com.sun.tools.javac.util.Convert;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.bean.CollectorState;
-import com.zjucsc.application.tshark.domain.packet.InitPacket;
-import com.zjucsc.application.tshark.domain.packet.layers.S7Packet;
-import io.swagger.models.auth.In;
+import com.zjucsc.application.tshark.domain.packet.S7CommPacket;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.index.qual.SameLen;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -45,21 +41,27 @@ public class PacketDecodeUtil {
     }
 
     public static byte[] hexStringToByteArray2(String s) {
+        return hexStringToByteArray2(s, 0 );
+    }
+
+
+    public static byte[] hexStringToByteArray2(String s , int offset) {
         int len = s.length();
         if (len == 0){
             return EMPTY;
         }
-        int byteArraySize = len / 2;
-        byte[] data = new byte[byteArraySize + 1];
-        for (int i = 0 ; i < len; i+=2) {
-            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+        int byteArraySize = (len - offset) >>> 1;
+        byte[] data = new byte[byteArraySize];
+        int j = 0;
+        for (int i = offset ; i < len; i += 2) {
+            data[j] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
                     + Character.digit(s.charAt(i+1), 16));
+            j++;
         }
-        data[byteArraySize ] = (byte) ((Character.digit(s.charAt(len - 2), 16) << 4)
-                + Character.digit(s.charAt(len - 1), 16));
+//        data[byteArraySize] = (byte) ((Character.digit(s.charAt(len - 2), 16) << 4)
+//                + Character.digit(s.charAt(len - 1), 16));
         return data;
     }
-
 
     private static ThreadLocal<StringBuilder> stringBuilderThreadLocal
             = ThreadLocal.withInitial(() -> new StringBuilder(100));
@@ -143,40 +145,6 @@ public class PacketDecodeUtil {
     }
 
 
-
-    /**
-     * 用于识别报文协议
-     * @param initPacket entherner:ip:tcp:...
-     * @return packet protocol
-     */
-    public static String discernPacket(InitPacket initPacket){
-        /*
-        switch (protocolStack.substring(protocolStack.length() - 3)){
-            case "bus": return PacketInfo.PACKET_PROTOCOL.MODBUS;
-            case "omm" : return PacketInfo.PACKET_PROTOCOL.S7;
-            default: return PacketInfo.PACKET_PROTOCOL.OTHER;
-        }
-        */
-        String protocolStack = initPacket.layers.frame_protocols[0];
-        if (protocolStack.endsWith("tcp")){
-            return TCP;
-        }
-        if (protocolStack.endsWith("modbus")){
-            return MODBUS;
-        }else if(protocolStack.endsWith("s7comm")){
-            String rosctr = initPacket.layers.s7comm_header_rosctr[0];
-            if (S7Packet.ACK_DATA.equals(rosctr)){
-                return S7_Ack_data;
-            }else if (S7Packet.JOB.equals(rosctr)) {
-                return S7_JOB;
-            }else{
-                return S7;
-            }
-        }else{
-            return protocolStack;
-        }
-    }
-
     /**
      * 用于识别报文协议
      * @param protocolStack 协议栈
@@ -185,13 +153,6 @@ public class PacketDecodeUtil {
      * @see com.zjucsc.application.config.PACKET_PROTOCOL
      */
     public static String discernPacket(String protocolStack ,  Object...otherInfo){
-        /*
-        switch (protocolStack.substring(protocolStack.length() - 3)){
-            case "bus": return PacketInfo.PACKET_PROTOCOL.MODBUS;
-            case "omm" : return PacketInfo.PACKET_PROTOCOL.S7;
-            default: return PacketInfo.PACKET_PROTOCOL.OTHER;
-        }
-        */
         if (protocolStack.endsWith("tcp")){
             return TCP;
         }
@@ -199,9 +160,9 @@ public class PacketDecodeUtil {
             return MODBUS;
         }else if(protocolStack.endsWith("s7comm")){
             String rosctr = ((String) otherInfo[0]);
-            if (S7Packet.ACK_DATA.equals(rosctr)){
+            if (S7CommPacket.ACK_DATA.equals(rosctr)){
                 return S7_Ack_data;
-            }else if (S7Packet.JOB.equals(rosctr)) {
+            }else if (S7CommPacket.JOB.equals(rosctr)) {
                 return S7_JOB;
             }else{
                 return S7;

@@ -1,4 +1,4 @@
-package com.zjucsc.application.tshark.domain.packets_2;
+package com.zjucsc.application.tshark.domain.packet;
 
 /**
  * #project packet-master-web
@@ -17,6 +17,7 @@ public class FvDimensionLayer {
     public String[] tcp_dstport = {""};
     public String[] eth_trailer = {""};
     public String[] eth_fcs = {""};
+    public String timeStamp = "";
 
     public FvDimensionLayer setFrameProtocols(String protocol){
         if (protocol!=null) {

@@ -1,4 +1,4 @@
-package com.zjucsc.application.tshark.domain.packets_2;
+package com.zjucsc.application.tshark.domain.packet;
 
 import java.util.Arrays;
 

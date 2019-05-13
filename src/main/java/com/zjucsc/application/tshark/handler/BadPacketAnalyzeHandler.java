@@ -1,16 +1,16 @@
-package com.zjucsc.application.tshark.handler_2;
+package com.zjucsc.application.tshark.handler;
 
 import com.zjucsc.application.config.SocketIoEvent;
-import com.zjucsc.application.domain.bean.BadPacket;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.application.socketio.SocketServiceCenter;
+import com.zjucsc.application.system.entity.FvDimensionFilter;
 import com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
 import com.zjucsc.application.tshark.decode.AbstractAsyncHandler;
-import com.zjucsc.application.tshark.domain.packet.FiveDimensionPacketWrapper;
-import com.zjucsc.application.tshark.domain.packets_2.FvDimensionLayer;
-import com.zjucsc.application.tshark.domain.packets_2.ModbusPacket;
-import com.zjucsc.application.tshark.domain.packets_2.S7CommPacket;
+import com.zjucsc.application.tshark.domain.bean.BadPacket;
+import com.zjucsc.application.tshark.domain.packet.FvDimensionLayer;
+import com.zjucsc.application.tshark.domain.packet.ModbusPacket;
+import com.zjucsc.application.tshark.domain.packet.S7CommPacket;
 import com.zjucsc.application.util.PacketDecodeUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -53,7 +53,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
        return 0;
     }
 
-    private void artifactAnalyze(byte[] tcpPayload, FiveDimensionPacketWrapper packet) {
+    private void artifactAnalyze(byte[] tcpPayload, FvDimensionFilter packet) {
         /*
          * 只有定义了工艺参数分析器的报文才需要分析，其他都不需要直接略过
          */

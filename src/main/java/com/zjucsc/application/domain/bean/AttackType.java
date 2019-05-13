@@ -1,7 +1,7 @@
 package com.zjucsc.application.domain.bean;
 
+import com.zjucsc.application.tshark.domain.bean.BadPacket;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * #project packet-master-web

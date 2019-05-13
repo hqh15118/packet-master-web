@@ -1,4 +1,4 @@
-package com.zjucsc.application.tshark.domain.packets_2;
+package com.zjucsc.application.tshark.domain.packet;
 
 
 import com.alibaba.fastjson.annotation.JSONField;
@@ -13,6 +13,8 @@ import java.util.Arrays;
  */
 public class S7CommPacket{
 
+    public static final String JOB = "1";
+    public static final String ACK_DATA = "3";
 
     @JSONField(name = "layers")
     public LayersBean layersX;

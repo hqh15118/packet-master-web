@@ -4,6 +4,8 @@ import com.corundumstudio.socketio.SocketIOClient;
 import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
 import com.zjucsc.application.socketio.SocketServiceCenter;
 import com.zjucsc.application.system.service.impl.PacketServiceImpl;
+import com.zjucsc.application.tshark.capture.CapturePacketServiceImpl;
+import com.zjucsc.application.tshark.capture.ProcessCallback;
 import com.zjucsc.application.util.PcapUtils;
 import com.zjucsc.base.BaseResponse;
 import com.zjucsc.application.config.Common;
@@ -27,6 +29,7 @@ public class PacketController {
 
     @Qualifier("packet_service")
     @Autowired private PacketServiceImpl packetService;
+    @Autowired private CapturePacketServiceImpl capturePacketService;
 
     @ApiOperation(value="开始抓包")
     @RequestMapping(value = "/start_service" , method = RequestMethod.POST)
@@ -50,7 +53,22 @@ public class PacketController {
                 Common.hasStartedHost.add(service.getService_name());
             }
         }
+        capturePacketService.start(new ProcessCallback<String, String>() {
+            @Override
+            public void error(Exception e) {
 
+            }
+
+            @Override
+            public void start(String start) {
+                log.info("{} has started capture service.." , start);
+            }
+
+            @Override
+            public void end(String end) {
+                log.info("{} has ended capture service.." , end);
+            }
+        });
     }
 
     @ApiOperation("开启websocket服务")
@@ -104,7 +122,7 @@ public class PacketController {
             Common.hasStartedHost.remove(service.getService_name());
         }
         log.info("close device : {} all device : {} " , service.getService_name() , Common.hasStartedHost);
-
+        capturePacketService.stop();
         return BaseResponse.OK();
     }
 }

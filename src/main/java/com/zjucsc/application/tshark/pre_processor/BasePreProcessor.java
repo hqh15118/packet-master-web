@@ -2,12 +2,10 @@ package com.zjucsc.application.tshark.pre_processor;
 
 import com.alibaba.fastjson.JSON;
 import com.zjucsc.application.handler.ThreadExceptionHandler;
-import com.zjucsc.application.tshark.decode.AbstractAsyncHandler;
 import com.zjucsc.application.tshark.decode.PipeLine;
-import com.zjucsc.application.tshark.domain.packets_2.FvDimensionLayer;
+import com.zjucsc.application.tshark.domain.packet.FvDimensionLayer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import springfox.documentation.spring.web.json.Json;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,7 +13,6 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 
 /**
  * #project packet-master-web
@@ -26,7 +23,7 @@ import java.util.concurrent.ThreadFactory;
  * 信息流向：
  *                     JSON                                 FvDimensionLayer
  * xxxPreProcessor ------------> decodeThreadPool[xxxPacket] ------------> fvDimensionHandler -->
- *                                                                |                 五元组发送 + 报文统计
+ *                                                                |        五元组发送 + 报文统计
  *                                                                |
  *                                                                |
  *                                                                |---------------> badpacketanalyzeHandler
@@ -101,15 +98,15 @@ public abstract class BasePreProcessor<P> implements PreProcessor<P> {
 
     @Override
     public String tsharkPath() {
-        return "C:\\Users\\Administrator\\Desktop\\tshark_min_win\\tshark.exe";
+        return tsharkMacPath;
     }
 
     @Override
     public void pcapFilePath(int limit) {
         if (limit < 0)
-            filePath =  " -r C:\\Users\\Administrator\\IdeaProjects\\packet-master-web\\src\\main\\resources\\pcap\\text.pcap ";
+            filePath =  " -r  " + pcapFilePathForMac;
         else
-            filePath = " -c " + limit +  " -r C:\\Users\\Administrator\\IdeaProjects\\packet-master-web\\src\\main\\resources\\pcap\\text.pcap ";
+            filePath = " -c " + limit + " -r " +  pcapFilePathForMac;
     }
 
     @Override
@@ -157,4 +154,8 @@ public abstract class BasePreProcessor<P> implements PreProcessor<P> {
 
     public abstract FvDimensionLayer decode(P packetInstance);
 
+    private String tsharkMacPath = " tshark ";
+    private String tsharkWinPath = " C:\\Users\\Administrator\\Desktop\\tshark_min_win\\tshark.exe";
+    private String pcapFilePathForMac = " /Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap/text.pcap ";
+    private String pcapFilePathForWin = " C:\\Users\\Administrator\\IdeaProjects\\packet-master-web\\src\\main\\resources\\pcap\\text.pcap";
 }

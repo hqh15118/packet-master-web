@@ -3,8 +3,8 @@ package com.zjucsc.application.tshark.filter;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.DangerLevel;
 import com.zjucsc.application.system.entity.FvDimensionFilter;
-import com.zjucsc.application.tshark.domain.beans.BadPacket;
-import com.zjucsc.application.tshark.domain.packets_2.FvDimensionLayer;
+import com.zjucsc.application.tshark.domain.bean.BadPacket;
+import com.zjucsc.application.tshark.domain.packet.FvDimensionLayer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
