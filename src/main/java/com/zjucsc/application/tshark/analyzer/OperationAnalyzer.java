@@ -39,7 +39,7 @@ public class OperationAnalyzer extends AbstractAnalyzer<OperationPacketFilter<In
 
     private String getOperation(String protocol , int fun_code) throws ProtocolIdNotValidException {
         String str = CommonConfigUtil.getTargetProtocolFuncodeMeanning(protocol,fun_code);
-        return str==null?"unknown operation" : str;
+        return str==null ? "unknown operation" : str;
     }
 
     @Override

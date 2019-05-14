@@ -28,8 +28,6 @@ public class S7CommPacket{
         public String[] s7comm_param_func={""};
         public String[] s7comm_header_rosctr={""};
 
-
-
         @Override
         public String toString() {
             return "LayersBean{" +
@@ -43,8 +41,9 @@ public class S7CommPacket{
                     ", ip_dst=" + Arrays.toString(ip_dst) +
                     ", tcp_srcport=" + Arrays.toString(tcp_srcport) +
                     ", tcp_dstport=" + Arrays.toString(tcp_dstport) +
-                    ", eth_eth_trailer=" + Arrays.toString(eth_trailer) +
-                    ", eth_eth_fcs=" + Arrays.toString(eth_fcs) +
+                    ", eth_trailer=" + Arrays.toString(eth_trailer) +
+                    ", eth_fcs=" + Arrays.toString(eth_fcs) +
+                    ", timeStamp='" + timeStamp + '\'' +
                     '}';
         }
     }

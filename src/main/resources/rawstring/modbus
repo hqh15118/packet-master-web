@@ -1,20 +1,20 @@
 {
-    "_index": "packets-2019-05-05",
+    "_index": "packets-2019-05-10",
     "_type": "pcap_file",
     "_score": null,
     "_source": {
       "layers": {
         "frame": {
           "frame.encap_type": "1",
-          "frame.time": "Jan  1, 2000 11:00:32.234778000 \u00e4\u00b8\u00ad\u00e5\u009b\u00bd\u00e6\u00a0\u0087\u00e5\u0087\u0086\u00e6\u0097\u00b6\u00e9\u0097\u00b4",
+          "frame.time": "May 10, 2019 17:48:53.742819000 CST",
           "frame.offset_shift": "0.000000000",
-          "frame.time_epoch": "946695632.234778000",
-          "frame.time_delta": "0.000323000",
-          "frame.time_delta_displayed": "0.000323000",
-          "frame.time_relative": "0.033190000",
-          "frame.number": "4",
-          "frame.len": "65",
-          "frame.cap_len": "65",
+          "frame.time_epoch": "1557481733.742819000",
+          "frame.time_delta": "0.000000000",
+          "frame.time_delta_displayed": "0.000000000",
+          "frame.time_relative": "0.000000000",
+          "frame.number": "1",
+          "frame.len": "89",
+          "frame.cap_len": "89",
           "frame.marked": "0",
           "frame.ignored": "0",
           "frame.protocols": "eth:ethertype:ip:tcp:mbtcp:modbus"
@@ -22,21 +22,24 @@
         "eth": {
           "eth.dst": "00:0c:29:75:b2:38",
           "eth.dst_tree": {
-            "eth.dst_resolved": "00:0c:29:75:b2:38",
+            "eth.dst_resolved": "Vmware_75:b2:38",
             "eth.addr": "00:0c:29:75:b2:38",
-            "eth.addr_resolved": "00:0c:29:75:b2:38",
+            "eth.addr_resolved": "Vmware_75:b2:38",
             "eth.lg": "0",
             "eth.ig": "0"
           },
           "eth.src": "00:0c:29:9e:7a:44",
           "eth.src_tree": {
-            "eth.src_resolved": "00:0c:29:9e:7a:44",
+            "eth.src_resolved": "Vmware_9e:7a:44",
             "eth.addr": "00:0c:29:9e:7a:44",
-            "eth.addr_resolved": "00:0c:29:9e:7a:44",
+            "eth.addr_resolved": "Vmware_9e:7a:44",
             "eth.lg": "0",
             "eth.ig": "0"
           },
-          "eth.type": "0x00000800"
+          "eth.type": "0x00000800",
+          "eth.trailer": "00:02:0d:04:fc:6a:a8:de:fb:9d:c4:10:fc:6a:a8:de:fb:9d:c4:40",
+          "eth.fcs": "0x00000061",
+          "eth.fcs.status": "2"
         },
         "ip": {
           "ip.version": "4",
@@ -47,7 +50,7 @@
             "ip.dsfield.ecn": "0"
           },
           "ip.len": "51",
-          "ip.id": "0x00002741",
+          "ip.id": "0x00002b8a",
           "ip.flags": "0x00004000",
           "ip.flags_tree": {
             "ip.flags.rb": "0",
@@ -57,7 +60,7 @@
           },
           "ip.ttl": "128",
           "ip.proto": "6",
-          "ip.checksum": "0x0000551c",
+          "ip.checksum": "0x000050d3",
           "ip.checksum.status": "2",
           "ip.src": "192.168.254.143",
           "ip.addr": "192.168.254.143",
@@ -75,9 +78,9 @@
           "tcp.port": "1075",
           "tcp.stream": "0",
           "tcp.len": "11",
-          "tcp.seq": "12",
-          "tcp.nxtseq": "23",
-          "tcp.ack": "25",
+          "tcp.seq": "1",
+          "tcp.nxtseq": "12",
+          "tcp.ack": "1",
           "tcp.hdr_len": "20",
           "tcp.flags": "0x00000018",
           "tcp.flags_tree": {
@@ -91,48 +94,45 @@
             "tcp.flags.reset": "0",
             "tcp.flags.syn": "0",
             "tcp.flags.fin": "0",
-            "tcp.flags.str": "\u00c2\u00b7\u00c2\u00b7\u00c2\u00b7\u00c2\u00b7\u00c2\u00b7\u00c2\u00b7\u00c2\u00b7AP\u00c2\u00b7\u00c2\u00b7\u00c2\u00b7"
+            "tcp.flags.str": "·······AP···"
           },
-          "tcp.window_size_value": "63976",
-          "tcp.window_size": "63976",
+          "tcp.window_size_value": "64012",
+          "tcp.window_size": "64012",
           "tcp.window_size_scalefactor": "-1",
-          "tcp.checksum": "0x00005965",
+          "tcp.checksum": "0x00005847",
           "tcp.checksum.status": "2",
           "tcp.urgent_pointer": "0",
           "tcp.analysis": {
-            "tcp.analysis.acks_frame": "3",
-            "tcp.analysis.ack_rtt": "0.000323000",
             "tcp.analysis.bytes_in_flight": "11",
             "tcp.analysis.push_bytes_sent": "11"
           },
           "Timestamps": {
-            "tcp.time_relative": "0.033190000",
-            "tcp.time_delta": "0.000323000"
+            "tcp.time_relative": "0.000000000",
+            "tcp.time_delta": "0.000000000"
           },
-          "tcp.payload": "da:04:00:00:00:05:01:01:02:17:01",
+          "tcp.payload": "21:09:00:00:00:05:01:02:02:52:07",
           "tcp.pdu.size": "11"
         },
         "mbtcp": {
-          "mbtcp.trans_id": "55812",
+          "mbtcp.trans_id": "8457",
           "mbtcp.prot_id": "0",
           "mbtcp.len": "5",
           "mbtcp.unit_id": "1"
         },
         "modbus": {
-          "modbus.func_code": "1",
-          "modbus.request_frame": "3",
+          "modbus.func_code": "2",
           "modbus.byte_cnt": "2",
-          "Bit 0 : 1": {
+          "Bit 0 : 0": {
             "modbus.bitnum": "0",
-            "modbus.bitval": "1"
+            "modbus.bitval": "0"
           },
           "Bit 1 : 1": {
             "modbus.bitnum": "1",
             "modbus.bitval": "1"
           },
-          "Bit 2 : 1": {
+          "Bit 2 : 0": {
             "modbus.bitnum": "2",
-            "modbus.bitval": "1"
+            "modbus.bitval": "0"
           },
           "Bit 3 : 0": {
             "modbus.bitnum": "3",
@@ -146,9 +146,9 @@
             "modbus.bitnum": "5",
             "modbus.bitval": "0"
           },
-          "Bit 6 : 0": {
+          "Bit 6 : 1": {
             "modbus.bitnum": "6",
-            "modbus.bitval": "0"
+            "modbus.bitval": "1"
           },
           "Bit 7 : 0": {
             "modbus.bitnum": "7",
@@ -158,8 +158,32 @@
             "modbus.bitnum": "8",
             "modbus.bitval": "1"
           },
-          "Bit 9 : 0": {
+          "Bit 9 : 1": {
             "modbus.bitnum": "9",
+            "modbus.bitval": "1"
+          },
+          "Bit 10 : 1": {
+            "modbus.bitnum": "10",
+            "modbus.bitval": "1"
+          },
+          "Bit 11 : 0": {
+            "modbus.bitnum": "11",
+            "modbus.bitval": "0"
+          },
+          "Bit 12 : 0": {
+            "modbus.bitnum": "12",
+            "modbus.bitval": "0"
+          },
+          "Bit 13 : 0": {
+            "modbus.bitnum": "13",
+            "modbus.bitval": "0"
+          },
+          "Bit 14 : 0": {
+            "modbus.bitnum": "14",
+            "modbus.bitval": "0"
+          },
+          "Bit 15 : 0": {
+            "modbus.bitnum": "15",
             "modbus.bitval": "0"
           }
         }

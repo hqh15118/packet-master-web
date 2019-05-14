@@ -1,0 +1,136 @@
+{
+    "_index": "packets-2019-05-13",
+    "_type": "pcap_file",
+    "_score": null,
+    "_source": {
+      "layers": {
+        "frame": {
+          "frame.interface_id": "0",
+          "frame.interface_id_tree": {
+            "frame.interface_name": "\\Device\\NPF_{E489F2AB-C267-46ED-9E13-0AABE468189E}",
+            "frame.interface_description": "en0"
+          },
+          "frame.encap_type": "1",
+          "frame.time": "May 13, 2019 13:46:29.542812000 CST",
+          "frame.offset_shift": "0.000000000",
+          "frame.time_epoch": "1557726389.542812000",
+          "frame.time_delta": "0.037705000",
+          "frame.time_delta_displayed": "0.037705000",
+          "frame.time_relative": "0.461599000",
+          "frame.number": "22",
+          "frame.len": "84",
+          "frame.cap_len": "84",
+          "frame.marked": "0",
+          "frame.ignored": "0",
+          "frame.protocols": "eth:ethertype:ip:tcp:iec60870_104"
+        },
+        "eth": {
+          "eth.dst": "00:1d:51:fc:75:52",
+          "eth.dst_tree": {
+            "eth.dst_resolved": "BabcockW_fc:75:52",
+            "eth.addr": "00:1d:51:fc:75:52",
+            "eth.addr_resolved": "BabcockW_fc:75:52",
+            "eth.lg": "0",
+            "eth.ig": "0"
+          },
+          "eth.src": "d4:ae:52:6f:9a:64",
+          "eth.src_tree": {
+            "eth.src_resolved": "Dell_6f:9a:64",
+            "eth.addr": "d4:ae:52:6f:9a:64",
+            "eth.addr_resolved": "Dell_6f:9a:64",
+            "eth.lg": "0",
+            "eth.ig": "0"
+          },
+          "eth.type": "0x00000800",
+          "eth.trailer": "00:03:0d:0d:00:00:00:99:df:cc:9a:20:00:00:00:99:df:cc:9a:90",
+          "eth.fcs": "0x0000005d",
+          "eth.fcs.status": "2"
+        },
+        "ip": {
+          "ip.version": "4",
+          "ip.hdr_len": "20",
+          "ip.dsfield": "0x00000000",
+          "ip.dsfield_tree": {
+            "ip.dsfield.dscp": "0",
+            "ip.dsfield.ecn": "0"
+          },
+          "ip.len": "46",
+          "ip.id": "0x00004978",
+          "ip.flags": "0x00004000",
+          "ip.flags_tree": {
+            "ip.flags.rb": "0",
+            "ip.flags.df": "1",
+            "ip.flags.mf": "0",
+            "ip.frag_offset": "0"
+          },
+          "ip.ttl": "128",
+          "ip.proto": "6",
+          "ip.checksum": "0x00008699",
+          "ip.checksum.status": "2",
+          "ip.src": "10.30.11.5",
+          "ip.addr": "10.30.11.5",
+          "ip.src_host": "10.30.11.5",
+          "ip.host": "10.30.11.5",
+          "ip.dst": "10.30.11.120",
+          "ip.addr": "10.30.11.120",
+          "ip.dst_host": "10.30.11.120",
+          "ip.host": "10.30.11.120"
+        },
+        "tcp": {
+          "tcp.srcport": "3118",
+          "tcp.dstport": "2404",
+          "tcp.port": "3118",
+          "tcp.port": "2404",
+          "tcp.stream": "4",
+          "tcp.len": "6",
+          "tcp.seq": "1",
+          "tcp.nxtseq": "7",
+          "tcp.ack": "1",
+          "tcp.hdr_len": "20",
+          "tcp.flags": "0x00000018",
+          "tcp.flags_tree": {
+            "tcp.flags.res": "0",
+            "tcp.flags.ns": "0",
+            "tcp.flags.cwr": "0",
+            "tcp.flags.ecn": "0",
+            "tcp.flags.urg": "0",
+            "tcp.flags.ack": "1",
+            "tcp.flags.push": "1",
+            "tcp.flags.reset": "0",
+            "tcp.flags.syn": "0",
+            "tcp.flags.fin": "0",
+            "tcp.flags.str": "·······AP···"
+          },
+          "tcp.window_size_value": "15496",
+          "tcp.window_size": "15496",
+          "tcp.window_size_scalefactor": "-1",
+          "tcp.checksum": "0x0000403f",
+          "tcp.checksum.status": "2",
+          "tcp.urgent_pointer": "0",
+          "tcp.analysis": {
+            "tcp.analysis.bytes_in_flight": "6",
+            "tcp.analysis.push_bytes_sent": "6"
+          },
+          "Timestamps": {
+            "tcp.time_relative": "0.000000000",
+            "tcp.time_delta": "0.000000000"
+          },
+          "tcp.payload": "68:04:43:00:00:00",
+          "tcp.pdu.size": "6"
+        },
+        "iec60870_104": {
+          "iec60870_asdu.start": "0x00000068",
+          "iec60870_104.apdulen": "4",
+          "iec60870_104.type": "0x00000003",
+          "iec60870_104.utype": "0x00000010"
+        }
+      }
+    }
+  }
+
+
+  hongqianhuideMacBook-Pro:~ hongqianhui$ tshark -T ek -c 24 -e iec60870_asdu.start -e iec60870_104.apdulen -e iec60870_104.type -e iec60870_104.utype -r /Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap/104_dnp_packets.pcapng iec60870_104
+  {"index":{"_index":"packets-2019-05-13","_type":"pcap_file"}}
+  {"timestamp":"1557726389542","layers":{"iec60870_asdu_start":["0x00000068"],"iec60870_104_apdulen":["4"],"iec60870_104_type":["0x00000003"],"iec60870_104_utype":["0x00000010"]}}
+  {"index":{"_index":"packets-2019-05-13","_type":"pcap_file"}}
+  {"timestamp":"1557726389559","layers":{"iec60870_asdu_start":["0x00000068"],"iec60870_104_apdulen":["4"],"iec60870_104_type":["0x00000003"],"iec60870_104_utype":["0x00000020"]}}

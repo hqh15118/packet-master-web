@@ -8,9 +8,7 @@ import com.zjucsc.application.tshark.analyzer.ArtAnalyzer;
 import com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 
@@ -119,4 +117,6 @@ public class Common {
 
 
     public static final BiMap<Integer,String> AUTH_MAP = HashBiMap.create();
+
+    public static final Set<String> CAPTURE_PROTOCOL = new HashSet<>();
 }

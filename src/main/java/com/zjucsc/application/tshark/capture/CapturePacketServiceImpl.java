@@ -9,14 +9,13 @@ import com.zjucsc.application.tshark.decode.AbstractAsyncHandler;
 import com.zjucsc.application.tshark.decode.DefaultPipeLine;
 import com.zjucsc.application.tshark.domain.packet.FvDimensionLayer;
 import com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler;
-import com.zjucsc.application.tshark.pre_processor.BasePreProcessor;
-import com.zjucsc.application.tshark.pre_processor.ModbusPreProcessor;
-import com.zjucsc.application.tshark.pre_processor.S7CommPreProcessor;
+import com.zjucsc.application.tshark.pre_processor.*;
 import com.zjucsc.application.util.PacketDecodeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executors;
 
@@ -37,7 +36,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     @Override
     public void start(ProcessCallback<String,String> callback) {
         this.callback = callback;
-        /*
+        /**
          * 接收协议解析好的五元组，并作五元组发送、报文流量统计处理
          */
         AbstractAsyncHandler<FvDimensionLayer> fvDimensionLayerAbstractAsyncHandler
@@ -50,17 +49,23 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             public FvDimensionLayer handle(Object t) {
                 FvDimensionLayer fvDimensionLayer = ((FvDimensionLayer) t);
                 sb.delete(0,50);
+                //有些报文可能没有eth_trailer和eth_fcs
                 sb.append(fvDimensionLayer.eth_trailer[0]).append(fvDimensionLayer.eth_fcs[0],2,10);
+                //如果不存在，那么sb.toString==""，hexStringToByteArray2会自动判空，
+                //然后返回EMPTY=""，即payload={}空的byte数组
                 byte[] payload = PacketDecodeUtil.hexStringToByteArray2(sb.toString());
                 sendFvDimensionPacket(fvDimensionLayer , payload);      //发送五元组所有报文
-                sendPacketStatisticsEvent(fvDimensionLayer);  //发送统计信息
-                analyzeCollectorState(fvDimensionLayer , payload);
-                return fvDimensionLayer;
+                sendPacketStatisticsEvent(fvDimensionLayer);            //发送统计信息
+                analyzeCollectorState(payload);                         //分析采集器信息
+                return fvDimensionLayer;                                //将五元组发送给BadPacketHandler
             }
         };
 
         callback.start(doStart(fvDimensionLayerAbstractAsyncHandler , new ModbusPreProcessor() ,
-                               new S7CommPreProcessor()
+                               new S7CommPreProcessor() ,
+                               new IEC104PreProcessor() ,
+
+                               new UnknownPreProcessor()      //必须放在最后
                                ));
     }
 
@@ -99,6 +104,10 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     private StringBuilder sb = new StringBuilder(50);
 
     private void sendFvDimensionPacket(FvDimensionLayer fvDimensionLayer , byte[] payload){
+        //payload如果是空的，那么timeStamp就用本地时间来代替
+        if (payload.length == 0){
+            log.error("{} 没有trailer和fcs，无法解析时间戳，返回上位机系统时间" , fvDimensionLayer);
+        }
         fvDimensionLayer.timeStamp = PacketDecodeUtil.decodeTimeStamp(payload,20);
         SocketServiceCenter.updateAllClient(SocketIoEvent.ALL_PACKET,fvDimensionLayer);
     }
@@ -108,7 +117,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         Common.recvPacketFlow += Integer.parseInt(fvDimensionLayer.frame_cap_len[0]);
     }
 
-    private void analyzeCollectorState(FvDimensionLayer fvDimensionLayer , byte[] payload){
+    private void analyzeCollectorState(byte[] payload){
         CollectorState collectorState = PacketDecodeUtil.decodeCollectorState(payload,24);
         if (collectorState!=null){
             SocketServiceCenter.updateAllClient(SocketIoEvent.COLLECTOR_STATE,collectorState);

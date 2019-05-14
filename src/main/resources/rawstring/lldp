@@ -1,0 +1,231 @@
+{
+    "_index": "packets-2019-05-13",
+    "_type": "pcap_file",
+    "_score": null,
+    "_source": {
+      "layers": {
+        "frame": {
+          "frame.interface_id": "0",
+          "frame.interface_id_tree": {
+            "frame.interface_name": "\\Device\\NPF_{E489F2AB-C267-46ED-9E13-0AABE468189E}",
+            "frame.interface_description": "en0"
+          },
+          "frame.encap_type": "1",
+          "frame.time": "May 13, 2019 13:46:49.036042000 CST",
+          "frame.offset_shift": "0.000000000",
+          "frame.time_epoch": "1557726409.036042000",
+          "frame.time_delta": "0.043853000",
+          "frame.time_delta_displayed": "0.043853000",
+          "frame.time_relative": "19.954829000",
+          "frame.number": "1019",
+          "frame.len": "342",
+          "frame.cap_len": "342",
+          "frame.marked": "0",
+          "frame.ignored": "0",
+          "frame.protocols": "eth:ethertype:lldp"
+        },
+        "eth": {
+          "eth.dst": "01:80:c2:00:00:0e",
+          "eth.dst_tree": {
+            "eth.dst_resolved": "LLDP_Multicast",
+            "eth.addr": "01:80:c2:00:00:0e",
+            "eth.addr_resolved": "LLDP_Multicast",
+            "eth.lg": "0",
+            "eth.ig": "1"
+          },
+          "eth.src": "c4:ca:d9:f7:0b:ee",
+          "eth.src_tree": {
+            "eth.src_resolved": "Hangzhou_f7:0b:ee",
+            "eth.addr": "c4:ca:d9:f7:0b:ee",
+            "eth.addr_resolved": "Hangzhou_f7:0b:ee",
+            "eth.lg": "0",
+            "eth.ig": "0"
+          },
+          "eth.type": "0x000088cc"
+        },
+        "lldp": {
+          "Chassis Subtype = MAC address, Id: c4:ca:d9:f7:0b:e7": {
+            "lldp.tlv.type": "1",
+            "lldp.tlv.len": "7",
+            "lldp.chassis.subtype": "4",
+            "lldp.chassis.id.mac": "c4:ca:d9:f7:0b:e7"
+          },
+          "Port Subtype = Interface name, Id: Ethernet1/0/7": {
+            "lldp.tlv.type": "2",
+            "lldp.tlv.len": "14",
+            "lldp.port.subtype": "5",
+            "lldp.port.id": "Ethernet1/0/7"
+          },
+          "Time To Live = 120 sec": {
+            "lldp.tlv.type": "3",
+            "lldp.tlv.len": "2",
+            "lldp.time_to_live": "120"
+          },
+          "Port Description = Ethernet1/0/7 Interface": {
+            "lldp.tlv.type": "4",
+            "lldp.tlv.len": "23",
+            "lldp.port.desc": "Ethernet1/0/7 Interface"
+          },
+          "System Name = H3C": {
+            "lldp.tlv.type": "5",
+            "lldp.tlv.len": "3",
+            "lldp.tlv.system.name": "H3C"
+          },
+          "System Description = H3C Comware Platform Software, Software Version 5.20 Release 5103\\r\\nH3C S3100V2-16TP-EI\\r\\nCopyright (c) 2004-2011 Hangzhou H3C Tech. Co., Ltd. All rights reserved.": {
+            "lldp.tlv.type": "6",
+            "lldp.tlv.len": "161",
+            "lldp.tlv.system.desc": "H3C Comware Platform Software, Software Version 5.20 Release 5103\r\nH3C S3100V2-16TP-EI\r\nCopyright (c) 2004-2011 Hangzhou H3C Tech. Co., Ltd. All rights reserved."
+          },
+          "Capabilities": {
+            "lldp.tlv.type": "7",
+            "lldp.tlv.len": "4",
+            "lldp.tlv.system_cap": "0x00000014",
+            "lldp.tlv.system_cap_tree": {
+              "lldp.tlv.system_cap.other": "0",
+              "lldp.tlv.system_cap.repeater": "0",
+              "lldp.tlv.system_cap.bridge": "1",
+              "lldp.tlv.system_cap.wlan_access_pt": "0",
+              "lldp.tlv.system_cap.router": "1",
+              "lldp.tlv.system_cap.telephone": "0",
+              "lldp.tlv.system_cap.docsis_cable_device": "0",
+              "lldp.tlv.system_cap.station_only": "0"
+            },
+            "lldp.tlv.enable_system_cap": "0x00000014",
+            "lldp.tlv.enable_system_cap_tree": {
+              "lldp.tlv.enable_system_cap.other": "0",
+              "lldp.tlv.enable_system_cap.repeater": "0",
+              "lldp.tlv.enable_system_cap.bridge": "1",
+              "lldp.tlv.enable_system_cap.wlan_access_pt": "0",
+              "lldp.tlv.enable_system_cap.router": "1",
+              "lldp.tlv.enable_system_cap.telephone": "0",
+              "lldp.tlv.enable_system_cap.docsis_cable_device": "0",
+              "lldp.tlv.enable_system_cap.station_only": "0"
+            }
+          },
+          "IEEE - Port VLAN ID": {
+            "lldp.tlv.type": "127",
+            "lldp.tlv.len": "6",
+            "lldp.orgtlv.oui": "32962",
+            "lldp.ieee.802_1.subtype": "0x00000001",
+            "lldp.ieee.802_1.port_vlan.id": "1"
+          },
+          "IEEE - Port and Protocol VLAN ID": {
+            "lldp.tlv.type": "127",
+            "lldp.tlv.len": "7",
+            "lldp.orgtlv.oui": "32962",
+            "lldp.ieee.802_1.subtype": "0x00000002",
+            "lldp.ieee.802_1.port_and_vlan_id_flag": "0x00000002",
+            "lldp.ieee.802_1.port_and_vlan_id_flag_tree": {
+              "lldp.ieee.802_1.port_and_vlan_id_flag.supported": "1",
+              "lldp.ieee.802_1.port_and_vlan_id_flag.enabled": "0"
+            },
+            "lldp.ieee.802_1.port_proto_vlan.id": "0"
+          },
+          "IEEE - VLAN Name": {
+            "lldp.tlv.type": "127",
+            "lldp.tlv.len": "16",
+            "lldp.orgtlv.oui": "32962",
+            "lldp.ieee.802_1.subtype": "0x00000003",
+            "lldp.ieee.802_1.vlan.id": "1",
+            "lldp.ieee.802_1.vlan.name_len": "9",
+            "lldp.ieee.802_1.vlan.name": "VLAN 0001"
+          },
+          "Ieee 802.3 - MAC/PHY Configuration/Status": {
+            "lldp.tlv.type": "127",
+            "lldp.tlv.len": "9",
+            "lldp.orgtlv.oui": "4623",
+            "lldp.ieee.802_3.subtype": "0x00000001",
+            "lldp.ieee.802_3.mac_phy_auto_neg_status": "0x00000003",
+            "lldp.ieee.802_3.mac_phy_auto_neg_status_tree": {
+              "lldp.ieee.802_3.mac_phy_auto_neg_status.supported": "1",
+              "lldp.ieee.802_3.mac_phy_auto_neg_status.enabled": "1"
+            },
+            "lldp.ieee.802_3.pmd_auto_neg_advertised_caps": "0x00000000",
+            "lldp.ieee.802_3.pmd_auto_neg_advertised_caps_tree": {
+              "lldp.ieee.802_3.pmd_auto_neg_advertised_caps.1000base_tfd": "0",
+              "lldp.ieee.802_3.pmd_auto_neg_advertised_caps.1000base_t": "0",
+              "lldp.ieee.802_3.pmd_auto_neg_advertised_caps.1000base_xfd": "0",
+              "lldp.ieee.802_3.pmd_auto_neg_advertised_caps.1000base_x": "0",
+              "lldp.ieee.802_3.pmd_auto_neg_advertised_caps.fdx_bpause": "0",
+              "lldp.ieee.802_3.pmd_auto_neg_advertised_caps.fdx_spause": "0",
+              "lldp.ieee.802_3.pmd_auto_neg_advertised_caps.fdx_apause": "0",
+              "lldp.ieee.802_3.pmd_auto_neg_advertised_caps.fdx_pause": "0",
+              "lldp.ieee.802_3.pmd_auto_neg_advertised_caps.100base_t2fd": "0",
+              "lldp.ieee.802_3.pmd_auto_neg_advertised_caps.100base_t2": "0",
+              "lldp.ieee.802_3.pmd_auto_neg_advertised_caps.100base_txfd": "0",
+              "lldp.ieee.802_3.pmd_auto_neg_advertised_caps.100base_tx": "0",
+              "lldp.ieee.802_3.pmd_auto_neg_advertised_caps.100base_t4": "0",
+              "lldp.ieee.802_3.pmd_auto_neg_advertised_caps.10base_tfd": "0",
+              "lldp.ieee.802_3.pmd_auto_neg_advertised_caps.10base_t": "0",
+              "lldp.ieee.802_3.pmd_auto_neg_advertised_caps.other": "0"
+            },
+            "Same in inverse (wrong) bitorder": {
+              "lldp.ieee.802_3.pmd_auto_neg_advertised_caps_inv.1000base_tfd": "0",
+              "lldp.ieee.802_3.pmd_auto_neg_advertised_caps_inv.1000base_t": "0",
+              "lldp.ieee.802_3.pmd_auto_neg_advertised_caps_inv.1000base_xfd": "0",
+              "lldp.ieee.802_3.pmd_auto_neg_advertised_caps_inv.1000base_x": "0",
+              "lldp.ieee.802_3.pmd_auto_neg_advertised_caps_inv.fdx_bpause": "0",
+              "lldp.ieee.802_3.pmd_auto_neg_advertised_caps_inv.fdx_spause": "0",
+              "lldp.ieee.802_3.pmd_auto_neg_advertised_caps_inv.fdx_apause": "0",
+              "lldp.ieee.802_3.pmd_auto_neg_advertised_caps_inv.fdx_pause": "0",
+              "lldp.ieee.802_3.pmd_auto_neg_advertised_caps_inv.100base_t2fd": "0",
+              "lldp.ieee.802_3.pmd_auto_neg_advertised_caps_inv.100base_t2": "0",
+              "lldp.ieee.802_3.pmd_auto_neg_advertised_caps_inv.100base_txfd": "0",
+              "lldp.ieee.802_3.pmd_auto_neg_advertised_caps_inv.100base_tx": "0",
+              "lldp.ieee.802_3.pmd_auto_neg_advertised_caps_inv.100base_t4": "0",
+              "lldp.ieee.802_3.pmd_auto_neg_advertised_caps_inv.10base_tfd": "0",
+              "lldp.ieee.802_3.pmd_auto_neg_advertised_caps_inv.10base_t": "0",
+              "lldp.ieee.802_3.pmd_auto_neg_advertised_caps_inv.other": "0"
+            },
+            "lldp.ieee.802_3.pmd_mau_type": "0x00000010"
+          },
+          "Ieee 802.3 - Power Via MDI": {
+            "lldp.tlv.type": "127",
+            "lldp.tlv.len": "7",
+            "lldp.orgtlv.oui": "4623",
+            "lldp.ieee.802_3.subtype": "0x00000002",
+            "lldp.ieee.802_3.mdi_power_support": "0x00000000",
+            "lldp.ieee.802_3.mdi_power_support_tree": {
+              "lldp.ieee.802_3.mdi_power_support.port_class": "0",
+              "lldp.ieee.802_3.mdi_power_support.supported": "0",
+              "lldp.ieee.802_3.mdi_power_support.enabled": "0",
+              "lldp.ieee.802_3.mdi_power_support.pse_pairs": "0"
+            },
+            "lldp.ieee.802_3.mdi_pse_pair": "1",
+            "lldp.ieee.802_3.mdi_power_class": "1"
+          },
+          "Ieee 802.3 - Link Aggregation": {
+            "lldp.tlv.type": "127",
+            "lldp.tlv.len": "9",
+            "lldp.orgtlv.oui": "4623",
+            "lldp.ieee.802_3.subtype": "0x00000003",
+            "lldp.ieee.802_3.subtype_tree": {
+              "_ws.expert": {
+                "lldp.tlv_deprecated": "",
+                "_ws.expert.message": "TLV has been deprecated",
+                "_ws.expert.severity": "6291456",
+                "_ws.expert.group": "150994944"
+              }
+            },
+            "lldp.ieee.802_3.aggregation_status": "0x00000001",
+            "lldp.ieee.802_3.aggregation_status_tree": {
+              "lldp.ieee.802_3.aggregation_status.cap": "1",
+              "lldp.ieee.802_3.aggregation_status.enabled": "0"
+            },
+            "lldp.ieee.802_3.aggregated_port_id": "0"
+          },
+          "Ieee 802.3 - Maximum Frame Size": {
+            "lldp.tlv.type": "127",
+            "lldp.tlv.len": "6",
+            "lldp.orgtlv.oui": "4623",
+            "lldp.ieee.802_3.subtype": "0x00000004",
+            "lldp.ieee.802_3.max_frame_size": "2048"
+          },
+          "End of LLDPDU": {
+            "lldp.tlv.type": "0",
+            "lldp.tlv.len": "0"
+          }
+        }
+      }
+    }
+  }

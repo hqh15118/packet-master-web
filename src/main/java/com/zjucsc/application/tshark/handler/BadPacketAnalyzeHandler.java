@@ -11,6 +11,7 @@ import com.zjucsc.application.tshark.domain.bean.BadPacket;
 import com.zjucsc.application.tshark.domain.packet.FvDimensionLayer;
 import com.zjucsc.application.tshark.domain.packet.ModbusPacket;
 import com.zjucsc.application.tshark.domain.packet.S7CommPacket;
+import com.zjucsc.application.tshark.domain.packet.UnknownPacket;
 import com.zjucsc.application.util.PacketDecodeUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,10 +35,16 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
     @Override
     public Void handle(Object t) {
         FvDimensionLayer layer = ((FvDimensionLayer) t);
+        //五元组分析
         protocolAnalyze(layer);
-        int funCode = decodeFuncode(t);
-        operationAnalyze(funCode,layer);
-
+        //功能码分析
+        //TODO 只对确定有功能码的报文进行分析，其他的不需要作功能码分析
+        if (!(t instanceof UnknownPacket.LayersBean)) {
+            int funCode = decodeFuncode(t);
+            if (funCode!=0) {
+                operationAnalyze(funCode, layer);
+            }
+        }
         return null;
     }
 
@@ -49,14 +56,17 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
         }else if (t instanceof ModbusPacket.LayersBean){
             funCodeStr = ((ModbusPacket.LayersBean) t).modbus_func_code[0];
             return PacketDecodeUtil.decodeFuncode(MODBUS,funCodeStr);
+        }else{
+            log.error("can not decode funCode of {} cause it is not defined" , t);
+            return 0;
         }
-       return 0;
     }
 
     private void artifactAnalyze(byte[] tcpPayload, FvDimensionFilter packet) {
         /*
          * 只有定义了工艺参数分析器的报文才需要分析，其他都不需要直接略过
          */
+
     }
 
     private ThreadLocal<AnalyzerConsumerForOperation> analyzerThreadlocalForOperation
@@ -73,6 +83,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
     }
 
     private void operationAnalyze(int funCode , FvDimensionLayer layer){
+        //analyzerThreadlocalForOperation.get() --> AnalyzerConsumerForOperation
         OPERATION_FILTER_PRO.forEach(analyzerThreadlocalForOperation.get().setPacketWrapper(layer,funCode));
     }
 
@@ -81,13 +92,14 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
         private FvDimensionLayer layer;
         private int funCode;
 
-        @Override
-        public void accept(String integer, ConcurrentHashMap<String, OperationAnalyzer> stringOperationAnalyzerConcurrentHashMap) {
+        @Override                                               //String是协议，OperationAnalyzer是对应的报文规则器
+        public void accept(String deviceId, ConcurrentHashMap<String, OperationAnalyzer> stringOperationAnalyzerConcurrentHashMap) {
             OperationAnalyzer operationAnalyzer = null;
+            /**
+             * 只有定义了分析器的报文[即配置了过滤规则的]才需要功能码解析，其他的报文直接略过
+             * layer.frame_protocols[0] 这个协议已经被统一过了
+             */
             if ((operationAnalyzer = stringOperationAnalyzerConcurrentHashMap.get(layer.frame_protocols[0]))!=null){
-                /*
-                 * 只有定义了分析器的报文才需要功能码解析，其他的报文直接略过
-                 */
                 BadPacket badPacket = null;
 
                 try {
@@ -96,7 +108,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
                     log.error(" " , e);
                 }
                 if (badPacket!=null){
-                    badPacket.setDeviceId(integer);
+                    badPacket.setDeviceId(deviceId);
                     sendBadPacket(badPacket);
                 }
             }else{

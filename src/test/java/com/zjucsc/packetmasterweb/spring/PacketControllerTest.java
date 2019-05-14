@@ -33,6 +33,8 @@ public class PacketControllerTest {
     public void startCapture() throws InterruptedException {
         //modbus set -c 1 ok
         //s7 set -c 2   ok
+        //104 ok
+
         capturePacketService.start(new ProcessCallback<String, String>() {
             @Override
             public void error(Exception e) {

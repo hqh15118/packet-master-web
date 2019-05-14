@@ -1,6 +1,7 @@
 package com.zjucsc.application.system.controller;
 
 import com.corundumstudio.socketio.SocketIOClient;
+import com.zjucsc.application.config.ConstantConfig;
 import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
 import com.zjucsc.application.socketio.SocketServiceCenter;
 import com.zjucsc.application.system.service.impl.PacketServiceImpl;
@@ -30,6 +31,7 @@ public class PacketController {
     @Qualifier("packet_service")
     @Autowired private PacketServiceImpl packetService;
     @Autowired private CapturePacketServiceImpl capturePacketService;
+    @Autowired private ConstantConfig constantConfig;
 
     @ApiOperation(value="开始抓包")
     @RequestMapping(value = "/start_service" , method = RequestMethod.POST)
@@ -74,7 +76,7 @@ public class PacketController {
     @ApiOperation("开启websocket服务")
     @RequestMapping(value = "/connect_socketio" , method = RequestMethod.GET)
     public BaseResponse startRecvRealTimePacket(){
-        boolean b = MainServer.openWebSocketService("192.168.0.121", Common.SOCKET_IO_PORT, new com.corundumstudio.socketio.listener.ConnectListener() {
+        boolean b = MainServer.openWebSocketService(constantConfig.getGlobal_address(), Common.SOCKET_IO_PORT, new com.corundumstudio.socketio.listener.ConnectListener() {
             @Override
             public void onConnect(SocketIOClient socketIOClient) {
                 log.info(socketIOClient.getRemoteAddress().toString() + "connected...");

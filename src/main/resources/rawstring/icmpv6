@@ -1,0 +1,108 @@
+{
+    "_index": "packets-2019-05-13",
+    "_type": "pcap_file",
+    "_score": null,
+    "_source": {
+      "layers": {
+        "frame": {
+          "frame.interface_id": "0",
+          "frame.interface_id_tree": {
+            "frame.interface_name": "\\Device\\NPF_{E489F2AB-C267-46ED-9E13-0AABE468189E}",
+            "frame.interface_description": "en0"
+          },
+          "frame.encap_type": "1",
+          "frame.time": "May 13, 2019 13:48:02.801895000 CST",
+          "frame.offset_shift": "0.000000000",
+          "frame.time_epoch": "1557726482.801895000",
+          "frame.time_delta": "0.006087000",
+          "frame.time_delta_displayed": "0.006087000",
+          "frame.time_relative": "93.720682000",
+          "frame.number": "4776",
+          "frame.len": "90",
+          "frame.cap_len": "90",
+          "frame.marked": "0",
+          "frame.ignored": "0",
+          "frame.protocols": "eth:ethertype:ipv6:ipv6.hopopts:icmpv6"
+        },
+        "eth": {
+          "eth.dst": "33:33:00:00:00:16",
+          "eth.dst_tree": {
+            "eth.dst_resolved": "IPv6mcast_16",
+            "eth.addr": "33:33:00:00:00:16",
+            "eth.addr_resolved": "IPv6mcast_16",
+            "eth.lg": "1",
+            "eth.ig": "1"
+          },
+          "eth.src": "28:d2:44:5f:69:e1",
+          "eth.src_tree": {
+            "eth.src_resolved": "LcfcHefe_5f:69:e1",
+            "eth.addr": "28:d2:44:5f:69:e1",
+            "eth.addr_resolved": "LcfcHefe_5f:69:e1",
+            "eth.lg": "0",
+            "eth.ig": "0"
+          },
+          "eth.type": "0x000086dd"
+        },
+        "ipv6": {
+          "ipv6.version": "6",
+          "ip.version": "6",
+          "ipv6.tclass": "0x00000000",
+          "ipv6.tclass_tree": {
+            "ipv6.tclass.dscp": "0",
+            "ipv6.tclass.ecn": "0"
+          },
+          "ipv6.flow": "0x00000000",
+          "ipv6.plen": "36",
+          "ipv6.nxt": "0",
+          "ipv6.hlim": "1",
+          "ipv6.src": "fe80::e987:95ee:1bd5:492e",
+          "ipv6.addr": "fe80::e987:95ee:1bd5:492e",
+          "ipv6.src_host": "fe80::e987:95ee:1bd5:492e",
+          "ipv6.host": "fe80::e987:95ee:1bd5:492e",
+          "ipv6.dst": "ff02::16",
+          "ipv6.addr": "ff02::16",
+          "ipv6.dst_host": "ff02::16",
+          "ipv6.host": "ff02::16",
+          "ipv6.hopopts": {
+            "ipv6.hopopts.nxt": "58",
+            "ipv6.hopopts.len": "0",
+            "ipv6.hopopts.len_oct": "8",
+            "ipv6.opt": {
+              "ipv6.opt.type": "5",
+              "ipv6.opt.type_tree": {
+                "ipv6.opt.type.action": "0",
+                "ipv6.opt.type.change": "0",
+                "ipv6.opt.type.rest": "0x00000005"
+              },
+              "ipv6.opt.length": "2",
+              "ipv6.opt.router_alert": "0"
+            },
+            "ipv6.opt": {
+              "ipv6.opt.type": "1",
+              "ipv6.opt.type_tree": {
+                "ipv6.opt.type.action": "0",
+                "ipv6.opt.type.change": "0",
+                "ipv6.opt.type.rest": "0x00000001"
+              },
+              "ipv6.opt.length": "0",
+              "ipv6.opt.padn": ""
+            }
+          }
+        },
+        "icmpv6": {
+          "icmpv6.type": "143",
+          "icmpv6.code": "0",
+          "icmpv6.checksum": "0x00008c8d",
+          "icmpv6.checksum.status": "1",
+          "icmpv6.reserved": "00:00",
+          "icmpv6.mldr.nb_mcast_records": "1",
+          "icmpv6.mldr.mar": {
+            "icmpv6.mldr.mar.record_type": "3",
+            "icmpv6.mldr.mar.aux_data_len": "0",
+            "icmpv6.mldr.mar.nb_sources": "0",
+            "icmpv6.mldr.mar.multicast_address": "ff02::1:3"
+          }
+        }
+      }
+    }
+  }

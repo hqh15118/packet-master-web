@@ -1,0 +1,52 @@
+{
+    "_index": "packets-2019-05-13",
+    "_type": "pcap_file",
+    "_score": null,
+    "_source": {
+      "layers": {
+        "frame": {
+          "frame.interface_id": "0",
+          "frame.interface_id_tree": {
+            "frame.interface_name": "\\Device\\NPF_{E489F2AB-C267-46ED-9E13-0AABE468189E}",
+            "frame.interface_description": "en0"
+          },
+          "frame.encap_type": "1",
+          "frame.time": "May 13, 2019 13:47:14.152805000 CST",
+          "frame.offset_shift": "0.000000000",
+          "frame.time_epoch": "1557726434.152805000",
+          "frame.time_delta": "0.012705000",
+          "frame.time_delta_displayed": "0.012705000",
+          "frame.time_relative": "45.071592000",
+          "frame.number": "2247",
+          "frame.len": "180",
+          "frame.cap_len": "180",
+          "frame.marked": "0",
+          "frame.ignored": "0",
+          "frame.protocols": "eth:ethertype:data"
+        },
+        "eth": {
+          "eth.dst": "01:80:c2:00:00:0a",
+          "eth.dst_tree": {
+            "eth.dst_resolved": "Spanning-tree-(for-bridges)_0a",
+            "eth.addr": "01:80:c2:00:00:0a",
+            "eth.addr_resolved": "Spanning-tree-(for-bridges)_0a",
+            "eth.lg": "0",
+            "eth.ig": "1"
+          },
+          "eth.src": "c4:ca:d9:f7:0b:ee",
+          "eth.src_tree": {
+            "eth.src_resolved": "Hangzhou_f7:0b:ee",
+            "eth.addr": "c4:ca:d9:f7:0b:ee",
+            "eth.addr_resolved": "Hangzhou_f7:0b:ee",
+            "eth.lg": "0",
+            "eth.ig": "0"
+          },
+          "eth.type": "0x000088a7"
+        },
+        "data": {
+          "data.data": "00:03:00:00:01:b4:d2:12:00:01:00:0e:00:00:00:00:c4:ca:d9:f7:0b:e7:00:07:00:17:48:33:43:20:53:33:31:30:30:56:32:2d:31:36:54:50:2d:45:49:00:0e:00:10:52:65:6c:65:61:73:65:20:35:31:30:33:00:11:00:17:56:35:30:30:52:30:30:31:42:30:31:44:30:31:30:53:50:30:32:00:10:00:08:20:31:30:39:00:0c:00:14:10:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:03:00:07:48:33:43:00:02:00:11:45:74:68:65:72:6e:65:74:31:2f:30:2f:37:00:0b:00:06:00:03:00:03:0d:0d:00:00:00:9b:64:bf:e1:b0:00:00:00:9b:64:bf:e2:80:00:00:00:bd",
+          "data.len": "166"
+        }
+      }
+    }
+  }

@@ -1,0 +1,142 @@
+{
+    "_index": "packets-2019-05-13",
+    "_type": "pcap_file",
+    "_score": null,
+    "_source": {
+      "layers": {
+        "frame": {
+          "frame.interface_id": "0",
+          "frame.interface_id_tree": {
+            "frame.interface_name": "\\Device\\NPF_{E489F2AB-C267-46ED-9E13-0AABE468189E}",
+            "frame.interface_description": "en0"
+          },
+          "frame.encap_type": "1",
+          "frame.time": "May 13, 2019 13:46:29.896120000 CST",
+          "frame.offset_shift": "0.000000000",
+          "frame.time_epoch": "1557726389.896120000",
+          "frame.time_delta": "0.041071000",
+          "frame.time_delta_displayed": "0.041071000",
+          "frame.time_relative": "0.814907000",
+          "frame.number": "43",
+          "frame.len": "221",
+          "frame.cap_len": "221",
+          "frame.marked": "0",
+          "frame.ignored": "0",
+          "frame.protocols": "eth:ethertype:goose"
+        },
+        "eth": {
+          "eth.dst": "01:0c:cd:01:00:07",
+          "eth.dst_tree": {
+            "eth.dst_resolved": "Iec-Tc57_01:00:07",
+            "eth.addr": "01:0c:cd:01:00:07",
+            "eth.addr_resolved": "Iec-Tc57_01:00:07",
+            "eth.lg": "0",
+            "eth.ig": "1"
+          },
+          "eth.src": "00:30:a7:10:46:a2",
+          "eth.src_tree": {
+            "eth.src_resolved": "Schweitz_10:46:a2",
+            "eth.addr": "00:30:a7:10:46:a2",
+            "eth.addr_resolved": "Schweitz_10:46:a2",
+            "eth.lg": "0",
+            "eth.ig": "0"
+          },
+          "eth.type": "0x000088b8"
+        },
+        "goose": {
+          "goose.appid": "0x00001007",
+          "goose.length": "183",
+          "goose.reserve1": "0x00000000",
+          "goose.reserve2": "0x00000000",
+          "goose.goosePdu_element": {
+            "goose.gocbRef": "SEL_2411_106CFG/LLN0$GO$GooseDSet13",
+            "goose.timeAllowedtoLive": "2000",
+            "goose.datSet": "SEL_2411_106CFG/LLN0$DSet13",
+            "goose.goID": "Sub2Bay1",
+            "goose.t": "May 13, 2019 13:50:52.228996276 UTC",
+            "goose.stNum": "9",
+            "goose.sqNum": "5262777",
+            "goose.test": "0",
+            "goose.confRev": "1",
+            "goose.ndsCom": "0",
+            "goose.numDatSetEntries": "12",
+            "goose.allData": "12",
+            "goose.allData_tree": {
+              "goose.Data": "3",
+              "goose.Data_tree": {
+                "goose.boolean": "0"
+              },
+              "goose.Data": "3",
+              "goose.Data_tree": {
+                "goose.boolean": "1"
+              },
+              "goose.Data": "3",
+              "goose.Data_tree": {
+                "goose.boolean": "0"
+              },
+              "goose.Data": "3",
+              "goose.Data_tree": {
+                "goose.boolean": "0"
+              },
+              "goose.Data": "3",
+              "goose.Data_tree": {
+                "goose.boolean": "0"
+              },
+              "goose.Data": "3",
+              "goose.Data_tree": {
+                "goose.boolean": "0"
+              },
+              "goose.Data": "3",
+              "goose.Data_tree": {
+                "goose.boolean": "0"
+              },
+              "goose.Data": "3",
+              "goose.Data_tree": {
+                "goose.boolean": "0"
+              },
+              "goose.Data": "2",
+              "goose.Data_tree": {
+                "goose.structure": "1",
+                "goose.structure_tree": {
+                  "goose.Data": "7",
+                  "goose.Data_tree": {
+                    "goose.floating_point": "08:00:00:00:00"
+                  }
+                }
+              },
+              "goose.Data": "2",
+              "goose.Data_tree": {
+                "goose.structure": "1",
+                "goose.structure_tree": {
+                  "goose.Data": "7",
+                  "goose.Data_tree": {
+                    "goose.floating_point": "08:00:00:00:00"
+                  }
+                }
+              },
+              "goose.Data": "2",
+              "goose.Data_tree": {
+                "goose.structure": "1",
+                "goose.structure_tree": {
+                  "goose.Data": "7",
+                  "goose.Data_tree": {
+                    "goose.floating_point": "08:00:00:00:00"
+                  }
+                }
+              },
+              "goose.Data": "2",
+              "goose.Data_tree": {
+                "goose.structure": "1",
+                "goose.structure_tree": {
+                  "goose.Data": "7",
+                  "goose.Data_tree": {
+                    "goose.floating_point": "08:00:00:00:00"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }

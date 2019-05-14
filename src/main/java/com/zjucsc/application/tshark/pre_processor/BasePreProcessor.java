@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.zjucsc.application.handler.ThreadExceptionHandler;
 import com.zjucsc.application.tshark.decode.PipeLine;
 import com.zjucsc.application.tshark.domain.packet.FvDimensionLayer;
+import com.zjucsc.application.util.CommonTsharkUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -11,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -21,13 +23,10 @@ import java.util.concurrent.Executors;
  * #create_time 2019-05-11 - 19:19
  *
  * 信息流向：
- *                     JSON                                 FvDimensionLayer
- * xxxPreProcessor ------------> decodeThreadPool[xxxPacket] ------------> fvDimensionHandler -->
- *                                                                |        五元组发送 + 报文统计
- *                                                                |
- *                                                                |
- *                                                                |---------------> badpacketanalyzeHandler
- *  输出JSON字符串                将JSON字符串解析为具体的Packet实体对象                       恶意报文分析
+ *                     JSON                                 FvDimensionLayer                    FvDimensionLayer
+ * xxxPreProcessor ------------> decodeThreadPool[xxxPacket] ------------> fvDimensionHandler --------------------> badpacketanalyzeHandler
+ *                                                                         五元组发送 + 报文统计                             恶意报文分析
+ *  输出JSON字符串                将JSON字符串解析为具体的Packet实体对象
  *                              这部分还会将传送上来的协议替换为本地的协议
  */
 @Slf4j
@@ -47,8 +46,8 @@ public abstract class BasePreProcessor<P> implements PreProcessor<P> {
     public void execCommand() {
         assert pipeLine!=null;
         List<String> fieldList = filterFields();
-        appendBaseCommand(fieldList);    //init fv dimension packet format
-        pcapFilePath(-1);            //init pcap file path
+        appendBaseCommand(fieldList);     //init fv dimension packet format
+        pcapFilePath(22);            //init pcap file path
 
         StringBuilder commandBuilder = new StringBuilder();
         commandBuilder.append(tsharkPath()).append(" ")
@@ -56,7 +55,7 @@ public abstract class BasePreProcessor<P> implements PreProcessor<P> {
 //        if (protocolFilterField()!=null){
 //            commandBuilder.append("-Y ").append(protocolFilterField()).append(" ");
 //        }                                               //-Y xxx
-        commandBuilder.append("-T ek").append(" ");     //-T ek
+        commandBuilder.append("-T ek").append(" ");       //-T ek
         for (String field : fieldList) {
             commandBuilder.append("-e ").append(field).append(" "); // -e xxx ...
         }
@@ -64,9 +63,15 @@ public abstract class BasePreProcessor<P> implements PreProcessor<P> {
             commandBuilder.append(filePath);          //-r pcap file
         }
         commandBuilder.append(" ").append(protocolFilterField());
+        /**
+         *
+         */
+        if (!protocolFilterField().contains("not")){
+            CommonTsharkUtil.addCaptureProtocol(protocolFilterField());
+        }
         String command = commandBuilder.toString();
         log.info("*****************");
-        log.info("run command : {} " , command);
+        log.info("{} ==> run command : {} " , this.getClass().getName() , command);
         log.info("*****************");
         Process process = null;
         try {
@@ -79,11 +84,6 @@ public abstract class BasePreProcessor<P> implements PreProcessor<P> {
                         if (packetInJSON.length() > 85) {
                             decodeThreadPool.execute(() -> {
                                 pipeLine.pushDataAtHead(decode(JSON.parseObject(packetInJSON,decodeType())));
-                                try {
-                                    Thread.sleep(1000);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
                             });
                         }
                     }else{
@@ -103,15 +103,15 @@ public abstract class BasePreProcessor<P> implements PreProcessor<P> {
 
     @Override
     public String tsharkPath() {
-        return tsharkWinPath;
+        return tsharkMacPath;
     }
 
     @Override
     public void pcapFilePath(int limit) {
         if (limit < 0)
-            filePath =  " -r  " + pcapFilePathForWin;
+            filePath =  " -r  " + pcapFilePathForMac;
         else
-            filePath = " -c " + limit + " -r " +  pcapFilePathForWin;
+            filePath = " -c " + limit + " -r " +  pcapFilePathForMac;
     }
 
     @Override
@@ -161,6 +161,6 @@ public abstract class BasePreProcessor<P> implements PreProcessor<P> {
 
     private String tsharkMacPath = " tshark ";
     private String tsharkWinPath = " C:\\Users\\Administrator\\Desktop\\tshark_min_win\\tshark.exe";
-    private String pcapFilePathForMac = " /Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap/text.pcap ";
-    private String pcapFilePathForWin = " C:\\Users\\Administrator\\IdeaProjects\\packet-master-web\\src\\main\\resources\\pcap\\text.pcap";
+    private String pcapFilePathForMac = " /Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap/104_dnp_packets.pcapng ";
+    private String pcapFilePathForWin = " C:\\Users\\Administrator\\IdeaProjects\\packet-master-web\\src\\main\\resources\\pcap\\104_dnp_packets.pcapng";
 }

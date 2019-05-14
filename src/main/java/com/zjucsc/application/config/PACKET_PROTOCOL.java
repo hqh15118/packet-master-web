@@ -23,6 +23,17 @@ public interface PACKET_PROTOCOL {
     String DNS = "dns";
     String ETHERNET = "ethernet";
     String OPCA_UA = "opcaua";
+    String IEC104 = "iec104";
+    String DNP3_0 = "dnp3.0";
+    String NBNS = "nbns";
+    String GOOSE = "goose";
+    String STP = "stp";
+    String CLNP = "clnp";
+    String ESIS = "esis";
+    String ICMPV6 = "icmpv6";
+    String IGMP = "igmp";
+    String LLDP = "lldp";
+    String UNKNOWN = "unknown";
 
     int MODBUS_ID = 1;
     int S7_ID = 2;
@@ -38,4 +49,15 @@ public interface PACKET_PROTOCOL {
     int DNS_ID = 10;
     int ETHERNET_ID = 11;
     int OPCA_UA_ID = 12;
+    int IEC104_ID = 13;
+    int DNP3_0_ID = 14;
+    int NBNS_ID = 15;
+    int GOOSE_ID = 16;
+    int STP_ID = 17;
+    int CLNP_ID = 18;
+    int ESIS_ID = 19;
+    int ICMPV6_ID = 20;
+    int IGMP_ID = 21;
+    int LLDP_ID = 22;
+    int UNKNOWN_ID = -100;
 }

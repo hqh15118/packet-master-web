@@ -82,6 +82,9 @@ public class PacketDecodeUtil {
 
     //  0000 0000/0000 0000/0000 1001/0011 1101/0010 0011/0111 0110/1010 0000/0000 0000
     public static String decodeTimeStamp(byte[] payload , int offset){
+        if (payload.length == 0){
+            return simpleDateFormatThreadLocal.get().format(new Date());
+        }
         if (offset == 20) {
             return simpleDateFormatThreadLocal.get().format(new Date());
         }
@@ -130,11 +133,12 @@ public class PacketDecodeUtil {
         try {
             switch (protocol) {
                 case MODBUS:
-                    fun_code = Integer.decode(str_fun_code);
-                    break;
+                    //fun_code = Integer.decode(str_fun_code);
+                    //break;
                 case S7:
                 case S7_Ack_data:
                 case S7_JOB:
+                case IEC104:
                     fun_code = Integer.decode(str_fun_code);
                     break;
             }
@@ -156,9 +160,11 @@ public class PacketDecodeUtil {
         if (protocolStack.endsWith("tcp")){
             return TCP;
         }
-        if (protocolStack.endsWith("modbus")){
+        else if (protocolStack.endsWith("modbus"))
+        {
             return MODBUS;
-        }else if(protocolStack.endsWith("s7comm")){
+        }else if(protocolStack.endsWith("s7comm"))
+        {
             String rosctr = ((String) otherInfo[0]);
             if (S7CommPacket.ACK_DATA.equals(rosctr)){
                 return S7_Ack_data;
@@ -167,7 +173,20 @@ public class PacketDecodeUtil {
             }else{
                 return S7;
             }
-        }else{
+        }
+        else if(protocolStack.endsWith("dnp3"))
+        {
+            return DNP3_0;
+        }
+        else if(protocolStack.endsWith("iec60870_104"))
+        {
+            return IEC104;
+        }
+        else if(protocolStack.endsWith("data"))
+        {//udp...fixme
+            return UDP;
+        }
+        else{
             return protocolStack;
         }
     }
@@ -182,6 +201,9 @@ public class PacketDecodeUtil {
      *  设备ID     A口状态      B口状态         其他
      * *********************************/
     public static CollectorState decodeCollectorState(byte[] payload , int offset){
+        if (payload.length==0){
+            return null;
+        }
         if (offset == 24){
             return null;
         }

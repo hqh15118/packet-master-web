@@ -1,0 +1,117 @@
+{
+    "_index": "packets-2019-05-13",
+    "_type": "pcap_file",
+    "_score": null,
+    "_source": {
+      "layers": {
+        "frame": {
+          "frame.interface_id": "0",
+          "frame.interface_id_tree": {
+            "frame.interface_name": "\\Device\\NPF_{E489F2AB-C267-46ED-9E13-0AABE468189E}",
+            "frame.interface_description": "en0"
+          },
+          "frame.encap_type": "1",
+          "frame.time": "May 13, 2019 13:46:29.390172000 CST",
+          "frame.offset_shift": "0.000000000",
+          "frame.time_epoch": "1557726389.390172000",
+          "frame.time_delta": "0.055754000",
+          "frame.time_delta_displayed": "0.055754000",
+          "frame.time_relative": "0.308959000",
+          "frame.number": "18",
+          "frame.len": "116",
+          "frame.cap_len": "116",
+          "frame.marked": "0",
+          "frame.ignored": "0",
+          "frame.protocols": "eth:ethertype:ip:udp:nbns"
+        },
+        "eth": {
+          "eth.dst": "ff:ff:ff:ff:ff:ff",
+          "eth.dst_tree": {
+            "eth.dst_resolved": "Broadcast",
+            "eth.addr": "ff:ff:ff:ff:ff:ff",
+            "eth.addr_resolved": "Broadcast",
+            "eth.lg": "1",
+            "eth.ig": "1"
+          },
+          "eth.src": "08:57:00:eb:e2:5b",
+          "eth.src_tree": {
+            "eth.src_resolved": "Tp-LinkT_eb:e2:5b",
+            "eth.addr": "08:57:00:eb:e2:5b",
+            "eth.addr_resolved": "Tp-LinkT_eb:e2:5b",
+            "eth.lg": "0",
+            "eth.ig": "0"
+          },
+          "eth.type": "0x00000800",
+          "eth.trailer": "00:03:0d:0d:00:00:00:99:de:9b:53:a0:00:00:00:99:de:9b:54:20",
+          "eth.fcs": "0x0000007d",
+          "eth.fcs.status": "2"
+        },
+        "ip": {
+          "ip.version": "4",
+          "ip.hdr_len": "20",
+          "ip.dsfield": "0x00000000",
+          "ip.dsfield_tree": {
+            "ip.dsfield.dscp": "0",
+            "ip.dsfield.ecn": "0"
+          },
+          "ip.len": "78",
+          "ip.id": "0x00006637",
+          "ip.flags": "0x00000000",
+          "ip.flags_tree": {
+            "ip.flags.rb": "0",
+            "ip.flags.df": "0",
+            "ip.flags.mf": "0",
+            "ip.frag_offset": "0"
+          },
+          "ip.ttl": "128",
+          "ip.proto": "17",
+          "ip.checksum": "0x0000a922",
+          "ip.checksum.status": "2",
+          "ip.src": "10.30.11.11",
+          "ip.addr": "10.30.11.11",
+          "ip.src_host": "10.30.11.11",
+          "ip.host": "10.30.11.11",
+          "ip.dst": "10.30.11.255",
+          "ip.addr": "10.30.11.255",
+          "ip.dst_host": "10.30.11.255",
+          "ip.host": "10.30.11.255"
+        },
+        "udp": {
+          "udp.srcport": "137",
+          "udp.dstport": "137",
+          "udp.port": "137",
+          "udp.port": "137",
+          "udp.length": "58",
+          "udp.checksum": "0x00008316",
+          "udp.checksum.status": "2",
+          "udp.stream": "0",
+          "Timestamps": {
+            "udp.time_relative": "0.000000000",
+            "udp.time_delta": "0.000000000"
+          }
+        },
+        "nbns": {
+          "nbns.id": "0x0000f698",
+          "nbns.flags": "0x00000110",
+          "nbns.flags_tree": {
+            "nbns.flags.response": "0",
+            "nbns.flags.opcode": "0",
+            "nbns.flags.truncated": "0",
+            "nbns.flags.recdesired": "1",
+            "nbns.flags.broadcast": "1"
+          },
+          "nbns.count.queries": "1",
+          "nbns.count.answers": "0",
+          "nbns.count.auth_rr": "0",
+          "nbns.count.add_rr": "0",
+          "Queries": {
+            "DEB20VNC<00>: type NB, class IN": {
+              "nbns.name": "DEB20VNC<00>",
+              "nbns.type": "32",
+              "nbns.class": "1"
+            }
+          }
+        }
+      }
+    }
+  }

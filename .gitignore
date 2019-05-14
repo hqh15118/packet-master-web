@@ -27,3 +27,8 @@ HELP.md
 
 ### VS Code ###
 .vscode/
+
+
+### tshark
+/src/main/resources/tshark
+protocolmap/target/generated-sources/

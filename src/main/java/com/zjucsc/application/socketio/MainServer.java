@@ -66,7 +66,10 @@ public class MainServer {
         if (!hasStartedService){
             return BaseResponse.ERROR(Common.HTTP_STATUS_CODE.SYS_ERROR,"服务未打开");
         }else{
+            hasStartedService = false;
             if (server!=null){
+                server.stop();
+                server = null;
                 return BaseResponse.OK();
             }else{
                 return BaseResponse.ERROR(Common.HTTP_STATUS_CODE.SYS_ERROR,"程序错误");
