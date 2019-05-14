@@ -48,7 +48,7 @@ public abstract class BasePreProcessor<P> implements PreProcessor<P> {
         assert pipeLine!=null;
         List<String> fieldList = filterFields();
         appendBaseCommand(fieldList);    //init fv dimension packet format
-        pcapFilePath(2);            //init pcap file path
+        pcapFilePath(-1);            //init pcap file path
 
         StringBuilder commandBuilder = new StringBuilder();
         commandBuilder.append(tsharkPath()).append(" ")
@@ -79,6 +79,11 @@ public abstract class BasePreProcessor<P> implements PreProcessor<P> {
                         if (packetInJSON.length() > 85) {
                             decodeThreadPool.execute(() -> {
                                 pipeLine.pushDataAtHead(decode(JSON.parseObject(packetInJSON,decodeType())));
+                                try {
+                                    Thread.sleep(1000);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
                             });
                         }
                     }else{
@@ -98,15 +103,15 @@ public abstract class BasePreProcessor<P> implements PreProcessor<P> {
 
     @Override
     public String tsharkPath() {
-        return tsharkMacPath;
+        return tsharkWinPath;
     }
 
     @Override
     public void pcapFilePath(int limit) {
         if (limit < 0)
-            filePath =  " -r  " + pcapFilePathForMac;
+            filePath =  " -r  " + pcapFilePathForWin;
         else
-            filePath = " -c " + limit + " -r " +  pcapFilePathForMac;
+            filePath = " -c " + limit + " -r " +  pcapFilePathForWin;
     }
 
     @Override

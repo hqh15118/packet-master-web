@@ -22,6 +22,7 @@ public interface PACKET_PROTOCOL {
     String FV_DIMENSION = "five_dimension";
     String DNS = "dns";
     String ETHERNET = "ethernet";
+    String OPCA_UA = "opcaua";
 
     int MODBUS_ID = 1;
     int S7_ID = 2;
@@ -36,4 +37,5 @@ public interface PACKET_PROTOCOL {
     int IPV6_ID = 9;
     int DNS_ID = 10;
     int ETHERNET_ID = 11;
+    int OPCA_UA_ID = 12;
 }

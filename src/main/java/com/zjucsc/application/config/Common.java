@@ -4,6 +4,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.zjucsc.application.domain.bean.CollectorState;
 import com.zjucsc.application.handler.ThreadExceptionHandler;
+import com.zjucsc.application.tshark.analyzer.ArtAnalyzer;
 import com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
 
@@ -81,19 +82,10 @@ public class Common {
      */
     public static ConcurrentHashMap<String, FiveDimensionAnalyzer> FV_DIMENSION_FILTER_PRO = new ConcurrentHashMap<>();
 
-    /*
-    public static ConcurrentHashMap<Integer, AbstractAnalyzer> BAD_PACKET_FILTER_PRO_2 = new ConcurrentHashMap<Integer, AbstractAnalyzer>(){
-        {
-            put(PACKET_PROTOCOL.OTHER_ID , new OtherPacketAnalyzer(new OtherPacketFilter()));
-            put(PACKET_PROTOCOL.TCP_ID , new TcpAnalyzer(new TcpPacketFilter()));
-            put(PACKET_PROTOCOL.S7_ID , new OperationAnalyzer(new OperationPacketFilter<Integer,String>(PACKET_PROTOCOL.S7)));
-            put(PACKET_PROTOCOL.S7_Ack_data_ID , new OperationAnalyzer(new OperationPacketFilter<Integer,String>(PACKET_PROTOCOL.S7_Ack_data)));
-            put(PACKET_PROTOCOL.S7_JOB_ID , new OperationAnalyzer(new OperationPacketFilter<Integer,String>(PACKET_PROTOCOL.S7_JOB)));
-            put(PACKET_PROTOCOL.MODBUS_ID , new OperationAnalyzer(new OperationPacketFilter<Integer,String>(PACKET_PROTOCOL.MODBUS)));
-            put(PACKET_PROTOCOL.FV_DIMENSION_ID, new FiveDimensionAnalyzer(new FiveDimensionPacketFilter(PACKET_PROTOCOL.FV_DIMENSION)));
-        }
-    };
-    */
+    /**
+     * 工艺分析 协议 -- 工艺参数分析器
+     */
+    public static ConcurrentHashMap<String , ArtAnalyzer> ART_FILTER = new ConcurrentHashMap<>();
 
     /**
      * BaseResponse的返回状态 - 修改起来比较方便

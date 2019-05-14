@@ -33,10 +33,12 @@ spring:
 #          url: jdbc:mysql://127.0.0.1:3306/febs_test?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
   aop:
     proxy-target-class: true
-#  boot:
-#    admin:
-#      client:
-#        url: http://192.168.0.121:8080
+  boot:
+    admin:
+      client:
+        url: http://192.168.0.121:8989
+        instance:
+          prefer-ip: true
 #  redis:
 #    host: 127.0.0.1
 #    port: 6379
@@ -73,11 +75,11 @@ febs:
     anonUrl: /login,/logout/**,/regist,/user/check/**
     # token有效期，单位秒
     jwtTimeOut: 3600
-#management:
-#  endpoints:
-#    web:
-#      exposure:
-#        include: '*'
-#  endpoint:
-#    health:
-#      show-details: always
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always

@@ -4,6 +4,7 @@ package com.zjucsc.application.system.controller;
 import com.zjucsc.application.system.entity.Gplot;
 import com.zjucsc.application.system.service.iservice.IGplotService;
 import com.zjucsc.base.BaseResponse;
+import io.micrometer.core.annotation.Timed;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,7 @@ public class GplotController {
 
     @ApiOperation("添加组态图设备位置信息")
     @PostMapping("new_gplot")
+    @Timed(value = "add.gplot")
     public BaseResponse addGplotInfo(@RequestBody @Valid Gplot.GplotForFront gplotForFront){
         Gplot gplot = new Gplot();
         gplot.setInfo(gplotForFront.info);
@@ -28,7 +30,7 @@ public class GplotController {
         iGplotService.save(gplot);
         return BaseResponse.OK(gplot.getId());
     }
-
+    @Timed(value = "load.gplot")
     @ApiOperation("加载组态图设备位置信息")
     @GetMapping("load_gplot")
     public BaseResponse loadGplotInfo(@RequestParam int id) throws RuntimeException {

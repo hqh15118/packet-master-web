@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: admin-server
+#  security:
+#    user:
+#      name: "admin"
+#      password: "123"
+server:
+  port: 8989
+  address: 192.168.0.121

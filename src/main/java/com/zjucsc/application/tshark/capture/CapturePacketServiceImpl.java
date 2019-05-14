@@ -99,7 +99,6 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     private StringBuilder sb = new StringBuilder(50);
 
     private void sendFvDimensionPacket(FvDimensionLayer fvDimensionLayer , byte[] payload){
-
         fvDimensionLayer.timeStamp = PacketDecodeUtil.decodeTimeStamp(payload,20);
         SocketServiceCenter.updateAllClient(SocketIoEvent.ALL_PACKET,fvDimensionLayer);
     }
