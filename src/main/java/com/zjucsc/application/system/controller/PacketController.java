@@ -56,7 +56,7 @@ public class PacketController {
                 Common.hasStartedHost.add(service.getService_name());
             }
         }
-
+        service.macAddress = service.macAddress.replace("-" , ":");
         BasePreProcessor.setCaptureDeviceNameAndMacAddress(service.macAddress , service.service_name);
 
         CompletableFuture<Exception> completableFuture = capturePacketService.start(new ProcessCallback<String, String>() {

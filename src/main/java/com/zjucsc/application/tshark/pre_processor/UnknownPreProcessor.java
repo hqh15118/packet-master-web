@@ -38,7 +38,7 @@ public class UnknownPreProcessor extends BasePreProcessor<UnknownPacket> {
         int setSize = captureProtocolSet.size();
         for (String s : captureProtocolSet) {
             if (i < setSize - 1) {
-                sb.append(" not ").append(s).append(" and");
+                sb.append(" not ").append(s).append(" AND");
             }else{
                 sb.append(" not ").append(s);
             }

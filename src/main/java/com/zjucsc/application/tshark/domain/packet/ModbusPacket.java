@@ -30,8 +30,8 @@ public class ModbusPacket {
                     ", eth_src=" + Arrays.toString(eth_src) +
                     ", ip_src=" + Arrays.toString(ip_src) +
                     ", ip_dst=" + Arrays.toString(ip_dst) +
-                    ", tcp_srcport=" + Arrays.toString(tcp_srcport) +
-                    ", tcp_dstport=" + Arrays.toString(tcp_dstport) +
+                    ", tcp_srcport=" + Arrays.toString(src_port) +
+                    ", tcp_dstport=" + Arrays.toString(dst_port) +
                     ", eth_eth_trailer=" + Arrays.toString(eth_trailer) +
                     ", eth_eth_fcs=" + Arrays.toString(eth_fcs) +
                     '}';

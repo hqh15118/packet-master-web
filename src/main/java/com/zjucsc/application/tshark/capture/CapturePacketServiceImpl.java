@@ -58,7 +58,9 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                 FvDimensionLayer fvDimensionLayer = ((FvDimensionLayer) t);
                 sb.delete(0,50);
                 //有些报文可能没有eth_trailer和eth_fcs
-                sb.append(fvDimensionLayer.eth_trailer[0]).append(fvDimensionLayer.eth_fcs[0],2,10);
+                if (fvDimensionLayer.eth_fcs[0].length() > 10) {
+                    sb.append(fvDimensionLayer.eth_trailer[0]).append(fvDimensionLayer.eth_fcs[0], 2, 10);
+                }
                 //如果不存在，那么sb.toString==""，hexStringToByteArray2会自动判空，
                 //然后返回EMPTY=""，即payload={}空的byte数组
                 byte[] payload = PacketDecodeUtil.hexStringToByteArray2(sb.toString());
@@ -135,7 +137,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                         downLatch.countDown();
                     }
                 });
-                basePreProcessor.execCommand(0 , 30);
+                basePreProcessor.execCommand(1 , 30);
             }
         });
         processThread.setName(processName + "-thread");

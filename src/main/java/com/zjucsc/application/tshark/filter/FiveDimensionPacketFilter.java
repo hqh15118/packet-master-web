@@ -255,9 +255,9 @@ public class FiveDimensionPacketFilter {
     public BadPacket OK(FvDimensionLayer layer){
         if (protocolWhiteMap.containsKey(layer.frame_protocols[0])){
             return null;
-        }else if (srcPortWhiteMap.containsKey(layer.tcp_srcport[0])){
+        }else if (srcPortWhiteMap.containsKey(layer.src_port[0])){
             return null;
-        }else if (dstPortWhiteMap.containsKey(layer.tcp_dstport[0])){
+        }else if (dstPortWhiteMap.containsKey(layer.dst_port[0])){
             return null;
         }else if (srcIpWhiteMap.containsKey(layer.ip_src[0])){
             return null;
@@ -281,7 +281,7 @@ public class FiveDimensionPacketFilter {
             badPacketBuilder.addComment("黑名单协议|");
             badPacketBuilder.setDangerLevel(DangerLevel.VERY_DANGER);
         }
-        if (srcPortBlackMap.containsKey(layer.tcp_srcport[0])){
+        if (srcPortBlackMap.containsKey(layer.src_port[0])){
             if (badPacketBuilder == null){
                 badPacketBuilder = new BadPacket();
                 badPacketBuilder.setLayer(layer);
@@ -289,7 +289,7 @@ public class FiveDimensionPacketFilter {
             }
             badPacketBuilder.addComment("黑名单源端口|");
         }
-        if (dstPortBlackMap.containsKey(layer.tcp_dstport[0])){
+        if (dstPortBlackMap.containsKey(layer.dst_port[0])){
             if (badPacketBuilder == null){
                 badPacketBuilder = new BadPacket();
                 badPacketBuilder.setLayer(layer);

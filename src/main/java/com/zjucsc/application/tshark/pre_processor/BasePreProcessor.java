@@ -83,11 +83,10 @@ public abstract class BasePreProcessor<P> implements PreProcessor<P> {
             }
         }else{
             // -f "xxx not mac"
-            commandBuilder.append(" -f ").append(" \"").append(filter())
-                    .append(" and not ether src ").append(chosenDeviceMac).append("\"");
+            commandBuilder.append(" -f ").append("'").append(filter())
+                    .append(" AND not ether src ").append(chosenDeviceMac).append("'");
         }
-        commandBuilder.append(" ").append(protocolFilterField()).append(" ");   // 最后的部分 + s7comm/...用于过滤
-
+        commandBuilder.append(" -Y ").append("\"").append(protocolFilterField()).append("\"");   // 最后的部分 + s7comm/...用于过滤
         String command = commandBuilder.toString();
         if (commandBuildFinishCallback!=null){
             commandBuildFinishCallback.commandBuildFinish();

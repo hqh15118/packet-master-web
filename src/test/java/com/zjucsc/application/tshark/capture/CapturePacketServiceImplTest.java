@@ -1,5 +1,6 @@
 package com.zjucsc.application.tshark.capture;
 
+import com.zjucsc.application.tshark.pre_processor.BasePreProcessor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,10 @@ public class CapturePacketServiceImplTest {
 
     @Test
     public void start() throws InterruptedException {
+        String macAddressForMac = "8c:85:90:93:15:a2";
+        String deviceName = "en0";
         CapturePacketServiceImpl capturePacketService = new CapturePacketServiceImpl();
+        BasePreProcessor.setCaptureDeviceNameAndMacAddress(macAddressForMac,deviceName);
         capturePacketService.start(new ProcessCallback<String, String>() {
             @Override
             public void error(Exception e) {
