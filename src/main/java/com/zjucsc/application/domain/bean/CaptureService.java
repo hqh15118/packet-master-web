@@ -10,4 +10,6 @@ public class CaptureService {
     public String service_ip;
     @NotBlank
     public String service_name;
+    @NotBlank
+    public String macAddress;
 }

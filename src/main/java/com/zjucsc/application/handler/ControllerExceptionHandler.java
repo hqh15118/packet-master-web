@@ -86,6 +86,6 @@ public class ControllerExceptionHandler {
 
 
     private void printException(Exception e){
-        log.error(" " , e);
+        log.error("class : {} ; msg : {}" , e.getClass() , e.getMessage());
     }
 }

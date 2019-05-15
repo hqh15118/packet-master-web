@@ -1,6 +1,7 @@
 package com.zjucsc.application.tshark.pre_processor;
 
 import com.alibaba.fastjson.JSON;
+import com.zjucsc.application.config.Common;
 import com.zjucsc.application.handler.ThreadExceptionHandler;
 import com.zjucsc.application.tshark.decode.PipeLine;
 import com.zjucsc.application.tshark.domain.packet.FvDimensionLayer;
@@ -32,6 +33,10 @@ import java.util.concurrent.Executors;
 @Slf4j
 public abstract class BasePreProcessor<P> implements PreProcessor<P> {
 
+    private static String chosenDeviceMac = null;
+    private static String captureDeviceName = null;
+    private CommandBuildFinishCallback commandBuildFinishCallback;
+
     private String filePath = null;
     private volatile boolean processRunning = false;
     private PipeLine pipeLine;
@@ -43,22 +48,29 @@ public abstract class BasePreProcessor<P> implements PreProcessor<P> {
     });
 
     @Override
-    public void execCommand(int type , int limit , String captureDeviceName) {
+    public void execCommand(int type , int limit) {
         assert pipeLine!=null;
         StringBuilder commandBuilder = new StringBuilder();
+        /**
+         * command builder
+         */
         List<String> fieldList = filterFields();
         appendBaseCommand(fieldList);       //init fv dimension packet format add all fv dimension to field list
 
+        commandBuilder.append(tsharkPath()).append(" ")
+                .append("-l -n").append(" ");           //tshark -l -n
+
         if (type == 0) {
-            pcapFilePath(limit);            //init pcap file path
+            pcapFilePath(limit);                        //init pcap file path
         }else{
+            assert chosenDeviceMac!=null;
+            assert captureDeviceName!=null;
             commandBuilder.append(" -i ").append(captureDeviceName).append(" ");    // -i capture_service
         }
-        commandBuilder.append(tsharkPath()).append(" ")
-                .append("-l -n").append(" ");           // -l -n
+
         commandBuilder.append("-T ek").append(" ");       // -T ek
         for (String field : fieldList) {
-            commandBuilder.append("-e ").append(field).append(" "); // -e xxx ... 根据需要的协议设置
+            commandBuilder.append("-e ").append(field).append(" "); // -e xxx ... 根据需要的协议设置 + 五元组
         }
 
         if (!protocolFilterField().contains("not")){
@@ -69,11 +81,17 @@ public abstract class BasePreProcessor<P> implements PreProcessor<P> {
             if (StringUtils.isNotBlank(filePath)) {
                 commandBuilder.append(filePath);          //-r pcap file
             }
-            commandBuilder.append(" ").append(protocolFilterField());   // s7comm
         }else{
             // -f "xxx not mac"
+            commandBuilder.append(" -f ").append(" \"").append(filter())
+                    .append(" and not ether src ").append(chosenDeviceMac).append("\"");
         }
+        commandBuilder.append(" ").append(protocolFilterField()).append(" ");   // 最后的部分 + s7comm/...用于过滤
+
         String command = commandBuilder.toString();
+        if (commandBuildFinishCallback!=null){
+            commandBuildFinishCallback.commandBuildFinish();
+        }
         log.info("***************** {} ==> run command : {} " , this.getClass().getName() , command);
         Process process;
         try {
@@ -89,6 +107,11 @@ public abstract class BasePreProcessor<P> implements PreProcessor<P> {
                             });
                         }
                     }else{
+                        if (processRunning) {
+                            log.info("{} exit by end finishing reading ..", this.getClass().getName());
+                        }else {
+                            log.info("{} exit by end quiting capture service..", this.getClass().getName());
+                        }
                         break;
                     }
                 }
@@ -110,10 +133,11 @@ public abstract class BasePreProcessor<P> implements PreProcessor<P> {
 
     @Override
     public void pcapFilePath(int limit) {
+        System.out.println("*** operation name is : " + Common.OS_NAME);
         if (limit < 0)
-            filePath =  " -r  " + pcapFilePathForWin;
+            filePath =  " -r  " + pcapFilePathForMac;
         else
-            filePath = " -c " + limit + " -r " +  pcapFilePathForWin;
+            filePath = " -c " + limit + " -r " +  pcapFilePathForMac;
     }
 
     @Override
@@ -165,4 +189,22 @@ public abstract class BasePreProcessor<P> implements PreProcessor<P> {
     private String tsharkWinPath = " tshark";
     private String pcapFilePathForMac = " /Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap/104_dnp_packets.pcapng ";
     private String pcapFilePathForWin = " C:\\Users\\Administrator\\IdeaProjects\\packet-master-web\\src\\main\\resources\\pcap\\104_dnp_packets.pcapng";
+
+    public static void setCaptureDeviceNameAndMacAddress(String macAddress,String captureDeviceName){
+        BasePreProcessor.captureDeviceName = captureDeviceName;
+        BasePreProcessor.chosenDeviceMac = macAddress;
+    }
+
+    @Override
+    public String filter() {
+        return "tcp";
+    }
+
+    public void setCommandBuildFinishCallback(CommandBuildFinishCallback commandBuildFinishCallback){
+        this.commandBuildFinishCallback = commandBuildFinishCallback;
+    }
+
+    public interface CommandBuildFinishCallback{
+        void commandBuildFinish();
+    }
 }

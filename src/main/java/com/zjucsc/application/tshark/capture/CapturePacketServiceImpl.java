@@ -14,12 +14,15 @@ import com.zjucsc.application.tshark.pre_processor.*;
 import com.zjucsc.application.util.PacketDecodeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -37,8 +40,9 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                 return thread;
             }));
 
+    @Async
     @Override
-    public void start(ProcessCallback<String,String> callback) {
+    public CompletableFuture<Exception> start(ProcessCallback<String,String> callback) {
         this.callback = callback;
         /**
          * 接收协议解析好的五元组，并作五元组发送、报文流量统计处理
@@ -66,12 +70,18 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             }
         };
 
-        callback.start(doStart(fvDimensionLayerAbstractAsyncHandler , new ModbusPreProcessor() ,
-                               new S7CommPreProcessor() ,
-                               new IEC104PreProcessor() ,
+        try {
+            callback.start(doStart(fvDimensionLayerAbstractAsyncHandler ,
+                                   new ModbusPreProcessor() ,
+                                   new S7CommPreProcessor() ,
+                                   new IEC104PreProcessor() ,
 
-                               new UnknownPreProcessor()      //必须放在最后
-                               ));
+                                   new UnknownPreProcessor()      //必须放在最后
+                                   ));
+        } catch (InterruptedException e) {
+            return CompletableFuture.completedFuture(e);
+        }
+        return CompletableFuture.completedFuture(null);
     }
 
     private void collectorDelayInfo(byte[] payload) {
@@ -83,36 +93,54 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         }
     }
 
+    @Async
     @Override
-    public void stop() {
+    public CompletableFuture<Exception> stop() {
         for (BasePreProcessor<?> basePreProcessor : processorList) {
             basePreProcessor.stopProcess();
             callback.end("end " + basePreProcessor.getClass().getName());
         }
+        processorList.clear();
+        return CompletableFuture.completedFuture(null);
     }
 
     private String doStart(AbstractAsyncHandler<FvDimensionLayer> fvDimensionHandler ,
-                           BasePreProcessor<?>... packetPreProcessor){
+                           BasePreProcessor<?>... packetPreProcessor) throws InterruptedException {
+        CountDownLatch downLatch = new CountDownLatch(packetPreProcessor.length - 1);
         StringBuilder sb = new StringBuilder();
-        for (BasePreProcessor<?> basePreProcessor : packetPreProcessor) {
-            String processName = basePreProcessor.getClass().getName();
-            processorList.add(basePreProcessor);
-            DefaultPipeLine pipeLine = new DefaultPipeLine(processName);
-            //fv_dimension_handler --> bad_packet_analyze_handler
-            pipeLine.addLast(fvDimensionHandler);
-            pipeLine.addLast(badPacketAnalyzeHandler);
-            basePreProcessor.setPipeLine(pipeLine);
-            Thread processThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    basePreProcessor.execCommand(0 , 10 , null);
-                }
-            });
-            processThread.setName(processName + "-thread");
-            processThread.start();
-            sb.append(basePreProcessor.getClass().getName()).append(" start");
+        int i = 0;
+        for (; i < packetPreProcessor.length - 1; i++) {
+            BasePreProcessor<?> basePreProcessor = packetPreProcessor[i];
+            doNow(basePreProcessor , fvDimensionHandler , downLatch , sb);
         }
+        downLatch.await(100, TimeUnit.SECONDS);
+        doNow(packetPreProcessor[i] , fvDimensionHandler,null , sb);
         return sb.toString();
+    }
+
+    private void doNow(BasePreProcessor<?> basePreProcessor , AbstractAsyncHandler<FvDimensionLayer> fvDimensionHandler,
+                       CountDownLatch downLatch , StringBuilder sb){
+        String processName = basePreProcessor.getClass().getName();
+        processorList.add(basePreProcessor);
+        DefaultPipeLine pipeLine = new DefaultPipeLine(processName);
+        //fv_dimension_handler --> bad_packet_analyze_handler
+        pipeLine.addLast(fvDimensionHandler);
+        pipeLine.addLast(badPacketAnalyzeHandler);
+        basePreProcessor.setPipeLine(pipeLine);
+        Thread processThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                basePreProcessor.setCommandBuildFinishCallback(()->{
+                    if (downLatch!=null) {
+                        downLatch.countDown();
+                    }
+                });
+                basePreProcessor.execCommand(0 , 30);
+            }
+        });
+        processThread.setName(processName + "-thread");
+        processThread.start();
+        sb.append(basePreProcessor.getClass().getName()).append(" start");
     }
 
     private StringBuilder sb = new StringBuilder(50);
@@ -123,6 +151,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             log.error("{} 没有trailer和fcs，无法解析时间戳，返回上位机系统时间" , fvDimensionLayer);
         }
         fvDimensionLayer.timeStamp = PacketDecodeUtil.decodeTimeStamp(payload,20);
+        System.out.println(fvDimensionLayer);
         SocketServiceCenter.updateAllClient(SocketIoEvent.ALL_PACKET,fvDimensionLayer);
     }
 

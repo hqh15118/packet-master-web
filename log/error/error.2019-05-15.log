@@ -3262,3 +3262,101 @@ Caused by: java.sql.SQLException: Field 'device_number' doesn't have a default v
 2019-05-15 17:35:50.405 febs [com.zjucsc.application.tshark.pre_processor.UnknownPreProcessor-thread] ERROR c.z.a.t.p.BasePreProcessor - can not run command  tshark  -l -n -T ek -e frame.protocols -e eth.dst -e eth.src -e frame.cap_len -e ip.dst -e ip.src -e tcp.srcport -e tcp.dstport -e eth.trailer -e eth.fcs  -c 10 -r  C:\Users\Administrator\IdeaProjects\packet-master-web\src\main\resources\pcap\104_dnp_packets.pcapng  not s7comm  not modbus  not iec60870_104  
 2019-05-15 17:35:50.530 febs [com.zjucsc.application.tshark.pre_processor.S7CommPreProcessor-thread] ERROR c.z.a.t.p.BasePreProcessor - can not run command  tshark  -l -n -T ek -e s7comm.param.func -e s7comm.header.rosctr -e frame.protocols -e eth.dst -e eth.src -e frame.cap_len -e ip.dst -e ip.src -e tcp.srcport -e tcp.dstport -e eth.trailer -e eth.fcs  -c 10 -r  C:\Users\Administrator\IdeaProjects\packet-master-web\src\main\resources\pcap\104_dnp_packets.pcapng s7comm 
 2019-05-15 17:35:50.655 febs [com.zjucsc.application.tshark.pre_processor.IEC104PreProcessor-thread] ERROR c.z.a.t.p.BasePreProcessor - can not run command  tshark  -l -n -T ek -e iec60870_asdu.start -e iec60870_104.apdulen -e iec60870_104.type -e iec60870_104.utype -e frame.protocols -e eth.dst -e eth.src -e frame.cap_len -e ip.dst -e ip.src -e tcp.srcport -e tcp.dstport -e eth.trailer -e eth.fcs  -c 10 -r  C:\Users\Administrator\IdeaProjects\packet-master-web\src\main\resources\pcap\104_dnp_packets.pcapng iec60870_104 
+2019-05-15 19:53:59.582 febs [main] ERROR o.apache.catalina.util.LifecycleBase - Failed to start component [Connector[HTTP/1.1-8080]]
+org.apache.catalina.LifecycleException: Protocol handler start failed
+	at org.apache.catalina.connector.Connector.startInternal(Connector.java:1008)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:183)
+	at org.apache.catalina.core.StandardService.addConnector(StandardService.java:226)
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.addPreviouslyRemovedConnectors(TomcatWebServer.java:259)
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.start(TomcatWebServer.java:197)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.startWebServer(ServletWebServerApplicationContext.java:311)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.finishRefresh(ServletWebServerApplicationContext.java:164)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:552)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:142)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:775)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:397)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:316)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1260)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1248)
+	at com.zjucsc.PacketMasterWebApplication.main(PacketMasterWebApplication.java:23)
+Caused by: java.net.BindException: Can't assign requested address
+	at sun.nio.ch.Net.bind0(Native Method)
+	at sun.nio.ch.Net.bind(Net.java:433)
+	at sun.nio.ch.Net.bind(Net.java:425)
+	at sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:223)
+	at sun.nio.ch.ServerSocketAdaptor.bind(ServerSocketAdaptor.java:74)
+	at org.apache.tomcat.util.net.NioEndpoint.initServerSocket(NioEndpoint.java:236)
+	at org.apache.tomcat.util.net.NioEndpoint.bind(NioEndpoint.java:210)
+	at org.apache.tomcat.util.net.AbstractEndpoint.bindWithCleanup(AbstractEndpoint.java:1103)
+	at org.apache.tomcat.util.net.AbstractEndpoint.start(AbstractEndpoint.java:1189)
+	at org.apache.coyote.AbstractProtocol.start(AbstractProtocol.java:568)
+	at org.apache.catalina.connector.Connector.startInternal(Connector.java:1005)
+	... 14 common frames omitted
+2019-05-15 19:53:59.599 febs [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+The Tomcat connector configured to listen on port 8080 failed to start. The port may already be in use or the connector may be misconfigured.
+
+Action:
+
+Verify the connector's configuration, identify and stop any process that's listening on port 8080, or configure this application to listen on another port.
+
+2019-05-15 19:55:45.584 febs [http-nio-192.168.1.102-8080-exec-1] ERROR c.zjucsc.application.util.PcapUtils - interface ip is invalid : fe80:0:0:0:1e17:3db4:b0f2:ce50%utun0
+2019-05-15 19:55:45.587 febs [http-nio-192.168.1.102-8080-exec-1] ERROR c.zjucsc.application.util.PcapUtils - interface ip is invalid : fe80:0:0:0:4c44:62ff:fe1a:8406%awdl0
+2019-05-15 19:55:45.587 febs [http-nio-192.168.1.102-8080-exec-1] ERROR c.zjucsc.application.util.PcapUtils - interface ip is invalid : fe80:0:0:0:18e6:d914:7d81:1ca1%en0
+2019-05-15 19:55:45.693 febs [http-nio-192.168.1.102-8080-exec-1] ERROR c.zjucsc.application.util.PcapUtils - interface ip is invalid : fe80:0:0:0:0:0:0:1%lo0
+2019-05-15 19:55:45.693 febs [http-nio-192.168.1.102-8080-exec-1] ERROR c.zjucsc.application.util.PcapUtils - interface ip is invalid : 0:0:0:0:0:0:0:1%lo0
+2019-05-15 20:00:56.128 febs [http-nio-192.168.1.102-8080-exec-4] ERROR c.z.a.h.ControllerExceptionHandler - class : class com.zjucsc.application.domain.exceptions.OpenCaptureServiceException ; msg : en0 service has started
+2019-05-15 20:07:08.936 febs [http-nio-192.168.1.102-8080-exec-3] ERROR c.z.a.h.ControllerExceptionHandler - class : class org.springframework.web.bind.MissingServletRequestParameterException ; msg : Required String parameter 'service_name' is not present
+2019-05-15 20:11:04.590 febs [http-nio-192.168.1.102-8080-exec-1] ERROR c.zjucsc.application.util.PcapUtils - interface ip is invalid : fe80:0:0:0:1e17:3db4:b0f2:ce50%utun0
+2019-05-15 20:11:04.590 febs [http-nio-192.168.1.102-8080-exec-1] ERROR c.zjucsc.application.util.PcapUtils - interface ip is invalid : fe80:0:0:0:4c44:62ff:fe1a:8406%awdl0
+2019-05-15 20:11:04.591 febs [http-nio-192.168.1.102-8080-exec-1] ERROR c.zjucsc.application.util.PcapUtils - interface ip is invalid : fe80:0:0:0:18e6:d914:7d81:1ca1%en0
+2019-05-15 20:11:04.676 febs [http-nio-192.168.1.102-8080-exec-1] ERROR c.zjucsc.application.util.PcapUtils - interface ip is invalid : fe80:0:0:0:0:0:0:1%lo0
+2019-05-15 20:11:04.676 febs [http-nio-192.168.1.102-8080-exec-1] ERROR c.zjucsc.application.util.PcapUtils - interface ip is invalid : 0:0:0:0:0:0:0:1%lo0
+2019-05-15 20:22:12.788 febs [bad packet analyze handler-] ERROR c.z.a.t.h.BadPacketAnalyzeHandler - can not decode funCode of com.zjucsc.application.tshark.domain.packet.IEC104Packet$LayersBean@775b2c79 cause it is not defined
+2019-05-15 20:22:12.788 febs [bad packet analyze handler-] ERROR c.z.a.t.h.BadPacketAnalyzeHandler - can not decode funCode of com.zjucsc.application.tshark.domain.packet.IEC104Packet$LayersBean@42092fdd cause it is not defined
+2019-05-15 20:37:20.090 febs [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+The bean 'capturePacketServiceImpl' could not be injected as a 'com.zjucsc.application.tshark.capture.CapturePacketServiceImpl' because it is a JDK dynamic proxy that implements:
+	com.zjucsc.application.tshark.capture.CapturePacketService
+
+
+Action:
+
+Consider injecting the bean as one of its interfaces or forcing the use of CGLib-based proxies by setting proxyTargetClass=true on @EnableAsync and/or @EnableCaching.
+
+2019-05-15 20:38:14.250 febs [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+The bean 'capturePacketServiceImpl' could not be injected as a 'com.zjucsc.application.tshark.capture.CapturePacketServiceImpl' because it is a JDK dynamic proxy that implements:
+	com.zjucsc.application.tshark.capture.CapturePacketService
+
+
+Action:
+
+Consider injecting the bean as one of its interfaces or forcing the use of CGLib-based proxies by setting proxyTargetClass=true on @EnableAsync and/or @EnableCaching.
+
+2019-05-15 20:39:52.106 febs [bad packet analyze handler-] ERROR c.z.a.t.h.BadPacketAnalyzeHandler - can not decode funCode of com.zjucsc.application.tshark.domain.packet.IEC104Packet$LayersBean@7218845e cause it is not defined
+2019-05-15 20:39:52.106 febs [bad packet analyze handler-] ERROR c.z.a.t.h.BadPacketAnalyzeHandler - can not decode funCode of com.zjucsc.application.tshark.domain.packet.IEC104Packet$LayersBean@284b7711 cause it is not defined
+2019-05-15 21:03:16.680 febs [http-nio-192.168.1.102-8080-exec-3] ERROR c.z.a.h.ControllerExceptionHandler - class : class org.springframework.web.HttpRequestMethodNotSupportedException ; msg : Request method 'POST' not supported
+2019-05-15 21:05:03.707 febs [http-nio-192.168.1.102-8080-exec-3] ERROR c.zjucsc.application.util.PcapUtils - interface ip is invalid : fe80:0:0:0:1e17:3db4:b0f2:ce50%utun0
+2019-05-15 21:05:03.708 febs [http-nio-192.168.1.102-8080-exec-3] ERROR c.zjucsc.application.util.PcapUtils - interface ip is invalid : fe80:0:0:0:4c44:62ff:fe1a:8406%awdl0
+2019-05-15 21:05:03.708 febs [http-nio-192.168.1.102-8080-exec-3] ERROR c.zjucsc.application.util.PcapUtils - interface ip is invalid : fe80:0:0:0:18e6:d914:7d81:1ca1%en0
+2019-05-15 21:05:03.786 febs [http-nio-192.168.1.102-8080-exec-3] ERROR c.zjucsc.application.util.PcapUtils - interface ip is invalid : fe80:0:0:0:0:0:0:1%lo0
+2019-05-15 21:05:03.786 febs [http-nio-192.168.1.102-8080-exec-3] ERROR c.zjucsc.application.util.PcapUtils - interface ip is invalid : 0:0:0:0:0:0:0:1%lo0

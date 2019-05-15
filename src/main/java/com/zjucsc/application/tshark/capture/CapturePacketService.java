@@ -1,6 +1,8 @@
 package com.zjucsc.application.tshark.capture;
 
+import java.util.concurrent.CompletableFuture;
+
 public interface CapturePacketService<S,E> {
-    void start(ProcessCallback<S,E> callback);
-    void stop();
+    CompletableFuture<Exception> start(ProcessCallback<S,E> callback);
+    CompletableFuture<Exception> stop();
 }

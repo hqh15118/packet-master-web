@@ -14,6 +14,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Common {
 
+    public static String OS_NAME = System.getProperty("os.name");
+
     public static final int SOCKET_IO_PORT = 8081;
 
     public static final String CAPTURE_COMMAND_WIN = "C:\\Users\\Administrator\\Desktop\\tshark_min_win\\tshark.exe -l -n -Y tcp -e frame.protocols -e eth.dst -e frame.cap_len -e eth.src -e ip.src -e ip.dst -e tcp.srcport -e tcp.dstport -e s7comm.param.func -e modbus.func_code -e tcp.payload -e s7comm.header.rosctr -T ek -e eth.trailer -e eth.fcs -r C:\\Users\\Administrator\\IdeaProjects\\packet-master-web\\src\\main\\resources\\pcap\\question_1531953285_02_notime.pcap";

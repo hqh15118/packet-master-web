@@ -10,7 +10,7 @@ import java.util.List;
  */
 public interface PreProcessor<P>{
 
-    void execCommand(int type , int limit , String captureDeviceName);
+    void execCommand(int type , int limit);
 
     String tsharkPath();
 
@@ -33,4 +33,6 @@ public interface PreProcessor<P>{
      */
     List<String> filterFields();
 
+    //-f "not ether src 28:d2:44:5f:69:e1 and tcp"
+    String filter();
 }

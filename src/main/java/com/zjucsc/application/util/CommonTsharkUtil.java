@@ -11,11 +11,11 @@ import java.util.Set;
  * #create_time 2019-05-14 - 20:59
  */
 public class CommonTsharkUtil {
-    public static void addCaptureProtocol(String protocol){
+    public static synchronized void addCaptureProtocol(String protocol){
         Common.CAPTURE_PROTOCOL.add(protocol);
     }
 
-    public static Set<String> getCaptureProtocols(){
+    public static synchronized Set<String> getCaptureProtocols(){
         return Common.CAPTURE_PROTOCOL;
     }
 

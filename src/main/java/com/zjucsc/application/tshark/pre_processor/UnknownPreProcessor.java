@@ -34,8 +34,15 @@ public class UnknownPreProcessor extends BasePreProcessor<UnknownPacket> {
     public String protocolFilterField() {
         StringBuilder sb = new StringBuilder();
         Set<String> captureProtocolSet = CommonTsharkUtil.getCaptureProtocols();
+        int i = 0;
+        int setSize = captureProtocolSet.size();
         for (String s : captureProtocolSet) {
-            sb.append(" not ").append(s) .append(" ");
+            if (i < setSize - 1) {
+                sb.append(" not ").append(s).append(" and");
+            }else{
+                sb.append(" not ").append(s);
+            }
+            i++;
         }
         return sb.toString();
     }

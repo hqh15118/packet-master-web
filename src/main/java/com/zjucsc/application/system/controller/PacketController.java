@@ -5,8 +5,10 @@ import com.zjucsc.application.config.ConstantConfig;
 import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
 import com.zjucsc.application.socketio.SocketServiceCenter;
 import com.zjucsc.application.system.service.impl.PacketServiceImpl;
+import com.zjucsc.application.tshark.capture.CapturePacketService;
 import com.zjucsc.application.tshark.capture.CapturePacketServiceImpl;
 import com.zjucsc.application.tshark.capture.ProcessCallback;
+import com.zjucsc.application.tshark.pre_processor.BasePreProcessor;
 import com.zjucsc.application.util.PcapUtils;
 import com.zjucsc.base.BaseResponse;
 import com.zjucsc.application.config.Common;
@@ -20,6 +22,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.SocketException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static com.zjucsc.application.config.Common.HTTP_STATUS_CODE.SYS_ERROR;
 
@@ -30,24 +34,21 @@ public class PacketController {
 
     @Qualifier("packet_service")
     @Autowired private PacketServiceImpl packetService;
-    @Autowired private CapturePacketServiceImpl capturePacketService;
+    @Autowired private CapturePacketService capturePacketService;
     @Autowired private ConstantConfig constantConfig;
 
     @ApiOperation(value="开始抓包")
     @RequestMapping(value = "/start_service" , method = RequestMethod.POST)
-    public BaseResponse startCaptureService(@RequestBody CaptureService service) throws DeviceNotValidException {
-        doStartService(service);
-        return BaseResponse.OK();
+    public BaseResponse startCaptureService(@RequestBody CaptureService service) {
+        return BaseResponse.OK(doStartService(service));
     }
 
     private final byte[] lock1 = new byte[]{};
     /**
      * start packet-capture service
      */
-    private void doStartService(CaptureService service) throws DeviceNotValidException {
-        if(!service.getService_ip().equals(PcapUtils.getTargetNetworkInterfaceIp(service.getService_name()))){
-            throw new DeviceNotValidException("设备名称与IP地址不符");
-        }
+    @SuppressWarnings("unchecked")
+    private Exception doStartService(CaptureService service) {
         synchronized (lock1){
             if (Common.hasStartedHost.contains(service.getService_name())){
                 throw new OpenCaptureServiceException(service.getService_name() + " service has started");
@@ -55,12 +56,14 @@ public class PacketController {
                 Common.hasStartedHost.add(service.getService_name());
             }
         }
-        capturePacketService.start(new ProcessCallback<String, String>() {
+
+        BasePreProcessor.setCaptureDeviceNameAndMacAddress(service.macAddress , service.service_name);
+
+        CompletableFuture<Exception> completableFuture = capturePacketService.start(new ProcessCallback<String, String>() {
             @Override
             public void error(Exception e) {
 
             }
-
             @Override
             public void start(String start) {
                 log.info("{} has started capture service.." , start);
@@ -71,6 +74,12 @@ public class PacketController {
                 log.info("{} has ended capture service.." , end);
             }
         });
+
+        try {
+            return completableFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            return e;
+        }
     }
 
     @ApiOperation("开启websocket服务")
@@ -115,15 +124,15 @@ public class PacketController {
     }
 
     @ApiOperation("停止抓包")
-    @PostMapping("stop_service")
-    public BaseResponse stopService(@RequestBody CaptureService service){
+    @GetMapping("stop_service")
+    public BaseResponse stopService(@RequestParam String service_name){
         synchronized (lock1){
-            if (!Common.hasStartedHost.contains(service.getService_name())){
-                return BaseResponse.ERROR(500,service.getService_name() + " not open");
+            if (!Common.hasStartedHost.contains(service_name)){
+                return BaseResponse.ERROR(500,service_name + " not open");
             }
-            Common.hasStartedHost.remove(service.getService_name());
+            Common.hasStartedHost.remove(service_name);
         }
-        log.info("close device : {} all device : {} " , service.getService_name() , Common.hasStartedHost);
+        log.info("close device : {} all opened device : {} " , service_name , Common.hasStartedHost);
         capturePacketService.stop();
         return BaseResponse.OK();
     }

@@ -25,3 +25,5 @@ tshark -i en0 -f "dnp3" -n -l -T ek -e frame.protocols -e eth.dst -e frame.cap_l
 
 
 tshark -i \\Device\\NPF_{E489F2AB-C267-46ED-9E13-0AABE468189E} -n -l -T ek -e frame.protocols -e eth.dst -e frame.cap_len -e eth.src -e ip.src -e ip.dst -e tcp.srcport -e tcp.dstport -f "not ether src 28:d2:44:5f:69:e1 and tcp" -Y dnp3 -c 10
+tshark -i \\Device\\NPF_{E489F2AB-C267-46ED-9E13-0AABE468189E} -n -l -T ek -e frame.protocols -e eth.dst -e frame.cap_len -e eth.src -e ip.src -e ip.dst -e tcp.srcport -e tcp.dstport -f "not ether src 28:d2:44:5f:69:e1 and tcp" -Y dnp3 and not s7comm and not modbus -c 10
+
