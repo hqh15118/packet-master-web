@@ -5,6 +5,7 @@ import com.zjucsc.application.config.SocketIoEvent;
 import com.zjucsc.application.domain.bean.CollectorState;
 import com.zjucsc.application.handler.ThreadExceptionHandler;
 import com.zjucsc.application.socketio.SocketServiceCenter;
+import com.zjucsc.application.system.service.PacketAnalyzeService;
 import com.zjucsc.application.tshark.decode.AbstractAsyncHandler;
 import com.zjucsc.application.tshark.decode.DefaultPipeLine;
 import com.zjucsc.application.tshark.domain.packet.FvDimensionLayer;
@@ -12,6 +13,7 @@ import com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler;
 import com.zjucsc.application.tshark.pre_processor.*;
 import com.zjucsc.application.util.PacketDecodeUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,6 +24,8 @@ import java.util.concurrent.Executors;
 @Slf4j
 @Service
 public class CapturePacketServiceImpl implements CapturePacketService<String,String>{
+
+    @Autowired private PacketAnalyzeService packetAnalyzeService;
 
     private List<BasePreProcessor<?>> processorList = new ArrayList<>();
     private ProcessCallback<String,String> callback;
@@ -56,7 +60,8 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                 byte[] payload = PacketDecodeUtil.hexStringToByteArray2(sb.toString());
                 sendFvDimensionPacket(fvDimensionLayer , payload);      //发送五元组所有报文
                 sendPacketStatisticsEvent(fvDimensionLayer);            //发送统计信息
-                analyzeCollectorState(payload);                         //分析采集器信息
+                analyzeCollectorState(payload);                         //分析采集器状态信息
+                collectorDelayInfo(payload);                            //解析时延信息
                 return fvDimensionLayer;                                //将五元组发送给BadPacketHandler
             }
         };
@@ -67,6 +72,15 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
 
                                new UnknownPreProcessor()      //必须放在最后
                                ));
+    }
+
+    private void collectorDelayInfo(byte[] payload) {
+        int collectorId = PacketDecodeUtil.decodeCollectorId(payload,24);
+        if (collectorId > 0){
+            //valid packet
+            long collectorDelay = PacketDecodeUtil.decodeCollectorDelay(payload,4);
+            packetAnalyzeService.setCollectorDelay(collectorId,collectorDelay);
+        }
     }
 
     @Override
@@ -91,7 +105,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             Thread processThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    basePreProcessor.execCommand();
+                    basePreProcessor.execCommand(0 , 10 , null);
                 }
             });
             processThread.setName(processName + "-thread");

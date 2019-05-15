@@ -85,42 +85,40 @@ public class PacketDecodeUtil {
         if (payload.length == 0){
             return simpleDateFormatThreadLocal.get().format(new Date());
         }
-        if (offset == 20) {
+        if (payload.length < offset ) {
             return simpleDateFormatThreadLocal.get().format(new Date());
         }
         StringBuilder sb = stringBuilderThreadLocal.get();
         sb.delete(0,sb.length());
         int len = payload.length;
-        offset = len - offset;
-        int year = Byte.toUnsignedInt(payload[offset]) >>> 3;
-        int var1 =  (payload[offset] & 0b00000111) << 6;
-        int var2 = (payload[offset + 1] & 0b11111100) >>> 2;
-        int day = var1 + var2;
-        var1 = ((payload[offset + 1] & 0b00000011)) << 3;
-        var2 = ((payload[offset + 2] & 0b11100000)) >>> 5;
-        int hour = var1 + var2;
-        var1 = ((payload[offset + 2] & 0b00011111)) << 1;
-        var2 = ((payload[offset + 3] & 0b10000000)) >>> 7;
-        int minute =  var1 + var2;
-        int second = ((payload[offset + 3] & 0b01111110)) >>> 1 ;
-        var1 = ((payload[offset + 3] & 0b00000001)) << 9;
-        var2 = (payload[offset + 4]) << 1;
-        int var3 = ((payload[offset + 5] & 0b10000000)) >>> 7;
-        int millsecond =  var1 + var2 + var3;
-        var1 = ((payload[offset + 5] & 0b01111111)) << 3;
-        var2 = ((payload[offset + 6] & 0b11100000)) >>> 5;
-        int unsecond = var1 + var2;
-        var1 = (payload[offset + 6] & 0b00011100) >>> 2;
-        int nansecond = var1 * 200;
+        offset = len - offset;          //offset 就是start index
+//        for (int i = offset; i < payload.length; i++) {
+//            System.out.println( Integer.toHexString(Byte.toUnsignedInt(payload[i])));
+//        }
+        int year = (Byte.toUnsignedInt(payload[offset]) << 3) + ((payload[offset + 1] & 0b11100000) >>> 5);
+        int month = ((payload[offset + 1] & 0b00011110) >> 1);
+        int day = ((payload[offset + 1] & 1) << 4) + ((payload[offset + 2] & 0b11110000) >>> 4);
+        int hour = ((Byte.toUnsignedInt(payload[offset + 2]) & 0b00001111) << 1) + ((payload[offset + 3] & 0b10000000) >>> 7);
+        int minute = ((payload[offset + 3] & 0b01111110) >> 1);
+        int second = ((Byte.toUnsignedInt(payload[offset + 3]) & 1) << 5)
+                + ((payload[offset + 4] & 0b11111000) >>> 3);
+        int millSecond = ((Byte.toUnsignedInt(payload[offset + 4]) & 0b00000111) << 7) +
+                ((payload[offset + 5] & 0b11111110) >>> 1);
+        int uSecond = ((Byte.toUnsignedInt(payload[offset + 5]) & 1) << 9) + (Byte.toUnsignedInt(payload[offset + 6]) << 1)
+                + ((payload[offset + 7] & 0b10000000) >>> 7);
+        int naoSecond = ((payload[offset + 7] & 0b01110000) >> 4) * 200;
+
         return sb.append(year).append(" 年 ")
+                .append(month).append(" 月 ")
                 .append(day).append(" 天 ")
                 .append(hour).append(" 时 ")
                 .append(minute).append(" 分 ")
                 .append(second).append(" 秒 ")
-                .append(millsecond).append( " 毫秒 ")
-                .append(unsecond).append(" 微秒 ")
-                .append(nansecond).append(" 纳秒 ").toString();
+                .append(millSecond).append( " 毫秒 ")
+                .append(uSecond).append(" 微秒 ")
+                .append(naoSecond).append(" 纳秒 ").toString();
     }
+
 
     /**
      * 不同的协议的tshark得到的功能码的格式不一样，要全部解成int
@@ -231,4 +229,18 @@ public class PacketDecodeUtil {
         return null;
     }
 
+
+    public static int decodeCollectorId(byte[] payload , int offset){
+        if (payload.length < offset){
+            return -1;
+        }
+        int start = payload.length - offset;
+        return payload[start] << 8 + payload[start + 1];
+    }
+
+    public static long decodeCollectorDelay(byte[] payload , int offsetFromEnd) {
+        //
+        int start = payload.length - offsetFromEnd;     //24 - 4
+        return ByteUtils.bytesToLong(payload,start,4);
+    }
 }

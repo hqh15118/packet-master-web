@@ -10,7 +10,7 @@ import java.util.List;
  */
 public interface PreProcessor<P>{
 
-    void execCommand();
+    void execCommand(int type , int limit , String captureDeviceName);
 
     String tsharkPath();
 
@@ -32,4 +32,5 @@ public interface PreProcessor<P>{
      * @return
      */
     List<String> filterFields();
+
 }

@@ -16,6 +16,8 @@ public class Gplot {
     private String name;
     @TableField("info")
     private String info;
+    @TableField("update_time")
+    private String updateTime;
 
 
     public static class GplotForFront{

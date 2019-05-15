@@ -34,38 +34,21 @@ public class Common {
      */
     public static long recvPacketFlow = 0;
 
+    /**
+     * 采集器的时延，key是采集器的ID，value是解析出来的最大时延
+     */
+    public static ConcurrentHashMap<Integer,Long> COLLECTOR_DELAY_MAP = new ConcurrentHashMap<>();
+
+    /**
+     * 异常数【五元组和过滤规则】
+     */
+    public static long exceptionCound = 0;
+
     /** 所有可配置的协议
      * 协议 --> 功能码 以及 对应的含义 --> 从serviceLoader中加载
      */
 
     public static final HashMap<String , HashMap<Integer,String>> CONFIGURATION_MAP = new HashMap<>();
-
-    /* 所有要分析的协议
-     *  过滤器种类 -> [功能码配置组]
-     */
-    /*public static ConcurrentHashMap<FilterType, OperationPacketFilter> BAD_PACKET_FILTER = new ConcurrentHashMap<FilterType, OperationPacketFilter>(){
-        {
-            put(FilterType.PROTOCOL,new OperationPacketFilter("protocol_filter"));
-            put(FilterType.OPERATION,new OperationPacketFilter("operation_filter"));
-            put(FilterType.ARTIFACT_PARAM,new OperationPacketFilter("artifact_filter"));
-            put(FilterType.PORT,new OperationPacketFilter("port_filter"));
-        }
-    */
-
-    /*  所有要分析的协议
-     *  过滤器种类 -> [分析器]
-     */
-    /*
-    public static ConcurrentHashMap<FilterType, AbstractAnalyzer> BAD_PACKET_FILTER_PRO = new ConcurrentHashMap<FilterType, AbstractAnalyzer>(){
-        {
-            put(OPERATION_S7Comm_JOB , new OperationAnalyzer(new OperationPacketFilter<Integer,String>(OPERATION_S7Comm_JOB.name())));
-            put(FilterType.OPERATION_S7Comm_Ack_data , new OperationAnalyzer(new OperationPacketFilter<Integer,String>(OPERATION_S7Comm_Ack_data.name())));
-            put(FilterType.OPERATION_MODBUS , new OperationAnalyzer(new OperationPacketFilter<Integer,String>(OPERATION_MODBUS.name())));
-            put(FilterType.FIVE_DIMENSION , new FiveDimensionAnalyzer(new FiveDimensionPacketFilter(FIVE_DIMENSION.name())));
-        }
-    };
-    */
-
 
     /**
      * String 设备ID

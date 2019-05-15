@@ -1,5 +1,5 @@
 myconfig:
-  global_address : 192.168.1.102
+  global_address : 192.168.0.121
   admin_client_port : 8989
   packet_master_web_port : 8080
 

@@ -11,4 +11,22 @@ import org.springframework.stereotype.Service;
 @Service("deviceservice")
 public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> implements IDeviceService {
 
+    @Override
+    public void updateDeviceInfo(Device device) {
+        this.baseMapper.updateDeviceInfo(device.getDeviceType(),
+                                        device.getDeviceInfo(),
+                                        device.getDeviceIp(),
+                                        device.getDeviceNumber(),
+                                        device.getGPlotId());
+    }
+
+    @Override
+    public Device selectDeviceByIdAndGplot(String deviceId, int plotId) {
+        return this.baseMapper.selectDeviceByIdAndGplot(deviceId,plotId);
+    }
+
+    @Override
+    public String selectDeviceNumberByCollectorTag(String collectorId) {
+        return this.baseMapper.selectDeviceNumberByCollectorTag(collectorId);
+    }
 }

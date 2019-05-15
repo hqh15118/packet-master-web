@@ -15,7 +15,9 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service("packet_service")
 public class PacketServiceImpl implements PacketService {
@@ -78,10 +80,16 @@ public class PacketServiceImpl implements PacketService {
     public static class StatisticsDataWrapper{
         public long number;
         public long flow;
+        public long attackCount;
+        public long exceptionCount;
+        public HashMap<String,Long> collectorDelay;
 
-        public StatisticsDataWrapper(long number, long flow) {
+        public StatisticsDataWrapper(long number, long flow, long attackCount, long exceptionCount, HashMap<String,Long> collectorDelay) {
             this.number = number;
             this.flow = flow;
+            this.attackCount = attackCount;
+            this.exceptionCount = exceptionCount;
+            this.collectorDelay = collectorDelay;
         }
     }
 }

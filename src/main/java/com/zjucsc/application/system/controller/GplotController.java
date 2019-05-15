@@ -10,6 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author hongqianhui
@@ -27,7 +31,8 @@ public class GplotController {
         Gplot gplot = new Gplot();
         gplot.setInfo(gplotForFront.info);
         gplot.setName(gplotForFront.name);
-        iGplotService.save(gplot);
+        gplot.setUpdateTime(new Date().toString());
+        iGplotService.addNewGplot(gplot);
         return BaseResponse.OK(gplot.getId());
     }
     @Timed(value = "load.gplot")
@@ -44,7 +49,12 @@ public class GplotController {
     @ApiOperation("加载所有的组态图")
     @GetMapping("load_all_gplot")
     public BaseResponse loadAllGplotInfo(){
-        return BaseResponse.OK(iGplotService.list());
+        List<Gplot> gplots = iGplotService.list();
+        gplots.sort((o1, o2) -> {
+            if (o1.getId() <= o2.getId()){return 1;}
+            return -1;
+        });
+        return BaseResponse.OK(gplots);
     }
 
     @ApiOperation("修改组态图设备位置信息")
@@ -60,4 +70,13 @@ public class GplotController {
         iGplotService.removeById(gplotId);
         return BaseResponse.OK();
     }
+
+    @ApiOperation("返回选定的组态图ID")
+    @GetMapping("set_gplot_id")
+    public BaseResponse setGplotId(@RequestParam int gplotId){
+        iGplotService.changeGplot(gplotId);
+        return BaseResponse.OK();
+    }
+
+
 }
