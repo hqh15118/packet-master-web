@@ -82,9 +82,9 @@ public class PacketServiceImpl implements PacketService {
         public long flow;
         public long attackCount;
         public long exceptionCount;
-        public HashMap<String,Long> collectorDelay;
+        public HashMap<String,Integer> collectorDelay;
 
-        public StatisticsDataWrapper(long number, long flow, long attackCount, long exceptionCount, HashMap<String,Long> collectorDelay) {
+        public StatisticsDataWrapper(long number, long flow, long attackCount, long exceptionCount, HashMap<String,Integer> collectorDelay) {
             this.number = number;
             this.flow = flow;
             this.attackCount = attackCount;

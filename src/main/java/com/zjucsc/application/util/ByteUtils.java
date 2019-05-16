@@ -8,6 +8,7 @@ public class ByteUtils {
 
     private static ThreadLocal<ByteBuffer> byteToLongByteBuffer = ThreadLocal.withInitial(() -> ByteBuffer.allocate(Long.BYTES));
     private static ThreadLocal<ByteBuffer> byteToShortByteBuffer = ThreadLocal.withInitial(() -> ByteBuffer.allocate(Short.BYTES));
+    private static ThreadLocal<ByteBuffer> byteToIntByteBuffer = ThreadLocal.withInitial(() -> ByteBuffer.allocate(Integer.BYTES));
 
     public static byte[] longToBytes(long x) {
         ByteBuffer buffer = byteToLongByteBuffer.get();
@@ -21,11 +22,20 @@ public class ByteUtils {
         return buffer.array();
     }
 
-    public static long bytesToLong(byte[] bytes,int offset,int length) {
+    public static long bytesToLong(byte[] bytes,int offset) {
         ByteBuffer buffer = byteToLongByteBuffer.get();
-        buffer.put(bytes, offset, length);
+        buffer.put(bytes, offset, 8);
         buffer.flip();//need flip
         long result =  buffer.getLong();
+        buffer.clear();
+        return result;
+    }
+
+    public static int bytesToInt(byte[] bytes , int offset){
+        ByteBuffer buffer = byteToIntByteBuffer.get();
+        buffer.put(bytes, offset, 4);
+        buffer.flip();//need flip
+        int result =  buffer.getInt();
         buffer.clear();
         return result;
     }

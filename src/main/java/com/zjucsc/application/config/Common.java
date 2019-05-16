@@ -39,7 +39,7 @@ public class Common {
     /**
      * 采集器的时延，key是采集器的ID，value是解析出来的最大时延
      */
-    public static ConcurrentHashMap<Integer,Long> COLLECTOR_DELAY_MAP = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<Integer,Integer> COLLECTOR_DELAY_MAP = new ConcurrentHashMap<>();
 
     /**
      * 异常数【五元组和过滤规则】

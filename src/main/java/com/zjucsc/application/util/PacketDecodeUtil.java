@@ -245,10 +245,10 @@ public class PacketDecodeUtil {
         return payload[start] << 8 + payload[start + 1];
     }
 
-    public static long decodeCollectorDelay(byte[] payload , int offsetFromEnd) {
+    public static int decodeCollectorDelay(byte[] payload , int offsetFromEnd) {
         //
         int start = payload.length - offsetFromEnd;     //24 - 4
-        return ByteUtils.bytesToLong(payload,start,4);
+        return ByteUtils.bytesToInt(payload,start);
     }
 
 

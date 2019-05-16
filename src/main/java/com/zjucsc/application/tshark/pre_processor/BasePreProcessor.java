@@ -94,6 +94,9 @@ public abstract class BasePreProcessor<P> implements PreProcessor<P> {
                 commandBuilder.append(filePath);          //-r pcap file
             }
         }else{
+            if(limit > 0){
+                commandBuilder.append(" -c ").append(limit);
+            }
             // -f "xxx not mac"
             commandBuilder.append(" -f ").append("\"").append(filter())
                     .append(" and not ether src ").append(chosenDeviceMac).append("\"");

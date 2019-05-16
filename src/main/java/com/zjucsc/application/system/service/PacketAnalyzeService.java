@@ -42,20 +42,20 @@ public class PacketAnalyzeService {
         return recvPacketFlow;
     }
 
-    public void setCollectorDelay(int collectorId , long delay){
+    public void setCollectorDelay(int collectorId , int delay){
         if (Common.COLLECTOR_DELAY_MAP.get(collectorId) < delay){
             COLLECTOR_DELAY_MAP.put(collectorId , delay);
             log.info("update collector id {} delay {}" , collectorId , delay);
         }
     }
 
-    private HashMap<String,Long> collectorNumToDelayMap = new HashMap<>();
+    private HashMap<String,Integer> collectorNumToDelayMap = new HashMap<>();
 
-    public synchronized HashMap<String,Long> getCollectorNumToDelayMap(){
+    public synchronized HashMap<String,Integer> getCollectorNumToDelayMap(){
         collectorNumToDelayMap.clear();
-        Common.COLLECTOR_DELAY_MAP.forEach(new BiConsumer<Integer, Long>() {
+        Common.COLLECTOR_DELAY_MAP.forEach(new BiConsumer<Integer, Integer>() {
             @Override
-            public void accept(Integer integer, Long aLong) {
+            public void accept(Integer integer, Integer aLong) {
                 String collectorNumber = iDeviceService.selectDeviceNumberByCollectorTag(String.valueOf(integer));
                 if (collectorNumber!=null){
                     collectorNumToDelayMap.put(collectorNumber,aLong);

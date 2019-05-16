@@ -20,7 +20,7 @@ public class ScheduledService {
      */
     @Scheduled(fixedRate = 10000)
     public void sendPacketStatisticsMsg(){
-        HashMap<String,Long> delayInfo = packetAnalyzeService.getCollectorNumToDelayMap();
+        HashMap<String,Integer> delayInfo = packetAnalyzeService.getCollectorNumToDelayMap();
         SocketServiceCenter.updateAllClient(SocketIoEvent.STATISTICS_PACKET,new PacketServiceImpl.StatisticsDataWrapper(packetAnalyzeService.getRecvPacketNumber()
                 ,packetAnalyzeService.getRecvPacketFlow(),0 , Common.exceptionCound, delayInfo));
     }

@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Scanner;
+
 import static org.junit.Assert.*;
 
 /**
@@ -44,7 +46,8 @@ public class CapturePacketServiceImplTest {
             }
         });
 
-        Thread.sleep(10000000);
+        Thread.sleep(20000);
+        capturePacketService.stop();
     }
 
     @Test

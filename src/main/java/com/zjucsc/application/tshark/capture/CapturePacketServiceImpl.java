@@ -61,7 +61,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                 sb.delete(0,50);
                 //有些报文可能没有eth_trailer和eth_fcs
                 if (fvDimensionLayer.eth_fcs[0].length() > 0) {
-                    sb.append(fvDimensionLayer.eth_trailer[0]).append(fvDimensionLayer.eth_fcs[0], 2, 10);
+                    sb.append(fvDimensionLayer.eth_trailer[0]).append(fvDimensionLayer.eth_fcs[0]);
                 }
                 //如果不存在，那么sb.toString==""，hexStringToByteArray2会自动判空，
                 //然后返回EMPTY=""，即payload={}空的byte数组
@@ -79,7 +79,6 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                                    new ModbusPreProcessor() ,
                                    new S7CommPreProcessor() ,
                                    new IEC104PreProcessor() ,
-
                                    new UnknownPreProcessor()      //必须放在最后
                                    ));
         } catch (InterruptedException e) {
@@ -89,11 +88,14 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     }
 
     private void collectorDelayInfo(byte[] payload) {
-        int collectorId = PacketDecodeUtil.decodeCollectorId(payload,24);
-        if (collectorId > 0){
-            //valid packet
-            long collectorDelay = PacketDecodeUtil.decodeCollectorDelay(payload,4);
-            packetAnalyzeService.setCollectorDelay(collectorId,collectorDelay);
+        if (payload.length > 0){
+            int collectorId = PacketDecodeUtil.decodeCollectorId(payload,24);
+            if (collectorId > 0){
+                //valid packet
+                int collectorDelay = PacketDecodeUtil.decodeCollectorDelay(payload,4);
+                System.out.println(collectorDelay);
+                //packetAnalyzeService.setCollectorDelay(collectorId,collectorDelay);
+            }
         }
     }
 
@@ -116,6 +118,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         for (; i < packetPreProcessor.length - 1; i++) {
             BasePreProcessor<?> basePreProcessor = packetPreProcessor[i];
             doNow(basePreProcessor , fvDimensionHandler , downLatch , sb);
+            Thread.sleep(2000);
         }
         downLatch.await(100, TimeUnit.SECONDS);
         doNow(packetPreProcessor[i] , fvDimensionHandler,null , sb);
@@ -139,7 +142,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                         downLatch.countDown();
                     }
                 });
-                basePreProcessor.execCommand(1 , 1);
+                basePreProcessor.execCommand(1 , -1);
             }
         });
         processThread.setName(processName + "-thread");
