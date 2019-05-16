@@ -5,6 +5,7 @@ import com.zjucsc.application.domain.exceptions.OptFilterNotValidException;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.application.system.entity.OptFilter;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
+import com.zjucsc.application.tshark.filter.OperationPacketFilter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -16,15 +17,37 @@ import static com.zjucsc.application.util.CommonCacheUtil.convertIdToName;
 @Slf4j
 public class CommonOptFilterUtil {
 
-    public static void addOrUpdateAnalyzer(String deviceNumber , List<OptFilter> optFilters){
+    public static void addOrUpdateAnalyzer(String deviceNumber , List<OptFilter> optFilters , String filterName) throws ProtocolIdNotValidException {
         ConcurrentHashMap<String, OperationAnalyzer> analyzerMap = null;
+        int type = 0;
         if ((analyzerMap = Common.OPERATION_FILTER_PRO.get(deviceNumber)) == null){
-                //TODO FINISH IT
+            //新建设备
+            analyzerMap = new ConcurrentHashMap<>();
+        }else{
+            type = 1;
         }
+
         for (OptFilter optFilter : optFilters) {
+            String protocolName = CommonCacheUtil.convertIdToName(optFilter.getProtocol_id());
+            analyzerMap.putIfAbsent(protocolName,new OperationAnalyzer(new OperationPacketFilter<>(filterName)));
+            int filterType = optFilter.getFilterType();
+            if (filterType == 0){
+                //white
+                analyzerMap.get(protocolName).getAnalyzer().addWhiteRule(optFilter.getFun_code(),
+                        CommonConfigUtil.getTargetProtocolFuncodeMeanning(protocolName,optFilter.getFun_code()));
+            }else{
+                analyzerMap.get(protocolName).getAnalyzer().addBlackRule(optFilter.getFun_code(),
+                        CommonConfigUtil.getTargetProtocolFuncodeMeanning(protocolName,optFilter.getFun_code()));
+            }
+        }
+        Common.OPERATION_FILTER_PRO.put(deviceNumber , analyzerMap);
+        if (type == 0){
+
+        }else{
 
         }
     }
+
 
     public static void addOrUpdateAnalyzer(String deviceId, String protocolName, OperationAnalyzer analyzer) throws OptFilterNotValidException {
         if (analyzer == null || analyzer.getAnalyzer() == null){
