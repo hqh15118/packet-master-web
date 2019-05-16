@@ -205,15 +205,14 @@ public class PacketDecodeUtil {
      * [2byte]    [1byte]     [1byte]       [20字节]
      *  设备ID     A口状态      B口状态         其他
      * *********************************/
-    public static CollectorState decodeCollectorState(byte[] payload , int offset){
+    public static CollectorState decodeCollectorState(byte[] payload , int offset , int collectorId){
         if (payload.length==0){
             return null;
         }
-        if (offset == 24){
+        if (payload.length < 24){
             return null;
         }
         int start = payload.length - offset;//payload中自定义的字节数组的开始位置
-        int collectorId = ByteUtils.bytesToShort(payload,start,2);
         CollectorState state = null;
         int A_state = Byte.toUnsignedInt(payload[start + 2]);
         int B_state = Byte.toUnsignedInt(payload[start + 3]);

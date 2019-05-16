@@ -68,8 +68,9 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                 byte[] payload = PacketDecodeUtil.decodeTrailerAndFsc(sb.toString());
                 sendFvDimensionPacket(fvDimensionLayer , payload);      //发送五元组所有报文
                 sendPacketStatisticsEvent(fvDimensionLayer);            //发送统计信息
-                analyzeCollectorState(payload);                         //分析采集器状态信息
-                collectorDelayInfo(payload);                            //解析时延信息
+                int collectorId = PacketDecodeUtil.decodeCollectorId(payload,24);;
+                analyzeCollectorState(payload , collectorId);                         //分析采集器状态信息
+                collectorDelayInfo(payload , collectorId);                            //解析时延信息
                 return fvDimensionLayer;                                //将五元组发送给BadPacketHandler
             }
         };
@@ -87,9 +88,8 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         return CompletableFuture.completedFuture(null);
     }
 
-    private void collectorDelayInfo(byte[] payload) {
+    private void collectorDelayInfo(byte[] payload , int collectorId) {
         if (payload.length > 0){
-            int collectorId = PacketDecodeUtil.decodeCollectorId(payload,24);
             if (collectorId > 0){
                 //valid packet
                 int collectorDelay = PacketDecodeUtil.decodeCollectorDelay(payload,4);
@@ -172,9 +172,10 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         Common.recvPacketFlow += Integer.parseInt(fvDimensionLayer.frame_cap_len[0]);
     }
 
-    private void analyzeCollectorState(byte[] payload){
-        CollectorState collectorState = PacketDecodeUtil.decodeCollectorState(payload,24);
+    private void analyzeCollectorState(byte[] payload , int collectorId){
+        CollectorState collectorState = PacketDecodeUtil.decodeCollectorState(payload,24,collectorId);
         if (collectorState!=null){
+            System.out.println(collectorState);
             SocketServiceCenter.updateAllClient(SocketIoEvent.COLLECTOR_STATE,collectorState);
         }
     }

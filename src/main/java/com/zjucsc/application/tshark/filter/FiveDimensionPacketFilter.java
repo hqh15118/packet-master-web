@@ -253,23 +253,21 @@ public class FiveDimensionPacketFilter {
     }
 
     public BadPacket OK(FvDimensionLayer layer){
-        if (protocolWhiteMap.containsKey(layer.frame_protocols[0])){
+        if (protocolWhiteMap.containsKey(layer.frame_protocols[0])
+            || srcPortWhiteMap.containsKey(layer.src_port[0])
+            || dstPortWhiteMap.containsKey(layer.dst_port[0])
+            || srcIpWhiteMap.containsKey(layer.ip_src[0])
+            || dstIpWhiteMap.containsKey(layer.ip_dst[0])
+            || dstMacAddressWhite.containsKey(layer.eth_dst[0])
+            || srcMacAddressWhite.containsKey(layer.eth_src[0])) {
             return null;
-        }else if (srcPortWhiteMap.containsKey(layer.src_port[0])){
-            return null;
-        }else if (dstPortWhiteMap.containsKey(layer.dst_port[0])){
-            return null;
-        }else if (srcIpWhiteMap.containsKey(layer.ip_src[0])){
-            return null;
-        }else if (dstIpWhiteMap.containsKey(layer.ip_dst[0])){
-            return null;
-        }else{
-//            return new BadPacket.Builder(FV_DIMENSION)
-//                    .set_five_Dimension(wrapper.fiveDimensionPacket)
-//                    .setDangerLevel(DangerLevel.DANGER)
-//                    .setComment("白名单未匹配五元组")
-//                    .build();
-            return null;
+        }
+        else{
+            return new BadPacket.Builder(FV_DIMENSION)
+                    .set_five_Dimension(layer)
+                    .setDangerLevel(DangerLevel.DANGER)
+                    .setComment("白名单未匹配五元组")
+                    .build();
         }
     }
 
@@ -278,46 +276,67 @@ public class FiveDimensionPacketFilter {
         if (protocolBlackMap.containsKey(layer.frame_protocols[0])){
             badPacketBuilder = new BadPacket();
             badPacketBuilder.setLayer(layer);
-            badPacketBuilder.addComment("黑名单协议|");
+            badPacketBuilder.addComment("黑名单协议");
             badPacketBuilder.setDangerLevel(DangerLevel.VERY_DANGER);
-        }
-        if (srcPortBlackMap.containsKey(layer.src_port[0])){
-            if (badPacketBuilder == null){
-                badPacketBuilder = new BadPacket();
-                badPacketBuilder.setLayer(layer);
-                badPacketBuilder.setDangerLevel(DangerLevel.VERY_DANGER);
-            }
-            badPacketBuilder.addComment("黑名单源端口|");
-        }
-        if (dstPortBlackMap.containsKey(layer.dst_port[0])){
-            if (badPacketBuilder == null){
-                badPacketBuilder = new BadPacket();
-                badPacketBuilder.setLayer(layer);
-                badPacketBuilder.setDangerLevel(DangerLevel.VERY_DANGER);
-            }
-            badPacketBuilder.addComment("黑名单目的端口|");
-        }
-        if (srcIpBlackMap.containsKey(layer.ip_src[0])){
-            if (badPacketBuilder == null){
-                badPacketBuilder = new BadPacket();
-                badPacketBuilder.setLayer(layer);
-                badPacketBuilder.setDangerLevel(DangerLevel.VERY_DANGER);
-            }
-            badPacketBuilder.addComment("黑名单源IP|");
-        }
-        if (dstIpBlackMap.containsKey(layer.ip_dst[0])){
-            if (badPacketBuilder == null){
-                badPacketBuilder = new BadPacket();
-                badPacketBuilder.setLayer(layer);
-                badPacketBuilder.setDangerLevel(DangerLevel.VERY_DANGER);
-            }
-            badPacketBuilder.addComment("黑名单目的IP|");
-        }
-        if (badPacketBuilder!=null){
             badPacketBuilder.setBadType(FV_DIMENSION);
             badPacketBuilder.setComment(badPacketBuilder.getComment());
+            return badPacketBuilder;
         }
-        return badPacketBuilder;
+        if (srcPortBlackMap.containsKey(layer.src_port[0])){
+            badPacketBuilder = new BadPacket();
+            badPacketBuilder.setLayer(layer);
+            badPacketBuilder.setDangerLevel(DangerLevel.VERY_DANGER);
+            badPacketBuilder.addComment("黑名单源端口");
+            badPacketBuilder.setBadType(FV_DIMENSION);
+            badPacketBuilder.setComment(badPacketBuilder.getComment());
+            return badPacketBuilder;
+        }
+        if (dstPortBlackMap.containsKey(layer.dst_port[0])){
+            badPacketBuilder = new BadPacket();
+            badPacketBuilder.setLayer(layer);
+            badPacketBuilder.setDangerLevel(DangerLevel.VERY_DANGER);
+            badPacketBuilder.addComment("黑名单目的端口");
+            badPacketBuilder.setBadType(FV_DIMENSION);
+            badPacketBuilder.setComment(badPacketBuilder.getComment());
+            return badPacketBuilder;
+        }
+        if (srcIpBlackMap.containsKey(layer.ip_src[0])){
+            badPacketBuilder = new BadPacket();
+            badPacketBuilder.setLayer(layer);
+            badPacketBuilder.setDangerLevel(DangerLevel.VERY_DANGER);
+            badPacketBuilder.addComment("黑名单源IP");
+            badPacketBuilder.setBadType(FV_DIMENSION);
+            badPacketBuilder.setComment(badPacketBuilder.getComment());
+            return badPacketBuilder;
+        }
+        if (dstIpBlackMap.containsKey(layer.ip_dst[0])){
+            badPacketBuilder = new BadPacket();
+            badPacketBuilder.setLayer(layer);
+            badPacketBuilder.setDangerLevel(DangerLevel.VERY_DANGER);
+            badPacketBuilder.addComment("黑名单目的IP");
+            badPacketBuilder.setBadType(FV_DIMENSION);
+            badPacketBuilder.setComment(badPacketBuilder.getComment());
+            return badPacketBuilder;
+        }
+        if (dstMacAddressBlack.containsKey(layer.eth_dst[0])){
+            badPacketBuilder = new BadPacket();
+            badPacketBuilder.setLayer(layer);
+            badPacketBuilder.setDangerLevel(DangerLevel.VERY_DANGER);
+            badPacketBuilder.addComment("黑名单目的MAC");
+            badPacketBuilder.setBadType(FV_DIMENSION);
+            badPacketBuilder.setComment(badPacketBuilder.getComment());
+            return badPacketBuilder;
+        }
+        if (srcMacAddressBlack.containsKey(layer.eth_src[0])){
+            badPacketBuilder = new BadPacket();
+            badPacketBuilder.setLayer(layer);
+            badPacketBuilder.setDangerLevel(DangerLevel.VERY_DANGER);
+            badPacketBuilder.addComment("黑名单源MAC");
+            badPacketBuilder.setBadType(FV_DIMENSION);
+            badPacketBuilder.setComment(badPacketBuilder.getComment());
+            return badPacketBuilder;
+        }
+        return null;
     }
 
     @Override
