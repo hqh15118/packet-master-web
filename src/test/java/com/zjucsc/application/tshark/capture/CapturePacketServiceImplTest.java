@@ -24,8 +24,9 @@ public class CapturePacketServiceImplTest {
     public void start() throws InterruptedException {
         String macAddressForMac = "8c:85:90:93:15:a2";
         String deviceName = "en0";
+        String macAddressForWin = "28:D2:44:5F:69:E1";
         CapturePacketServiceImpl capturePacketService = new CapturePacketServiceImpl();
-        BasePreProcessor.setCaptureDeviceNameAndMacAddress(macAddressForMac,deviceName);
+        BasePreProcessor.setCaptureDeviceNameAndMacAddress(macAddressForWin,deviceName);
         capturePacketService.start(new ProcessCallback<String, String>() {
             @Override
             public void error(Exception e) {

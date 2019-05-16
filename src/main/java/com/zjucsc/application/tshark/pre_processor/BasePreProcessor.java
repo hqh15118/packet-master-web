@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Set;
@@ -36,7 +37,6 @@ public abstract class BasePreProcessor<P> implements PreProcessor<P> {
     private static String chosenDeviceMac = null;
     private static String captureDeviceName = null;
     private CommandBuildFinishCallback commandBuildFinishCallback;
-
     private String filePath = null;
     private volatile boolean processRunning = false;
     private PipeLine pipeLine;
@@ -46,6 +46,18 @@ public abstract class BasePreProcessor<P> implements PreProcessor<P> {
         thread.setUncaughtExceptionHandler(new ThreadExceptionHandler());
         return thread;
     });
+
+    static{
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("hook start working ... ");
+                CommonTsharkUtil.shotDownAllRunningTsharkProcess();
+                System.out.println("hook finish working ... ");
+            }
+        });
+        Runtime.getRuntime().addShutdownHook(thread);
+    }
 
     @Override
     public void execCommand(int type , int limit) {
@@ -83,8 +95,8 @@ public abstract class BasePreProcessor<P> implements PreProcessor<P> {
             }
         }else{
             // -f "xxx not mac"
-            commandBuilder.append(" -f ").append("'").append(filter())
-                    .append(" AND not ether src ").append(chosenDeviceMac).append("'");
+            commandBuilder.append(" -f ").append("\"").append(filter())
+                    .append(" and not ether src ").append(chosenDeviceMac).append("\"");
         }
         commandBuilder.append(" -Y ").append("\"").append(protocolFilterField()).append("\"");   // 最后的部分 + s7comm/...用于过滤
         String command = commandBuilder.toString();
@@ -92,9 +104,12 @@ public abstract class BasePreProcessor<P> implements PreProcessor<P> {
             commandBuildFinishCallback.commandBuildFinish();
         }
         log.info("***************** {} ==> run command : {} " , this.getClass().getName() , command);
-        Process process;
+        Process process = null;
         try {
             process = Runtime.getRuntime().exec(command);
+            CommonTsharkUtil.addTsharkProcess(process);
+            //doWithErrorStream(process.getErrorStream() , command);
+            //log.info("start running --------------------> now ");
             processRunning = true;
             try (BufferedReader bfReader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                 for (;processRunning;) {
@@ -120,23 +135,55 @@ public abstract class BasePreProcessor<P> implements PreProcessor<P> {
         } catch (IOException e) {
             log.error("can not run command {} " , commandBuilder.toString());
             e.printStackTrace();
+        }finally {
+            if (process!=null){
+                CommonTsharkUtil.removeTsharkProcess(process);
+                process.destroy();
+                /*
+                  Returns the exit value for the subprocess.
+
+                  @return the exit value of the subprocess represented by this
+                 *         {@code Process} object.  By convention, the value
+                 *         {@code 0} indicates normal termination.
+                 * @throws IllegalThreadStateException if the subprocess represented
+                 *         by this {@code Process} object has not yet terminated
+                 */
+                log.info("{} exit with exit value : {} " , this.getClass().getName()  , process.exitValue());
+            }
+        }
+    }
+
+    private void doWithErrorStream(InputStream errorStream , String command) {
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(errorStream));
+        String str = null;
+        try {
+            if ((str = bufferedReader.readLine()) != null) {
+                log.error("run command error {} in {} \n ***** error msg : {} ", command , this.getClass().getName() , str);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                bufferedReader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
 
-
     @Override
     public String tsharkPath() {
-        return tsharkMacPath;
+        return tsharkWinPath;
     }
 
     @Override
     public void pcapFilePath(int limit) {
         System.out.println("*** operation name is : " + Common.OS_NAME);
         if (limit < 0)
-            filePath =  " -r  " + pcapFilePathForMac;
+            filePath =  " -r  " + pcapFilePathForWin;
         else
-            filePath = " -c " + limit + " -r " +  pcapFilePathForMac;
+            filePath = " -c " + limit + " -r " +  pcapFilePathForWin;
     }
 
     @Override

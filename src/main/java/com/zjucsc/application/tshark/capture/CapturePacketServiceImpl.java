@@ -51,14 +51,16 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                 = new AbstractAsyncHandler<FvDimensionLayer>(Executors.newFixedThreadPool(10, r -> {
                     Thread thread = new Thread(r);
                     thread.setName("fv_dimension_handler_thread");
+                    thread.setUncaughtExceptionHandler(new ThreadExceptionHandler());
                     return thread;
                 })) {
             @Override
             public FvDimensionLayer handle(Object t) {
                 FvDimensionLayer fvDimensionLayer = ((FvDimensionLayer) t);
+                StringBuilder sb = stringBuilderThreadLocal.get();
                 sb.delete(0,50);
                 //有些报文可能没有eth_trailer和eth_fcs
-                if (fvDimensionLayer.eth_fcs[0].length() > 10) {
+                if (fvDimensionLayer.eth_fcs[0].length() > 0) {
                     sb.append(fvDimensionLayer.eth_trailer[0]).append(fvDimensionLayer.eth_fcs[0], 2, 10);
                 }
                 //如果不存在，那么sb.toString==""，hexStringToByteArray2会自动判空，
@@ -137,7 +139,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                         downLatch.countDown();
                     }
                 });
-                basePreProcessor.execCommand(1 , 30);
+                basePreProcessor.execCommand(1 , 1);
             }
         });
         processThread.setName(processName + "-thread");
@@ -145,7 +147,13 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         sb.append(basePreProcessor.getClass().getName()).append(" start");
     }
 
-    private StringBuilder sb = new StringBuilder(50);
+    private static ThreadLocal<StringBuilder> stringBuilderThreadLocal =
+            new ThreadLocal<StringBuilder>(){
+                @Override
+                protected StringBuilder initialValue() {
+                    return new StringBuilder(50);
+                }
+            };
 
     private void sendFvDimensionPacket(FvDimensionLayer fvDimensionLayer , byte[] payload){
         //payload如果是空的，那么timeStamp就用本地时间来代替

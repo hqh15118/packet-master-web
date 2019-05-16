@@ -104,4 +104,7 @@ public class Common {
     public static final BiMap<Integer,String> AUTH_MAP = HashBiMap.create();
 
     public static final Set<String> CAPTURE_PROTOCOL = new HashSet<>();
+
+
+    public static final List<Process> TSHARK_RUNNING_PROCESS = new ArrayList<>();
 }

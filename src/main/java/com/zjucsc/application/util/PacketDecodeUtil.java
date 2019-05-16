@@ -40,6 +40,13 @@ public class PacketDecodeUtil {
         return data;
     }
 
+    /**
+     * decode non : string
+     * String trailer = "00020d04fc6aa8defba27a10fc6aa8defba27a80";
+     *         String fsc = "0x00000075";
+     * @param s
+     * @return
+     */
     public static byte[] hexStringToByteArray2(String s) {
         return hexStringToByteArray2(s, 0 );
     }
@@ -242,5 +249,21 @@ public class PacketDecodeUtil {
         //
         int start = payload.length - offsetFromEnd;     //24 - 4
         return ByteUtils.bytesToLong(payload,start,4);
+    }
+
+    /**
+     * decode 00:80:90:...0x0000...
+     * 67个 =
+     * @return
+     */
+    public static byte[] decodeTrailerAndFCS(String s){
+        //00:03:0d:0d:fc:6b:05:b2:1d:18:4a:00:fc:6b:05:b2:1d:18:4a:80  0-58
+        //0x00000081                        60-length
+        if (s.length() != 69){
+            return EMPTY;
+        }
+        for (int i = 0; i < 59; i++) {
+
+        }
     }
 }

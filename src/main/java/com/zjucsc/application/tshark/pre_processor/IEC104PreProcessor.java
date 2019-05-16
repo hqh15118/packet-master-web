@@ -24,7 +24,7 @@ public class IEC104PreProcessor extends BasePreProcessor<IEC104Packet> {
 
     @Override
     public String protocolFilterField() {
-        return "iec60870_104";
+        return "104apci";
     }
 
     @Override
@@ -36,10 +36,10 @@ public class IEC104PreProcessor extends BasePreProcessor<IEC104Packet> {
     public List<String> filterFields() {
         return new ArrayList<String>(){
             {
-                add("iec60870_asdu.start");
-                add("iec60870_104.apdulen");
-                add("iec60870_104.type");
-                add("iec60870_104.utype");
+                add("104asdu.start");
+                add("104apci.apdulen");
+                add("104apci.type");
+                add("104apci.utype");
             }
         };
     }
