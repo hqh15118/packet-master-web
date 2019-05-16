@@ -11,4 +11,5 @@ public interface IGplotService extends IService<Gplot> {
 
 
     void changeGplot(int gplotId);
+
 }

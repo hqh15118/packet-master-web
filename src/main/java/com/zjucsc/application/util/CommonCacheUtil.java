@@ -16,7 +16,6 @@ public class CommonCacheUtil {
     /**
      *
      */
-
     public static void deleteCachedProtocolByName(String protocolName){
         CONFIGURATION_MAP.remove(protocolName);
         PROTOCOL_STR_TO_INT.inverse().remove(protocolName);

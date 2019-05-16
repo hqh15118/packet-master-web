@@ -1,9 +1,13 @@
 package com.zjucsc.application.system.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zjucsc.application.system.entity.Device;
+import com.zjucsc.application.system.entity.FvDimensionFilter;
+import com.zjucsc.application.system.entity.OptFilter;
 import com.zjucsc.application.system.mapper.DeviceMapper;
 import com.zjucsc.application.system.service.iservice.IDeviceService;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @author hongqianhui
@@ -28,5 +32,20 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     @Override
     public String selectDeviceNumberByCollectorTag(String collectorId) {
         return this.baseMapper.selectDeviceNumberByCollectorTag(collectorId);
+    }
+
+    @Override
+    public List<String> loadAllDevicesByGplotId(int gplotId) {
+        return this.baseMapper.loadAllDevicesByGplotId(gplotId);
+    }
+
+    @Override
+    public List<FvDimensionFilter> loadAllFvDimensionFilterByDeviceNumberAndGpotId(String deviceNumber, int gplotId) {
+        return this.baseMapper.loadAllFvDimensionFilterByDeviceNumberAndGpotId(deviceNumber,gplotId);
+    }
+
+    @Override
+    public List<OptFilter> loadAllOptFiterByDeviceNumberAndGplotId(String deviceNumber, int gplotId) {
+        return this.baseMapper.loadAllOptFiterByDeviceNumberAndGplotId(deviceNumber , gplotId);
     }
 }

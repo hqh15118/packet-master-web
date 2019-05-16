@@ -16,7 +16,7 @@ public class FvDimensionFilter {
     private int id;
     @TableField("device_id")
     @NotBlank
-    private String deviceId;
+    private String deviceNumber;
     @TableField("user_name")
     private String userName;
     @TableField("filter_type")
@@ -35,4 +35,6 @@ public class FvDimensionFilter {
     private String dstPort;
     @TableField("protocol")
     private int protocolId;
+    @TableField("gplot_id")
+    private int gplotId;
 }

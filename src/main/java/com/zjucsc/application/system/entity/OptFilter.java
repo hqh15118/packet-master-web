@@ -26,6 +26,8 @@ public class OptFilter {
     private int fun_code;
     @TableField("protocol_id")
     private int protocol_id;
+    @TableField("gplot_id")
+    private int gplotId;
 
     @Data
     public static class OptFilterForFront{

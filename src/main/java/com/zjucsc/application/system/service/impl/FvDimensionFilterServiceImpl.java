@@ -25,7 +25,7 @@ public class FvDimensionFilterServiceImpl extends ServiceImpl<FvDimensionFilterM
     @Override
     public CompletableFuture<Exception> addFvDimensionFilter(List<FvDimensionFilter> fvDimensionFilters) {
         //更新缓存
-        String deviceId = fvDimensionFilters.get(0).getDeviceId();
+        String deviceId = fvDimensionFilters.get(0).getDeviceNumber();
         String userName = fvDimensionFilters.get(0).getUserName();
         if (Common.FV_DIMENSION_FILTER_PRO.get(deviceId) == null){
             //未添加过该设备，缓存中没有该分析器，需要新加一个

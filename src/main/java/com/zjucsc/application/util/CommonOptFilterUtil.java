@@ -1,10 +1,13 @@
 package com.zjucsc.application.util;
 
+import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.exceptions.OptFilterNotValidException;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
+import com.zjucsc.application.system.entity.OptFilter;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.zjucsc.application.config.Common.OPERATION_FILTER_PRO;
@@ -12,6 +15,16 @@ import static com.zjucsc.application.util.CommonCacheUtil.convertIdToName;
 
 @Slf4j
 public class CommonOptFilterUtil {
+
+    public static void addOrUpdateAnalyzer(String deviceNumber , List<OptFilter> optFilters){
+        ConcurrentHashMap<String, OperationAnalyzer> analyzerMap = null;
+        if ((analyzerMap = Common.OPERATION_FILTER_PRO.get(deviceNumber)) == null){
+                //TODO FINISH IT
+        }
+        for (OptFilter optFilter : optFilters) {
+
+        }
+    }
 
     public static void addOrUpdateAnalyzer(String deviceId, String protocolName, OperationAnalyzer analyzer) throws OptFilterNotValidException {
         if (analyzer == null || analyzer.getAnalyzer() == null){
