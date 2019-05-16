@@ -58,7 +58,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             public FvDimensionLayer handle(Object t) {
                 FvDimensionLayer fvDimensionLayer = ((FvDimensionLayer) t);
                 StringBuilder sb = stringBuilderThreadLocal.get();
-                sb.delete(0,50);
+                sb.delete(0,sb.length());
                 //有些报文可能没有eth_trailer和eth_fcs
                 if (fvDimensionLayer.eth_fcs[0].length() > 0) {
                     sb.append(fvDimensionLayer.eth_trailer[0]).append(fvDimensionLayer.eth_fcs[0]);
@@ -76,9 +76,9 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
 
         try {
             callback.start(doStart(fvDimensionLayerAbstractAsyncHandler ,
-                                   new ModbusPreProcessor() ,
-                                   new S7CommPreProcessor() ,
-                                   new IEC104PreProcessor() ,
+                                   //new ModbusPreProcessor() ,
+                                   //new S7CommPreProcessor() ,
+                                   //new IEC104PreProcessor() ,
                                    new UnknownPreProcessor()      //必须放在最后
                                    ));
         } catch (InterruptedException e) {
@@ -93,7 +93,6 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             if (collectorId > 0){
                 //valid packet
                 int collectorDelay = PacketDecodeUtil.decodeCollectorDelay(payload,4);
-                System.out.println(collectorDelay);
                 //packetAnalyzeService.setCollectorDelay(collectorId,collectorDelay);
             }
         }
@@ -142,7 +141,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                         downLatch.countDown();
                     }
                 });
-                basePreProcessor.execCommand(1 , -1);
+                basePreProcessor.execCommand(1 , 50);
             }
         });
         processThread.setName(processName + "-thread");
@@ -164,7 +163,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             log.error("{} 没有trailer和fcs，无法解析时间戳，返回上位机系统时间" , fvDimensionLayer);
         }
         fvDimensionLayer.timeStamp = PacketDecodeUtil.decodeTimeStamp(payload,20);
-        System.out.println(fvDimensionLayer);
+        //System.out.println(fvDimensionLayer);
         SocketServiceCenter.updateAllClient(SocketIoEvent.ALL_PACKET,fvDimensionLayer);
     }
 

@@ -14,6 +14,9 @@ import static org.junit.Assert.*;
  */
 public class PacketDecodeUtilTest {
 
+    private String trailer = "00:03:0d:0d:fc:6b:07:e4:ae:78:63:b0:fc:6b:07:e4:ae:78:64:20";
+    private String fcs = "0x00000067";
+
     @Test
     public void hexStringToByteArray() {
     }
@@ -65,6 +68,7 @@ public class PacketDecodeUtilTest {
             public void gotPacket(Packet packet) {
                 byte[] bytes = packet.getRawData();
                 PacketDecodeUtil.decodeTimeStamp(bytes,20);
+                System.out.println(PacketDecodeUtil.decodeCollectorDelay(bytes,4));
             }
         });
     }
@@ -89,5 +93,12 @@ public class PacketDecodeUtilTest {
         for (byte b : buffer) {
             System.out.println(Integer.toHexString(Byte.toUnsignedInt(b)));
         }
+    }
+
+    @Test
+    public void decodeDelay(){
+        byte[] payload = PacketDecodeUtil.decodeTrailerAndFsc(trailer + fcs);
+        int delay = PacketDecodeUtil.decodeCollectorDelay(payload,4);
+        System.out.println(delay);
     }
 }
