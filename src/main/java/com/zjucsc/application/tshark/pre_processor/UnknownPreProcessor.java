@@ -5,7 +5,6 @@ import com.zjucsc.application.tshark.domain.packet.UnknownPacket;
 import com.zjucsc.application.util.CommonTsharkUtil;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -38,7 +37,7 @@ public class UnknownPreProcessor extends BasePreProcessor<UnknownPacket> {
         int setSize = captureProtocolSet.size();
         for (String s : captureProtocolSet) {
             if (i < setSize - 1) {
-                sb.append(" not ").append(s).append(" AND");
+                sb.append(" not ").append(s).append(" and");
             }else{
                 sb.append(" not ").append(s);
             }

@@ -243,4 +243,34 @@ public class PacketDecodeUtil {
         int start = payload.length - offsetFromEnd;     //24 - 4
         return ByteUtils.bytesToLong(payload,start,4);
     }
+
+
+    private static final int trailerLength = 59;
+    private static final int fscLength = 10;
+    private static final int trailerAndFscLength = 24;
+
+    public static byte[] decodeTrailerAndFsc(String trailerAndFsc){
+        if (trailerAndFsc.length() == 0){
+            return EMPTY;
+        }
+        if (!trailerAndFsc.contains(":")){//
+            return hexStringToByteArray2(trailerAndFsc);
+        }
+        int trailerLength = PacketDecodeUtil.trailerLength;
+        int fscLength = PacketDecodeUtil.fscLength;
+        byte[] allBytes = new byte[PacketDecodeUtil.trailerAndFscLength];
+        int i = 0;
+        for (; i < trailerLength; i += 3) {
+            allBytes[i / 3] = (byte) ((Character.digit(trailerAndFsc.charAt(i), 16) << 4)
+                    + Character.digit(trailerAndFsc.charAt(i+1), 16));
+        }
+        i = i / 3;
+        int point = 0;
+        for (int j = trailerLength + 2 , len = trailerLength + fscLength; j < len; j+=2) {
+            allBytes[i + point] = (byte) ((Character.digit(trailerAndFsc.charAt(j), 16) << 4)
+                    + Character.digit(trailerAndFsc.charAt(j+1), 16));
+            point++;
+        }
+        return allBytes;
+    }
 }
