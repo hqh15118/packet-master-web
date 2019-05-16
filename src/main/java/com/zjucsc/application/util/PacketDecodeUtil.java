@@ -251,19 +251,33 @@ public class PacketDecodeUtil {
         return ByteUtils.bytesToLong(payload,start,4);
     }
 
-    /**
-     * decode 00:80:90:...0x0000...
-     * 67个 =
-     * @return
-     */
-    public static byte[] decodeTrailerAndFCS(String s){
-        //00:03:0d:0d:fc:6b:05:b2:1d:18:4a:00:fc:6b:05:b2:1d:18:4a:80  0-58
-        //0x00000081                        60-length
-        if (s.length() != 69){
+
+    private static final int trailerLength = 59;
+    private static final int fscLength = 10;
+    private static final int trailerAndFscLength = 24;
+
+    public static byte[] decodeTrailerAndFsc(String trailerAndFsc){
+        if (trailerAndFsc.length() == 0){
             return EMPTY;
         }
-        for (int i = 0; i < 59; i++) {
-
+        if (!trailerAndFsc.contains(":")){//
+            return hexStringToByteArray2(trailerAndFsc);
         }
+        int trailerLength = PacketDecodeUtil.trailerLength;
+        int fscLength = PacketDecodeUtil.fscLength;
+        byte[] allBytes = new byte[PacketDecodeUtil.trailerAndFscLength];
+        int i = 0;
+        for (; i < trailerLength; i += 3) {
+            allBytes[i / 3] = (byte) ((Character.digit(trailerAndFsc.charAt(i), 16) << 4)
+                    + Character.digit(trailerAndFsc.charAt(i+1), 16));
+        }
+        i = i / 3;
+        int point = 0;
+        for (int j = trailerLength + 2 , len = trailerLength + fscLength; j < len; j+=2) {
+            allBytes[i + point] = (byte) ((Character.digit(trailerAndFsc.charAt(j), 16) << 4)
+                    + Character.digit(trailerAndFsc.charAt(j+1), 16));
+            point++;
+        }
+        return allBytes;
     }
 }

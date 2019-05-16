@@ -65,7 +65,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                 }
                 //如果不存在，那么sb.toString==""，hexStringToByteArray2会自动判空，
                 //然后返回EMPTY=""，即payload={}空的byte数组
-                byte[] payload = PacketDecodeUtil.hexStringToByteArray2(sb.toString());
+                byte[] payload = PacketDecodeUtil.decodeTrailerAndFsc(sb.toString());
                 sendFvDimensionPacket(fvDimensionLayer , payload);      //发送五元组所有报文
                 sendPacketStatisticsEvent(fvDimensionLayer);            //发送统计信息
                 analyzeCollectorState(payload);                         //分析采集器状态信息

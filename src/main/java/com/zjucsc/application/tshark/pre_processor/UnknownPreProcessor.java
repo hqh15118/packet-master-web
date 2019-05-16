@@ -5,7 +5,6 @@ import com.zjucsc.application.tshark.domain.packet.UnknownPacket;
 import com.zjucsc.application.util.CommonTsharkUtil;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 

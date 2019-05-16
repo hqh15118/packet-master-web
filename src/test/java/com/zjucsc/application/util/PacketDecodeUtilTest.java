@@ -31,6 +31,8 @@ public class PacketDecodeUtilTest {
         sb.delete(0,50);
         sb.append(trailer);
         sb.append(fsc,2,10);
+        String res = sb.toString();
+        res.replace(":","");
         System.out.println(sb.toString());
 
         byte[] bytes = PacketDecodeUtil.hexStringToByteArray2(sb.toString());
@@ -49,8 +51,8 @@ public class PacketDecodeUtilTest {
         sb.delete(0,50);
         //有些报文可能没有eth_trailer和eth_fcs
         sb.append(trailer).append(fsc,2,10);
-        byte[] payload = PacketDecodeUtil.hexStringToByteArray2(sb.toString());
-        PacketDecodeUtil.decodeTimeStamp(payload,20);
+        byte[] payload = PacketDecodeUtil.decodeTrailerAndFsc(sb.toString());
+        System.out.println(PacketDecodeUtil.decodeTimeStamp(payload,20));
     }
 
     @Test
@@ -77,5 +79,15 @@ public class PacketDecodeUtilTest {
 
     @Test
     public void decodeCollectorState() {
+    }
+
+    @Test
+    public void decodeTrailerAndFsc(){
+        String trailer = "00:30:d0:df:c6:af:4e:f5:08:d6:08:0f:c6:af:4e:f5:08:d6:0c:01";
+        String fsc = "0x00000061";
+        byte[] buffer = PacketDecodeUtil.decodeTrailerAndFsc(trailer + fsc);
+        for (byte b : buffer) {
+            System.out.println(Integer.toHexString(Byte.toUnsignedInt(b)));
+        }
     }
 }
