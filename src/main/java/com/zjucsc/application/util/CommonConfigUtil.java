@@ -15,6 +15,8 @@ import static com.zjucsc.application.util.CommonCacheUtil.convertIdToName;
 @Slf4j
 public class CommonConfigUtil {
 
+    public static boolean SHOW_LOG = false;
+
     public static HashMap<Integer,String> getTargetProtocolAllFuncodeMeaning(String protocol) throws ProtocolIdNotValidException {
         HashMap<Integer,String> map = null;
         if ((map = CONFIGURATION_MAP.get(protocol)) == null){
@@ -33,8 +35,10 @@ public class CommonConfigUtil {
         String funcodeMeaning = null;
         if ((funcodeMeaning = getTargetProtocolAllFuncodeMeaning(protocol).get(funcode)) == null){
             funcodeMeaning = "unknown operation";
-            log.info("can not find protocol {} funcode {} meaning in CONFIGURATION_MAP \n CONFIGURATION_MAP is {}"
-            , protocol , funcode , CONFIGURATION_MAP);
+            if (SHOW_LOG) {
+                log.info("can not find protocol {} funcode {} meaning in CONFIGURATION_MAP \n CONFIGURATION_MAP is {}"
+                        , protocol, funcode, CONFIGURATION_MAP);
+            }
         }
         return funcodeMeaning;
     }
@@ -44,8 +48,10 @@ public class CommonConfigUtil {
         String name = convertIdToName(protocolId);
         if ((funcodeMeaning = getTargetProtocolAllFuncodeMeaning(name).get(funcode)) == null){
             funcodeMeaning = "unknown operation";
-            log.info("can not find protocol id {} [protocol {} ]funcode {} meaning in CONFIGURATION_MAP \n CONFIGURATION_MAP is {}"
-                    , protocolId , name , funcode , CONFIGURATION_MAP);
+            if (SHOW_LOG) {
+                log.info("can not find protocol id {} [protocol {} ]funcode {} meaning in CONFIGURATION_MAP \n CONFIGURATION_MAP is {}"
+                        , protocolId, name, funcode, CONFIGURATION_MAP);
+            }
         }
         return funcodeMeaning;
     }
@@ -57,16 +63,20 @@ public class CommonConfigUtil {
             funcodeMeaning = new HashMap<>();
             funcodeMeaning.put(funcode,optMeaning);
             CONFIGURATION_MAP.put(protocol , funcodeMeaning);
-            log.info("add NEW protocol and NEW funcode meaning \n protocol : {} / funcode {} / optMeaning {} " +
-                            "/ CONFIGURATION_MAP :  {}" ,
-                    protocol , funcode , optMeaning , CONFIGURATION_MAP);
+            if (SHOW_LOG) {
+                log.info("add NEW protocol and NEW funcode meaning \n protocol : {} / funcode {} / optMeaning {} " +
+                                "/ CONFIGURATION_MAP :  {}",
+                        protocol, funcode, optMeaning, CONFIGURATION_MAP);
+            }
         }else{
             synchronized (CommonConfigUtil.class){
                 //防止多个线程对同一个hashmap并发访问
                 //由于只是加了一个写锁，所以读的时候可能会出现滞后的问题
                 funcodeMeaning.put(funcode,optMeaning);
-                log.info("add NEW funcode meaning \n protocol : {} / funcode {} / optMeaning {} /CONFIGURATION_MAP : {}" ,
-                        protocol , funcode , optMeaning , CONFIGURATION_MAP);
+                if (SHOW_LOG) {
+                    log.info("add NEW funcode meaning \n protocol : {} / funcode {} / optMeaning {} /CONFIGURATION_MAP : {}",
+                            protocol, funcode, optMeaning, CONFIGURATION_MAP);
+                }
             }
         }
     }
@@ -84,7 +94,9 @@ public class CommonConfigUtil {
             for (FuncodeStatement funcodeStatement : funcodeStatements) {
                 funcodeMeaning.put(funcodeStatement.getId() , funcodeStatement.getLabel());
             }
-            log.info("add NEW funcode meaning / protocol : {} , funcodes : {} " , protocol , funcodeStatements);
+            if (SHOW_LOG) {
+                log.info("add NEW funcode meaning / protocol : {} , funcodes : {} ", protocol, funcodeStatements);
+            }
         }
     }
 
@@ -93,10 +105,14 @@ public class CommonConfigUtil {
         if ((funcodeMeaning = CONFIGURATION_MAP.get(protocol)) != null) {
             //CONFIGURATION_MAP中不包含该协议，需要添加一个新的map
             CONFIGURATION_MAP.put(protocol, funcodeStatements);
-            log.info("******* overwrite protocol [{}] funcode meaning : \n before : {} after {} " , protocol ,  funcodeMeaning , funcodeStatements);
+            if (SHOW_LOG) {
+                log.info("******* overwrite protocol [{}] funcode meaning : \n before : {} after {} ", protocol, funcodeMeaning, funcodeStatements);
+            }
         }else {
             CONFIGURATION_MAP.put(protocol, funcodeStatements);
-            log.info("******* new protocol [{}] funcode meaning : \n  {} " , protocol , funcodeStatements);
+            if (SHOW_LOG) {
+                log.info("******* new protocol [{}] funcode meaning : \n  {} ", protocol, funcodeStatements);
+            }
         }
     }
 }
