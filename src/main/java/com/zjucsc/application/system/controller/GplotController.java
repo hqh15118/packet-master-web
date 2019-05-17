@@ -61,6 +61,7 @@ public class GplotController {
     @ApiOperation("修改组态图设备位置信息")
     @RequestMapping(value = "update_gplot" , method = RequestMethod.POST)
     public BaseResponse updateGplotInfo(@RequestBody Gplot gplot){
+        gplot.setUpdateTime(new Date().toString());
         iGplotService.updateById(gplot);
         return BaseResponse.OK();
     }

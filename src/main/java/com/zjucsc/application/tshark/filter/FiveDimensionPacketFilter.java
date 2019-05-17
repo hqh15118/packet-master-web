@@ -163,6 +163,9 @@ public class FiveDimensionPacketFilter {
                 case SRC_MAC_ADDRESS_WHITE:
                     srcMacAddressWhite = allMap.get(SRC_MAC_ADDRESS_WHITE);
                     break;
+                case DST_MAC_ADDRESS_WHITE:
+                    dstMacAddressWhite = allMap.get(DST_MAC_ADDRESS_WHITE);
+                    break;
                 case DST_IP_BLACK:
                     dstIpBlackMap = allMap.get(DST_IP_BLACK);
                     break;

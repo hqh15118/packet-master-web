@@ -14,7 +14,7 @@ import javax.validation.constraints.NotBlank;
 public class FvDimensionFilter {
     @TableId(value = "id" , type = IdType.AUTO)
     private int id;
-    @TableField("device_id")
+    @TableField("device_number")
     @NotBlank
     private String deviceNumber;
     @TableField("user_name")

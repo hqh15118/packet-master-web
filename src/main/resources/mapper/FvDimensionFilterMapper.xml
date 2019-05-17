@@ -4,4 +4,8 @@
     <select id="selectByDeviceId" resultType="com.zjucsc.application.system.entity.FvDimensionFilter">
         SELECT * FROM fv_dimension_filter WHERE device_number = #{device_id}
     </select>
+
+    <delete id="deleteAllFilterByDeviceNumberAndGplotId">
+        DELETE FROM fv_dimension_filter WHERE device_number=#{deviceNumber} AND gplot_id = #{gplotId}
+    </delete>
 </mapper>

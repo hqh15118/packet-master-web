@@ -10,7 +10,7 @@ import java.util.List;
 public class OptFilterForFront {
     private int protocolId;
     private String userName;
-    private String deviceId;    //deviceId是字符串
+    private String deviceNumber;    //deviceId是字符串
     @NotEmpty
     private List<IOptFilter> iOptFilters;
 

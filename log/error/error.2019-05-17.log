@@ -397,3 +397,87 @@ Caused by: java.lang.IllegalArgumentException: Result Maps collection does not c
 	at org.apache.ibatis.session.Configuration.getResultMap(Configuration.java:645)
 	at org.apache.ibatis.builder.MapperBuilderAssistant.getStatementResultMaps(MapperBuilderAssistant.java:344)
 	... 28 common frames omitted
+2019-05-17 20:05:51.472 febs [SimpleAsyncTaskExecutor-1] ERROR c.z.a.t.f.FiveDimensionPacketFilter - code error in five dimension filter , not define dst_mac_address_white
+2019-05-17 20:06:01.427 febs [http-nio-192.168.0.121-8080-exec-9] ERROR c.z.a.h.ControllerExceptionHandler - class : class java.util.concurrent.ExecutionException ; msg : org.springframework.jdbc.BadSqlGrammarException: 
+### Error querying database.  Cause: java.sql.SQLSyntaxErrorException: Unknown column 'device_id' in 'field list'
+### The error may exist in com/zjucsc/application/system/mapper/FvDimensionFilterMapper.java (best guess)
+### The error may involve defaultParameterMap
+### The error occurred while setting parameters
+### SQL: SELECT id,device_id AS deviceNumber,user_name,filter_type,src_ip,dst_ip,src_mac,dst_mac,src_port,dst_port,protocol_id,gplot_id FROM fv_dimension_filter WHERE id=?
+### Cause: java.sql.SQLSyntaxErrorException: Unknown column 'device_id' in 'field list'
+; bad SQL grammar []; nested exception is java.sql.SQLSyntaxErrorException: Unknown column 'device_id' in 'field list'
+2019-05-17 20:07:18.887 febs [SimpleAsyncTaskExecutor-1] ERROR c.z.a.t.f.FiveDimensionPacketFilter - code error in five dimension filter , not define dst_mac_address_white
+2019-05-17 20:10:16.445 febs [SimpleAsyncTaskExecutor-3] ERROR c.z.a.t.f.FiveDimensionPacketFilter - code error in five dimension filter , not define dst_mac_address_white
+2019-05-17 20:14:38.853 febs [http-nio-192.168.0.121-8080-exec-10] ERROR c.z.a.h.ControllerExceptionHandler - class : class java.util.concurrent.ExecutionException ; msg : org.springframework.jdbc.BadSqlGrammarException: 
+### Error updating database.  Cause: java.sql.SQLSyntaxErrorException: Unknown column 'device_id' in 'where clause'
+### The error may exist in com/zjucsc/application/system/mapper/OptFilterMapper.java (best guess)
+### The error may involve defaultParameterMap
+### The error occurred while setting parameters
+### SQL: DELETE FROM opt_filter    WHERE device_id = ?
+### Cause: java.sql.SQLSyntaxErrorException: Unknown column 'device_id' in 'where clause'
+; bad SQL grammar []; nested exception is java.sql.SQLSyntaxErrorException: Unknown column 'device_id' in 'where clause'
+2019-05-17 20:27:41.702 febs [http-nio-192.168.0.121-8080-exec-2] ERROR c.z.a.h.ControllerExceptionHandler - class : class org.springframework.web.bind.MissingServletRequestParameterException ; msg : Required String parameter 'deviceNumber' is not present
+2019-05-17 20:28:27.970 febs [http-nio-192.168.0.121-8080-exec-3] ERROR c.z.a.h.ControllerExceptionHandler - class : class java.util.concurrent.ExecutionException ; msg : org.springframework.jdbc.BadSqlGrammarException: 
+### Error updating database.  Cause: java.sql.SQLSyntaxErrorException: Unknown database 'csc_db'
+### The error may exist in file [C:\Users\Administrator\IdeaProjects\packet-master-web\target\classes\mapper\FvDimensionFilterMapper.xml]
+### The error may involve defaultParameterMap
+### The error occurred while setting parameters
+### SQL: DELETE FROM csc_db.fv_dimension_filter WHERE device_number=? AND gplot_id = ?
+### Cause: java.sql.SQLSyntaxErrorException: Unknown database 'csc_db'
+; bad SQL grammar []; nested exception is java.sql.SQLSyntaxErrorException: Unknown database 'csc_db'
+2019-05-17 20:30:19.282 febs [http-nio-192.168.0.121-8080-exec-5] ERROR c.z.a.h.ControllerExceptionHandler - class : class java.util.concurrent.ExecutionException ; msg : org.springframework.jdbc.BadSqlGrammarException: 
+### Error updating database.  Cause: java.sql.SQLSyntaxErrorException: Unknown database 'csc_db'
+### The error may exist in file [C:\Users\Administrator\IdeaProjects\packet-master-web\target\classes\mapper\FvDimensionFilterMapper.xml]
+### The error may involve defaultParameterMap
+### The error occurred while setting parameters
+### SQL: DELETE FROM csc_db.fv_dimension_filter WHERE device_number=? AND gplot_id = ?
+### Cause: java.sql.SQLSyntaxErrorException: Unknown database 'csc_db'
+; bad SQL grammar []; nested exception is java.sql.SQLSyntaxErrorException: Unknown database 'csc_db'
+2019-05-17 20:30:40.219 febs [http-nio-192.168.0.121-8080-exec-7] ERROR c.z.a.h.ControllerExceptionHandler - class : class java.util.concurrent.ExecutionException ; msg : org.springframework.jdbc.BadSqlGrammarException: 
+### Error updating database.  Cause: java.sql.SQLSyntaxErrorException: Unknown database 'csc_db'
+### The error may exist in file [C:\Users\Administrator\IdeaProjects\packet-master-web\target\classes\mapper\FvDimensionFilterMapper.xml]
+### The error may involve defaultParameterMap
+### The error occurred while setting parameters
+### SQL: DELETE FROM csc_db.fv_dimension_filter WHERE device_number=? AND gplot_id = ?
+### Cause: java.sql.SQLSyntaxErrorException: Unknown database 'csc_db'
+; bad SQL grammar []; nested exception is java.sql.SQLSyntaxErrorException: Unknown database 'csc_db'
+2019-05-17 20:33:37.032 febs [http-nio-192.168.0.121-8080-exec-5] ERROR c.z.a.h.ControllerExceptionHandler - class : class org.springframework.web.bind.MissingServletRequestParameterException ; msg : Required String parameter 'deviceNumber' is not present
+2019-05-17 20:33:47.466 febs [SimpleAsyncTaskExecutor-2] ERROR c.z.a.t.f.FiveDimensionPacketFilter - code error in five dimension filter , not define dst_mac_address_white
+2019-05-17 20:33:53.275 febs [http-nio-192.168.0.121-8080-exec-6] ERROR c.z.a.h.ControllerExceptionHandler - class : class org.springframework.web.bind.MissingServletRequestParameterException ; msg : Required String parameter 'deviceNumber' is not present
+2019-05-17 20:36:15.029 febs [SimpleAsyncTaskExecutor-3] ERROR c.z.a.t.f.FiveDimensionPacketFilter - code error in five dimension filter , not define dst_mac_address_white
+2019-05-17 20:37:48.107 febs [SimpleAsyncTaskExecutor-1] ERROR c.z.a.t.f.FiveDimensionPacketFilter - code error in five dimension filter , not define dst_mac_address_white
+2019-05-17 20:37:48.162 febs [http-nio-192.168.0.121-8080-exec-2] ERROR c.z.a.h.ControllerExceptionHandler - class : class java.util.concurrent.ExecutionException ; msg : org.apache.ibatis.exceptions.PersistenceException: 
+### Error flushing statements.  Cause: org.apache.ibatis.executor.BatchExecutorException: com.zjucsc.application.system.mapper.FvDimensionFilterMapper.insert (batch index #1) failed. Cause: java.sql.BatchUpdateException: Duplicate entry 'test_device_number--0--ip_update--mac_update--port_update-0-0' for key 'device_number'
+### Cause: org.apache.ibatis.executor.BatchExecutorException: com.zjucsc.application.system.mapper.FvDimensionFilterMapper.insert (batch index #1) failed. Cause: java.sql.BatchUpdateException: Duplicate entry 'test_device_number--0--ip_update--mac_update--port_update-0-0' for key 'device_number'
+2019-05-17 20:38:05.359 febs [SimpleAsyncTaskExecutor-2] ERROR c.z.a.t.f.FiveDimensionPacketFilter - code error in five dimension filter , not define dst_mac_address_white
+2019-05-17 20:42:38.080 febs [SimpleAsyncTaskExecutor-1] ERROR c.z.a.t.f.FiveDimensionPacketFilter - code error in five dimension filter , not define dst_mac_address_white
+2019-05-17 20:42:52.320 febs [SimpleAsyncTaskExecutor-2] ERROR c.z.a.t.f.FiveDimensionPacketFilter - code error in five dimension filter , not define dst_mac_address_white
+2019-05-17 20:46:05.200 febs [SimpleAsyncTaskExecutor-3] ERROR c.z.a.t.f.FiveDimensionPacketFilter - code error in five dimension filter , not define dst_mac_address_white
+2019-05-17 20:46:05.298 febs [http-nio-192.168.0.121-8080-exec-5] ERROR c.z.a.h.ControllerExceptionHandler - class : class java.util.concurrent.ExecutionException ; msg : org.apache.ibatis.exceptions.PersistenceException: 
+### Error flushing statements.  Cause: org.apache.ibatis.executor.BatchExecutorException: com.zjucsc.application.system.mapper.FvDimensionFilterMapper.insert (batch index #1) failed. Cause: java.sql.BatchUpdateException: Duplicate entry 'test_device_number--0--ip_update--mac_update2--port_update-0-0' for key 'device_number'
+### Cause: org.apache.ibatis.executor.BatchExecutorException: com.zjucsc.application.system.mapper.FvDimensionFilterMapper.insert (batch index #1) failed. Cause: java.sql.BatchUpdateException: Duplicate entry 'test_device_number--0--ip_update--mac_update2--port_update-0-0' for key 'device_number'
+2019-05-17 20:50:10.636 febs [SimpleAsyncTaskExecutor-4] ERROR c.z.a.t.f.FiveDimensionPacketFilter - code error in five dimension filter , not define dst_mac_address_white
+2019-05-17 20:51:06.708 febs [http-nio-192.168.0.121-8080-exec-3] ERROR c.z.a.h.ControllerExceptionHandler - class : class java.util.concurrent.ExecutionException ; msg : org.apache.ibatis.exceptions.PersistenceException: 
+### Error flushing statements.  Cause: org.apache.ibatis.executor.BatchExecutorException: com.zjucsc.application.system.mapper.FvDimensionFilterMapper.insert (batch index #1) failed. Cause: java.sql.BatchUpdateException: Duplicate entry 'test_device_number--0--ip_update--mac_update4--port_update-0-0' for key 'device_number'
+### Cause: org.apache.ibatis.executor.BatchExecutorException: com.zjucsc.application.system.mapper.FvDimensionFilterMapper.insert (batch index #1) failed. Cause: java.sql.BatchUpdateException: Duplicate entry 'test_device_number--0--ip_update--mac_update4--port_update-0-0' for key 'device_number'
+2019-05-17 20:51:28.070 febs [http-nio-192.168.0.121-8080-exec-4] ERROR c.z.a.h.ControllerExceptionHandler - class : class java.util.concurrent.ExecutionException ; msg : org.apache.ibatis.exceptions.PersistenceException: 
+### Error flushing statements.  Cause: org.apache.ibatis.executor.BatchExecutorException: com.zjucsc.application.system.mapper.FvDimensionFilterMapper.insert (batch index #1) failed. Cause: java.sql.BatchUpdateException: Duplicate entry 'test_device_number--0--ip_update--mac_update4--port_update-0-0' for key 'device_number'
+### Cause: org.apache.ibatis.executor.BatchExecutorException: com.zjucsc.application.system.mapper.FvDimensionFilterMapper.insert (batch index #1) failed. Cause: java.sql.BatchUpdateException: Duplicate entry 'test_device_number--0--ip_update--mac_update4--port_update-0-0' for key 'device_number'
+2019-05-17 20:51:47.962 febs [http-nio-192.168.0.121-8080-exec-5] ERROR c.z.a.h.ControllerExceptionHandler - class : class java.util.concurrent.ExecutionException ; msg : org.apache.ibatis.exceptions.PersistenceException: 
+### Error flushing statements.  Cause: org.apache.ibatis.executor.BatchExecutorException: com.zjucsc.application.system.mapper.FvDimensionFilterMapper.insert (batch index #1) failed. Cause: java.sql.BatchUpdateException: Duplicate entry 'test_device_number3--0--ip_update3--mac_update34--port_update-0-' for key 'device_number'
+### Cause: org.apache.ibatis.executor.BatchExecutorException: com.zjucsc.application.system.mapper.FvDimensionFilterMapper.insert (batch index #1) failed. Cause: java.sql.BatchUpdateException: Duplicate entry 'test_device_number3--0--ip_update3--mac_update34--port_update-0-' for key 'device_number'
+2019-05-17 20:52:07.577 febs [http-nio-192.168.0.121-8080-exec-6] ERROR c.z.a.h.ControllerExceptionHandler - class : class java.util.concurrent.ExecutionException ; msg : org.apache.ibatis.exceptions.PersistenceException: 
+### Error flushing statements.  Cause: org.apache.ibatis.executor.BatchExecutorException: com.zjucsc.application.system.mapper.FvDimensionFilterMapper.insert (batch index #1) failed. Cause: java.sql.BatchUpdateException: Duplicate entry 'test_device_number--0--ip_update--mac_update4--port_update-0-0' for key 'device_number'
+### Cause: org.apache.ibatis.executor.BatchExecutorException: com.zjucsc.application.system.mapper.FvDimensionFilterMapper.insert (batch index #1) failed. Cause: java.sql.BatchUpdateException: Duplicate entry 'test_device_number--0--ip_update--mac_update4--port_update-0-0' for key 'device_number'
+2019-05-17 20:52:31.400 febs [http-nio-192.168.0.121-8080-exec-7] ERROR c.z.a.h.ControllerExceptionHandler - class : class java.util.concurrent.ExecutionException ; msg : org.apache.ibatis.exceptions.PersistenceException: 
+### Error flushing statements.  Cause: org.apache.ibatis.executor.BatchExecutorException: com.zjucsc.application.system.mapper.FvDimensionFilterMapper.insert (batch index #1) failed. Cause: java.sql.BatchUpdateException: Duplicate entry 'test_device_number4--0--ip_update3--mac_update34--port_update-0-' for key 'device_number'
+### Cause: org.apache.ibatis.executor.BatchExecutorException: com.zjucsc.application.system.mapper.FvDimensionFilterMapper.insert (batch index #1) failed. Cause: java.sql.BatchUpdateException: Duplicate entry 'test_device_number4--0--ip_update3--mac_update34--port_update-0-' for key 'device_number'
+2019-05-17 20:52:49.493 febs [http-nio-192.168.0.121-8080-exec-8] ERROR c.z.a.h.ControllerExceptionHandler - class : class java.util.concurrent.ExecutionException ; msg : org.apache.ibatis.exceptions.PersistenceException: 
+### Error flushing statements.  Cause: org.apache.ibatis.executor.BatchExecutorException: com.zjucsc.application.system.mapper.FvDimensionFilterMapper.insert (batch index #1) failed. Cause: java.sql.BatchUpdateException: Duplicate entry 'test_device_number4--0--ip_update3--mac_update34--port_update-0-' for key 'device_number'
+### Cause: org.apache.ibatis.executor.BatchExecutorException: com.zjucsc.application.system.mapper.FvDimensionFilterMapper.insert (batch index #1) failed. Cause: java.sql.BatchUpdateException: Duplicate entry 'test_device_number4--0--ip_update3--mac_update34--port_update-0-' for key 'device_number'
+2019-05-17 20:54:38.587 febs [http-nio-192.168.0.121-8080-exec-1] ERROR c.z.a.h.ControllerExceptionHandler - class : class java.util.concurrent.ExecutionException ; msg : org.apache.ibatis.exceptions.PersistenceException: 
+### Error flushing statements.  Cause: org.apache.ibatis.executor.BatchExecutorException: com.zjucsc.application.system.mapper.FvDimensionFilterMapper.insert (batch index #1) failed. Cause: java.sql.BatchUpdateException: Duplicate entry 'test_device_number4--0--ip_update3--mac_update34--port_update-0-' for key 'device_number'
+### Cause: org.apache.ibatis.executor.BatchExecutorException: com.zjucsc.application.system.mapper.FvDimensionFilterMapper.insert (batch index #1) failed. Cause: java.sql.BatchUpdateException: Duplicate entry 'test_device_number4--0--ip_update3--mac_update34--port_update-0-' for key 'device_number'
+2019-05-17 20:55:27.017 febs [http-nio-192.168.0.121-8080-exec-4] ERROR c.z.a.h.ControllerExceptionHandler - class : class java.util.concurrent.ExecutionException ; msg : org.apache.ibatis.exceptions.PersistenceException: 
+### Error flushing statements.  Cause: org.apache.ibatis.executor.BatchExecutorException: com.zjucsc.application.system.mapper.FvDimensionFilterMapper.insert (batch index #1) failed. Cause: java.sql.BatchUpdateException: Duplicate entry 'test_device_number4--0--ip_update33--mac_update34--port_update-0' for key 'device_number'
+### Cause: org.apache.ibatis.executor.BatchExecutorException: com.zjucsc.application.system.mapper.FvDimensionFilterMapper.insert (batch index #1) failed. Cause: java.sql.BatchUpdateException: Duplicate entry 'test_device_number4--0--ip_update33--mac_update34--port_update-0' for key 'device_number'
