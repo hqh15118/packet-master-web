@@ -6,6 +6,7 @@ import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.application.system.entity.ConfigurationSetting;
 import com.zjucsc.application.system.service.iservice.IConfigurationSettingService;
 import com.zjucsc.application.system.service.iservice.IProtocolIdService;
+import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.base.BaseResponse;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,10 +42,13 @@ public class ConfigurationSettingController {
         if (list.size() > 0) {
             iConfigurationSettingService.saveOrUpdateBatch(list);
         }
+        for (ConfigurationSetting configurationSetting : list) {
+
+        }
         return BaseResponse.OK(convertNameToId(configurationForFronts.getProtocolName()));
     }
 
-    private void addNewProtocolToCacheFirst(ConfigurationForNewProtocol configurationForFronts){
+    private void addNewProtocolToCacheFirst(ConfigurationForNewProtocol configurationForFronts) throws ProtocolIdNotValidException {
         String protocolName = configurationForFronts.getProtocolName();
         com.zjucsc.application.system.entity.ProtocolId protocolIdAndName = new com.zjucsc.application.system.entity.ProtocolId();
         protocolIdAndName.setProtocolName(protocolName);
@@ -52,7 +56,7 @@ public class ConfigurationSettingController {
 
         iProtocolIdService.save(protocolIdAndName);
         int newProtocolId = protocolIdAndName.getProtocolId();  //新增协议对应的协议ID
-        addNewProtocolToCache(protocolName , newProtocolId);        //将新增的协议添加到两个缓存中
+        addNewProtocolToCache(protocolName , newProtocolId);    //将新增的协议添加到两个缓存中
     }
 
     @ApiOperation(value = "新增协议的功能码")

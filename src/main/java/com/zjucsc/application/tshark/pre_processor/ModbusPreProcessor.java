@@ -14,10 +14,10 @@ import static com.zjucsc.application.util.PacketDecodeUtil.discernPacket;
  * @author hongqianhui
  * #create_time 2019-05-11 - 22:39
  */
-public class ModbusPreProcessor extends BasePreProcessor<ModbusPacket> {
+public class ModbusPreProcessor extends SinglePreProcessor<ModbusPacket> {
 
     @Override
-    public String protocolFilterField() {
+    public String singleProtocolFilterField() {
         return "modbus";
     }
 

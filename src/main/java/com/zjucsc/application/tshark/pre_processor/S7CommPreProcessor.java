@@ -14,10 +14,10 @@ import static com.zjucsc.application.util.PacketDecodeUtil.discernPacket;
  * @author hongqianhui
  * #create_time 2019-05-11 - 20:06
  */
-public class S7CommPreProcessor extends BasePreProcessor<S7CommPacket> {
+public class S7CommPreProcessor extends SinglePreProcessor<S7CommPacket> {
 
     @Override
-    public String protocolFilterField() {
+    public String singleProtocolFilterField() {
         return "s7comm";
     }
 

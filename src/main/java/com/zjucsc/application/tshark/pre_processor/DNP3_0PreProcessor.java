@@ -14,7 +14,7 @@ import static com.zjucsc.application.util.PacketDecodeUtil.discernPacket;
  * @author hongqianhui
  * #create_time 2019-05-14 - 21:30
  */
-public class DNP3_0PreProcessor extends BasePreProcessor<Dnp3_0Packet> {
+public class DNP3_0PreProcessor extends SinglePreProcessor<Dnp3_0Packet> {
     @Override
     public FvDimensionLayer decode(Dnp3_0Packet packetInstance) {
         return packetInstance.layers.setFrameProtocols(
@@ -22,7 +22,7 @@ public class DNP3_0PreProcessor extends BasePreProcessor<Dnp3_0Packet> {
     }
 
     @Override
-    public String protocolFilterField() {
+    public String singleProtocolFilterField() {
         return "dnp3";
     }
 

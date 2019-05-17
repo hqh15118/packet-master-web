@@ -13,10 +13,12 @@ import static com.zjucsc.application.config.Common.PROTOCOL_STR_TO_INT;
 @Slf4j
 public class CommonCacheUtil {
 
-
-    /**
+    /*********************************
      *
-     */
+     *  CONFIGURATION_MAP
+     *
+     **********************************/
+
     public static void deleteCachedProtocolByName(String protocolName){
         CONFIGURATION_MAP.remove(protocolName);
         PROTOCOL_STR_TO_INT.inverse().remove(protocolName);
@@ -36,14 +38,14 @@ public class CommonCacheUtil {
         }else{
             funcodeMeaningMap.remove(funcode);
         }
-        log.info("delete funcode {} of protocol {}" , funcode , protocolName);
+        log.info("delete funcode [{}] of protocol [{}] " , funcode , protocolName);
     }
 
     public static void deleteCachedFuncodeById(int protocolId,
                                                  int funcode) throws ProtocolIdNotValidException {
         String name = convertIdToName(protocolId);
         deleteCachedFuncodeByName(name,funcode);
-        log.info("delete funcode {} of protocol {}" , funcode , name);
+        log.info("【接上】delete funcode [{}] of protocol [{}]" , funcode , name);
     }
 
     /**
@@ -52,24 +54,21 @@ public class CommonCacheUtil {
      * @param protocolId
      */
     public static void addNewProtocolToCache(String protocol,
-                                          int protocolId){
+                                          int protocolId) throws ProtocolIdNotValidException {
         doAddNewProtocolToCache(protocol,protocolId,null);
     }
 
-    private static void doAddNewProtocolToCache(String protocol,int protocolId,HashMap<Integer,String> funcodeMeaningMap){
+    private static void doAddNewProtocolToCache(String protocol,int protocolId,HashMap<Integer,String> funCodeMeaningMap) throws ProtocolIdNotValidException {
         if (Common.CONFIGURATION_MAP.get(protocol) != null || Common.PROTOCOL_STR_TO_INT.get(protocolId)!=null){
-            throw new RuntimeException("protocol " + protocol + " is not valid , cause it exists in CONFIGURATION_MAP or PROTOCOL_STR_TO_INT \n CONFIGURATION_MAP is" +
+            throw new ProtocolIdNotValidException("protocol " + protocol + " is not valid , cause it exists in CONFIGURATION_MAP or PROTOCOL_STR_TO_INT \n CONFIGURATION_MAP is" +
                     CONFIGURATION_MAP + " PROTOCOL_STR_TO_INT" + PROTOCOL_STR_TO_INT);
         }else{
-            if (funcodeMeaningMap == null) {
+            if (funCodeMeaningMap == null) {
                 Common.CONFIGURATION_MAP.put(protocol, new HashMap<>());
             }else {
-                Common.CONFIGURATION_MAP.put(protocol, funcodeMeaningMap);
+                Common.CONFIGURATION_MAP.put(protocol, funCodeMeaningMap);
             }
-            if (Common.PROTOCOL_STR_TO_INT.get(protocolId)!=null){
-                Common.PROTOCOL_STR_TO_INT.remove(protocolId);
-            }
-            Common.PROTOCOL_STR_TO_INT.put(protocolId , protocol);
+            addNewProtocolToId(protocol,protocolId);
         }
     }
 
@@ -79,7 +78,7 @@ public class CommonCacheUtil {
      * @param protocolId
      * @param funcodeMeaningMap
      */
-    public static void addNewProtocolAndFuncodeMapToCache(String protocol,int protocolId,HashMap<Integer,String> funcodeMeaningMap){
+    public static void addNewProtocolAndFuncodeMapToCache(String protocol,int protocolId,HashMap<Integer,String> funcodeMeaningMap) throws ProtocolIdNotValidException {
         doAddNewProtocolToCache(protocol,protocolId , funcodeMeaningMap);
     }
 
@@ -100,7 +99,6 @@ public class CommonCacheUtil {
         }else{
             funcodeMeaningMap.put(funcode,opt);
         }
-
         log.info("update CONFIGURATION_MAP protocol : {} funcode : {}  opt : {}" , protocol , funcode , opt);
     }
 
@@ -128,16 +126,30 @@ public class CommonCacheUtil {
         log.info("update PROTOCOL_STR_TO_INT protocol : {} funcode : {}  opt : {}" , protocolId , funcode , opt);
     }
 
+
+    /*********************************
+     *
+     *  PROTOCOL_STR_TO_INT
+     *
+     **********************************/
+
+    /**
+     *
+     * @param protocolId
+     * @return
+     * @throws ProtocolIdNotValidException
+     */
+
     public static String convertIdToName(int protocolId) throws ProtocolIdNotValidException {
         if (PROTOCOL_STR_TO_INT.get(protocolId) == null){
-            throw new ProtocolIdNotValidException(protocolId + " protocol id not exist and the PROTOCOL_STR_TO_INT is : \n" + PROTOCOL_STR_TO_INT);
+            throw new ProtocolIdNotValidException(protocolId + " << PROTOCOL ID not exist and the PROTOCOL_STR_TO_INT is : \n" + PROTOCOL_STR_TO_INT);
         }
         return PROTOCOL_STR_TO_INT.get(protocolId);
     }
 
     public static int convertNameToId(String protocolName) throws ProtocolIdNotValidException {
         if (PROTOCOL_STR_TO_INT.inverse().get(protocolName) == null){
-            throw new ProtocolIdNotValidException(protocolName + " protocol name not exist and the PROTOCOL_STR_TO_INT is : \n" + PROTOCOL_STR_TO_INT);
+            throw new ProtocolIdNotValidException(protocolName + " << PROTOCOL NAME not exist and the PROTOCOL_STR_TO_INT is : \n" + PROTOCOL_STR_TO_INT);
         }
         return PROTOCOL_STR_TO_INT.inverse().get(protocolName);
     }
@@ -151,6 +163,20 @@ public class CommonCacheUtil {
         }
         return true;
     }
+
+    public static void addNewProtocolToId(String protocolName , int protocolId) throws ProtocolIdNotValidException {
+        if (PROTOCOL_STR_TO_INT.get(protocolId)!=null){
+            throw new ProtocolIdNotValidException(protocolId + " << is existed ,can not update PROTOCOL_STR_TO_INT");
+        }
+        PROTOCOL_STR_TO_INT.put(protocolId,protocolName);
+        log.info("add new protocol into PROTOCOL_STR_TO_INT ; protocolId : {} ; protocolName : {} " , protocolId , protocolName);
+    }
+
+    /*********************************
+     *
+     *  DEVICE_IP_TO_NAME
+     *
+     **********************************/
 
     public static void addOrUpdateDeviceNumberAndIp(String deviceNumber , String deviceIp){
         Common.DEVICE_IP_TO_NAME.put(deviceIp , deviceNumber);

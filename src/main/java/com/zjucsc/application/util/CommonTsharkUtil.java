@@ -3,6 +3,7 @@ package com.zjucsc.application.util;
 import com.zjucsc.application.config.Common;
 
 import javax.activation.CommandInfo;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -13,8 +14,8 @@ import java.util.Set;
  * #create_time 2019-05-14 - 20:59
  */
 public class CommonTsharkUtil {
-    public static synchronized void addCaptureProtocol(String protocol){
-        Common.CAPTURE_PROTOCOL.add(protocol);
+    public static synchronized void addCaptureProtocol(String[] protocols){
+        Common.CAPTURE_PROTOCOL.addAll(Arrays.asList(protocols));
     }
 
     public static synchronized Set<String> getCaptureProtocols(){

@@ -20,7 +20,7 @@ import static com.zjucsc.application.util.PacketDecodeUtil.discernPacket;
 /**
  * 用于捕获除了必须报文之外的其他报文
  */
-public class UnknownPreProcessor extends BasePreProcessor<UnknownPacket> {
+public class UnknownPreProcessor extends SinglePreProcessor<UnknownPacket> {
 
     @Override
     public FvDimensionLayer decode(UnknownPacket packetInstance) {
@@ -30,7 +30,7 @@ public class UnknownPreProcessor extends BasePreProcessor<UnknownPacket> {
     }
 
     @Override
-    public String protocolFilterField() {
+    public String singleProtocolFilterField() {
         StringBuilder sb = new StringBuilder();
         Set<String> captureProtocolSet = CommonTsharkUtil.getCaptureProtocols();
         int i = 0;

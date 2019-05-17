@@ -32,17 +32,17 @@ import java.util.concurrent.Executors;
  *                              这部分还会将传送上来的协议替换为本地的协议
  */
 @Slf4j
-public abstract class BasePreProcessor<P> implements PreProcessor<P> {
+public abstract class BasePreProcessor implements PreProcessor {
 
     private static String chosenDeviceMac = null;
     private static String captureDeviceName = null;
     private CommandBuildFinishCallback commandBuildFinishCallback;
     private String filePath = null;
     private volatile boolean processRunning = false;
-    private PipeLine pipeLine;
-    private ExecutorService decodeThreadPool = Executors.newSingleThreadExecutor(r -> {
+    protected PipeLine pipeLine;
+    protected ExecutorService decodeThreadPool = Executors.newSingleThreadExecutor(r -> {
         Thread thread = new Thread(r);
-        thread.setName(BasePreProcessor.this.getClass().getName() + " -pre process thread");
+        thread.setName(BasePreProcessor.this.getClass().getName() + " -pre_process_thread");
         thread.setUncaughtExceptionHandler(new ThreadExceptionHandler());
         return thread;
     });
@@ -85,7 +85,7 @@ public abstract class BasePreProcessor<P> implements PreProcessor<P> {
             commandBuilder.append("-e ").append(field).append(" "); // -e xxx ... 根据需要的协议设置 + 五元组
         }
 
-        if (!protocolFilterField().contains("not")){
+        if (!protocolFilterField()[0].contains("not")){
             CommonTsharkUtil.addCaptureProtocol(protocolFilterField());
         }
 
@@ -101,7 +101,11 @@ public abstract class BasePreProcessor<P> implements PreProcessor<P> {
             commandBuilder.append(" -f ").append("\"").append(filter())
                     .append(" and not ether src ").append(chosenDeviceMac).append("\"");
         }
-        //commandBuilder.append(" -Y ").append("\"").append(protocolFilterField()).append("\"");   // 最后的部分 + s7comm/...用于过滤
+        commandBuilder.append(" -Y ").append("\"");
+        for (String s : protocolFilterField()) {
+            commandBuilder.append(s).append(" ");
+        }
+        commandBuilder.append("\"");   // 最后的部分 + s7comm/...用于过滤
         String command = commandBuilder.toString();
         if (commandBuildFinishCallback!=null){
             commandBuildFinishCallback.commandBuildFinish();
@@ -109,6 +113,7 @@ public abstract class BasePreProcessor<P> implements PreProcessor<P> {
         log.info("***************** {} ==> run command : {} " , this.getClass().getName() , command);
         Process process = null;
         try {
+            //TODO 这边加个锁，是不是就可以了？保证一次只有一个线程指定TSHARK程序
             process = Runtime.getRuntime().exec(command);
             CommonTsharkUtil.addTsharkProcess(process);
             //doWithErrorStream(process.getErrorStream() , command);
@@ -119,9 +124,7 @@ public abstract class BasePreProcessor<P> implements PreProcessor<P> {
                     String packetInJSON = bfReader.readLine();
                     if (packetInJSON != null) {
                         if (packetInJSON.length() > 85) {
-                            decodeThreadPool.execute(() -> {
-                                pipeLine.pushDataAtHead(decode(JSON.parseObject(packetInJSON,decodeType())));
-                            });
+                            decodeJSONString(packetInJSON);
                         }
                     }else{
                         if (processRunning) {
@@ -232,7 +235,7 @@ public abstract class BasePreProcessor<P> implements PreProcessor<P> {
         }
     }
 
-    public abstract FvDimensionLayer decode(P packetInstance);
+    public abstract void decodeJSONString(String packetJSON);
 
     private String tsharkMacPath = " tshark ";
     private String tsharkWinPath = " tshark";

@@ -8,7 +8,7 @@ import java.util.List;
  * @author hongqianhui
  * #create_time 2019-05-11 - 17:40
  */
-public interface PreProcessor<P>{
+public interface PreProcessor{
 
     void execCommand(int type , int limit);
 
@@ -21,12 +21,8 @@ public interface PreProcessor<P>{
      * 只捕获该协议的报文
      * @return
      */
-    String protocolFilterField();
-    /**
-     * 解析的结果类型
-     * @return
-     */
-    Class<P> decodeType();
+    String[] protocolFilterField();
+
     /**
      * 除了五元组之外，该报文需要过滤出来的字段，不可以为null，可以为空 ""
      * @return

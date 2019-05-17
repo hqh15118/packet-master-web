@@ -4,7 +4,6 @@ import com.zjucsc.application.tshark.domain.packet.FvDimensionLayer;
 import com.zjucsc.application.tshark.domain.packet.IEC104Packet;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static com.zjucsc.application.util.PacketDecodeUtil.discernPacket;
@@ -15,7 +14,7 @@ import static com.zjucsc.application.util.PacketDecodeUtil.discernPacket;
  * @author hongqianhui
  * #create_time 2019-05-14 - 21:41
  */
-public class IEC104PreProcessor extends BasePreProcessor<IEC104Packet> {
+public class IEC104PreProcessor extends SinglePreProcessor<IEC104Packet> {
     @Override
     public FvDimensionLayer decode(IEC104Packet packetInstance) {
         return packetInstance.layers.setFrameProtocols(
@@ -23,7 +22,7 @@ public class IEC104PreProcessor extends BasePreProcessor<IEC104Packet> {
     }
 
     @Override
-    public String protocolFilterField() {
+    public String singleProtocolFilterField() {
         return "104apci";
     }
 
