@@ -4,8 +4,6 @@ import org.junit.Test;
 import org.pcap4j.core.*;
 import org.pcap4j.packet.Packet;
 
-import static org.junit.Assert.*;
-
 /**
  * #project packet-master-web
  *
