@@ -16,19 +16,19 @@
     </select>
 
     <resultMap id="deviceNumberAndIp" type="com.zjucsc.application.domain.bean.DeviceNumberAndIp">
-        <result property="deviceNumber" column="device_number" jdbcType="java.lang.String"/>
-        <result property="deviceIp" column="device_tag" jdbcType="java.lang.String"/>
+        <result property="deviceNumber" column="device_number" jdbcType="VARCHAR"/>
+        <result property="deviceIp" column="device_tag" jdbcType="VARCHAR"/>
     </resultMap>
 
     <select id="loadAllDevicesByGplotId" resultMap="deviceNumberAndIp">
         SELECT device_number,device_tag FROM device_info WHERE gplot_id = #{gplotId}
     </select>
 
-    <select id="loadAllFvDimensionFilterByDeviceNumberAndGpotId" resultMap="com.zjucsc.application.system.entity.FvDimensionFilter">
+    <select id="loadAllFvDimensionFilterByDeviceNumberAndGpotId" resultType="com.zjucsc.application.system.entity.FvDimensionFilter">
         SELECT * FROM fv_dimension_filter WHERE device_number = #{deviceNumber} AND gplot_id = #{gplotId}
     </select>
 
-    <select id="loadAllOptFiterByDeviceNumberAndGplotId" resultMap="com.zjucsc.application.system.entity.OptFilter">
+    <select id="loadAllOptFiterByDeviceNumberAndGplotId" resultType="com.zjucsc.application.system.entity.OptFilter">
         SELECT * FROM opt_filter WHERE device_number = #{deviceNumber} AND gplot_id = #{gplotId};
     </select>
 
