@@ -7,6 +7,6 @@
     </delete>
 
     <select id="selectTargetOptFilter" resultType="java.lang.Integer">
-        SELECT fun_code from  opt_filter where device_id=#{device_id} AND filter_type=#{type} AND protocol_id=#{protocolId}
+        SELECT fun_code from  opt_filter where device_number=#{device_id} AND filter_type=#{type} AND protocol_id=#{protocolId}
     </select>
 </mapper>

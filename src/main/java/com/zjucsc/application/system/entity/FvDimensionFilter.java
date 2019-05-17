@@ -14,9 +14,9 @@ import javax.validation.constraints.NotBlank;
 public class FvDimensionFilter {
     @TableId(value = "id" , type = IdType.AUTO)
     private int id;
-    @TableField("device_id")
+    @TableField("device_number")
     @NotBlank
-    private String deviceId;
+    private String deviceNumber;
     @TableField("user_name")
     private String userName;
     @TableField("filter_type")
@@ -33,6 +33,8 @@ public class FvDimensionFilter {
     private String srcPort;
     @TableField("dst_port")
     private String dstPort;
-    @TableField("protocol")
+    @TableField("protocol_id")
     private int protocolId;
+    @TableField("gplot_id")
+    private int gplotId;
 }

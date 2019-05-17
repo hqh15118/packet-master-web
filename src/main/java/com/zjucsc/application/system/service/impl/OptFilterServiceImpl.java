@@ -46,12 +46,12 @@ public class OptFilterServiceImpl extends ServiceImpl<OptFilterMapper, OptFilter
     @Override
     public CompletableFuture<Exception> addOperationFilter(OptFilterForFront optFilterForFront) throws ProtocolIdNotValidException, OptFilterNotValidException {
         StringBuilder sb = new StringBuilder();
-        String deviceId = optFilterForFront.getDeviceId();
+        String deviceId = optFilterForFront.getDeviceNumber();
         String userName = optFilterForFront.getUserName();
         int protocolId = optFilterForFront.getProtocolId();
 
         Map<String, Object> removeMap = new HashMap<>();
-        removeMap.put("device_id" , deviceId);
+        removeMap.put("device_number" , deviceId);
         //先删除数据库中该设备已有的配置
         removeByMap(removeMap);
         //ConcurrentHashMap<String,OperationAnalyzer> analyzerMap = new ConcurrentHashMap<>(); //每一个设备都需要这样一个map，key是协议类型，value是该协议下对应的分析器

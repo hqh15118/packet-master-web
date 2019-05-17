@@ -11,4 +11,6 @@ import java.util.List;
  */
 public interface FvDimensionFilterMapper extends BaseMapper<FvDimensionFilter> {
     List<FvDimensionFilter> selectByDeviceId(@Param("device_id") String deviceId);
+
+    void deleteAllFilterByDeviceNumberAndGplotId(@Param("deviceNumber")String deviceNumber , @Param("gplotId")int gplotId);
 }

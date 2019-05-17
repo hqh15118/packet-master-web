@@ -5,7 +5,6 @@ import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.PACKET_PROTOCOL;
 import com.zjucsc.application.config.auth.Auth;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
-import com.zjucsc.application.system.controller.ConfigurationSettingController;
 import com.zjucsc.application.system.entity.ConfigurationSetting;
 import com.zjucsc.application.system.entity.ProtocolId;
 import com.zjucsc.application.system.service.iservice.IConfigurationSettingService;
@@ -33,7 +32,6 @@ public class InitConfigurationService implements ApplicationRunner {
 
     private final String str_name = "java.lang.String";
 
-    @Autowired private ConfigurationSettingController configurationSettingController;
     @Autowired private IConfigurationSettingService iConfigurationSettingService;
     @Autowired private IProtocolIdService iProtocolIdService;
 
@@ -90,13 +88,11 @@ public class InitConfigurationService implements ApplicationRunner {
                 iConfigurationSettingService.saveBatch(configurationSettings);
                 addProtocolFuncodeMeaning(protocolName,funcodeStatements);
             }
-            log.info(" load CONFIGURATION_MAP from libs successfully : \n {} " , Common.CONFIGURATION_MAP);
         }else{
             for (ConfigurationSetting configuration : iConfigurationSettingService.list()) {
                 addProtocolFuncodeMeaning(convertIdToName(configuration.getProtocolId()),
                         configuration.getFunCode(),configuration.getOpt());
             }
-            log.info(" load CONFIGURATION_MAP from db successfully : \n {} " , Common.CONFIGURATION_MAP);
         }
         /*
          * INIT AUTH
@@ -112,5 +108,7 @@ public class InitConfigurationService implements ApplicationRunner {
             }
         }
         log.info("AUTH_MAP : {} " , Common.AUTH_MAP);
+        log.info("size : {} ; CONFIGURATION_MAP : {}  " ,  Common.CONFIGURATION_MAP.size() , Common.CONFIGURATION_MAP);
+        log.info("size : {} ; PROTOCOL_STR_TO_INT : {} " , Common.PROTOCOL_STR_TO_INT.size() ,  Common.PROTOCOL_STR_TO_INT  );
     }
 }

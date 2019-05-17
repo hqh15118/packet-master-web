@@ -1,8 +1,10 @@
 package com.zjucsc.application.system.controller;
 
 
+import com.zjucsc.application.config.Common;
 import com.zjucsc.application.system.entity.Device;
 import com.zjucsc.application.system.service.iservice.IDeviceService;
+import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.base.BaseResponse;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,25 +25,14 @@ import java.util.Map;
 public class DeviceController {
     @Autowired private IDeviceService iDeviceService;
 
-    @ApiOperation("添加设备信息")
+    @ApiOperation("添加设备信息【保存拓扑图时，删除所有旧设备，添加所有新设备】")
     @PostMapping("new_device")
     public BaseResponse addDeviceInfo(@RequestBody @Valid @NotEmpty List<Device> deviceList){
-        List<Device> devices = new ArrayList<>();
-
+        iDeviceService.removeAllDevicesByGplotId(Common.GPLOT_ID);
         for (Device device : deviceList) {
-            if (iDeviceService.selectDeviceByIdAndGplot(device.getDeviceNumber(),device.getGPlotId())!=null){
-                updateService(device);
-                continue;
-            }
-            devices.add(device);
+            CommonCacheUtil.addOrUpdateDeviceNumberAndIp(device.getDeviceNumber(), device.getDeviceTag());
         }
-        iDeviceService.saveBatch(devices);
-        return BaseResponse.OK();
-    }
-
-    @ApiOperation("修改设备信息")
-    public BaseResponse updateService(@RequestBody @Valid  Device device){
-        iDeviceService.updateDeviceInfo(device);
+        iDeviceService.saveBatch(deviceList);
         return BaseResponse.OK();
     }
 
@@ -52,4 +43,5 @@ public class DeviceController {
         findByGplotId.put("gplot_id" , gplotId);
         return BaseResponse.OK(iDeviceService.listByMap(findByGplotId));
     }
+
 }

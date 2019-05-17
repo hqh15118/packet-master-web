@@ -40,6 +40,13 @@ public class PacketDecodeUtil {
         return data;
     }
 
+    /**
+     * decode non : string
+     * String trailer = "00020d04fc6aa8defba27a10fc6aa8defba27a80";
+     *         String fsc = "0x00000075";
+     * @param s
+     * @return
+     */
     public static byte[] hexStringToByteArray2(String s) {
         return hexStringToByteArray2(s, 0 );
     }
@@ -198,15 +205,14 @@ public class PacketDecodeUtil {
      * [2byte]    [1byte]     [1byte]       [20字节]
      *  设备ID     A口状态      B口状态         其他
      * *********************************/
-    public static CollectorState decodeCollectorState(byte[] payload , int offset){
+    public static CollectorState decodeCollectorState(byte[] payload , int offset , int collectorId){
         if (payload.length==0){
             return null;
         }
-        if (offset == 24){
+        if (payload.length < 24){
             return null;
         }
         int start = payload.length - offset;//payload中自定义的字节数组的开始位置
-        int collectorId = ByteUtils.bytesToShort(payload,start,2);
         CollectorState state = null;
         int A_state = Byte.toUnsignedInt(payload[start + 2]);
         int B_state = Byte.toUnsignedInt(payload[start + 3]);
@@ -235,13 +241,13 @@ public class PacketDecodeUtil {
             return -1;
         }
         int start = payload.length - offset;
-        return payload[start] << 8 + payload[start + 1];
+        return (payload[start] << 8) + payload[start + 1];
     }
 
-    public static long decodeCollectorDelay(byte[] payload , int offsetFromEnd) {
+    public static int decodeCollectorDelay(byte[] payload , int offsetFromEnd) {
         //
         int start = payload.length - offsetFromEnd;     //24 - 4
-        return ByteUtils.bytesToLong(payload,start,4);
+        return ByteUtils.bytesToInt(payload,start);
     }
 
 

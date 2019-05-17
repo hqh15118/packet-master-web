@@ -1,5 +1,6 @@
 myconfig:
   global_address : 10.180.142.77
+  #global_address : 192.168.0.121
   admin_client_port : 8989
   packet_master_web_port : 8080
 
@@ -68,19 +69,20 @@ mybatis-plus:
     # 关闭 mybatis-plus的 banner
     banner: false
 
-febs:
-  # 是否异步记录用户操作日志
-  openAopLog: true
-  # 单次最大批量入库数量
-  max:
-    batch:
-      insert:
-        num: 1000
-  shiro:
-    # 后端免认证接口 url
-    anonUrl: /login,/logout/**,/regist,/user/check/**
-    # token有效期，单位秒
-    jwtTimeOut: 3600
+#febs:
+#  # 是否异步记录用户操作日志
+#  openAopLog: true
+#  # 单次最大批量入库数量
+#  max:
+#    batch:
+#      insert:
+#        num: 1000
+#  shiro:
+#    # 后端免认证接口 url
+#    anonUrl: /login,/logout/**,/regist,/user/check/**
+#    # token有效期，单位秒
+#    jwtTimeOut: 3600
+
 management:
   endpoints:
     web:

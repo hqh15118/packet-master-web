@@ -43,6 +43,7 @@ public class FvDimensionFilterController {
 
     @ApiOperation("添加/更新五元组过滤规则")
     @PostMapping("new_fv_packet_rule")
+    //2019 5 17 -- ok
     public BaseResponse addFvDimensionFilterRules(@RequestBody @Valid @NotEmpty List<FvDimensionFilter> list) throws ExecutionException, InterruptedException {
         CompletableFuture<Exception> future =  iFvDimensionFilterService.addFvDimensionFilter(list);
         if (future.get() == null){
@@ -54,15 +55,16 @@ public class FvDimensionFilterController {
 
     @ApiOperation(value = "查询五元组异常报文规则")
     @GetMapping("/get_fv_packet_rule")
-    public BaseResponse loadFvDimensionPacketRule(@RequestParam String deviceId , @RequestParam String name) throws DeviceNotValidException, ExecutionException, InterruptedException {
-        CompletableFuture<List<FvDimensionFilter>> future =  iFvDimensionFilterService.getTargetExistIdFilter(deviceId , false);
+    //2019 5 17 -- ok
+    public BaseResponse loadFvDimensionPacketRule(@RequestParam String deviceNumber , @RequestParam String name) throws DeviceNotValidException, ExecutionException, InterruptedException {
+        CompletableFuture<List<FvDimensionFilter>> future =  iFvDimensionFilterService.getTargetExistIdFilter(deviceNumber , false);
         return BaseResponse.OK(future.get());
     }
-
+    //2019 5 17 -- ok
     @ApiOperation(value = "查询已经成功挂载的五元组异常报文规则[确认是否已经将规则下载到服务器]")
     @GetMapping("/get_fv_packet_rule_cached")
-    public BaseResponse loadFvDimensionPacketRuleCached(@RequestParam String deviceId , @RequestParam String name) throws DeviceNotValidException, ExecutionException, InterruptedException {
-        CompletableFuture<List<FvDimensionFilter>> future =  iFvDimensionFilterService.getTargetExistIdFilter(deviceId , true);
+    public BaseResponse loadFvDimensionPacketRuleCached(@RequestParam String deviceNumber , @RequestParam String name) throws DeviceNotValidException, ExecutionException, InterruptedException {
+        CompletableFuture<List<FvDimensionFilter>> future =  iFvDimensionFilterService.getTargetExistIdFilter(deviceNumber , true);
         return BaseResponse.OK(future.get());
     }
 }

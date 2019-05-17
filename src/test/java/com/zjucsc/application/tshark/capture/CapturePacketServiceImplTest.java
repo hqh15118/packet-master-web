@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Scanner;
+
 import static org.junit.Assert.*;
 
 /**
@@ -24,8 +26,9 @@ public class CapturePacketServiceImplTest {
     public void start() throws InterruptedException {
         String macAddressForMac = "8c:85:90:93:15:a2";
         String deviceName = "en0";
+        String macAddressForWin = "28:D2:44:5F:69:E1";
         CapturePacketServiceImpl capturePacketService = new CapturePacketServiceImpl();
-        BasePreProcessor.setCaptureDeviceNameAndMacAddress(macAddressForMac,deviceName);
+        BasePreProcessor.setCaptureDeviceNameAndMacAddress(macAddressForWin,deviceName);
         capturePacketService.start(new ProcessCallback<String, String>() {
             @Override
             public void error(Exception e) {
@@ -43,7 +46,8 @@ public class CapturePacketServiceImplTest {
             }
         });
 
-        Thread.sleep(10000000);
+        Thread.sleep(20000);
+        capturePacketService.stop();
     }
 
     @Test

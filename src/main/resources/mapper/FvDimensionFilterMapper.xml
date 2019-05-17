@@ -2,6 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zjucsc.application.system.mapper.FvDimensionFilterMapper">
     <select id="selectByDeviceId" resultType="com.zjucsc.application.system.entity.FvDimensionFilter">
-        SELECT * FROM fv_dimension_filter WHERE device_id = #{device_id}
+        SELECT * FROM fv_dimension_filter WHERE device_number = #{device_id}
     </select>
+
+    <delete id="deleteAllFilterByDeviceNumberAndGplotId">
+        DELETE FROM fv_dimension_filter WHERE device_number=#{deviceNumber} AND gplot_id = #{gplotId}
+    </delete>
 </mapper>

@@ -1,10 +1,14 @@
 package com.zjucsc.application.util;
 
+import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.exceptions.OptFilterNotValidException;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
+import com.zjucsc.application.system.entity.OptFilter;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
+import com.zjucsc.application.tshark.filter.OperationPacketFilter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.zjucsc.application.config.Common.OPERATION_FILTER_PRO;
@@ -12,6 +16,46 @@ import static com.zjucsc.application.util.CommonCacheUtil.convertIdToName;
 
 @Slf4j
 public class CommonOptFilterUtil {
+
+    /**
+     *
+     * @param deviceNumber 设备
+     * @param optFilters 过滤器集合
+     * @param filterName 过滤器名字，随便写一个就好
+     * @throws ProtocolIdNotValidException
+     */
+    public static void addOrUpdateAnalyzer(String deviceNumber , List<OptFilter> optFilters , String filterName) throws ProtocolIdNotValidException {
+        ConcurrentHashMap<String, OperationAnalyzer> analyzerMap = null;
+        int type = 0;
+        if ((analyzerMap = Common.OPERATION_FILTER_PRO.get(deviceNumber)) == null){
+            //新建设备
+            analyzerMap = new ConcurrentHashMap<>();
+        }else{
+            type = 1;
+        }
+
+        for (OptFilter optFilter : optFilters) {
+            String protocolName = CommonCacheUtil.convertIdToName(optFilter.getProtocol_id());
+            analyzerMap.putIfAbsent(protocolName,new OperationAnalyzer(new OperationPacketFilter<>(filterName)));
+            int filterType = optFilter.getFilterType();
+            if (filterType == 0){
+                //white
+                analyzerMap.get(protocolName).getAnalyzer().addWhiteRule(optFilter.getFun_code(),
+                        CommonConfigUtil.getTargetProtocolFuncodeMeanning(protocolName,optFilter.getFun_code()));
+            }else{
+                analyzerMap.get(protocolName).getAnalyzer().addBlackRule(optFilter.getFun_code(),
+                        CommonConfigUtil.getTargetProtocolFuncodeMeanning(protocolName,optFilter.getFun_code()));
+            }
+        }
+        Common.OPERATION_FILTER_PRO.put(deviceNumber , analyzerMap);
+        if (type == 0){
+            //new analyze map
+            log.info("NEW operation filter map , new one {} " , analyzerMap);
+        }else{
+            log.info("UPDATE old operation filter map , new one {} " , analyzerMap);
+        }
+    }
+
 
     public static void addOrUpdateAnalyzer(String deviceId, String protocolName, OperationAnalyzer analyzer) throws OptFilterNotValidException {
         if (analyzer == null || analyzer.getAnalyzer() == null){
@@ -91,5 +135,10 @@ public class CommonOptFilterUtil {
      */
     public static OperationAnalyzer getTargetDeviceProtocolOptAnalyzer(String deviceId , String protocol){
         return OPERATION_FILTER_PRO.get(deviceId).get(protocol);
+    }
+
+    public static void removeAllOptFilter(){
+        Common.OPERATION_FILTER_PRO.clear();
+        log.info("clear all opt dimension filter of gplotid : {} " , Common.GPLOT_ID);
     }
 }
