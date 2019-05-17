@@ -17,6 +17,13 @@ import static com.zjucsc.application.util.CommonCacheUtil.convertIdToName;
 @Slf4j
 public class CommonOptFilterUtil {
 
+    /**
+     *
+     * @param deviceNumber
+     * @param optFilters
+     * @param filterName
+     * @throws ProtocolIdNotValidException
+     */
     public static void addOrUpdateAnalyzer(String deviceNumber , List<OptFilter> optFilters , String filterName) throws ProtocolIdNotValidException {
         ConcurrentHashMap<String, OperationAnalyzer> analyzerMap = null;
         int type = 0;
@@ -42,9 +49,10 @@ public class CommonOptFilterUtil {
         }
         Common.OPERATION_FILTER_PRO.put(deviceNumber , analyzerMap);
         if (type == 0){
-
+            //new analyze map
+            log.info("NEW operation filter map , new one {} " , analyzerMap);
         }else{
-
+            log.info("UPDATE old operation filter map , new one {} " , analyzerMap);
         }
     }
 

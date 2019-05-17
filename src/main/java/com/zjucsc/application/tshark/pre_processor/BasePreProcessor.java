@@ -67,7 +67,7 @@ public abstract class BasePreProcessor<P> implements PreProcessor<P> {
          * command builder
          */
         List<String> fieldList = filterFields();
-        appendBaseCommand(fieldList);       //init fv dimension packet format add all fv dimension to field list
+        appendBaseCommand(fieldList);       //init fv dimension packet format add all fv dimension into field list
 
         commandBuilder.append(tsharkPath()).append(" ")
                 .append("-l -n").append(" ");           //tshark -l -n
