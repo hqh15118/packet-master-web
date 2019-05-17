@@ -1,6 +1,7 @@
 package com.zjucsc.application.system.controller;
 
 
+import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.application.system.entity.Gplot;
 import com.zjucsc.application.system.service.iservice.IGplotService;
 import com.zjucsc.base.BaseResponse;
@@ -35,7 +36,7 @@ public class GplotController {
         iGplotService.addNewGplot(gplot);
         return BaseResponse.OK(gplot.getId());
     }
-    @Timed(value = "load.gplot")
+
     @ApiOperation("加载组态图设备位置信息")
     @GetMapping("load_gplot")
     public BaseResponse loadGplotInfo(@RequestParam int id) throws RuntimeException {
@@ -73,7 +74,7 @@ public class GplotController {
 
     @ApiOperation("返回选定的组态图ID")
     @GetMapping("set_gplot_id")
-    public BaseResponse setGplotId(@RequestParam int gplotId){
+    public BaseResponse setGplotId(@RequestParam int gplotId) throws ProtocolIdNotValidException {
         iGplotService.changeGplot(gplotId);
         return BaseResponse.OK();
     }

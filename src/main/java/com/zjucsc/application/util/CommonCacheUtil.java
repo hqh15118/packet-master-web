@@ -1,6 +1,7 @@
 package com.zjucsc.application.util;
 
 import com.zjucsc.application.config.Common;
+import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -149,5 +150,22 @@ public class CommonCacheUtil {
             return false;
         }
         return true;
+    }
+
+    public static void addOrUpdateDeviceNumberAndIp(String deviceNumber , String deviceIp){
+        Common.DEVICE_IP_TO_NAME.put(deviceIp , deviceNumber);
+    }
+
+    public static void removeDeviceNumer(String deviceNumber){
+        Common.DEVICE_IP_TO_NAME.remove(deviceNumber);
+        log.info("remove device number : {} [ip : {} ]" , deviceNumber , Common.DEVICE_IP_TO_NAME.inverse().get(deviceNumber));
+    }
+
+    public static String getTargetDeviceNumberByIp(String deviceIp) throws DeviceNotValidException {
+        return Common.DEVICE_IP_TO_NAME.get(deviceIp);
+    }
+
+    public static void removeAllCachedDeviceNumber(){
+        Common.DEVICE_IP_TO_NAME.clear();
     }
 }

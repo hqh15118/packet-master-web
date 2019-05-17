@@ -2,7 +2,9 @@ package com.zjucsc.application.tshark.capture;
 
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.SocketIoEvent;
+import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.domain.bean.CollectorState;
+import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
 import com.zjucsc.application.handler.ThreadExceptionHandler;
 import com.zjucsc.application.socketio.SocketServiceCenter;
 import com.zjucsc.application.system.service.PacketAnalyzeService;
@@ -11,6 +13,7 @@ import com.zjucsc.application.tshark.decode.DefaultPipeLine;
 import com.zjucsc.application.tshark.domain.packet.FvDimensionLayer;
 import com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler;
 import com.zjucsc.application.tshark.pre_processor.*;
+import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.PacketDecodeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,9 +49,10 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         this.callback = callback;
         /**
          * 接收协议解析好的五元组，并作五元组发送、报文流量统计处理
+         * 单线程处理，保证线程安全
          */
         AbstractAsyncHandler<FvDimensionLayer> fvDimensionLayerAbstractAsyncHandler
-                = new AbstractAsyncHandler<FvDimensionLayer>(Executors.newFixedThreadPool(10, r -> {
+                = new AbstractAsyncHandler<FvDimensionLayer>(Executors.newFixedThreadPool(1, r -> {
                     Thread thread = new Thread(r);
                     thread.setName("fv_dimension_handler_thread");
                     thread.setUncaughtExceptionHandler(new ThreadExceptionHandler());
@@ -67,8 +71,12 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                 //然后返回EMPTY=""，即payload={}空的byte数组
                 byte[] payload = PacketDecodeUtil.decodeTrailerAndFsc(sb.toString());
                 sendFvDimensionPacket(fvDimensionLayer , payload);      //发送五元组所有报文
-                sendPacketStatisticsEvent(fvDimensionLayer);            //发送统计信息
-                int collectorId = PacketDecodeUtil.decodeCollectorId(payload,24);;
+                try {
+                    sendPacketStatisticsEvent(fvDimensionLayer);            //发送统计信息
+                } catch (DeviceNotValidException e) {
+                    log.error("找不到IP地址对应的设备号" , e);
+                }
+                int collectorId = PacketDecodeUtil.decodeCollectorId(payload,24);
                 analyzeCollectorState(payload , collectorId);                         //分析采集器状态信息
                 collectorDelayInfo(payload , collectorId);                            //解析时延信息
                 return fvDimensionLayer;                                //将五元组发送给BadPacketHandler
@@ -167,9 +175,12 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         SocketServiceCenter.updateAllClient(SocketIoEvent.ALL_PACKET,fvDimensionLayer);
     }
 
-    private void sendPacketStatisticsEvent(FvDimensionLayer fvDimensionLayer){
-        Common.recvPacketNuber += 1;
-        Common.recvPacketFlow += Integer.parseInt(fvDimensionLayer.frame_cap_len[0]);
+    private void sendPacketStatisticsEvent(FvDimensionLayer fvDimensionLayer) throws DeviceNotValidException {
+        StatisticsData.recvPacketNumber.incrementAndGet();      //总报文数
+        //外界 --> PLC[ip_dst]
+        StatisticsData.increaseNumberByDeviceIn(CommonCacheUtil.getTargetDeviceNumberByIp(fvDimensionLayer.ip_dst[0]));
+        //外界 <-- PLC[ip_src]
+        StatisticsData.increaseNumberByDeviceOut(CommonCacheUtil.getTargetDeviceNumberByIp(fvDimensionLayer.ip_src[0]));
     }
 
     private void analyzeCollectorState(byte[] payload , int collectorId){

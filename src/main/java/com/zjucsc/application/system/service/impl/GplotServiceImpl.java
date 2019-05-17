@@ -2,6 +2,8 @@ package com.zjucsc.application.system.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zjucsc.application.config.Common;
+import com.zjucsc.application.domain.bean.DeviceNumberAndIp;
+import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.application.system.entity.Device;
 import com.zjucsc.application.system.entity.FvDimensionFilter;
 import com.zjucsc.application.system.entity.Gplot;
@@ -41,17 +43,31 @@ public class GplotServiceImpl extends ServiceImpl<GplotMapper, Gplot> implements
     @Transactional
     @Async(value = "global_single_thread_executor")
     @Override
-    public void changeGplot(int gplotId) {
+    public void changeGplot(int gplotId) throws ProtocolIdNotValidException {
         Common.GPLOT_ID = gplotId;
         StringBuilder sb = new StringBuilder();
-        List<String> deviceNumbers = iDeviceService.loadAllDevicesByGplotId(gplotId);
-        for (String deviceNumber : deviceNumbers) {
+        //移除旧组态图上的所有规则
+        CommonOptFilterUtil.removeAllOptFilter();
+        CommonFvFilterUtil.removeAllFvFilter();
+        //移除旧组态图上的所有DEVICE_NUMBER和DEVICE_IP之间的对应关系
+        CommonCacheUtil.removeAllCachedDeviceNumber();
+        //reload filters
+        List<DeviceNumberAndIp> deviceNumbers = iDeviceService.loadAllDevicesByGplotId(gplotId);   //load all device from device_info table by gplot_id
+        for (DeviceNumberAndIp deviceNumberAndIp : deviceNumbers) {
             sb.delete(0 , sb.length());
-            List<FvDimensionFilter> fvDimensionFilters = iDeviceService.loadAllFvDimensionFilterByDeviceNumberAndGpotId(deviceNumber,gplotId);
-            CommonFvFilterUtil.addOrUpdateFvFilter(deviceNumber,fvDimensionFilters,sb.append("device_name-").append(deviceNumber).
+            //load all fv dimension rule from fv_dimension table by device_number + gpolt_id
+            List<FvDimensionFilter> fvDimensionFilters = iDeviceService.
+                    loadAllFvDimensionFilterByDeviceNumberAndGpotId(deviceNumberAndIp.deviceNumber,gplotId);
+            //add all fv filters to cache
+            CommonFvFilterUtil.addOrUpdateFvFilter(deviceNumberAndIp.deviceNumber,fvDimensionFilters,
+                    sb.append("device_name-").append(deviceNumberAndIp.deviceNumber).
                     append(" gplot_id-").append(gplotId).toString());
-            List<OptFilter> optFilters = iDeviceService.loadAllOptFiterByDeviceNumberAndGplotId(deviceNumber,gplotId);
-            CommonOptFilterUtil.addOrUpdateAnalyzer();
+            //load all opt dimension rule from fv_dimension table by device_number + gpolt_id
+            List<OptFilter> optFilters = iDeviceService.loadAllOptFiterByDeviceNumberAndGplotId(deviceNumberAndIp.deviceNumber,gplotId);
+            //add all opt filters to cache
+            CommonOptFilterUtil.addOrUpdateAnalyzer(deviceNumberAndIp.deviceNumber , optFilters , "xxx");
+            //更新DEVICE_NUMBER和DEVICE_IP之间的对应关系
+            CommonCacheUtil.addOrUpdateDeviceNumberAndIp(deviceNumberAndIp.deviceNumber , deviceNumberAndIp.deviceIp);
         }
     }
 

@@ -19,9 +19,9 @@ public class CommonOptFilterUtil {
 
     /**
      *
-     * @param deviceNumber
-     * @param optFilters
-     * @param filterName
+     * @param deviceNumber 设备
+     * @param optFilters 过滤器集合
+     * @param filterName 过滤器名字，随便写一个就好
      * @throws ProtocolIdNotValidException
      */
     public static void addOrUpdateAnalyzer(String deviceNumber , List<OptFilter> optFilters , String filterName) throws ProtocolIdNotValidException {
@@ -135,5 +135,10 @@ public class CommonOptFilterUtil {
      */
     public static OperationAnalyzer getTargetDeviceProtocolOptAnalyzer(String deviceId , String protocol){
         return OPERATION_FILTER_PRO.get(deviceId).get(protocol);
+    }
+
+    public static void removeAllOptFilter(){
+        Common.OPERATION_FILTER_PRO.clear();
+        log.info("clear all opt dimension filter of gplotid : {} " , Common.GPLOT_ID);
     }
 }

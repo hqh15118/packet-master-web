@@ -33,7 +33,7 @@ public class FvDimensionFilter {
     private String srcPort;
     @TableField("dst_port")
     private String dstPort;
-    @TableField("protocol")
+    @TableField("protocol_id")
     private int protocolId;
     @TableField("gplot_id")
     private int gplotId;

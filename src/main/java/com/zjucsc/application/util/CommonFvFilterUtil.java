@@ -11,7 +11,7 @@ import java.util.List;
 @Slf4j
 public class CommonFvFilterUtil {
 
-    public static void clearAll(){
+    public static void removeAllFvFilter(){
         Common.FV_DIMENSION_FILTER_PRO.clear();
         log.info("clear all fv dimension filter of gplotid : {} " , Common.GPLOT_ID);
     }
@@ -29,4 +29,5 @@ public class CommonFvFilterUtil {
             log.info("update old fv dimension analyzer cause device {} is existed !! NEW Filter list is : {} " , deviceName , filterList);
         }
     }
+
 }

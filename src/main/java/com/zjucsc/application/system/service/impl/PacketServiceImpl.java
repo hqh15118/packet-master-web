@@ -77,19 +77,4 @@ public class PacketServiceImpl implements PacketService {
         return all;
     }
 
-    public static class StatisticsDataWrapper{
-        public long number;
-        public long flow;
-        public long attackCount;
-        public long exceptionCount;
-        public HashMap<String,Integer> collectorDelay;
-
-        public StatisticsDataWrapper(long number, long flow, long attackCount, long exceptionCount, HashMap<String,Integer> collectorDelay) {
-            this.number = number;
-            this.flow = flow;
-            this.attackCount = attackCount;
-            this.exceptionCount = exceptionCount;
-            this.collectorDelay = collectorDelay;
-        }
-    }
 }
