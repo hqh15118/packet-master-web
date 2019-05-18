@@ -59,13 +59,13 @@ public class PacketDecodeUtilTest {
     @Test
     public void realTimeStampDecode() throws PcapNativeException, InterruptedException, NotOpenException {
         String classPath = PacketDecodeUtilTest.class.getResource("").getPath();
-        String filePath = "C:\\Users\\Administrator\\IdeaProjects\\packet-master-web\\src\\main\\resources\\pcap\\no_ether_src.pcap";
+        String filePath = "/Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap/no_ether_src.pcap";
         PcapHandle handle = Pcaps.openOffline(filePath);
         handle.loop(-1, new PacketListener() {
             @Override
             public void gotPacket(Packet packet) {
                 byte[] bytes = packet.getRawData();
-                PacketDecodeUtil.decodeTimeStamp(bytes,20);
+                System.out.println(PacketDecodeUtil.decodeTimeStamp(bytes,20));
                 System.out.println(PacketDecodeUtil.decodeCollectorDelay(bytes,4));
             }
         });

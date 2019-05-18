@@ -1,6 +1,5 @@
 package com.zjucsc.application.tshark.capture;
 
-import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.SocketIoEvent;
 import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.domain.bean.CollectorState;
@@ -33,7 +32,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
 
     @Autowired private PacketAnalyzeService packetAnalyzeService;
 
-    private List<BasePreProcessor<?>> processorList = new ArrayList<>();
+    private List<BasePreProcessor> processorList = new ArrayList<>();
     private ProcessCallback<String,String> callback;
     private BadPacketAnalyzeHandler badPacketAnalyzeHandler = new BadPacketAnalyzeHandler(Executors.newFixedThreadPool(5,
             r -> {
@@ -109,7 +108,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     @Async
     @Override
     public CompletableFuture<Exception> stop() {
-        for (BasePreProcessor<?> basePreProcessor : processorList) {
+        for (BasePreProcessor basePreProcessor : processorList) {
             basePreProcessor.stopProcess();
             callback.end("end " + basePreProcessor.getClass().getName());
         }
@@ -118,12 +117,12 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     }
 
     private String doStart(AbstractAsyncHandler<FvDimensionLayer> fvDimensionHandler ,
-                           BasePreProcessor<?>... packetPreProcessor) throws InterruptedException {
+                           BasePreProcessor... packetPreProcessor) throws InterruptedException {
         CountDownLatch downLatch = new CountDownLatch(packetPreProcessor.length - 1);
         StringBuilder sb = new StringBuilder();
         int i = 0;
         for (; i < packetPreProcessor.length - 1; i++) {
-            BasePreProcessor<?> basePreProcessor = packetPreProcessor[i];
+            BasePreProcessor basePreProcessor = packetPreProcessor[i];
             doNow(basePreProcessor , fvDimensionHandler , downLatch , sb);
             Thread.sleep(2000);
         }
@@ -132,7 +131,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         return sb.toString();
     }
 
-    private void doNow(BasePreProcessor<?> basePreProcessor , AbstractAsyncHandler<FvDimensionLayer> fvDimensionHandler,
+    private void doNow(BasePreProcessor basePreProcessor , AbstractAsyncHandler<FvDimensionLayer> fvDimensionHandler,
                        CountDownLatch downLatch , StringBuilder sb){
         String processName = basePreProcessor.getClass().getName();
         processorList.add(basePreProcessor);

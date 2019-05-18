@@ -87,32 +87,32 @@ public class PacketDecodeUtil {
         }
     };
 
-    //  0000 0000/0000 0000/0000 1001/0011 1101/0010 0011/0111 0110/1010 0000/0000 0000
+    private static int offset1 = Byte.toUnsignedInt((byte)0b11100000);
+    private static int offset2 = Byte.toUnsignedInt((byte)0b10000000);
+    private static int offset3 = Byte.toUnsignedInt((byte)0b11111000);
+    private static int offset4 = Byte.toUnsignedInt((byte)0b11111110);
+    private static int offset5 = Byte.toUnsignedInt((byte)0b11110000);
+
+
     public static String decodeTimeStamp(byte[] payload , int offset){
-        if (payload.length == 0){
-            return simpleDateFormatThreadLocal.get().format(new Date());
-        }
-        if (payload.length < offset ) {
+        if (payload.length < offset){
             return simpleDateFormatThreadLocal.get().format(new Date());
         }
         StringBuilder sb = stringBuilderThreadLocal.get();
         sb.delete(0,sb.length());
         int len = payload.length;
         offset = len - offset;          //offset 就是start index
-//        for (int i = offset; i < payload.length; i++) {
-//            System.out.println( Integer.toHexString(Byte.toUnsignedInt(payload[i])));
-//        }
-        int year = (Byte.toUnsignedInt(payload[offset]) << 3) + ((payload[offset + 1] & 0b11100000) >>> 5);
+        int year = (Byte.toUnsignedInt(payload[offset]) << 3) + ((payload[offset + 1] & offset1) >>> 5);
         int month = ((payload[offset + 1] & 0b00011110) >> 1);
-        int day = ((payload[offset + 1] & 1) << 4) + ((payload[offset + 2] & 0b11110000) >>> 4);
-        int hour = ((Byte.toUnsignedInt(payload[offset + 2]) & 0b00001111) << 1) + ((payload[offset + 3] & 0b10000000) >>> 7);
+        int day = ((payload[offset + 1] & 1) << 4) + ((payload[offset + 2] & offset5) >>> 4);
+        int hour = ((payload[offset + 2] & 0b00001111) << 1) + ((payload[offset + 3] & offset2) >>> 7);
         int minute = ((payload[offset + 3] & 0b01111110) >> 1);
-        int second = ((Byte.toUnsignedInt(payload[offset + 3]) & 1) << 5)
-                + ((payload[offset + 4] & 0b11111000) >>> 3);
-        int millSecond = ((Byte.toUnsignedInt(payload[offset + 4]) & 0b00000111) << 7) +
-                ((payload[offset + 5] & 0b11111110) >>> 1);
-        int uSecond = ((Byte.toUnsignedInt(payload[offset + 5]) & 1) << 9) + (Byte.toUnsignedInt(payload[offset + 6]) << 1)
-                + ((payload[offset + 7] & 0b10000000) >>> 7);
+        int second = ((payload[offset + 3] & 1) << 5)
+                + ((payload[offset + 4] & offset3) >>> 3);
+        int millSecond = ((payload[offset + 4] & 0b00000111) << 7) +
+                ((payload[offset + 5] & offset4) >>> 1);
+        int uSecond = ((payload[offset + 5] & 1) << 9) + (Byte.toUnsignedInt(payload[offset + 6]) << 1)
+                + ((payload[offset + 7] & offset2) >>> 7);
         int naoSecond = ((payload[offset + 7] & 0b01110000) >> 4) * 200;
 
         return sb.append(year).append(" 年 ")
@@ -259,7 +259,7 @@ public class PacketDecodeUtil {
         if (trailerAndFsc.length() == 0){
             return EMPTY;
         }
-        if (!trailerAndFsc.contains(":")){//
+        if (!trailerAndFsc.contains(":")){  //
             return hexStringToByteArray2(trailerAndFsc);
         }
         int trailerLength = PacketDecodeUtil.trailerLength;
