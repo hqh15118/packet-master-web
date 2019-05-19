@@ -1,5 +1,6 @@
 package com.zjucsc.application.util;
 
+import com.zjucsc.application.config.Common;
 import org.junit.Test;
 import org.pcap4j.core.*;
 import org.pcap4j.packet.Packet;
@@ -56,17 +57,20 @@ public class PacketDecodeUtilTest {
         System.out.println(PacketDecodeUtil.decodeTimeStamp(payload,20));
     }
 
-    @Test
-    public void realTimeStampDecode() throws PcapNativeException, InterruptedException, NotOpenException {
+    private PcapHandle getPcapHandler() throws PcapNativeException {
         String classPath = PacketDecodeUtilTest.class.getResource("").getPath();
         String filePath = "/Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap/no_ether_src.pcap";
-        PcapHandle handle = Pcaps.openOffline(filePath);
+        return Pcaps.openOffline(filePath);
+    }
+
+    @Test
+    public void realTimeStampDecode() throws PcapNativeException, InterruptedException, NotOpenException {
+        PcapHandle handle = getPcapHandler();
         handle.loop(-1, new PacketListener() {
             @Override
             public void gotPacket(Packet packet) {
                 byte[] bytes = packet.getRawData();
                 System.out.println(PacketDecodeUtil.decodeTimeStamp(bytes,20));
-                System.out.println(PacketDecodeUtil.decodeCollectorDelay(bytes,4));
             }
         });
     }
@@ -76,11 +80,22 @@ public class PacketDecodeUtilTest {
     }
 
     @Test
-    public void discernPacket() {
+    public void discernPacket() throws PcapNativeException, NotOpenException, InterruptedException {
+
     }
 
     @Test
-    public void decodeCollectorState() {
+    public void decodeCollectorState() throws PcapNativeException, NotOpenException, InterruptedException {
+        PcapHandle handle = getPcapHandler();
+        handle.loop(-1, new PacketListener() {
+            @Override
+            public void gotPacket(Packet packet) {
+                byte[] bytes = packet.getRawData();
+                int collectorId = PacketDecodeUtil.decodeCollectorId(bytes,24);
+                System.out.println(PacketDecodeUtil.decodeCollectorState(bytes,24,collectorId));
+            }
+        });
+        System.out.println(Common.COLLECTOR_STATE_MAP);
     }
 
     @Test
@@ -94,9 +109,14 @@ public class PacketDecodeUtilTest {
     }
 
     @Test
-    public void decodeDelay(){
-        byte[] payload = PacketDecodeUtil.decodeTrailerAndFsc(trailer + fcs);
-        int delay = PacketDecodeUtil.decodeCollectorDelay(payload,4);
-        System.out.println(delay);
+    public void decodeDelay() throws PcapNativeException, NotOpenException, InterruptedException {
+        PcapHandle handle = getPcapHandler();
+        handle.loop(-1, new PacketListener() {
+            @Override
+            public void gotPacket(Packet packet) {
+                byte[] bytes = packet.getRawData();
+                System.out.println(PacketDecodeUtil.decodeCollectorDelay(bytes,4));
+            }
+        });
     }
 }

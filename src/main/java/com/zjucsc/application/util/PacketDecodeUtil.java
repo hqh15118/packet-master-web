@@ -65,8 +65,6 @@ public class PacketDecodeUtil {
                     + Character.digit(s.charAt(i+1), 16));
             j++;
         }
-//        data[byteArraySize] = (byte) ((Character.digit(s.charAt(len - 2), 16) << 4)
-//                + Character.digit(s.charAt(len - 1), 16));
         return data;
     }
 
@@ -94,6 +92,12 @@ public class PacketDecodeUtil {
     private static int offset5 = Byte.toUnsignedInt((byte)0b11110000);
 
 
+    /**
+     *
+     * @param payload 负载
+     * @param offset 从后往前的offset个字节为start index
+     * @return
+     */
     public static String decodeTimeStamp(byte[] payload , int offset){
         if (payload.length < offset){
             return simpleDateFormatThreadLocal.get().format(new Date());
@@ -206,12 +210,10 @@ public class PacketDecodeUtil {
      *  设备ID     A口状态      B口状态         其他
      * *********************************/
     public static CollectorState decodeCollectorState(byte[] payload , int offset , int collectorId){
-        if (payload.length==0){
-            return null;
-        }
         if (payload.length < 24){
             return null;
         }
+
         int start = payload.length - offset;//payload中自定义的字节数组的开始位置
         CollectorState state = null;
         int A_state = Byte.toUnsignedInt(payload[start + 2]);
