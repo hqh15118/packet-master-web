@@ -34,7 +34,7 @@ public class CapturePacketServiceImplTest {
         String deviceName = "en0";
         CapturePacketServiceImpl capturePacketService = new CapturePacketServiceImpl();
         BasePreProcessor.setCaptureDeviceNameAndMacAddress(macAddressForWin,deviceName);
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 10; i++) {
             capturePacketService.start(new ProcessCallback<String, String>() {
                 @Override
                 public void error(Exception e) {

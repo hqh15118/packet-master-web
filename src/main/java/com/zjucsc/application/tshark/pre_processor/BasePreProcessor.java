@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 
 import static com.zjucsc.application.config.Common.COMMON_THREAD_EXCEPTION_HANDLER;
 
@@ -41,6 +42,7 @@ public abstract class BasePreProcessor implements PreProcessor {
     private CommandBuildFinishCallback commandBuildFinishCallback;
     private String filePath = null;
     private volatile boolean processRunning = false;
+    private static final Semaphore semaphore = new Semaphore(1);
     protected PipeLine pipeLine;
     protected ExecutorService decodeThreadPool = Executors.newSingleThreadExecutor(r -> {
         Thread thread = new Thread(r);
@@ -48,7 +50,6 @@ public abstract class BasePreProcessor implements PreProcessor {
         thread.setUncaughtExceptionHandler(COMMON_THREAD_EXCEPTION_HANDLER);
         return thread;
     });
-    private static final byte[] LOCK = new byte[1];
 
     static{
         Thread thread = new Thread(new Runnable() {
@@ -64,8 +65,6 @@ public abstract class BasePreProcessor implements PreProcessor {
 
     @Override
     public void execCommand(int type , int limit) {
-        //保证在运行之前没有任何的tshark进程，防止【进程泄露】
-        CommonTsharkUtil.shotDownAllRunningTsharkProcess();
         assert pipeLine!=null;
         StringBuilder commandBuilder = new StringBuilder();
         /**
@@ -116,17 +115,19 @@ public abstract class BasePreProcessor implements PreProcessor {
         if (commandBuildFinishCallback!=null){
             commandBuildFinishCallback.commandBuildFinish();
         }
-        log.info("***************** {} ==> run command : {} " , this.getClass().getName() , command);
-
-        Process process = null;
         try {
             //TODO 保证一次只有一个线程指定TSHARK程序
-            synchronized (LOCK) {
-                process = Runtime.getRuntime().exec(command);
-                CommonTsharkUtil.addTsharkProcess(process);
-            }
-            //doWithErrorStream(process.getErrorStream() , command);
-            //log.info("start running --------------------> now ");
+            semaphore.acquire();
+        } catch (InterruptedException e) {
+            return;
+        }
+        Process process = null;
+        try {
+            log.info("***************** {} ==> run command : {} " , this.getClass().getName() , command);
+            process = Runtime.getRuntime().exec(command);
+            CommonTsharkUtil.addTsharkProcess(process);
+            doWithErrorStream(process.getErrorStream() , command);
+            log.info("start running --------------------> now ");
             processRunning = true;
             try (BufferedReader bfReader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                 for (;processRunning;) {
@@ -170,18 +171,19 @@ public abstract class BasePreProcessor implements PreProcessor {
 
     private void doWithErrorStream(InputStream errorStream , String command) {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(errorStream));
-        String str = null;
+        String str;
         try {
             if ((str = bufferedReader.readLine()) != null) {
-                log.error("run command error {} in {} \n ***** error msg : {} ", command , this.getClass().getName() , str);
+                System.out.println("error stream : " + str);
+                semaphore.release();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("" , e);
         } finally {
             try {
                 bufferedReader.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error("" , e);
             }
         }
     }
