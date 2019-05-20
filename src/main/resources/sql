@@ -91,3 +91,89 @@ create table configuration(
 )ENGINE  = INNODB;
 
 DELETE FROM configuration where 1 = 1;
+
+
+
+###### TIME_SERIES_SQL
+--by hours
+SELECT TO_CHAR(oper_time, 'hh24') AS "Each HOUR", COUNT(id) AS qty
+FROM T_SYS_OPER_LOG  
+WHERE  oper_time  BETWEEN TO_DATE('2014-01-01 00:00:00','yyyy-mm-dd hh24:mi:ss') AND TO_DATE('2014-12-31 23:59:59','yyyy-mm-dd hh24:mi:ss') 
+GROUP BY TO_CHAR(oper_time, 'hh24')
+ 
+--by day
+SELECT TO_CHAR(oper_time,'DD')AS "Each day", COUNT(id) AS qty
+FROM T_SYS_OPER_LOG  
+WHERE  oper_time  BETWEEN TO_DATE('2014-01-01 00:00:00','yyyy-mm-dd hh24:mi:ss') AND TO_DATE('2014-12-31 23:59:59','yyyy-mm-dd hh24:mi:ss') 
+GROUP BY  TO_CHAR(oper_time,'DD')
+ 
+  --by week
+SELECT TO_CHAR(oper_time,'iw')AS "Each Week", COUNT(id) AS qty
+FROM T_SYS_OPER_LOG  
+WHERE  oper_time  BETWEEN TO_DATE('2014-01-01 00:00:00','yyyy-mm-dd hh24:mi:ss') AND TO_DATE('2014-12-31 23:59:59','yyyy-mm-dd hh24:mi:ss') 
+GROUP BY  TO_CHAR(oper_time,'iw')
+
+
+ --by month
+SELECT TO_CHAR(oper_time,'MM')AS "Each MOnth", COUNT(id) AS qty
+FROM T_SYS_OPER_LOG  
+WHERE  oper_time  BETWEEN TO_DATE('2014-01-01 00:00:00','yyyy-mm-dd hh24:mi:ss') AND TO_DATE('2014-12-31 23:59:59','yyyy-mm-dd hh24:mi:ss') 
+GROUP BY  TO_CHAR(oper_time,'MM')
+
+
+--by quart
+SELECT TO_CHAR(oper_time,'q')AS "Each MOnth", COUNT(id) AS qty
+FROM T_SYS_OPER_LOG  
+WHERE  oper_time  BETWEEN TO_DATE('2014-01-01 00:00:00','yyyy-mm-dd hh24:mi:ss') AND TO_DATE('2014-12-31 23:59:59','yyyy-mm-dd hh24:mi:ss') 
+GROUP BY  TO_CHAR(oper_time,'q')
+
+
+--by year
+--by quart
+SELECT TO_CHAR(oper_time,'YYYY')AS "Each MOnth", COUNT(id) AS qty
+FROM T_SYS_OPER_LOG  
+WHERE  oper_time  BETWEEN TO_DATE('2014-01-01 00:00:00','yyyy-mm-dd hh24:mi:ss') AND TO_DATE('2014-12-31 23:59:59','yyyy-mm-dd hh24:mi:ss') 
+GROUP BY  TO_CHAR(oper_time,'YYYY')
+
+
+###
+
+CREATE TABLE device_info(
+  id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  device_number VARCHAR(64) NOT NULL
+)ENGINE = INNODB;
+
+CREATE TABLE time_series(
+  id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  gplot_id INT  NOT NULL ,
+  device_number VARCHAR(64)  NOT NULL ,
+  create_time DATETIME DEFAULT CURRENT_TIMESTAMP
+)ENGINE = INNODB;
+
+INSERT INTO device_info(`device_number`) VALUES ('device1');
+INSERT INTO device_info(`device_number`) VALUES ('device2');
+INSERT INTO device_info(`device_number`) VALUES ('device3');
+
+DELETE FROM time_series WHERE 1=1;
+
+
+# 今天
+select * from time_series where TO_DAYS(create_time) = TO_DAYS(now()) AND gplot_id=1 AND  device_number='device1';
+# 昨天
+SELECT * FROM time_series WHERE TO_DAYS( NOW( ) ) - TO_DAYS( create_time) <= 1;
+#
+SELECT * FROM time_series WHERE HOUR();
+# 最近七天
+SELECT * FROM time_series where DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= date(create_time);
+# 最近30天
+SELECT * FROM time_series where DATE_SUB(CURDATE(), INTERVAL 30 DAY) <= date(create_time);
+# 本月
+SELECT * FROM time_series WHERE DATE_FORMAT( create_time, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' );
+# 上个月
+SELECT * FROM time_series WHERE PERIOD_DIFF( date_format( now( ) , '%Y%m' ) , date_format( create_time, '%Y%m' ) ) =1
+
+
+
+
+
+

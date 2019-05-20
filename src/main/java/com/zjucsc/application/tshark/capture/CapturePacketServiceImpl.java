@@ -26,6 +26,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import static com.zjucsc.application.config.Common.COMMON_THREAD_EXCEPTION_HANDLER;
+
 @Slf4j
 @Service
 public class CapturePacketServiceImpl implements CapturePacketService<String,String>{
@@ -34,53 +36,56 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
 
     private List<BasePreProcessor> processorList = new ArrayList<>();
     private ProcessCallback<String,String> callback;
+    //恶意报文handler
     private BadPacketAnalyzeHandler badPacketAnalyzeHandler = new BadPacketAnalyzeHandler(Executors.newFixedThreadPool(5,
             r -> {
                 Thread thread = new Thread(r);
-                thread.setName("bad packet analyze handler-");
-                thread.setUncaughtExceptionHandler(new ThreadExceptionHandler());
+                thread.setName("bad_packet_analyze handler-");
+                thread.setUncaughtExceptionHandler(COMMON_THREAD_EXCEPTION_HANDLER);
                 return thread;
             }));
+
+    /**
+     * 接收协议解析好的五元组，并作五元组发送、报文流量统计处理
+     * 单线程处理，保证线程安全
+     */
+    private AbstractAsyncHandler<FvDimensionLayer> fvDimensionLayerAbstractAsyncHandler
+            = new AbstractAsyncHandler<FvDimensionLayer>(Executors.newFixedThreadPool(1, r -> {
+        Thread thread = new Thread(r);
+        thread.setName("fv_dimension_handler_thread-");
+        thread.setUncaughtExceptionHandler(COMMON_THREAD_EXCEPTION_HANDLER);
+        return thread;
+    })) {
+        @Override
+        public FvDimensionLayer handle(Object t) {
+            FvDimensionLayer fvDimensionLayer = ((FvDimensionLayer) t);
+            StringBuilder sb = stringBuilderThreadLocal.get();
+            sb.delete(0,sb.length());
+            //有些报文可能没有eth_trailer和eth_fcs
+            if (fvDimensionLayer.eth_trailer[0].length() > 0) {
+                sb.append(fvDimensionLayer.eth_trailer[0]).append(fvDimensionLayer.eth_fcs[0]);
+            }
+            //如果不存在，那么sb.toString==""，hexStringToByteArray2会自动判空，
+            //然后返回EMPTY=""，即payload={}空的byte数组
+            byte[] payload = PacketDecodeUtil.decodeTrailerAndFsc(sb.toString());
+            sendFvDimensionPacket(fvDimensionLayer , payload);          //发送五元组所有报文
+            try {
+                sendPacketStatisticsEvent(fvDimensionLayer);            //发送统计信息
+            } catch (DeviceNotValidException e) {
+                log.error("找不到IP地址对应的设备号" , e.getMsg());
+            }
+            int collectorId = PacketDecodeUtil.decodeCollectorId(payload,24);
+            analyzeCollectorState(payload , collectorId);                         //分析采集器状态信息
+            collectorDelayInfo(payload , collectorId);                            //解析时延信息
+            return fvDimensionLayer;                                //将五元组发送给BadPacketHandler
+        }
+    };
 
     @Async
     @Override
     public CompletableFuture<Exception> start(ProcessCallback<String,String> callback) {
         this.callback = callback;
-        /**
-         * 接收协议解析好的五元组，并作五元组发送、报文流量统计处理
-         * 单线程处理，保证线程安全
-         */
-        AbstractAsyncHandler<FvDimensionLayer> fvDimensionLayerAbstractAsyncHandler
-                = new AbstractAsyncHandler<FvDimensionLayer>(Executors.newFixedThreadPool(1, r -> {
-                    Thread thread = new Thread(r);
-                    thread.setName("fv_dimension_handler_thread");
-                    thread.setUncaughtExceptionHandler(new ThreadExceptionHandler());
-                    return thread;
-                })) {
-            @Override
-            public FvDimensionLayer handle(Object t) {
-                FvDimensionLayer fvDimensionLayer = ((FvDimensionLayer) t);
-                StringBuilder sb = stringBuilderThreadLocal.get();
-                sb.delete(0,sb.length());
-                //有些报文可能没有eth_trailer和eth_fcs
-                if (fvDimensionLayer.eth_fcs[0].length() > 0) {
-                    sb.append(fvDimensionLayer.eth_trailer[0]).append(fvDimensionLayer.eth_fcs[0]);
-                }
-                //如果不存在，那么sb.toString==""，hexStringToByteArray2会自动判空，
-                //然后返回EMPTY=""，即payload={}空的byte数组
-                byte[] payload = PacketDecodeUtil.decodeTrailerAndFsc(sb.toString());
-                sendFvDimensionPacket(fvDimensionLayer , payload);      //发送五元组所有报文
-                try {
-                    sendPacketStatisticsEvent(fvDimensionLayer);            //发送统计信息
-                } catch (DeviceNotValidException e) {
-                    log.error("找不到IP地址对应的设备号" , e);
-                }
-                int collectorId = PacketDecodeUtil.decodeCollectorId(payload,24);
-                analyzeCollectorState(payload , collectorId);                         //分析采集器状态信息
-                collectorDelayInfo(payload , collectorId);                            //解析时延信息
-                return fvDimensionLayer;                                //将五元组发送给BadPacketHandler
-            }
-        };
+
 
         try {
             callback.start(doStart(fvDimensionLayerAbstractAsyncHandler ,
@@ -165,27 +170,27 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             };
 
     private void sendFvDimensionPacket(FvDimensionLayer fvDimensionLayer , byte[] payload){
+        fvDimensionLayer.timeStamp = PacketDecodeUtil.decodeTimeStamp(payload,20);
         //payload如果是空的，那么timeStamp就用本地时间来代替
         if (payload.length == 0){
             log.error("{} 没有trailer和fcs，无法解析时间戳，返回上位机系统时间" , fvDimensionLayer);
         }
-        fvDimensionLayer.timeStamp = PacketDecodeUtil.decodeTimeStamp(payload,20);
         //System.out.println(fvDimensionLayer);
         SocketServiceCenter.updateAllClient(SocketIoEvent.ALL_PACKET,fvDimensionLayer);
     }
 
     private void sendPacketStatisticsEvent(FvDimensionLayer fvDimensionLayer) throws DeviceNotValidException {
         StatisticsData.recvPacketNumber.incrementAndGet();      //总报文数
-        //外界 --> PLC[ip_dst]
+        //外界 --> PLC[ip_dst]  设备接收的报文数
         StatisticsData.increaseNumberByDeviceIn(CommonCacheUtil.getTargetDeviceNumberByIp(fvDimensionLayer.ip_dst[0]));
-        //外界 <-- PLC[ip_src]
+        //外界 <-- PLC[ip_src]  设备发送的报文数
         StatisticsData.increaseNumberByDeviceOut(CommonCacheUtil.getTargetDeviceNumberByIp(fvDimensionLayer.ip_src[0]));
     }
 
     private void analyzeCollectorState(byte[] payload , int collectorId){
         CollectorState collectorState = PacketDecodeUtil.decodeCollectorState(payload,24,collectorId);
         if (collectorState!=null){
-            System.out.println(collectorState);
+            log.info("**********************\ncollector state change : {} \n **********************" , collectorState);
             SocketServiceCenter.updateAllClient(SocketIoEvent.COLLECTOR_STATE,collectorState);
         }
     }

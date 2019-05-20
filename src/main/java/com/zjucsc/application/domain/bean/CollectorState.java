@@ -30,4 +30,6 @@ public class CollectorState {
         A_currentState = a_currentState;
         B_currentState = b_currentState;
     }
+
+
 }

@@ -18,6 +18,8 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static com.zjucsc.application.config.Common.COMMON_THREAD_EXCEPTION_HANDLER;
+
 /**
  * #project packet-master-web
  *
@@ -43,7 +45,7 @@ public abstract class BasePreProcessor implements PreProcessor {
     protected ExecutorService decodeThreadPool = Executors.newSingleThreadExecutor(r -> {
         Thread thread = new Thread(r);
         thread.setName(BasePreProcessor.this.getClass().getName() + " -pre_process_thread");
-        thread.setUncaughtExceptionHandler(new ThreadExceptionHandler());
+        thread.setUncaughtExceptionHandler(COMMON_THREAD_EXCEPTION_HANDLER);
         return thread;
     });
 
