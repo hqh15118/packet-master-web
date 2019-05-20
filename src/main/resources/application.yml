@@ -1,6 +1,6 @@
 myconfig:
-  global_address : 10.180.142.77
-  #global_address : 192.168.0.121
+  #global_address : 10.180.142.77
+  global_address : 192.168.0.121
   admin_client_port : 8989
   packet_master_web_port : 8080
 
@@ -42,10 +42,20 @@ spring:
   boot:
     admin:
       client:
-        url: http://${myconfig.global_address}:${myconfig.admin_client_port}
+        #url : http://${myconfig.global_address}:${myconfig.admin_client_port}
+        url : http://192.168.0.121:8989
         instance:
           prefer-ip: true
           service-base-url: http://${myconfig.global_address}:${myconfig.admin_client_port}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+
 #  redis:
 #    host: 127.0.0.1
 #    port: 6379
@@ -82,12 +92,3 @@ mybatis-plus:
 #    anonUrl: /login,/logout/**,/regist,/user/check/**
 #    # token有效期，单位秒
 #    jwtTimeOut: 3600
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: '*'
-  endpoint:
-    health:
-      show-details: always
