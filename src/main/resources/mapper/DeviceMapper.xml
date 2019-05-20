@@ -24,19 +24,19 @@
         SELECT device_number,device_tag FROM device_info WHERE gplot_id = #{gplotId}
     </select>
 
-    <select id="loadAllFvDimensionFilterByDeviceNumberAndGpotId" resultType="com.zjucsc.application.system.entity.FvDimensionFilter">
+    <select id="loadAllFvDimensionFilterByDeviceNumberAndGplotId" resultType="com.zjucsc.application.system.entity.FvDimensionFilter">
         SELECT * FROM fv_dimension_filter WHERE device_number = #{deviceNumber} AND gplot_id = #{gplotId}
     </select>
 
-    <select id="loadAllOptFiterByDeviceNumberAndGplotId" resultType="com.zjucsc.application.system.entity.OptFilter">
+    <select id="loadAllOptFilterByDeviceNumberAndGplotId" resultType="com.zjucsc.application.system.entity.OptFilter">
         SELECT * FROM opt_filter WHERE device_number = #{deviceNumber} AND gplot_id = #{gplotId};
     </select>
 
     <delete id="removeDeviceByDeviceNumberAndGplotId" >
-        DELETE FROM csc_db.device_info WHERE device_number=#{deviceNumber} AND gplot_id=#{gplotId}
+        DELETE FROM device_info WHERE device_number=#{deviceNumber} AND gplot_id=#{gplotId}
     </delete>
 
     <delete id="removeAllDevicesByGplotId">
-        DELETE FROM csc_db.device_info WHERE gplot_id = #{gplotId}
+        DELETE FROM device_info WHERE gplot_id = #{gplotId}
     </delete>
 </mapper>

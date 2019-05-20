@@ -180,6 +180,7 @@ public class CommonCacheUtil {
 
     public static void addOrUpdateDeviceNumberAndIp(String deviceNumber , String deviceIp){
         Common.DEVICE_IP_TO_NAME.put(deviceIp , deviceNumber);
+        log.info("add device number : {} [ip : {} ] and DEVICE_IP_TO_NAME {}" , deviceNumber , deviceIp , Common.DEVICE_IP_TO_NAME);
     }
 
     public static void removeDeviceNumer(String deviceNumber){
@@ -187,7 +188,8 @@ public class CommonCacheUtil {
         log.info("remove device number : {} [ip : {} ]" , deviceNumber , Common.DEVICE_IP_TO_NAME.inverse().get(deviceNumber));
     }
 
-    public static String getTargetDeviceNumberByIp(String deviceIp) throws DeviceNotValidException {
+    public static String getTargetDeviceNumberByIp(String deviceIp) {
+        //System.out.println("get " + deviceIp + "xxxxxx" + Common.DEVICE_IP_TO_NAME.get(deviceIp));
         return Common.DEVICE_IP_TO_NAME.get(deviceIp);
     }
 

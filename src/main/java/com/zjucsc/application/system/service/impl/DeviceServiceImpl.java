@@ -43,12 +43,12 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
 
     @Override
     public List<FvDimensionFilter> loadAllFvDimensionFilterByDeviceNumberAndGplotId(String deviceNumber, int gplotId) {
-        return this.baseMapper.loadAllFvDimensionFilterByDeviceNumberAndGpotId(deviceNumber,gplotId);
+        return this.baseMapper.loadAllFvDimensionFilterByDeviceNumberAndGplotId(deviceNumber,gplotId);
     }
 
     @Override
     public List<OptFilter> loadAllOptFiterByDeviceNumberAndGplotId(String deviceNumber, int gplotId) {
-        return this.baseMapper.loadAllOptFiterByDeviceNumberAndGplotId(deviceNumber , gplotId);
+        return this.baseMapper.loadAllOptFilterByDeviceNumberAndGplotId(deviceNumber , gplotId);
     }
 
     @Override

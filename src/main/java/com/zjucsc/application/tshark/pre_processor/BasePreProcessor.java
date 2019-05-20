@@ -116,7 +116,10 @@ public abstract class BasePreProcessor implements PreProcessor {
             commandBuildFinishCallback.commandBuildFinish();
         }
         try {
-            //TODO 保证一次只有一个线程指定TSHARK程序
+            /**
+             * 这里必须要保证一次只能有一个线程运行tshark程序
+             * 【如果有多个tshark文件，那么可以同时开多个不同的tshark】
+             */
             semaphore.acquire();
         } catch (InterruptedException e) {
             return;
@@ -175,6 +178,10 @@ public abstract class BasePreProcessor implements PreProcessor {
         try {
             if ((str = bufferedReader.readLine()) != null) {
                 System.out.println("error stream : " + str);
+                /**
+                 * 当接收到capture on xxx的时候，就表示该tshark进程已经开启完毕了，那么就可以释放
+                 * 信号量，让下一个线程打开tshark
+                 */
                 semaphore.release();
             }
         } catch (IOException e) {

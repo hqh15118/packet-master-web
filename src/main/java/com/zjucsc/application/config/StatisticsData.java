@@ -35,29 +35,31 @@ public class StatisticsData {
 
     public static void increaseNumberByDeviceIn(String deviceNumber){
         if (deviceNumber!=null) {
-            doIncrease(NUMBER_BY_DEVICE_IN.get(deviceNumber));
+            doIncrease(NUMBER_BY_DEVICE_IN.get(deviceNumber) , deviceNumber , NUMBER_BY_DEVICE_IN);
         }
     }
 
     public static void increaseNumberByDeviceOut(String deviceNumber){
         if (deviceNumber!=null) {
-            doIncrease(NUMBER_BY_DEVICE_OUT.get(deviceNumber));
+            doIncrease(NUMBER_BY_DEVICE_OUT.get(deviceNumber) , deviceNumber , NUMBER_BY_DEVICE_OUT);
         }
     }
     public static void increaseAttackByDevice(String deviceNumber){
         if (deviceNumber!=null) {
-            doIncrease(ATTACK_BY_DEVICE.get(deviceNumber));
+            doIncrease(ATTACK_BY_DEVICE.get(deviceNumber) , deviceNumber , ATTACK_BY_DEVICE);
         }
     }
     public static void increaseExceptionByDevice(String deviceNumber){
         if (deviceNumber!=null) {
-            doIncrease(EXCEPTION_BY_DEVICE.get(deviceNumber));
+            doIncrease(EXCEPTION_BY_DEVICE.get(deviceNumber) , deviceNumber , EXCEPTION_BY_DEVICE);
         }
     }
 
-    private static void doIncrease(AtomicLong atomicInteger){
+    private static void doIncrease(AtomicLong atomicInteger , String deviceNumber ,  ConcurrentHashMap<String, AtomicLong> map){
         if (atomicInteger!=null) {
             atomicInteger.incrementAndGet();
+        }else{
+            map.put(deviceNumber , new AtomicLong(1));
         }
     }
 }

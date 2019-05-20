@@ -76,7 +76,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             int collectorId = PacketDecodeUtil.decodeCollectorId(payload,24);
             analyzeCollectorState(payload , collectorId);                         //分析采集器状态信息
             collectorDelayInfo(payload , collectorId);                            //解析时延信息
-            return fvDimensionLayer;                                //将五元组发送给BadPacketHandler
+            return fvDimensionLayer;                                              //将五元组发送给BadPacketHandler
         }
     };
 
@@ -174,7 +174,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         if (payload.length == 0){
             log.error("fv dimension layer is : {} 没有trailer和fcs，无法解析时间戳，返回上位机系统时间" , fvDimensionLayer);
         }
-        System.out.println(fvDimensionLayer);
+        //System.out.println(fvDimensionLayer);
         //SocketServiceCenter.updateAllClient(SocketIoEvent.ALL_PACKET,fvDimensionLayer);
         if (newFvDimensionCallback!=null){
             newFvDimensionCallback.newCome(fvDimensionLayer);

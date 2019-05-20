@@ -76,4 +76,8 @@ public class MainServer {
             }
         }
     }
+
+    public static boolean getWebSocketServiceState(){
+        return hasStartedService;
+    }
 }

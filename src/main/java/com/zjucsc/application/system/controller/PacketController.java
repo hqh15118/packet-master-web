@@ -2,6 +2,7 @@ package com.zjucsc.application.system.controller;
 
 import com.corundumstudio.socketio.SocketIOClient;
 import com.zjucsc.application.config.ConstantConfig;
+import com.zjucsc.application.domain.bean.ServiceStatus;
 import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
 import com.zjucsc.application.socketio.SocketServiceCenter;
 import com.zjucsc.application.system.service.impl.PacketServiceImpl;
@@ -135,5 +136,12 @@ public class PacketController {
         log.info("close device : {} all opened device : {} " , service_name , Common.hasStartedHost);
         capturePacketService.stop();
         return BaseResponse.OK();
+    }
+
+    @ApiOperation("获取接口状态")
+    @GetMapping("interface_status")
+    public BaseResponse getInterfaceStatus(){
+        int webSocketState = MainServer.getWebSocketServiceState()?1:0;
+        return BaseResponse.OK(new ServiceStatus(webSocketState , Common.hasStartedHost.size() == 0 ? " " : Common.hasStartedHost.get(0)));
     }
 }

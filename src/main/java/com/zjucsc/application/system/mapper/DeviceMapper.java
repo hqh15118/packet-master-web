@@ -23,11 +23,11 @@ public interface DeviceMapper extends BaseMapper<Device> {
 
     List<DeviceNumberAndIp> loadAllDevicesByGplotId(@Param("gplotId")int gplotId);
 
-    List<FvDimensionFilter> loadAllFvDimensionFilterByDeviceNumberAndGpotId(@Param("deviceNumber") String deviceNumber, @Param("gplotId") int  gplotId);
+    List<FvDimensionFilter> loadAllFvDimensionFilterByDeviceNumberAndGplotId(@Param("deviceNumber") String deviceNumber, @Param("gplotId") int  gplotId);
 
-    List<OptFilter> loadAllOptFiterByDeviceNumberAndGplotId(@Param("deviceNumber") String deviceNumber , @Param("gplotId") int gplotId);
+    List<OptFilter> loadAllOptFilterByDeviceNumberAndGplotId(@Param("deviceNumber") String deviceNumber , @Param("gplotId") int gplotId);
 
     void removeDeviceByDeviceNumberAndGplotId(@Param("deviceNumber") String deviceNumber , @Param("gplotId") int gplotId);
 
-    void removeAllDevicesByGplotId(@Param("glotId")int gplotId);
+    void removeAllDevicesByGplotId(@Param("gplotId")int gplotId);
 }

@@ -197,8 +197,8 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
             sendBadPacketThreadPool.execute(new Runnable() {
                 @Override
                 public void run() {
-                    System.out.println("send bad packet : " + badPacket);
-                    System.out.println("**********************");
+                    //System.out.println("send bad packet : " + badPacket);
+                    //System.out.println("**********************");
                     SocketServiceCenter.updateAllClient(SocketIoEvent.BAD_PACKET,badPacket);
                 }
             });

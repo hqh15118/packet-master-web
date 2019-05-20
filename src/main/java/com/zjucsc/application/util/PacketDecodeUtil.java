@@ -119,15 +119,15 @@ public class PacketDecodeUtil {
                 + ((payload[offset + 7] & offset2) >>> 7);
         int naoSecond = ((payload[offset + 7] & 0b01110000) >> 4) * 200;
 
-        return sb.append(year).append(" 年 ")
-                .append(month).append(" 月 ")
-                .append(day).append(" 日 ")
-                .append(hour).append(" 时 ")
-                .append(minute).append(" 分 ")
-                .append(second).append(" 秒 ")
-                .append(millSecond).append( " 毫秒 ")
-                .append(uSecond).append(" 微秒 ")
-                .append(naoSecond).append(" 纳秒 ").toString();
+        return sb.append(year).append("-")
+                .append(month).append("-")
+                .append(day).append("-")
+                .append(hour).append(":")
+                .append(minute).append(":")
+                .append(second).append(":")
+                .append(millSecond).append( ":")
+                .append(uSecond).append(":")
+                .append(naoSecond).toString();
     }
 
 
