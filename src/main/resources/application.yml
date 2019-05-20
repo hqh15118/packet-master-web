@@ -4,6 +4,7 @@ myconfig:
   admin_client_port : 8989
   packet_master_web_port : 8080
   kafka-server-url : 192.168.0.157:9092
+  openAOPLog : 0      # 1 open 0 close
 
 server:
   port: ${myconfig.packet_master_web_port}
