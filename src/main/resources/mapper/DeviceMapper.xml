@@ -8,11 +8,11 @@
     </update>
 
     <select id="selectDeviceByIdAndGplot" resultType="com.zjucsc.application.system.entity.Device">
-        SELECT * FROM device_info WHERE device_number=#{deviceId} AND gplot_id=#{gplotId};
+        SELECT * FROM device_info WHERE device_number=#{deviceId} AND gplot_id = #{gplotId};
     </select>
 
-    <select id="selectDeviceNumberByCollectorTag" resultType="java.lang.String">
-        SELECT device_number FROM device_info WHERE  device_tag = #{deviceTag};
+    <select id="selectDeviceNumberByCollectorTagAndGplotId" resultType="java.lang.String">
+        SELECT device_number FROM device_info WHERE device_tag = #{collectorTag} AND gplot_id = #{gplotId};
     </select>
 
     <resultMap id="deviceNumberAndIp" type="com.zjucsc.application.domain.bean.DeviceNumberAndIp">

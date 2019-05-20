@@ -48,6 +48,7 @@ public abstract class BasePreProcessor implements PreProcessor {
         thread.setUncaughtExceptionHandler(COMMON_THREAD_EXCEPTION_HANDLER);
         return thread;
     });
+    private static final byte[] LOCK = new byte[1];
 
     static{
         Thread thread = new Thread(new Runnable() {
@@ -63,6 +64,8 @@ public abstract class BasePreProcessor implements PreProcessor {
 
     @Override
     public void execCommand(int type , int limit) {
+        //保证在运行之前没有任何的tshark进程，防止【进程泄露】
+        CommonTsharkUtil.shotDownAllRunningTsharkProcess();
         assert pipeLine!=null;
         StringBuilder commandBuilder = new StringBuilder();
         /**
@@ -108,16 +111,20 @@ public abstract class BasePreProcessor implements PreProcessor {
             commandBuilder.append(s).append(" ");
         }
         commandBuilder.append("\"");   // 最后的部分 + s7comm/...用于过滤
+        commandBuilder.append(" -M 100000");    //设置十万条之后重置回话
         String command = commandBuilder.toString();
         if (commandBuildFinishCallback!=null){
             commandBuildFinishCallback.commandBuildFinish();
         }
         log.info("***************** {} ==> run command : {} " , this.getClass().getName() , command);
+
         Process process = null;
         try {
-            //TODO 这边加个锁，是不是就可以了？保证一次只有一个线程指定TSHARK程序
-            process = Runtime.getRuntime().exec(command);
-            CommonTsharkUtil.addTsharkProcess(process);
+            //TODO 保证一次只有一个线程指定TSHARK程序
+            synchronized (LOCK) {
+                process = Runtime.getRuntime().exec(command);
+                CommonTsharkUtil.addTsharkProcess(process);
+            }
             //doWithErrorStream(process.getErrorStream() , command);
             //log.info("start running --------------------> now ");
             processRunning = true;
@@ -196,6 +203,7 @@ public abstract class BasePreProcessor implements PreProcessor {
 
     @Override
     public void stopProcess() {
+        CommonTsharkUtil.shotDownAllRunningTsharkProcess();
         processRunning = false;
     }
 

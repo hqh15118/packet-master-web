@@ -13,9 +13,9 @@ import java.util.List;
 public interface IDeviceService extends IService<Device> {
     void updateDeviceInfo(Device device);
     Device selectDeviceByIdAndGplot(String deviceId,int plotId);
-    String selectDeviceNumberByCollectorTag(String collectorId);
+    String selectDeviceNumberByCollectorTag(String collectorId , int gplotId);
     List<DeviceNumberAndIp> loadAllDevicesByGplotId(int gplotId);
-    List<FvDimensionFilter> loadAllFvDimensionFilterByDeviceNumberAndGpotId(String deviceNumber,int  gplotId);
+    List<FvDimensionFilter> loadAllFvDimensionFilterByDeviceNumberAndGplotId(String deviceNumber,int  gplotId);
     List<OptFilter> loadAllOptFiterByDeviceNumberAndGplotId(String deviceNumber , int gplotId);
     void removeDeviceByDeviceNumberAndGplotId(String deviceNumber , int gplotId);
     void removeAllDevicesByGplotId(int gplotId);

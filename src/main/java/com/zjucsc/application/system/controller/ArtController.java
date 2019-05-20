@@ -2,7 +2,7 @@ package com.zjucsc.application.system.controller;
 
 
 import com.zjucsc.application.system.entity.Art;
-import com.zjucsc.application.system.service.IArtService;
+import com.zjucsc.application.system.service.iservice.IArtService;
 import com.zjucsc.base.BaseResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collection;
 import java.util.List;
 
 /**

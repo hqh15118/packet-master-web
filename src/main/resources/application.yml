@@ -3,6 +3,7 @@ myconfig:
   global_address : 192.168.0.121
   admin_client_port : 8989
   packet_master_web_port : 8080
+  kafka-server-url : 192.168.0.157:9092
 
 server:
   port: ${myconfig.packet_master_web_port}
@@ -47,6 +48,12 @@ spring:
         instance:
           prefer-ip: true
           service-base-url: http://${myconfig.global_address}:${myconfig.admin_client_port}
+  kafka:
+    producer:
+      bootstrap-servers: http://${myconfig.kafka-server-url}
+      retries: 1
+      batch-size: 4096
+      buffer-memory: 40960
 management:
   endpoints:
     web:
@@ -92,3 +99,4 @@ mybatis-plus:
 #    anonUrl: /login,/logout/**,/regist,/user/check/**
 #    # token有效期，单位秒
 #    jwtTimeOut: 3600
+

@@ -2,6 +2,8 @@ package com.zjucsc.application.tshark.domain.packet;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
+import java.util.Arrays;
+
 /**
  * #project packet-master-web
  *
@@ -31,4 +33,20 @@ public class FvDimensionLayer {
         return this;
     }
 
+    @Override
+    public String toString() {
+        return "FvDimensionLayer{" +
+                "frame_protocols=" + Arrays.toString(frame_protocols) +
+                ", eth_dst=" + Arrays.toString(eth_dst) +
+                ", frame_cap_len=" + Arrays.toString(frame_cap_len) +
+                ", eth_src=" + Arrays.toString(eth_src) +
+                ", ip_src=" + Arrays.toString(ip_src) +
+                ", ip_dst=" + Arrays.toString(ip_dst) +
+                ", src_port=" + Arrays.toString(src_port) +
+                ", dst_port=" + Arrays.toString(dst_port) +
+                ", eth_trailer=" + Arrays.toString(eth_trailer) +
+                ", eth_fcs=" + Arrays.toString(eth_fcs) +
+                ", timeStamp='" + timeStamp + '\'' +
+                '}';
+    }
 }

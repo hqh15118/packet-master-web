@@ -19,7 +19,7 @@ public interface DeviceMapper extends BaseMapper<Device> {
 
     Device selectDeviceByIdAndGplot(@Param("deviceId")String deviceId , @Param("gplotId")int gplotId);
 
-    String selectDeviceNumberByCollectorTag(@Param("collectorTag") String collectorId);
+    String selectDeviceNumberByCollectorTagAndGplotId(@Param("collectorTag") String collectorId , @Param("gplotId")int gplotId);
 
     List<DeviceNumberAndIp> loadAllDevicesByGplotId(@Param("gplotId")int gplotId);
 

@@ -16,7 +16,7 @@ public class Common {
 
     public static String OS_NAME = System.getProperty("os.name");
 
-    public static int GPLOT_ID = -1;
+    public static int GPLOT_ID = 0;
 
     public static final int SOCKET_IO_PORT = 8081;
 

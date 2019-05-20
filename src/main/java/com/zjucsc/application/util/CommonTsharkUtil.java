@@ -49,6 +49,7 @@ public class CommonTsharkUtil {
             for (Process tsharkRunningProcess : Common.TSHARK_RUNNING_PROCESS) {
                 tsharkRunningProcess.destroyForcibly();
             }
+            Common.TSHARK_RUNNING_PROCESS.clear();
             System.out.println("exit " + Common.TSHARK_RUNNING_PROCESS.size() + " tshark process");
         }
     }

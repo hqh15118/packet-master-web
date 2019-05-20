@@ -121,7 +121,7 @@ public class PacketDecodeUtil {
 
         return sb.append(year).append(" 年 ")
                 .append(month).append(" 月 ")
-                .append(day).append(" 天 ")
+                .append(day).append(" 日 ")
                 .append(hour).append(" 时 ")
                 .append(minute).append(" 分 ")
                 .append(second).append(" 秒 ")

@@ -1,5 +1,6 @@
 package com.zjucsc.application.system.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.bean.DeviceNumberAndIp;
 import com.zjucsc.application.system.entity.Device;
 import com.zjucsc.application.system.entity.FvDimensionFilter;
@@ -31,8 +32,8 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     }
 
     @Override
-    public String selectDeviceNumberByCollectorTag(String collectorId) {
-        return this.baseMapper.selectDeviceNumberByCollectorTag(collectorId);
+    public String selectDeviceNumberByCollectorTag(String collectorId , int gplotId) {
+        return this.baseMapper.selectDeviceNumberByCollectorTagAndGplotId(collectorId , gplotId);
     }
 
     @Override
@@ -41,7 +42,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     }
 
     @Override
-    public List<FvDimensionFilter> loadAllFvDimensionFilterByDeviceNumberAndGpotId(String deviceNumber, int gplotId) {
+    public List<FvDimensionFilter> loadAllFvDimensionFilterByDeviceNumberAndGplotId(String deviceNumber, int gplotId) {
         return this.baseMapper.loadAllFvDimensionFilterByDeviceNumberAndGpotId(deviceNumber,gplotId);
     }
 

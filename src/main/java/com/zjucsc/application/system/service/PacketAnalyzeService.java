@@ -1,5 +1,6 @@
 package com.zjucsc.application.system.service;
 
+import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.bean.CollectorDelay;
 import com.zjucsc.application.system.service.iservice.IDeviceService;
 import lombok.extern.slf4j.Slf4j;
@@ -27,9 +28,14 @@ public class PacketAnalyzeService {
     @Autowired private IDeviceService iDeviceService;
 
     public void setCollectorDelay(int collectorId , int delay){
-        if (COLLECTOR_DELAY_MAP.get(collectorId) < delay){
-            COLLECTOR_DELAY_MAP.put(collectorId , delay);
-            log.info("update collector id {} delay {}" , collectorId , delay);
+        Integer delayInit;
+        if ((delayInit = COLLECTOR_DELAY_MAP.get(collectorId))!=null){
+            if (delayInit < delay){
+                COLLECTOR_DELAY_MAP.put(collectorId , delay);
+                log.info("update collector id {} delay {}" , collectorId , delay);
+            }
+        }else{
+            COLLECTOR_DELAY_MAP.put(collectorId,delay);
         }
     }
 
@@ -40,14 +46,15 @@ public class PacketAnalyzeService {
         COLLECTOR_DELAY_MAP.forEach(new BiConsumer<Integer, Integer>() {
             @Override
             public void accept(Integer integer, Integer delay) {
-                String deviceNumber = iDeviceService.selectDeviceNumberByCollectorTag(String.valueOf(integer));
+                String deviceNumber = iDeviceService.selectDeviceNumberByCollectorTag(String.valueOf(integer) , Common.GPLOT_ID);
                 if (deviceNumber!=null){
                     collectorNumToDelayMap.put(deviceNumber,delay);
                 }else{
-                    log.error("*********************\n 无法找到采集器ID为 {} 的设备号(device_number)" , integer);
+                    log.error("********************* 无法找到采集器ID为 {} 组态图ID为 {} 的设备号(device_number)" , integer , Common.GPLOT_ID);
                 }
             }
         });
+        clearCollectorDelay();                      //清除旧的时延数据
         return collectorNumToDelayMap;
     }
 

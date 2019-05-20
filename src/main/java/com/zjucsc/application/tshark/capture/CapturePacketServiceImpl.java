@@ -20,6 +20,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
@@ -33,6 +34,7 @@ import static com.zjucsc.application.config.Common.COMMON_THREAD_EXCEPTION_HANDL
 public class CapturePacketServiceImpl implements CapturePacketService<String,String>{
 
     @Autowired private PacketAnalyzeService packetAnalyzeService;
+    private NewFvDimensionCallback newFvDimensionCallback;
 
     private List<BasePreProcessor> processorList = new ArrayList<>();
     private ProcessCallback<String,String> callback;
@@ -86,13 +88,12 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     public CompletableFuture<Exception> start(ProcessCallback<String,String> callback) {
         this.callback = callback;
 
-
         try {
             callback.start(doStart(fvDimensionLayerAbstractAsyncHandler ,
-                                   //new ModbusPreProcessor() ,
-                                   //new S7CommPreProcessor() ,
-                                   //new IEC104PreProcessor() ,
-                                   new UnknownPreProcessor()      //必须放在最后
+                                   new ModbusPreProcessor() ,
+                                   new S7CommPreProcessor() ,
+                                   new IEC104PreProcessor() ,
+                                   new UnknownPreProcessor()      //必须放在解析协议的最后
                                    ));
         } catch (InterruptedException e) {
             return CompletableFuture.completedFuture(e);
@@ -105,6 +106,8 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             if (collectorId > 0){
                 //valid packet
                 int collectorDelay = PacketDecodeUtil.decodeCollectorDelay(payload,4);
+                //设置ID和延时用于发送
+                //packetAnalyzeService.setCollectorDelay(collectorId,collectorDelay);
                 //packetAnalyzeService.setCollectorDelay(collectorId,collectorDelay);
             }
         }
@@ -129,7 +132,6 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         for (; i < packetPreProcessor.length - 1; i++) {
             BasePreProcessor basePreProcessor = packetPreProcessor[i];
             doNow(basePreProcessor , fvDimensionHandler , downLatch , sb);
-            Thread.sleep(2000);
         }
         downLatch.await(100, TimeUnit.SECONDS);
         doNow(packetPreProcessor[i] , fvDimensionHandler,null , sb);
@@ -153,7 +155,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                         downLatch.countDown();
                     }
                 });
-                basePreProcessor.execCommand(1 , 50);
+                basePreProcessor.execCommand(1 , -1);
             }
         });
         processThread.setName(processName + "-thread");
@@ -173,10 +175,13 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         fvDimensionLayer.timeStamp = PacketDecodeUtil.decodeTimeStamp(payload,20);
         //payload如果是空的，那么timeStamp就用本地时间来代替
         if (payload.length == 0){
-            log.error("{} 没有trailer和fcs，无法解析时间戳，返回上位机系统时间" , fvDimensionLayer);
+            log.error("fv dimension layer is : {} 没有trailer和fcs，无法解析时间戳，返回上位机系统时间" , fvDimensionLayer);
         }
-        //System.out.println(fvDimensionLayer);
-        SocketServiceCenter.updateAllClient(SocketIoEvent.ALL_PACKET,fvDimensionLayer);
+        System.out.println(fvDimensionLayer);
+        //SocketServiceCenter.updateAllClient(SocketIoEvent.ALL_PACKET,fvDimensionLayer);
+        if (newFvDimensionCallback!=null){
+            newFvDimensionCallback.newCome(fvDimensionLayer);
+        }
     }
 
     private void sendPacketStatisticsEvent(FvDimensionLayer fvDimensionLayer) throws DeviceNotValidException {
@@ -193,5 +198,10 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             log.info("**********************\ncollector state change : {} \n **********************" , collectorState);
             SocketServiceCenter.updateAllClient(SocketIoEvent.COLLECTOR_STATE,collectorState);
         }
+        //System.out.println(collectorId + " -- " + collectorState);
+    }
+
+    public void setNewFvDimensionCallback(NewFvDimensionCallback newFvDimensionCallback){
+        this.newFvDimensionCallback = newFvDimensionCallback;
     }
 }

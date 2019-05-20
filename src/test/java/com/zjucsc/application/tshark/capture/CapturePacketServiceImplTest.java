@@ -1,5 +1,8 @@
 package com.zjucsc.application.tshark.capture;
 
+import com.zjucsc.application.domain.bean.CaptureService;
+import com.zjucsc.application.system.controller.PacketController;
+import com.zjucsc.application.system.service.iservice.PacketService;
 import com.zjucsc.application.tshark.pre_processor.BasePreProcessor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,35 +25,51 @@ import static org.junit.Assert.*;
 //@SpringBootTest
 public class CapturePacketServiceImplTest {
 
+    private String macAddressForWin = "28:D2:44:5F:69:E1";
+    private String macAddressForMac = "8c:85:90:93:15:a2";
+
+
     @Test
     public void start() throws InterruptedException {
-        String macAddressForMac = "8c:85:90:93:15:a2";
         String deviceName = "en0";
-        String macAddressForWin = "28:D2:44:5F:69:E1";
         CapturePacketServiceImpl capturePacketService = new CapturePacketServiceImpl();
         BasePreProcessor.setCaptureDeviceNameAndMacAddress(macAddressForWin,deviceName);
-        capturePacketService.start(new ProcessCallback<String, String>() {
-            @Override
-            public void error(Exception e) {
+        for (int i = 0; i < 5; i++) {
+            capturePacketService.start(new ProcessCallback<String, String>() {
+                @Override
+                public void error(Exception e) {
 
-            }
+                }
+                @Override
+                public void start(String start) {
+                    System.out.println(start);
+                }
 
-            @Override
-            public void start(String start) {
-                System.out.println(start);
-            }
+                @Override
+                public void end(String end) {
 
-            @Override
-            public void end(String end) {
-
-            }
-        });
-
-        Thread.sleep(20000);
-        capturePacketService.stop();
+                }
+            });
+            Thread.sleep(20000);
+            capturePacketService.stop();
+        }
     }
 
     @Test
     public void stop() {
+    }
+
+    @Autowired private PacketController packetController;
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void allPacketSendTest() throws InterruptedException {
+        packetController.startRecvRealTimePacket();
+        CaptureService captureService = new CaptureService();
+        captureService.setMacAddress(macAddressForWin);
+        captureService.setService_ip("192.168.0.121");
+        captureService.setService_name("en0");
+        packetController.startCaptureService(captureService);
+        Thread.sleep(200000);
     }
 }
