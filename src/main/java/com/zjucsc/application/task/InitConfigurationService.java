@@ -3,6 +3,7 @@ package com.zjucsc.application.task;
 import com.zjucsc.IArtDecode;
 import com.zjucsc.IProtocolFuncodeMap;
 import com.zjucsc.application.config.Common;
+import com.zjucsc.application.config.ConstantConfig;
 import com.zjucsc.application.config.PACKET_PROTOCOL;
 import com.zjucsc.application.config.auth.Auth;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
@@ -38,10 +39,10 @@ public class InitConfigurationService implements ApplicationRunner {
 
     @Autowired private IConfigurationSettingService iConfigurationSettingService;
     @Autowired private IProtocolIdService iProtocolIdService;
+    @Autowired private ConstantConfig constantConfig;
 
     @Override
     public void run(ApplicationArguments args) throws IllegalAccessException, NoSuchFieldException, ProtocolIdNotValidException {
-
         /***************************
          * INIT PROTOCOL STR TO INT
          ***************************/
@@ -125,9 +126,12 @@ public class InitConfigurationService implements ApplicationRunner {
         /**************************
          *  PRINT INIT RESULT
          ***************************/
-        log.info("\n********************\n AUTH_MAP : {} \n********************" , Common.AUTH_MAP);
-        log.info("\n********************\n size : {} ; CONFIGURATION_MAP : {}\n********************" ,  Common.CONFIGURATION_MAP.size() , Common.CONFIGURATION_MAP);
-        log.info("\n******************** size : {} ; PROTOCOL_STR_TO_INT : {} \n********************" , Common.PROTOCOL_STR_TO_INT.size() ,  Common.PROTOCOL_STR_TO_INT  );
-        log.info("\n******************** size : {} ; ART_FILTER MAP: {} \n ********************" , ART_FILTER.getAnalyzer().size() , ART_FILTER.getAnalyzer());
+        log.info("\n******************** \n AUTH_MAP : {} \n********************" , Common.AUTH_MAP);
+        log.info("\n******************** \n size : {} ; CONFIGURATION_MAP : {}\n********************" ,  Common.CONFIGURATION_MAP.size() , Common.CONFIGURATION_MAP);
+        log.info("\n******************** \n size : {} ; PROTOCOL_STR_TO_INT : {} \n********************" , Common.PROTOCOL_STR_TO_INT.size() ,  Common.PROTOCOL_STR_TO_INT  );
+        log.info("\n******************** \n size : {} ; ART_FILTER MAP: {} \n********************" , ART_FILTER.getAnalyzer().size() , ART_FILTER.getAnalyzer());
+
+        System.out.println("spring boot admin address : http://your-address:8989");
+        System.out.println("swagger-ui address : http://your-address:your-port/swagger-ui.html#/greeting-controller");
     }
 }

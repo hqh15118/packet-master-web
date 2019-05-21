@@ -52,7 +52,7 @@ public class OptFilterServiceImpl extends ServiceImpl<OptFilterMapper, OptFilter
         String deviceNumber = optFilterForFront.getDeviceNumber();
         String deviceIp = CommonCacheUtil.getTargetDeviceIpByNumber(deviceNumber);
         if (deviceIp == null){
-            log.error("异常，设备[deviceNumber : ] {} 对应的IP地址未添加到缓存中");
+            log.error("异常，设备[deviceNumber] :  {} 对应的IP地址未添加到缓存中");
             return CompletableFuture.completedFuture(new DeviceNotValidException("未发现 " + optFilterForFront.getDeviceNumber() +" 的设备IP"));
         }
         String userName = optFilterForFront.getUserName();

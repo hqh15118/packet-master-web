@@ -16,19 +16,8 @@ public class KafkaServiceImpl implements IKafkaService {
 
     @SuppressWarnings("unchecked")
     public void sendMsg(){
-        ListenableFuture<SendResult<String, String>> resultListenableFuture =  kafkaTemplate.send("test",0,"test_data" , "test_data11");
-        resultListenableFuture.addCallback(new ListenableFutureCallback<SendResult<String, String>>() {
-            @Override
-            public void onFailure(Throwable throwable) {
-                System.out.println(throwable);
-            }
-
-            @Override
-            public void onSuccess(SendResult<String, String> stringStringSendResult) {
-                System.out.println("send successfully");
-                System.out.println(stringStringSendResult);
-            }
-        });
+        kafkaTemplate.send("test","fnhafoiabovga");
+        kafkaTemplate.flush();
     }
 
     @Override
