@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Slf4j
 @Aspect
-@Component
+//@Component
 public class LogAspect {
 
     @Autowired
@@ -29,7 +29,7 @@ public class LogAspect {
     @Autowired
     //private LogService logService;
 
-    @Pointcut("@annotation(cc.mrbird.febs.common.annotation.Log)")
+    @Pointcut("@annotation(com.zjucsc.application.config.auth.Log)")
     public void pointcut() {
         // do nothing
     }
