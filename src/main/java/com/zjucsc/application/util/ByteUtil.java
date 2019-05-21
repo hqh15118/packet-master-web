@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 
-public class ByteUtils {
+public class ByteUtil {
 
     private static ThreadLocal<ByteBuffer> byteToLongByteBuffer = ThreadLocal.withInitial(() -> ByteBuffer.allocate(Long.BYTES));
     private static ThreadLocal<ByteBuffer> byteToShortByteBuffer = ThreadLocal.withInitial(() -> ByteBuffer.allocate(Short.BYTES));

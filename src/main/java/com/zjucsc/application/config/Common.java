@@ -32,7 +32,7 @@ public class Common {
     public static final HashMap<String , HashMap<Integer,String>> CONFIGURATION_MAP = new HashMap<>();
 
     /** cache6
-     * String DEVICE_NUMBER
+     * String 设备IP
      * String -> 协议
      * OperationAnalyzer -> 报文操作分析器
      */
@@ -40,14 +40,14 @@ public class Common {
             new ConcurrentHashMap<>();
 
     /** cache5
-     * DEVICE_NUMBER 五元组过滤器
+     * DEVICE_IP 五元组过滤器
      */
     public static ConcurrentHashMap<String, FiveDimensionAnalyzer> FV_DIMENSION_FILTER_PRO = new ConcurrentHashMap<>();
 
     /** cache4
      * 工艺分析 协议 -- 工艺参数分析器
      */
-    public static ConcurrentHashMap<String , ArtAnalyzer> ART_FILTER = new ConcurrentHashMap<>();
+    public static ArtAnalyzer ART_FILTER ;
 
     /**
      * BaseResponse的返回状态 - 修改起来比较方便

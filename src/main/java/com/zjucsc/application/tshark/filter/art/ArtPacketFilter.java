@@ -1,6 +1,8 @@
 package com.zjucsc.application.tshark.filter.art;
 
-public interface ArtPacketFilter {
-    void init();
+import java.util.Map;
 
+public interface ArtPacketFilter {
+
+    Map<String,Double> decode(byte[] payload);
 }

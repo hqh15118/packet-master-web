@@ -12,10 +12,11 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
 
 @Service
 public class KafkaServiceImpl implements IKafkaService {
-    @Autowired private KafkaTemplate<String,String> kafkaTemplate;
+    @Autowired private KafkaTemplate kafkaTemplate;
 
+    @SuppressWarnings("unchecked")
     public void sendMsg(){
-        ListenableFuture<SendResult<String, String>> resultListenableFuture =  kafkaTemplate.send("test","test_data" , "test_data11");
+        ListenableFuture<SendResult<String, String>> resultListenableFuture =  kafkaTemplate.send("test",0,"test_data" , "test_data11");
         resultListenableFuture.addCallback(new ListenableFutureCallback<SendResult<String, String>>() {
             @Override
             public void onFailure(Throwable throwable) {

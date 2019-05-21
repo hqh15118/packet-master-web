@@ -8,7 +8,7 @@ import lombok.ToString;
 @Data
 public class BadPacket {
     /**
-     * badType -- 具体的协议，还是五元组？
+     * badType -- 具体的协议，还是五元组
      */
     private String badType;
     private FvDimensionLayer layer;
@@ -20,7 +20,7 @@ public class BadPacket {
     private DangerLevel dangerLevel;
     @ToString.Exclude
     private StringBuilder sb;
-    private String deviceId;
+    private String deviceNumber;
 
 
     public void addComment(String comment) {

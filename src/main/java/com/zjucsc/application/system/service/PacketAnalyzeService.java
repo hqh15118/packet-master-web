@@ -39,9 +39,9 @@ public class PacketAnalyzeService {
         }
     }
 
-    private Map<String,Integer> collectorNumToDelayMap = new HashMap<>(20);
+    private HashMap<String,Integer> collectorNumToDelayMap = new HashMap<>(20);
 
-    public synchronized Map<String,Integer> getCollectorNumToDelayList(){
+    public synchronized HashMap<String,Integer> getCollectorNumToDelayList(){
         collectorNumToDelayMap.clear();
         COLLECTOR_DELAY_MAP.forEach(new BiConsumer<Integer, Integer>() {
             @Override
@@ -50,7 +50,7 @@ public class PacketAnalyzeService {
                 if (deviceNumber!=null){
                     collectorNumToDelayMap.put(deviceNumber,delay);
                 }else{
-                    log.error("********************* 无法找到采集器ID为 {} 组态图ID为 {} 的设备号(device_number)" , integer , Common.GPLOT_ID);
+                    log.debug("********************* 无法找到采集器ID为 {} 组态图ID为 {} 的设备号(device_number)" , integer , Common.GPLOT_ID);
                 }
             }
         });

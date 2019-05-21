@@ -72,7 +72,15 @@ public class SocketIOClient {
                 System.out.println("disconnect");
             }
 
-        });
+        })
+          .on(SocketIoEvent.GRAPH_INFO, new Emitter.Listener() {
+              @Override
+              public void call(Object... objects) {
+                  for (Object object : objects) {
+                      System.out.println("graph info" + object);
+                  }
+              }
+          });
         socket.connect();
         Thread.sleep(100000000);
         socket.disconnect();

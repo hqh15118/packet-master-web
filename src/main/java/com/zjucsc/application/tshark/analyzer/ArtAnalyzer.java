@@ -1,21 +1,32 @@
 package com.zjucsc.application.tshark.analyzer;
 
-import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
-import com.zjucsc.application.tshark.filter.art.S7ArtPacketFilter;
+import com.zjucsc.IArtDecode;
 import com.zjucsc.application.util.AbstractAnalyzer;
 import com.zjucsc.application.util.Analyzed;
 import com.zjucsc.application.util.PacketDecodeUtil;
+import lombok.extern.slf4j.Slf4j;
 
-public class ArtAnalyzer extends AbstractAnalyzer<S7ArtPacketFilter> implements Analyzed {
+import java.util.Map;
 
-    public ArtAnalyzer(S7ArtPacketFilter s7ArtPacketFilter) {
-        super(s7ArtPacketFilter);
+@Slf4j
+public class ArtAnalyzer extends AbstractAnalyzer<Map<String, IArtDecode>> implements Analyzed {
+
+
+    public ArtAnalyzer(Map<String, IArtDecode> stringAbstractArtPacketFilterMap) {
+        super(stringAbstractArtPacketFilterMap);
     }
 
     @Override
-    public Object analyze(Object... objs) throws ProtocolIdNotValidException {
+    public Object analyze(Object... objs) {
         String tcpPayload = (String)objs[0];
-        byte[] tcpPayloadB = PacketDecodeUtil.hexStringToByteArray(tcpPayload);
-        return null;
+        String protocol = ((String) objs[1]);
+        byte[] tcpPayloadArrInByte = PacketDecodeUtil.hexStringToByteArray(tcpPayload);
+        IArtDecode iArtDecode = null;
+        if ((iArtDecode = getAnalyzer().get(protocol))!=null){
+            return iArtDecode.decode(tcpPayloadArrInByte);
+        }else {
+            log.debug("can not decode art args of protocol : {}" , protocol);
+            return null;
+        }
     }
 }

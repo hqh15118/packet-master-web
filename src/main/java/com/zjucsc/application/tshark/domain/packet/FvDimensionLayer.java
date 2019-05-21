@@ -25,6 +25,7 @@ public class FvDimensionLayer {
     public String[] eth_trailer = {""};
     public String[] eth_fcs = {""};
     public String timeStamp = "";
+    public String[] tcp_payload = {""};
 
     public FvDimensionLayer setFrameProtocols(String protocol){
         if (protocol!=null) {
@@ -47,6 +48,7 @@ public class FvDimensionLayer {
                 ", eth_trailer=" + Arrays.toString(eth_trailer) +
                 ", eth_fcs=" + Arrays.toString(eth_fcs) +
                 ", timeStamp='" + timeStamp + '\'' +
+                ", tcp_payload=" + Arrays.toString(tcp_payload) +
                 '}';
     }
 }

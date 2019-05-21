@@ -16,17 +16,17 @@ public class CommonFvFilterUtil {
         log.info("clear all fv dimension filter of gplotid : {} " , Common.GPLOT_ID);
     }
 
-    public synchronized static void addOrUpdateFvFilter(String deviceName , List<FvDimensionFilter> filterList , String filterName){
+    public synchronized static void addOrUpdateFvFilter(String deviceIp , List<FvDimensionFilter> filterList , String filterName){
         FiveDimensionAnalyzer analyzer;
-        if ((analyzer = Common.FV_DIMENSION_FILTER_PRO.get(deviceName))==null){
+        if ((analyzer = Common.FV_DIMENSION_FILTER_PRO.get(deviceIp))==null){
             FiveDimensionPacketFilter fiveDimensionPacketFilter = new FiveDimensionPacketFilter(filterName);
             fiveDimensionPacketFilter.setFilterList(filterList);
             analyzer = new FiveDimensionAnalyzer(fiveDimensionPacketFilter);
-            Common.FV_DIMENSION_FILTER_PRO.put(deviceName,analyzer);
-            log.info("add new fv dimension analyzer cause device {} is new !! NEW Filter list is : {} " , deviceName , filterList);
+            Common.FV_DIMENSION_FILTER_PRO.put(deviceIp,analyzer);
+            log.info("add new fv dimension analyzer cause device {} is new !! NEW Filter list is : {} " , deviceIp , filterList);
         }else {
             analyzer.getAnalyzer().setFilterList(filterList);
-            log.info("update old fv dimension analyzer cause device {} is existed !! NEW Filter list is : {} " , deviceName , filterList);
+            log.info("update old fv dimension analyzer cause device {} is existed !! NEW Filter list is : {} " , deviceIp , filterList);
         }
     }
 

@@ -1,9 +1,11 @@
 package com.zjucsc.application.tshark.capture;
 
 import com.zjucsc.application.domain.bean.CaptureService;
+import com.zjucsc.application.system.controller.DeviceController;
 import com.zjucsc.application.system.controller.PacketController;
 import com.zjucsc.application.system.service.iservice.PacketService;
 import com.zjucsc.application.tshark.pre_processor.BasePreProcessor;
+import com.zjucsc.application.util.CommonCacheUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +23,12 @@ import static org.junit.Assert.*;
  * #create_time 2019-05-13 - 20:34
  */
 
-//@RunWith(SpringRunner.class)
-//@SpringBootTest
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class CapturePacketServiceImplTest {
 
     private String macAddressForWin = "28:D2:44:5F:69:E1";
     private String macAddressForMac = "8c:85:90:93:15:a2";
-
 
     @Test
     public void start() throws InterruptedException {
@@ -64,6 +65,7 @@ public class CapturePacketServiceImplTest {
     @Test
     @SuppressWarnings("unchecked")
     public void allPacketSendTest() throws InterruptedException {
+        CommonCacheUtil.addOrUpdateDeviceNumberAndIp("1232211521", "10.30.11.120");
         packetController.startRecvRealTimePacket();
         CaptureService captureService = new CaptureService();
         captureService.setMacAddress(macAddressForWin);

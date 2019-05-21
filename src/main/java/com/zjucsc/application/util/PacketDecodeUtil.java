@@ -249,7 +249,7 @@ public class PacketDecodeUtil {
     public static int decodeCollectorDelay(byte[] payload , int offsetFromEnd) {
         //
         int start = payload.length - offsetFromEnd;     //24 - 4
-        return ByteUtils.bytesToInt(payload,start);
+        return ByteUtil.bytesToInt(payload,start);
     }
 
 

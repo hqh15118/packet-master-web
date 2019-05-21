@@ -3,6 +3,7 @@ package com.zjucsc.application.system.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.bean.OptFilterForFront;
+import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
 import com.zjucsc.application.domain.exceptions.OptFilterNotValidException;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.application.system.entity.OptFilter;
@@ -10,8 +11,10 @@ import com.zjucsc.application.system.mapper.OptFilterMapper;
 import com.zjucsc.application.system.service.iservice.IOptFilterService;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
 import com.zjucsc.application.tshark.filter.OperationPacketFilter;
+import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.CommonConfigUtil;
 import com.zjucsc.application.util.CommonOptFilterUtil;
+import io.netty.util.concurrent.CompleteFuture;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -46,24 +49,29 @@ public class OptFilterServiceImpl extends ServiceImpl<OptFilterMapper, OptFilter
     @Override
     public CompletableFuture<Exception> addOperationFilter(OptFilterForFront optFilterForFront) throws ProtocolIdNotValidException, OptFilterNotValidException {
         StringBuilder sb = new StringBuilder();
-        String deviceId = optFilterForFront.getDeviceNumber();
+        String deviceNumber = optFilterForFront.getDeviceNumber();
+        String deviceIp = CommonCacheUtil.getTargetDeviceIpByNumber(deviceNumber);
+        if (deviceIp == null){
+            log.error("异常，设备[deviceNumber : ] {} 对应的IP地址未添加到缓存中");
+            return CompletableFuture.completedFuture(new DeviceNotValidException("未发现 " + optFilterForFront.getDeviceNumber() +" 的设备IP"));
+        }
         String userName = optFilterForFront.getUserName();
         int protocolId = optFilterForFront.getProtocolId();
 
         Map<String, Object> removeMap = new HashMap<>();
-        removeMap.put("device_number" , deviceId);
+        removeMap.put("device_number" , deviceNumber);
         //先删除数据库中该设备已有的配置
         removeByMap(removeMap);
         //ConcurrentHashMap<String,OperationAnalyzer> analyzerMap = new ConcurrentHashMap<>(); //每一个设备都需要这样一个map，key是协议类型，value是该协议下对应的分析器
         List<OptFilter> optFilters = new ArrayList<>();
         OperationPacketFilter<Integer,String> operationPacketFilter = new OperationPacketFilter<>
-                (sb.append(deviceId).append(" : ").append(userName).append(convertIdToName(protocolId)).toString());//该协议对应的分析器的报文过滤器
+                (sb.append(deviceNumber).append(" : ").append(userName).append(convertIdToName(protocolId)).toString());//该协议对应的分析器的报文过滤器
         for (OptFilterForFront.IOptFilter iOptFilter : optFilterForFront.getIOptFilters()) {
             String protocol = convertIdToName(protocolId);
             //实例化数据库实体
             OptFilter optFilter = new OptFilter();
             optFilter.setFilterType(iOptFilter.getFilterType());
-            optFilter.setDeviceId(deviceId);
+            optFilter.setDeviceNumber(deviceNumber);
             optFilter.setUser_name(userName);
             optFilter.setProtocol_id(protocolId);
             optFilter.setFun_code(iOptFilter.getFunCode());
@@ -82,10 +90,10 @@ public class OptFilterServiceImpl extends ServiceImpl<OptFilterMapper, OptFilter
         }
         //analyzerMap.put(convertIdToName(protocolId) , new OperationAnalyzer(operationPacketFilter));
         saveBatch(optFilters);                              //将新的过滤规则保存到数据库
-        CommonOptFilterUtil.addOrUpdateAnalyzer(deviceId,convertIdToName(protocolId),new OperationAnalyzer(operationPacketFilter));  //替换旧的过滤规则
-        log.info("addOperationFilter [device id :  {} ; protocol id : {} protocol name {} ] : new operation filter of {} \n" +
+        CommonOptFilterUtil.addOrUpdateAnalyzer(deviceIp,convertIdToName(protocolId),new OperationAnalyzer(operationPacketFilter));  //替换旧的过滤规则
+        log.info("addOperationFilter [device number :  {} ; device ip {} ;protocol id : {} protocol name {} ] : new operation filter of {} \n" +
                         "and OPERATION_FILTER is {} " ,
-                deviceId , protocolId , convertIdToName(protocolId) , operationPacketFilter , Common.OPERATION_FILTER_PRO);
+                deviceNumber , deviceIp , protocolId , convertIdToName(protocolId) , operationPacketFilter , Common.OPERATION_FILTER_PRO);
         return CompletableFuture.completedFuture(null);
     }
 
@@ -93,7 +101,8 @@ public class OptFilterServiceImpl extends ServiceImpl<OptFilterMapper, OptFilter
     @Override
     public CompletableFuture<List<Integer>> getTargetExistIdFilter(String deviceId, int type , boolean cached , int protocolId) throws ProtocolIdNotValidException {
         if (cached){
-            ConcurrentHashMap<String, OperationAnalyzer> map = Common.OPERATION_FILTER_PRO.get(deviceId);
+            String deviceIp = CommonCacheUtil.getTargetDeviceIpByNumber(deviceId);
+            ConcurrentHashMap<String, OperationAnalyzer> map = Common.OPERATION_FILTER_PRO.get(deviceIp);
             if (map == null){
                 throw new ProtocolIdNotValidException("缓存中不存在ID为 " + deviceId + " 的规则");
             }
@@ -133,24 +142,4 @@ public class OptFilterServiceImpl extends ServiceImpl<OptFilterMapper, OptFilter
     public List<Integer> selectTargetOptFilter(String device, int type, int protocolId) {
         return this.baseMapper.selectTargetOptFilter(device,type,protocolId);
     }
-
-
-    private void addOptFilter(List<OptFilter> optFilterList , int type ,
-                              HashMap<Integer,String> filterMap , String deviceId ,
-                              String protocolName){
-        filterMap.forEach(new BiConsumer<Integer, String>() {
-            @Override
-            public void accept(Integer fun_code, String fun_code_meaning) {
-                OptFilter optFilter = new OptFilter();
-                optFilter.setDeviceId(deviceId);
-                optFilter.setFilterType(type);
-                optFilter.setFun_code(fun_code);
-                optFilter.setProtocol_id(Common.PROTOCOL_STR_TO_INT.inverse().get(protocolName));
-                optFilter.setUser_name("");
-                optFilterList.add(optFilter);
-            }
-        });
-    }
-
-
 }

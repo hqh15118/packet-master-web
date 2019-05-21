@@ -24,20 +24,20 @@ import static com.zjucsc.application.config.PACKET_PROTOCOL.OTHER;
 @Slf4j
 public class FiveDimensionPacketFilter {
 
-    public static final String DST_IP_WHITE = "dst_ip_white";
-    public static final String SRC_IP_WHITE = "src_ip_white";
-    public static final String DST_PORT_WHITE = "dst_port_white";
-    public static final String SRC_PORT_WHITE = "src_port_white";
-    public static final String PROTOCOL_WHITE = "protocol_white";
-    public static final String DST_IP_BLACK = "dst_ip_black";
-    public static final String SRC_IP_BLACK = "src_ip_black";
-    public static final String DST_PORT_BLACK = "dst_port_black";
-    public static final String SRC_PORT_BLACK = "src_port_black";
-    public static final String PROTOCOL_BLACK = "protocol_black";
-    public static final String SRC_MAC_ADDRESS_WHITE = "src_mac_address_white";
-    public static final String SRC_MAC_ADDRESS_BLACK = "src_mac_address_black";
-    public static final String DST_MAC_ADDRESS_WHITE = "dst_mac_address_white";
-    public static final String DST_MAC_ADDRESS_BLACK = "dst_mac_address_black";
+    private static final String DST_IP_WHITE = "dst_ip_white";
+    private static final String SRC_IP_WHITE = "src_ip_white";
+    private static final String DST_PORT_WHITE = "dst_port_white";
+    private static final String SRC_PORT_WHITE = "src_port_white";
+    private static final String PROTOCOL_WHITE = "protocol_white";
+    private static final String DST_IP_BLACK = "dst_ip_black";
+    private static final String SRC_IP_BLACK = "src_ip_black";
+    private static final String DST_PORT_BLACK = "dst_port_black";
+    private static final String SRC_PORT_BLACK = "src_port_black";
+    private static final String PROTOCOL_BLACK = "protocol_black";
+    private static final String SRC_MAC_ADDRESS_WHITE = "src_mac_address_white";
+    private static final String SRC_MAC_ADDRESS_BLACK = "src_mac_address_black";
+    private static final String DST_MAC_ADDRESS_WHITE = "dst_mac_address_white";
+    private static final String DST_MAC_ADDRESS_BLACK = "dst_mac_address_black";
 
     private HashMap<String,String> srcIpWhiteMap = new HashMap<>(0);
     private HashMap<String,String> srcIpBlackMap = new HashMap<>(0);
@@ -73,14 +73,19 @@ public class FiveDimensionPacketFilter {
         return this.filterList;
     }
 
+    /**
+     * @param filterList 前端配置的针对某个设备的五元组过滤器组
+     */
     public void setFilterList(List<FvDimensionFilter> filterList){
         this.filterList = filterList;
+        //key : 类型，【目的IP】【白】名单 value：过滤用的map
         HashMap<String,HashMap<String, String>> allMap = new HashMap<>();
         for (FvDimensionFilter fiveDimensionFilter : filterList) {
             String str = null;
+            //白名单
             if (fiveDimensionFilter.getFilterType() == 0){
                 if (StringUtils.isNotBlank((str = fiveDimensionFilter.getDstIp()))){
-                    doSet(allMap,DST_IP_WHITE,str);
+                    doSet(allMap,DST_IP_WHITE,str);//将str添加到DST_IP_WHITE map的 key// 中
                 }
                 if (StringUtils.isNotBlank((str = fiveDimensionFilter.getSrcIp()))){
                     doSet(allMap,SRC_IP_WHITE,str);
@@ -110,6 +115,7 @@ public class FiveDimensionPacketFilter {
                     }
                 }
             }else{
+                //黑名单
                 if (StringUtils.isNotBlank((str = fiveDimensionFilter.getDstIp()))){
                     doSet(allMap,DST_IP_BLACK,str);
                 }
@@ -194,65 +200,15 @@ public class FiveDimensionPacketFilter {
         }
     }
 
+    /**
+     *
+     * @param allMap
+     * @param type 类型，如目的IP白名单
+     * @param str 信息，如目的IP、目的MAC地址等
+     */
     private void doSet(HashMap<String,HashMap<String,String>> allMap,String type , String str){
-        allMap.computeIfAbsent(type, k -> new HashMap<String, String>());
+        allMap.putIfAbsent(type , new HashMap<>());
         allMap.get(type).put(str , str);
-    }
-
-    public HashMap<String, String> getSrcIpWhiteMap() {
-        return srcIpWhiteMap;
-    }
-
-    public HashMap<String, String> getSrcIpBlackMap() {
-        return srcIpBlackMap;
-    }
-
-    public HashMap<String, String> getSrcPortWhiteMap() {
-        return srcPortWhiteMap;
-    }
-
-    public HashMap<String, String> getSrcPortBlackMap() {
-        return srcPortBlackMap;
-    }
-
-    public HashMap<String, String> getProtocolWhiteMap() {
-        return protocolWhiteMap;
-    }
-
-    public HashMap<String, String> getProtocolBlackMap() {
-        return protocolBlackMap;
-    }
-
-    public HashMap<String, String> getDstIpWhiteMap() {
-        return dstIpWhiteMap;
-    }
-
-    public HashMap<String, String> getDstIpBlackMap() {
-        return dstIpBlackMap;
-    }
-
-    public HashMap<String, String> getDstPortWhiteMap() {
-        return dstPortWhiteMap;
-    }
-
-    public HashMap<String, String> getDstPortBlackMap() {
-        return dstPortBlackMap;
-    }
-
-    public HashMap<String, String> getSrcMacAddressWhite() {
-        return srcMacAddressWhite;
-    }
-
-    public HashMap<String, String> getSrcMacAddressBlack() {
-        return srcMacAddressBlack;
-    }
-
-    public HashMap<String, String> getDstMacAddressWhite() {
-        return dstMacAddressWhite;
-    }
-
-    public HashMap<String, String> getDstMacAddressBlack() {
-        return dstMacAddressBlack;
     }
 
     public BadPacket OK(FvDimensionLayer layer){
@@ -269,7 +225,7 @@ public class FiveDimensionPacketFilter {
             return new BadPacket.Builder(FV_DIMENSION)
                     .set_five_Dimension(layer)
                     .setDangerLevel(DangerLevel.DANGER)
-                    .setComment("白名单未匹配五元组")
+                    .setComment("五元组不存在于白名单")
                     .build();
         }
     }

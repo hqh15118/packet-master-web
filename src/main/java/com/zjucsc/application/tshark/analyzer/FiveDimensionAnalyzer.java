@@ -29,7 +29,7 @@ public class FiveDimensionAnalyzer extends AbstractAnalyzer<FiveDimensionPacketF
         FvDimensionLayer layer = ((FvDimensionLayer) objs[0]);
         BadPacket badPacket = getAnalyzer().ERROR(layer);
         if (badPacket != null){
-            //黑名单匹配
+            //黑名单匹配成功
             return badPacket;
         }
         //黑名单匹配失败后白名单匹配

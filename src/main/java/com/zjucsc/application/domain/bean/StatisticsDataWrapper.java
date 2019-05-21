@@ -11,10 +11,10 @@ public class StatisticsDataWrapper {
     private long packetCount;
     private long attackCount;
     private long exceptionCount;
-    private Map<String, AtomicLong> packetIn;
-    private Map<String, AtomicLong> packetOut;
-    private Map<String, AtomicLong> attackByDevice;
-    private Map<String, AtomicLong> exceptionByDevice;
+    private Map<String, Integer> packetIn;
+    private Map<String, Integer> packetOut;
+    private Map<String, Integer> attackByDevice;
+    private Map<String, Integer> exceptionByDevice;
     private Map<String,Integer> collectorDelays;
 
     public static class Builder{
@@ -39,22 +39,22 @@ public class StatisticsDataWrapper {
             return this;
         }
 
-        public Builder setNumberByDeviceIn(Map<String, AtomicLong> numberByDeviceIn) {
+        public Builder setNumberByDeviceIn(Map<String, Integer> numberByDeviceIn) {
             statisticsDataWrapper.packetIn = numberByDeviceIn;
             return this;
         }
 
-        public Builder setNumberByDeviceOut(Map<String, AtomicLong> numberByDeviceOut) {
+        public Builder setNumberByDeviceOut(Map<String, Integer> numberByDeviceOut) {
             statisticsDataWrapper.packetOut = numberByDeviceOut;
             return this;
         }
 
-        public Builder setAttackByDevice(Map<String, AtomicLong> attackByDevice) {
+        public Builder setAttackByDevice(Map<String, Integer> attackByDevice) {
             statisticsDataWrapper.attackByDevice = attackByDevice;
             return this;
         }
 
-        public Builder setExceptionByDevice(Map<String, AtomicLong> exceptionByDevice) {
+        public Builder setExceptionByDevice(Map<String, Integer> exceptionByDevice) {
             statisticsDataWrapper.exceptionByDevice = exceptionByDevice;
             return this;
         }

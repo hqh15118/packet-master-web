@@ -193,6 +193,10 @@ public class CommonCacheUtil {
         return Common.DEVICE_IP_TO_NAME.get(deviceIp);
     }
 
+    public static String getTargetDeviceIpByNumber(String deviceNumber){
+        return Common.DEVICE_IP_TO_NAME.inverse().get(deviceNumber);
+    }
+
     public static void removeAllCachedDeviceNumber(){
         Common.DEVICE_IP_TO_NAME.clear();
     }

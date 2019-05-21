@@ -59,7 +59,7 @@ public class GplotServiceImpl extends ServiceImpl<GplotMapper, Gplot> implements
             List<FvDimensionFilter> fvDimensionFilters = iDeviceService.
                     loadAllFvDimensionFilterByDeviceNumberAndGplotId(deviceNumberAndIp.deviceNumber,gplotId);
             //add all fv filters to cache
-            CommonFvFilterUtil.addOrUpdateFvFilter(deviceNumberAndIp.deviceNumber,fvDimensionFilters,
+            CommonFvFilterUtil.addOrUpdateFvFilter(deviceNumberAndIp.deviceIp,fvDimensionFilters,
                     sb.append("device_name-").append(deviceNumberAndIp.deviceNumber).
                     append(" gplot_id-").append(gplotId).toString());
             //load all opt dimension rule from fv_dimension table by device_number + gpolt_id

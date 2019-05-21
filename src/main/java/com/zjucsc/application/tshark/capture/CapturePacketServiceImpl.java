@@ -71,7 +71,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             try {
                 sendPacketStatisticsEvent(fvDimensionLayer);            //发送统计信息
             } catch (DeviceNotValidException e) {
-                log.error("找不到IP地址对应的设备号" , e.getMsg());
+                log.error("找不到IP地址对应的设备号 {} " , e.getMsg());
             }
             int collectorId = PacketDecodeUtil.decodeCollectorId(payload,24);
             analyzeCollectorState(payload , collectorId);                         //分析采集器状态信息
@@ -104,8 +104,8 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                 //valid packet
                 int collectorDelay = PacketDecodeUtil.decodeCollectorDelay(payload,4);
                 //设置ID和延时用于发送
-                //packetAnalyzeService.setCollectorDelay(collectorId,collectorDelay);
-                //packetAnalyzeService.setCollectorDelay(collectorId,collectorDelay);
+                //System.out.println("delay : " + collectorDelay);
+                packetAnalyzeService.setCollectorDelay(collectorId,collectorDelay);
             }
         }
     }

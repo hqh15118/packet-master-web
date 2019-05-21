@@ -1,5 +1,6 @@
 package com.zjucsc.application.task;
 
+import com.zjucsc.IArtDecode;
 import com.zjucsc.IProtocolFuncodeMap;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.PACKET_PROTOCOL;
@@ -7,8 +8,10 @@ import com.zjucsc.application.config.auth.Auth;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.application.system.entity.ConfigurationSetting;
 import com.zjucsc.application.system.entity.ProtocolId;
+import com.zjucsc.application.system.service.iservice.IArtService;
 import com.zjucsc.application.system.service.iservice.IConfigurationSettingService;
 import com.zjucsc.application.system.service.iservice.IProtocolIdService;
+import com.zjucsc.application.tshark.analyzer.ArtAnalyzer;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.CommonConfigUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.Field;
 import java.util.*;
 
+import static com.zjucsc.application.config.Common.ART_FILTER;
 import static com.zjucsc.application.util.CommonCacheUtil.convertIdToName;
 import static com.zjucsc.application.util.CommonConfigUtil.addProtocolFuncodeMeaning;
 
@@ -38,9 +42,9 @@ public class InitConfigurationService implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws IllegalAccessException, NoSuchFieldException, ProtocolIdNotValidException {
 
-        /*
+        /***************************
          * INIT PROTOCOL STR TO INT
-         */
+         ***************************/
         //如果数据库中没有条目，就从代码中加载之前配置好的，如果数据库中有条目，
         //就直接使用数据库中的条目初始化 PROTOCOL_STR_TO_INT ， 用户协议ID和协议字符串之间的转换
         if (iProtocolIdService.list().size() == 0){
@@ -94,9 +98,9 @@ public class InitConfigurationService implements ApplicationRunner {
                         configuration.getFunCode(),configuration.getOpt());
             }
         }
-        /*
+        /***************************
          * INIT AUTH
-         */
+         ***************************/
         Field[] allField;
         Class<Auth> authClass = Auth.class;
         allField = authClass.getDeclaredFields();
@@ -107,8 +111,23 @@ public class InitConfigurationService implements ApplicationRunner {
                 Common.AUTH_MAP.put(auth,authName);
             }
         }
-        log.info("AUTH_MAP : {} " , Common.AUTH_MAP);
-        log.info("size : {} ; CONFIGURATION_MAP : {}  " ,  Common.CONFIGURATION_MAP.size() , Common.CONFIGURATION_MAP);
-        log.info("size : {} ; PROTOCOL_STR_TO_INT : {} " , Common.PROTOCOL_STR_TO_INT.size() ,  Common.PROTOCOL_STR_TO_INT  );
+
+        /***************************
+         * INIT ART_ANALYZER
+         ***************************/
+        ServiceLoader<IArtDecode> artLoader = ServiceLoader.load(IArtDecode.class);
+        Map<String,IArtDecode> artServiceMap = new HashMap<>();
+        for (IArtDecode iArtDecode : artLoader) {
+            artServiceMap.put(iArtDecode.protocol(),iArtDecode);
+        }
+        ART_FILTER = new ArtAnalyzer(artServiceMap);
+
+        /**************************
+         *  PRINT INIT RESULT
+         ***************************/
+        log.info("\n********************\n AUTH_MAP : {} \n********************" , Common.AUTH_MAP);
+        log.info("\n********************\n size : {} ; CONFIGURATION_MAP : {}\n********************" ,  Common.CONFIGURATION_MAP.size() , Common.CONFIGURATION_MAP);
+        log.info("\n******************** size : {} ; PROTOCOL_STR_TO_INT : {} \n********************" , Common.PROTOCOL_STR_TO_INT.size() ,  Common.PROTOCOL_STR_TO_INT  );
+        log.info("\n******************** size : {} ; ART_FILTER MAP: {} \n ********************" , ART_FILTER.getAnalyzer().size() , ART_FILTER.getAnalyzer());
     }
 }

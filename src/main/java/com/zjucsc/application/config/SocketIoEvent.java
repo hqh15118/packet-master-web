@@ -11,4 +11,8 @@ public class SocketIoEvent {
     public static final String COLLECTOR_STATE = "collector_state";
     //攻击类型推送
     public static final String ATTACK_INFO = "attack_info";
+    //实时图表信息推送
+    public static final String GRAPH_INFO = "graph_info";
+    //系统信息
+    public static final String SYS_INFO = "sys_info";
 }

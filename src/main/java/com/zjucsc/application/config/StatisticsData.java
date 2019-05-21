@@ -1,10 +1,15 @@
 package com.zjucsc.application.config;
 
+import com.zjucsc.application.domain.bean.GraphInfo;
+import com.zjucsc.application.domain.bean.GraphInfoCollection;
+import com.zjucsc.application.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
 public class StatisticsData {
@@ -28,10 +33,11 @@ public class StatisticsData {
      */
     public static AtomicInteger attackNumber = new AtomicInteger(0);
 
-    public static ConcurrentHashMap<String, AtomicLong> NUMBER_BY_DEVICE_IN = new ConcurrentHashMap<>();
-    public static ConcurrentHashMap<String,AtomicLong> NUMBER_BY_DEVICE_OUT = new ConcurrentHashMap<>();
-    public static ConcurrentHashMap<String,AtomicLong> ATTACK_BY_DEVICE = new ConcurrentHashMap<>();
-    public static ConcurrentHashMap<String,AtomicLong> EXCEPTION_BY_DEVICE = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String, AtomicInteger> NUMBER_BY_DEVICE_IN = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String,AtomicInteger> NUMBER_BY_DEVICE_OUT = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String,AtomicInteger> ATTACK_BY_DEVICE = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String,AtomicInteger> EXCEPTION_BY_DEVICE = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String, GraphInfoCollection> GRAPH_BY_DEVICE = new ConcurrentHashMap<>();
 
     public static void increaseNumberByDeviceIn(String deviceNumber){
         if (deviceNumber!=null) {
@@ -55,11 +61,34 @@ public class StatisticsData {
         }
     }
 
-    private static void doIncrease(AtomicLong atomicInteger , String deviceNumber ,  ConcurrentHashMap<String, AtomicLong> map){
+    private static void doIncrease(AtomicInteger atomicInteger , String deviceNumber ,  ConcurrentHashMap<String, AtomicInteger> map){
         if (atomicInteger!=null) {
             atomicInteger.incrementAndGet();
         }else{
-            map.put(deviceNumber , new AtomicLong(1));
+            map.put(deviceNumber , new AtomicInteger(1));
+        }
+    }
+
+    public static void addDeviceGraphInfo(String deviceNumber , GraphInfo info){
+        GraphInfoCollection collection = GRAPH_BY_DEVICE.get(deviceNumber);
+        if (collection == null){
+            collection = new GraphInfoCollection();
+            GRAPH_BY_DEVICE.put(deviceNumber , collection);
+        }
+        doAddInfoToList(collection.getAttack(),info.getAttack());
+        doAddInfoToList(collection.getDelay(),info.getDelay());
+        doAddInfoToList(collection.getException(),info.getException());
+        doAddInfoToList(collection.getPacketIn(),info.getPacketIn());
+        doAddInfoToList(collection.getPacketOut(),info.getPacketOut());
+        collection.getTimeStamp().addFirst(CommonUtil.getDateFormat().format(new Date()));
+    }
+
+    private static void doAddInfoToList(LinkedList<Integer> list , int data){
+        if (list.size() >= 12){
+            list.removeFirst();
+            list.addLast(data);
+        }else{
+            list.addLast(data);
         }
     }
 }
