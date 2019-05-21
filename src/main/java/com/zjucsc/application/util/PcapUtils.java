@@ -1,6 +1,6 @@
 package com.zjucsc.application.util;
 
-import com.sun.deploy.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.pcap4j.core.*;
 import org.pcap4j.packet.Packet;
 import org.pcap4j.util.LinkLayerAddress;
@@ -230,7 +230,7 @@ public class PcapUtils {
             logger.error("interface ip is invalid : {}",targetIp);
             return null;
         }
-        targetIp = StringUtils.trimWhitespace(targetIp);
+        targetIp = StringUtils.trim(targetIp);
         for (PcapNetworkInterface pcapNetworkInterface : doGetAllNetworkInterfaces()){
             List<PcapAddress> pcapAddressList = pcapNetworkInterface.getAddresses();
             for (PcapAddress address : pcapAddressList){
@@ -301,7 +301,7 @@ public class PcapUtils {
         if (targetIp == null){
             return  null;
         }
-        targetIp = StringUtils.trimWhitespace(targetIp);
+        targetIp = StringUtils.trim(targetIp);
         for (PcapNetworkInterface pcapNetworkInterface : list){
             List<PcapAddress> pcapAddressList = pcapNetworkInterface.getAddresses();
             for (PcapAddress address : pcapAddressList){
@@ -323,7 +323,7 @@ public class PcapUtils {
         if (targetName == null){
             return  null;
         }
-        targetName = StringUtils.trimWhitespace(targetName);
+        targetName = StringUtils.trim(targetName);
         for (PcapNetworkInterface pcapNetworkInterface : list){
             if (pcapNetworkInterface.getName().equals(targetName)){
                 return pcapNetworkInterface;
