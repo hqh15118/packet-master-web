@@ -17,4 +17,6 @@ public class SocketIoEvent {
     public static final String SYS_INFO = "sys_info";
     //工艺参数
     public static final String ART_INFO = "art_info";
+    //日志打印
+    public static final String LOG_INFO = "log_info";
 }
