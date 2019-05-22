@@ -1,5 +1,6 @@
 package com.zjucsc.application.system.service;
 
+import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.SocketIoEvent;
 import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.domain.bean.GraphInfo;
@@ -10,15 +11,13 @@ import com.zjucsc.application.tshark.capture.CapturePacketService;
 import com.zjucsc.application.tshark.capture.CapturePacketServiceImpl;
 import com.zjucsc.application.tshark.capture.NewFvDimensionCallback;
 import com.zjucsc.application.tshark.domain.packet.FvDimensionLayer;
+import com.zjucsc.application.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -51,6 +50,7 @@ public class ScheduledService {
     private final BiConsumer<String,GraphInfo> GRAPH_INFO_CONSUMER =
             StatisticsData::addDeviceGraphInfo;
 
+
     /**
      * 5秒钟发送一次统计信息
      */
@@ -63,7 +63,6 @@ public class ScheduledService {
         NUMBER_BY_DEVICE_OUT.forEach(SEND_CONSUMER.setMap(numberByDeviceOut , 4));
         DELAY_INFO.forEach(SEND_CONSUMER.setMap(null,5));
 
-        System.out.println(ATTACK_BY_DEVICE + "-" + EXCEPTION_BY_DEVICE + "-" + NUMBER_BY_DEVICE_IN + "-" + NUMBER_BY_DEVICE_OUT);
         SocketServiceCenter.updateAllClient(SocketIoEvent.STATISTICS_PACKET,
                 new StatisticsDataWrapper.Builder()
                 .setCollectorDelay(DELAY_INFO)
@@ -76,6 +75,7 @@ public class ScheduledService {
                 .setNumberByDeviceOut(numberByDeviceOut)    //分设备的发送报文数
                 .build()
                 );
+
         graphInfoInList.forEach(GRAPH_INFO_CONSUMER);
         SocketServiceCenter.updateAllClient(SocketIoEvent.GRAPH_INFO,StatisticsData.GRAPH_BY_DEVICE);
     }
@@ -85,6 +85,13 @@ public class ScheduledService {
         for (int i = 0; i < 5; i++) {
             doSend(fvDimensionLayers.poll());
         }
+    }
+
+    @Scheduled(fixedRate = 5000)
+    public void sendGraphInfo(){
+        SocketServiceCenter.updateAllClient(SocketIoEvent.ART_INFO, StatisticsData.ART_INFO);
+        addArtData("timestamp", CommonUtil.getDateFormat().format(new Date()));
+        //System.out.println(StatisticsData.ART_INFO);
     }
 
     private void doSend(FvDimensionLayer layer){
@@ -107,15 +114,17 @@ public class ScheduledService {
             int res;
             if (obj instanceof AtomicInteger) {            //除时延之外的信息
                 AtomicInteger data = ((AtomicInteger) obj);//非时延信息，需要转换减去旧数据
-                Integer var = null;
-                if ((var = map.get(deviceNumber)) == null) {//未添加过该设备
-                    res = data.get();
-                    map.put(deviceNumber, res);
-                } else {
-                    int var1 = data.getAndSet(0);
-                    res = var1 - var;
-                    map.put(deviceNumber, res);
-                }
+//                Integer var = null;
+//                if ((var = map.get(deviceNumber)) == null) {//未添加过该设备
+//                    res = data.getAndSet(0);
+//                    map.put(deviceNumber, res);
+//                } else {
+//                    int var1 = data.get();
+//                    res = var1 - var;
+//                    map.put(deviceNumber, res);
+//                }
+                res = data.getAndSet(0);
+                map.put(deviceNumber , res);
             }else{
                 res = ((Integer) obj);
             }

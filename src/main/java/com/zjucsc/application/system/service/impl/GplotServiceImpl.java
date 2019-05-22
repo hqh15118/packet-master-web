@@ -34,9 +34,6 @@ public class GplotServiceImpl extends ServiceImpl<GplotMapper, Gplot> implements
     @Transactional
     @Override
     public void addNewGplot(Gplot gplot) {
-        Map<String,Object> removeMap = new HashMap<>();
-        removeMap.put("name" , gplot.getName());
-        removeByMap(removeMap);
         save(gplot);
     }
 

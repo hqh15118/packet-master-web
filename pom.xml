@@ -2,8 +2,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.zjucsc</groupId>
     <packaging>jar</packaging>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.1.4.RELEASE</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+    <groupId>com.zjucsc</groupId>
     <artifactId>packet-master-web</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>packet-master-web</name>
@@ -15,12 +23,6 @@
         <java.version>1.8</java.version>
         <mybatis-plus.version>3.1.0</mybatis-plus.version>
     </properties>
-
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.1.4.RELEASE</version>
-    </parent>
 
     <dependencies>
         <dependency>
@@ -50,7 +52,7 @@
             <artifactId>mybatis-plus-generator</artifactId>
             <version>${mybatis-plus.version}</version>
         </dependency>
-        <!-- freemaker引擎 -->
+        <!-- free_maker引擎 -->
         <dependency>
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
@@ -261,6 +263,7 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/src/main/resources/libs/protocolmap.jar</systemPath>
         </dependency>
+
     </dependencies>
 
     <!--<build>-->

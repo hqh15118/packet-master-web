@@ -1,10 +1,10 @@
 myconfig:
-  global_address : 192.168.1.104
-  #global_address : 192.168.0.121
+  #global_address : 192.168.1.104
+  global_address : 192.168.0.121
   admin_server_port : 8989
   packet_master_web_port : 8080
   kafka-server-url : 192.168.0.157:9092
-  openAOPLog : 0      # 1 open 0 close
+  openAOPLog : false
 
 server:
   port: ${myconfig.packet_master_web_port}
@@ -44,7 +44,7 @@ spring:
   boot:
     admin:
       client:
-        #url : http://${myconfig.global_address}:${myconfig.admin_server_port}
+        url : http://${myconfig.global_address}:${myconfig.admin_server_port}
         instance:
           prefer-ip: true
           service-base-url: http://${myconfig.global_address}:${myconfig.packet_master_web_port}

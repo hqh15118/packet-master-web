@@ -184,6 +184,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     private void sendPacketStatisticsEvent(FvDimensionLayer fvDimensionLayer) throws DeviceNotValidException {
         StatisticsData.recvPacketNumber.incrementAndGet();      //总报文数
         //外界 --> PLC[ip_dst]  设备接收的报文数
+
         StatisticsData.increaseNumberByDeviceIn(CommonCacheUtil.getTargetDeviceNumberByIp(fvDimensionLayer.ip_dst[0]));
         //外界 <-- PLC[ip_src]  设备发送的报文数
         StatisticsData.increaseNumberByDeviceOut(CommonCacheUtil.getTargetDeviceNumberByIp(fvDimensionLayer.ip_src[0]));

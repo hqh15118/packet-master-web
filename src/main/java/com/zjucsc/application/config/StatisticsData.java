@@ -5,11 +5,13 @@ import com.zjucsc.application.domain.bean.GraphInfoCollection;
 import com.zjucsc.application.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
 
 @Slf4j
 public class StatisticsData {
@@ -38,6 +40,7 @@ public class StatisticsData {
     public static ConcurrentHashMap<String,AtomicInteger> ATTACK_BY_DEVICE = new ConcurrentHashMap<>();
     public static ConcurrentHashMap<String,AtomicInteger> EXCEPTION_BY_DEVICE = new ConcurrentHashMap<>();
     public static ConcurrentHashMap<String, GraphInfoCollection> GRAPH_BY_DEVICE = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String, LinkedList<String>> ART_INFO = new ConcurrentHashMap<>();
 
     public static void increaseNumberByDeviceIn(String deviceNumber){
         if (deviceNumber!=null) {
@@ -80,7 +83,7 @@ public class StatisticsData {
         doAddInfoToList(collection.getException(),info.getException());
         doAddInfoToList(collection.getPacketIn(),info.getPacketIn());
         doAddInfoToList(collection.getPacketOut(),info.getPacketOut());
-        collection.getTimeStamp().addFirst(CommonUtil.getDateFormat().format(new Date()));
+        addTimeStamp(collection.getTimeStamp());
     }
 
     private static void doAddInfoToList(LinkedList<Integer> list , int data){
@@ -91,4 +94,45 @@ public class StatisticsData {
             list.addLast(data);
         }
     }
+
+    private static void addTimeStamp(LinkedList<String> timeStamps){
+        if (timeStamps.size() >= 12){
+            timeStamps.removeFirst();
+            timeStamps.addLast(CommonUtil.getDateFormat().format(new Date()));
+        }else{
+            timeStamps.addLast(CommonUtil.getDateFormat().format(new Date()));
+        }
+    }
+
+    static {
+        ART_INFO.put("timestamp",new LinkedList<>());
+    }
+
+    public static void initArtArgs(String artArg){
+        ART_INFO.putIfAbsent(artArg,new LinkedList<>());
+    }
+
+    public static void addArtData(String artArg , String value){
+        LinkedList<String> var = ART_INFO.get(artArg);
+        if (var == null){
+            log.error("工艺参数 {} 未初始化添加到ART_INFO中，请修正" , artArg);
+        }else{
+            if (var.size() >= 6){
+                var.removeFirst();
+                var.addLast(value);
+            }else{
+                var.addLast(value);
+            }
+        }
+    }
+
+    public static synchronized void addArtMapData(Map<String,Float> artDataMap){
+        artDataMap.forEach(new BiConsumer<String, Float>() {
+            @Override
+            public void accept(String artArg, Float value) {
+                addArtData(artArg,String.valueOf(value));
+            }
+        });
+    }
+
 }

@@ -32,7 +32,7 @@ public class PacketAnalyzeService {
         if ((delayInit = COLLECTOR_DELAY_MAP.get(collectorId))!=null){
             if (delayInit < delay){
                 COLLECTOR_DELAY_MAP.put(collectorId , delay);
-                log.info("update collector id {} delay {}" , collectorId , delay);
+                log.debug("update collector id {} delay {}" , collectorId , delay);
             }
         }else{
             COLLECTOR_DELAY_MAP.put(collectorId,delay);

@@ -20,5 +20,6 @@ public class ConstantConfig {
     @Value("#{systemProperties['os.name']}")
     private String systemPropertiesName; // 注入操作系统属性
 
-    private int openAOPLog;
+    private boolean openAOPLog;
+
 }

@@ -46,7 +46,7 @@ public class LogAspect {
         //String ip = IPUtil.getIpAddr(request);
         // 执行时长(毫秒)
         long time = System.currentTimeMillis() - beginTime;
-        if (constantConfig.getOpenAOPLog() == 1) {
+        if (constantConfig.isOpenAOPLog()) {
             // 保存日志
             String token = (String) SecurityUtils.getSubject().getPrincipal();
             String username = "";
