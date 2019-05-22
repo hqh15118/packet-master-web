@@ -80,7 +80,7 @@ public class StatisticsData {
         doAddInfoToList(collection.getException(),info.getException());
         doAddInfoToList(collection.getPacketIn(),info.getPacketIn());
         doAddInfoToList(collection.getPacketOut(),info.getPacketOut());
-        collection.getTimeStamp().addFirst(CommonUtil.getDateFormat().format(new Date()));
+        addTimeStamp(collection.getTimeStamp());
     }
 
     private static void doAddInfoToList(LinkedList<Integer> list , int data){
@@ -89,6 +89,15 @@ public class StatisticsData {
             list.addLast(data);
         }else{
             list.addLast(data);
+        }
+    }
+
+    private static void addTimeStamp(LinkedList<String> timeStamps){
+        if (timeStamps.size() >= 12){
+            timeStamps.removeFirst();
+            timeStamps.addLast(CommonUtil.getDateFormat().format(new Date()));
+        }else{
+            timeStamps.addLast(CommonUtil.getDateFormat().format(new Date()));
         }
     }
 }

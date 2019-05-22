@@ -7,7 +7,7 @@ public class CommonUtil {
              = new ThreadLocal<SimpleDateFormat>(){
         @Override
         protected SimpleDateFormat initialValue() {
-            return new SimpleDateFormat("HH:MM:ss");
+            return new SimpleDateFormat("HH:mm:ss");
         }
     };
     public static SimpleDateFormat getDateFormat(){
