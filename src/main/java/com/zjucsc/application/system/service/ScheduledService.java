@@ -1,5 +1,6 @@
 package com.zjucsc.application.system.service;
 
+import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.SocketIoEvent;
 import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.domain.bean.GraphInfo;
@@ -10,15 +11,13 @@ import com.zjucsc.application.tshark.capture.CapturePacketService;
 import com.zjucsc.application.tshark.capture.CapturePacketServiceImpl;
 import com.zjucsc.application.tshark.capture.NewFvDimensionCallback;
 import com.zjucsc.application.tshark.domain.packet.FvDimensionLayer;
+import com.zjucsc.application.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -50,6 +49,7 @@ public class ScheduledService {
     private final SenderConsumer SEND_CONSUMER = new SenderConsumer();
     private final BiConsumer<String,GraphInfo> GRAPH_INFO_CONSUMER =
             StatisticsData::addDeviceGraphInfo;
+
 
     /**
      * 5秒钟发送一次统计信息
@@ -85,6 +85,13 @@ public class ScheduledService {
         for (int i = 0; i < 5; i++) {
             doSend(fvDimensionLayers.poll());
         }
+    }
+
+    @Scheduled(fixedRate = 5000)
+    public void sendGraphInfo(){
+        SocketServiceCenter.updateAllClient(SocketIoEvent.ART_INFO, StatisticsData.ART_INFO);
+        addArtData("timestamp", CommonUtil.getDateFormat().format(new Date()));
+        //System.out.println(StatisticsData.ART_INFO);
     }
 
     private void doSend(FvDimensionLayer layer){

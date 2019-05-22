@@ -15,7 +15,7 @@ public class OptFilter {
     @TableId(value = "id" , type = IdType.AUTO)
     private int id;
     @TableField("user_name")
-    private String user_name;
+    private String userName;
     @TableField("device_number")
     @NotBlank
     private String deviceNumber;
@@ -23,9 +23,9 @@ public class OptFilter {
     @TableField("filter_type")
     private int filterType;
     @TableField("fun_code")
-    private int fun_code;
+    private int funCode;
     @TableField("protocol_id")
-    private int protocol_id;
+    private int protocolId;
     @TableField("gplot_id")
     private int gplotId;
 

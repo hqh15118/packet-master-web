@@ -7,13 +7,13 @@ import com.zjucsc.application.config.ConstantConfig;
 import com.zjucsc.application.config.PACKET_PROTOCOL;
 import com.zjucsc.application.config.auth.Auth;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
+import com.zjucsc.application.system.art.S7commDecode;
 import com.zjucsc.application.system.entity.ConfigurationSetting;
 import com.zjucsc.application.system.entity.ProtocolId;
 import com.zjucsc.application.system.service.iservice.IConfigurationSettingService;
 import com.zjucsc.application.system.service.iservice.IProtocolIdService;
 import com.zjucsc.application.tshark.analyzer.ArtAnalyzer;
 import com.zjucsc.application.util.CommonCacheUtil;
-import com.zjucsc.application.util.CommonConfigUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -43,11 +43,28 @@ public class InitConfigurationService implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws IllegalAccessException, NoSuchFieldException, ProtocolIdNotValidException {
         /***************************
+         * RELOAD
+         ***************************/
+        List<String> vir = args.getOptionValues("reload");
+        System.out.println("*******************\n" + "program args : " + vir + "\n*******************");
+        boolean reload = false;
+        if (vir!=null && vir.size() > 0){
+            if ("true".equals(vir.get(0))){
+                //重新到jar包中加载功能码含义
+                reload = true;
+                log.info("force reload [funCode Meaning]from jar file");
+            }
+        }
+        /***************************
+         * IGNORE PROTOCOL[统计数量，但是]
+         ***************************/
+
+        /***************************
          * INIT PROTOCOL STR TO INT
          ***************************/
         //如果数据库中没有条目，就从代码中加载之前配置好的，如果数据库中有条目，
-        //就直接使用数据库中的条目初始化 PROTOCOL_STR_TO_INT ， 用户协议ID和协议字符串之间的转换
-        if (iProtocolIdService.list().size() == 0){
+        //就判断是否需要重新加载使用数据库中的条目初始化 PROTOCOL_STR_TO_INT ， 用户协议ID和协议字符串之间的转换
+        if (iProtocolIdService.list().size() == 0 ){
             List<ProtocolId> protocolIds = new ArrayList<>();
             Class<PACKET_PROTOCOL> packet_protocolClass = PACKET_PROTOCOL.class;
             Field[] allField = packet_protocolClass.getDeclaredFields();
@@ -56,7 +73,7 @@ public class InitConfigurationService implements ApplicationRunner {
                     String protocol_name = (String) field.get(null);
                     int protocol_id = (int) packet_protocolClass.getDeclaredField(field.getName() + "_ID").get(null);
                     Common.PROTOCOL_STR_TO_INT.put(protocol_id,protocol_name);
-                    CommonConfigUtil.addProtocolFuncodeMeaning(protocol_name,new HashMap<>());
+                    //CommonConfigUtil.addProtocolFuncodeMeaning(protocol_name,new HashMap<>());
                     protocolIds.add(new ProtocolId(protocol_id , protocol_name));
                 }
             }
@@ -65,11 +82,14 @@ public class InitConfigurationService implements ApplicationRunner {
             List<ProtocolId> list = iProtocolIdService.list();
             for (ProtocolId protocolId : list) {
                 Common.PROTOCOL_STR_TO_INT.put(protocolId.getProtocolId() , protocolId.getProtocolName());
-                CommonConfigUtil.addProtocolFuncodeMeaning(protocolId.getProtocolName(),new HashMap<>());
+                //CommonConfigUtil.addProtocolFuncodeMeaning(protocolId.getProtocolName(),new HashMap<>());
             }
         }
-        if(iConfigurationSettingService.list().size() == 0) {
-            log.info("no configuration in database and ready to load from libs ... ");
+
+        if(reload || iConfigurationSettingService.list().size() == 0) {
+            if(!reload) {
+                log.info("no configuration in database and ready to load from libs ... ");
+            }
             /*
              * INIT ALL FUN_CODE MAP
              */
@@ -117,9 +137,11 @@ public class InitConfigurationService implements ApplicationRunner {
          ***************************/
         ServiceLoader<IArtDecode> artLoader = ServiceLoader.load(IArtDecode.class);
         Map<String,IArtDecode> artServiceMap = new HashMap<>();
-        for (IArtDecode iArtDecode : artLoader) {
-            artServiceMap.put(iArtDecode.protocol(),iArtDecode);
-        }
+//        for (IArtDecode iArtDecode : artLoader) {
+//            artServiceMap.put(iArtDecode.protocol(),iArtDecode);
+//        }
+        S7commDecode s7commDecode = new S7commDecode();
+        artServiceMap.put(s7commDecode.protocol(),s7commDecode);
         ART_FILTER = new ArtAnalyzer(artServiceMap);
 
         /**************************

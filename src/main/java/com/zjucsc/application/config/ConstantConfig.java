@@ -21,4 +21,5 @@ public class ConstantConfig {
     private String systemPropertiesName; // 注入操作系统属性
 
     private boolean openAOPLog;
+
 }

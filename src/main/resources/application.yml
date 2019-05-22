@@ -44,7 +44,7 @@ spring:
   boot:
     admin:
       client:
-        #url : http://${myconfig.global_address}:${myconfig.admin_server_port}
+        url : http://${myconfig.global_address}:${myconfig.admin_server_port}
         instance:
           prefer-ip: true
           service-base-url: http://${myconfig.global_address}:${myconfig.packet_master_web_port}

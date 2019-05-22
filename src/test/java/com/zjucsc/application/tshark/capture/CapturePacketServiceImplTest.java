@@ -65,13 +65,12 @@ public class CapturePacketServiceImplTest {
     @Test
     @SuppressWarnings("unchecked")
     public void allPacketSendTest() throws InterruptedException {
-        CommonCacheUtil.addOrUpdateDeviceNumberAndIp("1232211521", "10.30.11.120");
         packetController.startRecvRealTimePacket();
         CaptureService captureService = new CaptureService();
         captureService.setMacAddress(macAddressForWin);
         captureService.setService_ip("192.168.0.121");
         captureService.setService_name("en0");
         packetController.startCaptureService(captureService);
-        Thread.sleep(200000);
+        Thread.sleep(20000000);
     }
 }

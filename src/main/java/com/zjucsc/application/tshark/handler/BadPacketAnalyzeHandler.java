@@ -17,6 +17,7 @@ import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.PacketDecodeUtil;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -68,11 +69,16 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
         super(executor);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Void handle(Object t) {
         FvDimensionLayer layer = ((FvDimensionLayer) t);
         //五元组分析，如果正常，则回调进行操作码分析，如果操作码正常，则回调进行工艺参数分析
         protocolAnalyze(layer);
+        Object res = ART_FILTER.analyze(layer.tcp_payload[0] , layer.frame_protocols[0]);
+        if(res!=null){
+            StatisticsData.addArtMapData((Map)res);
+        }
         return null;
     }
 
@@ -178,10 +184,11 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
                     badPacket.setDeviceNumber(deviceNumber);
                     statisticsBadPacket(badPacket , deviceNumber);
                 }else{
-                    Object res = ART_FILTER.analyze(layer.tcp_payload[0] , layer.frame_protocols[0]);
-                    if (res!=null){
-                        SocketServiceCenter.updateAllClient(SocketIoEvent.GRAPH_INFO,res);
-                    }
+//                    Object res = ART_FILTER.analyze(layer.tcp_payload[0] , layer.frame_protocols[0]);
+//                    System.out.println(res);
+//                    if (res!=null){
+//                        SocketServiceCenter.updateAllClient(SocketIoEvent.GRAPH_INFO,res);
+//                    }
                 }
             }else{
                 log.debug("can not find protocol {} 's operation analyzer" , layer.frame_protocols[0]);

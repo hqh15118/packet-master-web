@@ -35,16 +35,16 @@ public class CommonOptFilterUtil {
         }
 
         for (OptFilter optFilter : optFilters) {
-            String protocolName = CommonCacheUtil.convertIdToName(optFilter.getProtocol_id());
+            String protocolName = CommonCacheUtil.convertIdToName(optFilter.getProtocolId());
             analyzerMap.putIfAbsent(protocolName,new OperationAnalyzer(new OperationPacketFilter<>(filterName)));
             int filterType = optFilter.getFilterType();
             if (filterType == 0){
                 //white
-                analyzerMap.get(protocolName).getAnalyzer().addWhiteRule(optFilter.getFun_code(),
-                        CommonConfigUtil.getTargetProtocolFuncodeMeanning(protocolName,optFilter.getFun_code()));
+                analyzerMap.get(protocolName).getAnalyzer().addWhiteRule(optFilter.getFunCode(),
+                        CommonConfigUtil.getTargetProtocolFuncodeMeanning(protocolName,optFilter.getFunCode()));
             }else{
-                analyzerMap.get(protocolName).getAnalyzer().addBlackRule(optFilter.getFun_code(),
-                        CommonConfigUtil.getTargetProtocolFuncodeMeanning(protocolName,optFilter.getFun_code()));
+                analyzerMap.get(protocolName).getAnalyzer().addBlackRule(optFilter.getFunCode(),
+                        CommonConfigUtil.getTargetProtocolFuncodeMeanning(protocolName,optFilter.getFunCode()));
             }
         }
         Common.OPERATION_FILTER_PRO.put(deviceIp, analyzerMap);

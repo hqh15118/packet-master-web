@@ -72,11 +72,11 @@ public class OptFilterServiceImpl extends ServiceImpl<OptFilterMapper, OptFilter
             OptFilter optFilter = new OptFilter();
             optFilter.setFilterType(iOptFilter.getFilterType());
             optFilter.setDeviceNumber(deviceNumber);
-            optFilter.setUser_name(userName);
-            optFilter.setProtocol_id(protocolId);
-            optFilter.setFun_code(iOptFilter.getFunCode());
+            optFilter.setUserName(userName);
+            optFilter.setProtocolId(protocolId);
+            optFilter.setFunCode(iOptFilter.getFunCode());
+            optFilter.setGplotId(Common.GPLOT_ID);
             optFilters.add(optFilter);
-
             //更新该协议下的过滤器
             if (iOptFilter.getFilterType() == 0){
                 //白名单

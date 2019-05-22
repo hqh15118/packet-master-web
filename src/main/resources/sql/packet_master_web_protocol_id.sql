@@ -1,0 +1,16 @@
+INSERT INTO packet_master_web.protocol_id (id, protocol_id, protocol_name) VALUES (58, 1, 'modbus');
+INSERT INTO packet_master_web.protocol_id (id, protocol_id, protocol_name) VALUES (59, 2, 's7comm');
+INSERT INTO packet_master_web.protocol_id (id, protocol_id, protocol_name) VALUES (60, 3, 's7comm_job');
+INSERT INTO packet_master_web.protocol_id (id, protocol_id, protocol_name) VALUES (61, 4, 's7comm_ack_data');
+INSERT INTO packet_master_web.protocol_id (id, protocol_id, protocol_name) VALUES (62, 5, 'tcp');
+INSERT INTO packet_master_web.protocol_id (id, protocol_id, protocol_name) VALUES (63, 6, 'ipv4');
+INSERT INTO packet_master_web.protocol_id (id, protocol_id, protocol_name) VALUES (64, 7, 'udp');
+INSERT INTO packet_master_web.protocol_id (id, protocol_id, protocol_name) VALUES (65, -1, 'unknown packet');
+INSERT INTO packet_master_web.protocol_id (id, protocol_id, protocol_name) VALUES (66, 8, 'arp');
+INSERT INTO packet_master_web.protocol_id (id, protocol_id, protocol_name) VALUES (67, 9, 'ipv6');
+INSERT INTO packet_master_web.protocol_id (id, protocol_id, protocol_name) VALUES (68, -2, 'five_dimension');
+INSERT INTO packet_master_web.protocol_id (id, protocol_id, protocol_name) VALUES (69, 10, 'dns');
+INSERT INTO packet_master_web.protocol_id (id, protocol_id, protocol_name) VALUES (70, 11, 'ethernet');
+INSERT INTO packet_master_web.protocol_id (id, protocol_id, protocol_name) VALUES (71, 12, 'opcaua');
+INSERT INTO packet_master_web.protocol_id (id, protocol_id, protocol_name) VALUES (96, -100, 'unknown');
+INSERT INTO packet_master_web.protocol_id (id, protocol_id, protocol_name) VALUES (97, 13, 'iec104');

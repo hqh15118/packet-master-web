@@ -33,7 +33,7 @@ public class SocketIOClient {
             @Override
             public void call(Object... args) {
                 for (Object arg : args) {
-                    //System.out.println("bad packet + " + arg);
+                    System.out.println("bad packet + " + arg);
                 }
             }
 
@@ -42,7 +42,7 @@ public class SocketIOClient {
             public void call(Object... objects) {
                 for (Object object : objects) {
                     receivedPacket++;
-                    //System.out.println("all :" + object);
+                    System.out.println("all :" + object);
                 }
             }
         }).on(SocketIoEvent.STATISTICS_PACKET, new Emitter.Listener() {
@@ -77,7 +77,7 @@ public class SocketIOClient {
               @Override
               public void call(Object... objects) {
                   for (Object object : objects) {
-                      System.out.println("graph info" + object);
+                      //System.out.println("graph info" + object);
                   }
               }
           });

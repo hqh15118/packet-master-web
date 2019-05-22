@@ -1,0 +1,47 @@
+{
+    "_index": "packets-2019-05-22",
+    "_type": "pcap_file",
+    "_score": null,
+    "_source": {
+      "layers": {
+        "frame": {
+          "frame.encap_type": "1",
+          "frame.time": "May 22, 2019 14:04:29.910473000 \u00e4\u00b8\u00ad\u00e5\u009b\u00bd\u00e6\u00a0\u0087\u00e5\u0087\u0086\u00e6\u0097\u00b6\u00e9\u0097\u00b4",
+          "frame.offset_shift": "0.000000000",
+          "frame.time_epoch": "1558505069.910473000",
+          "frame.time_delta": "0.000000000",
+          "frame.time_delta_displayed": "0.000000000",
+          "frame.time_relative": "0.000000000",
+          "frame.number": "1",
+          "frame.len": "90",
+          "frame.cap_len": "90",
+          "frame.marked": "0",
+          "frame.ignored": "0",
+          "frame.protocols": "eth:ethertype:data"
+        },
+        "eth": {
+          "eth.dst": "01:15:4e:00:00:01",
+          "eth.dst_tree": {
+            "eth.dst_resolved": "01:15:4e:00:00:01",
+            "eth.addr": "01:15:4e:00:00:01",
+            "eth.addr_resolved": "01:15:4e:00:00:01",
+            "eth.lg": "0",
+            "eth.ig": "1"
+          },
+          "eth.src": "00:1b:1b:12:73:a2",
+          "eth.src_tree": {
+            "eth.src_resolved": "00:1b:1b:12:73:a2",
+            "eth.addr": "00:1b:1b:12:73:a2",
+            "eth.addr_resolved": "00:1b:1b:12:73:a2",
+            "eth.lg": "0",
+            "eth.ig": "0"
+          },
+          "eth.type": "0x000088e3"
+        },
+        "data": {
+          "data.data": "00:01:02:12:a0:00:00:1b:1b:12:73:a1:00:00:00:00:00:00:ed:3f:69:ea:01:12:52:60:c3:d6:87:fe:78:9e:03:a1:ac:db:e5:bf:cb:bc:27:b6:7f:06:08:00:06:00:00:00:00:00:00:03:0d:0d:fc:6b:67:08:e1:71:b5:90:fc:6b:67:08:e1:71:b6:00:00:00:00:67",
+          "data.len": "76"
+        }
+      }
+    }
+  }

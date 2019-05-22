@@ -48,7 +48,7 @@ public class OptFilterController {
             cache = true;
         }
         CompletableFuture<List<Integer>> future =  iOptFilterService.getTargetExistIdFilter(
-                optRulePullForFront.getDeviceId(),optRulePullForFront.getType(),cache,optRulePullForFront.getProtocolId()
+                optRulePullForFront.getDeviceNumber(),optRulePullForFront.getType(),cache,optRulePullForFront.getProtocolId()
         );
         return BaseResponse.OK(future.get());
     }

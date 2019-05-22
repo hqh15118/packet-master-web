@@ -269,6 +269,7 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/src/main/resources/libs/protocolmap.jar</systemPath>
         </dependency>
+
     </dependencies>
 
     <!--<build>-->
