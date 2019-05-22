@@ -1,43 +1,43 @@
 Manifest-Version: 1.0
-Class-Path: shiro-event-1.4.0.jar shiro-crypto-cipher-1.4.0.jar p6spy-
- 3.8.1.jar dom4j-1.6.1.jar spring-tx-5.1.6.RELEASE.jar jackson-annotat
- ions-2.9.0.jar aspectjweaver-1.9.2.jar poi-ooxml-3.17.jar jul-to-slf4
- j-1.7.26.jar spring-boot-2.1.4.RELEASE.jar mybatis-plus-generator-3.1
- .0.jar netty-all-4.1.35.Final.jar spring-context-5.1.6.RELEASE.jar jn
- a-5.2.0.jar spring-boot-autoconfigure-2.1.4.RELEASE.jar shiro-crypto-
- hash-1.4.0.jar spring-context-support-5.1.6.RELEASE.jar shiro-web-1.4
- .0.jar mapstruct-1.0.0.Final.jar java-jwt-3.4.1.jar spring-boot-start
- er-2.1.4.RELEASE.jar netty-codec-http-4.1.34.Final.jar springfox-spri
- ng-web-2.6.1.jar spring-retry-1.2.4.RELEASE.jar spring-web-5.1.6.RELE
- ASE.jar spring-boot-starter-actuator-2.0.4.RELEASE.jar shiro-spring-1
- .4.0.jar listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.j
- ar jsr305-3.0.2.jar commons-collections-3.2.2.jar failureaccess-1.0.1
- .jar springfox-spi-2.6.1.jar mybatis-plus-core-3.1.0.jar netty-socket
- io-1.7.17.jar logback-classic-1.2.3.jar netty-transport-native-unix-c
- ommon-4.1.34.Final.jar springfox-swagger-ui-2.6.1.jar commons-beanuti
- ls-1.9.3.jar tomcat-embed-el-9.0.17.jar spring-boot-starter-web-2.1.4
- .RELEASE.jar dynamic-datasource-spring-boot-starter-2.5.1.jar commons
- -codec-1.11.jar spring-boot-starter-logging-2.1.4.RELEASE.jar validat
- ion-api-2.0.1.Final.jar lombok-1.18.6.jar shiro-cache-1.4.0.jar sprin
- g-jcl-5.1.6.RELEASE.jar netty-handler-4.1.34.Final.jar xml-apis-1.4.0
- 1.jar jackson-datatype-jsr310-2.9.8.jar spring-aop-5.1.6.RELEASE.jar 
- spring-kafka-2.2.6.RELEASE.jar spring-core-5.1.6.RELEASE.jar spring-b
- oot-starter-cache-2.1.4.RELEASE.jar javax.annotation-api-1.3.2.jar my
- batis-spring-2.0.0.jar spring-boot-admin-client-2.1.5.jar mybatis-plu
- s-3.1.0.jar jolokia-core-1.6.0.jar art_decode.jar protocolmap.jar sna
- ppy-java-1.1.7.1.jar commons-collections4-4.1.jar ExcelKit-2.0.7.jar 
- spring-boot-actuator-2.1.4.RELEASE.jar spring-boot-starter-json-2.1.4
- .RELEASE.jar springfox-swagger2-2.6.1.jar netty-codec-4.1.34.Final.ja
- r springfox-core-2.6.1.jar spring-boot-configuration-processor-2.1.4.
- RELEASE.jar curvesapi-1.04.jar netty-buffer-4.1.34.Final.jar guava-27
- .1-jre.jar jaxen-1.1.6.jar spring-boot-admin-starter-client-2.1.5.jar
-  tomcat-embed-core-9.0.17.jar xercesImpl-2.11.0.jar spring-boot-start
- er-jdbc-2.1.4.RELEASE.jar j2objc-annotations-1.1.jar spring-boot-actu
- ator-autoconfigure-2.1.4.RELEASE.jar checker-qual-2.5.2.jar jboss-log
- ging-3.3.2.Final.jar tomcat-embed-websocket-9.0.17.jar snakeyaml-1.23
- .jar swagger-annotations-1.5.10.jar LatencyUtils-2.0.3.jar poi-ooxml-
- schemas-3.17.jar commons-logging-1.2.jar spring-jdbc-5.1.6.RELEASE.ja
- r poi-3.17.jar mybatis-plus-boot-starter-3.1.0.jar classmate-1.4.0.ja
+Class-Path: shiro-event-1.4.0.jar shiro-crypto-cipher-1.4.0.jar dynami
+ c-datasource-spring-boot-starter-2.5.4.jar p6spy-3.8.1.jar dom4j-1.6.
+ 1.jar spring-tx-5.1.6.RELEASE.jar jackson-annotations-2.9.0.jar aspec
+ tjweaver-1.9.2.jar poi-ooxml-3.17.jar jul-to-slf4j-1.7.26.jar spring-
+ boot-2.1.4.RELEASE.jar mybatis-plus-generator-3.1.0.jar netty-all-4.1
+ .35.Final.jar spring-context-5.1.6.RELEASE.jar jna-5.2.0.jar spring-b
+ oot-autoconfigure-2.1.4.RELEASE.jar shiro-crypto-hash-1.4.0.jar sprin
+ g-context-support-5.1.6.RELEASE.jar shiro-web-1.4.0.jar mapstruct-1.0
+ .0.Final.jar java-jwt-3.4.1.jar spring-boot-starter-2.1.4.RELEASE.jar
+  netty-codec-http-4.1.34.Final.jar springfox-spring-web-2.6.1.jar spr
+ ing-retry-1.2.4.RELEASE.jar spring-web-5.1.6.RELEASE.jar spring-boot-
+ starter-actuator-2.0.4.RELEASE.jar shiro-spring-1.4.0.jar listenablef
+ uture-9999.0-empty-to-avoid-conflict-with-guava.jar jsr305-3.0.2.jar 
+ commons-collections-3.2.2.jar failureaccess-1.0.1.jar springfox-spi-2
+ .6.1.jar mybatis-plus-core-3.1.0.jar netty-socketio-1.7.17.jar logbac
+ k-classic-1.2.3.jar netty-transport-native-unix-common-4.1.34.Final.j
+ ar springfox-swagger-ui-2.6.1.jar commons-beanutils-1.9.3.jar tomcat-
+ embed-el-9.0.17.jar mybatis-plus-boot-starter-3.1.0.jar commons-codec
+ -1.11.jar spring-boot-starter-logging-2.1.4.RELEASE.jar validation-ap
+ i-2.0.1.Final.jar lombok-1.18.6.jar shiro-cache-1.4.0.jar spring-jcl-
+ 5.1.6.RELEASE.jar netty-handler-4.1.34.Final.jar xml-apis-1.4.01.jar 
+ jackson-datatype-jsr310-2.9.8.jar spring-aop-5.1.6.RELEASE.jar spring
+ -kafka-2.2.6.RELEASE.jar spring-core-5.1.6.RELEASE.jar spring-boot-st
+ arter-cache-2.1.4.RELEASE.jar javax.annotation-api-1.3.2.jar mybatis-
+ spring-2.0.0.jar spring-boot-admin-client-2.1.5.jar mybatis-plus-3.1.
+ 0.jar jolokia-core-1.6.0.jar art_decode.jar protocolmap.jar snappy-ja
+ va-1.1.7.1.jar commons-collections4-4.1.jar ExcelKit-2.0.7.jar spring
+ -boot-actuator-2.1.4.RELEASE.jar spring-boot-starter-json-2.1.4.RELEA
+ SE.jar springfox-swagger2-2.6.1.jar netty-codec-4.1.34.Final.jar spri
+ ngfox-core-2.6.1.jar spring-boot-configuration-processor-2.1.4.RELEAS
+ E.jar curvesapi-1.04.jar netty-buffer-4.1.34.Final.jar guava-27.1-jre
+ .jar jaxen-1.1.6.jar spring-boot-admin-starter-client-2.1.5.jar tomca
+ t-embed-core-9.0.17.jar xercesImpl-2.11.0.jar spring-boot-starter-jdb
+ c-2.1.4.RELEASE.jar j2objc-annotations-1.1.jar spring-boot-actuator-a
+ utoconfigure-2.1.4.RELEASE.jar checker-qual-2.5.2.jar jboss-logging-3
+ .3.2.Final.jar tomcat-embed-websocket-9.0.17.jar snakeyaml-1.23.jar s
+ wagger-annotations-1.5.10.jar LatencyUtils-2.0.3.jar poi-ooxml-schema
+ s-3.17.jar commons-logging-1.2.jar spring-jdbc-5.1.6.RELEASE.jar poi-
+ 3.17.jar spring-boot-starter-web-2.1.4.RELEASE.jar classmate-1.4.0.ja
  r mybatis-plus-extension-3.1.0.jar fastjson-1.2.56.jar jackson-core-2
  .9.8.jar HdrHistogram-2.1.9.jar mybatis-plus-annotation-3.1.0.jar ip2
  region-1.7.2.jar protocol_map_s7.jar protocol_map_opcua.jar protocol_
