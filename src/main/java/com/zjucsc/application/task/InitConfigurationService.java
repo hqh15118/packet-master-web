@@ -9,7 +9,6 @@ import com.zjucsc.application.config.auth.Auth;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.application.system.entity.ConfigurationSetting;
 import com.zjucsc.application.system.entity.ProtocolId;
-import com.zjucsc.application.system.service.iservice.IArtService;
 import com.zjucsc.application.system.service.iservice.IConfigurationSettingService;
 import com.zjucsc.application.system.service.iservice.IProtocolIdService;
 import com.zjucsc.application.tshark.analyzer.ArtAnalyzer;

@@ -10,16 +10,12 @@
         <version>2.1.4.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
+
     <groupId>com.zjucsc</groupId>
     <artifactId>packet-master-web</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>packet-master-web</name>
     <description>project for Spring Boot</description>
-
-    <modules>
-        <module>protocolmap</module>
-        <module>art_decode</module>
-    </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -27,6 +23,12 @@
         <java.version>1.8</java.version>
         <mybatis-plus.version>3.1.0</mybatis-plus.version>
     </properties>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.1.4.RELEASE</version>
+    </parent>
 
     <dependencies>
         <dependency>
@@ -42,7 +44,7 @@
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
-            <version>2.5.1</version>
+            <version>2.5.4</version>
         </dependency>
         <!-- mybatis-plus -->
         <dependency>
@@ -201,12 +203,12 @@
             </exclusions>
         </dependency>
 
-            <dependency>
-                <groupId>io.socket</groupId>
-                <artifactId>socket.io-client</artifactId>
-                <version>1.0.0</version>
-                <scope>test</scope>
-            </dependency>
+        <dependency>
+            <groupId>io.socket</groupId>
+            <artifactId>socket.io-client</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.pcap4j</groupId>
@@ -254,25 +256,48 @@
 
         <dependency>
             <groupId>com.zjucsc</groupId>
-            <artifactId>protocolmap</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <artifactId>art_decode</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/libs/art_decode.jar</systemPath>
         </dependency>
 
         <dependency>
             <groupId>com.zjucsc</groupId>
-            <artifactId>art_decode</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <artifactId>protocolmap</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/libs/protocolmap.jar</systemPath>
         </dependency>
-
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
+    <!--<build>-->
+        <!--<resources>-->
+            <!--<resource>-->
+                <!--<directory>${project.basedir}/src/main/resources/libs</directory>-->
+                <!--<targetPath>BOOT-INF/lib/</targetPath>-->
+                <!--<includes>-->
+                    <!--<include>**/*.jar</include>-->
+                <!--</includes>-->
+            <!--</resource>-->
+            <!--<resource>-->
+                <!--<directory>src/main/resources</directory>-->
+                <!--<targetPath>BOOT-INF/classes/</targetPath>-->
+            <!--</resource>-->
+        <!--</resources>-->
+        <!--<plugins>-->
+            <!--<plugin>-->
+                <!--<groupId>org.springframework.boot</groupId>-->
+                <!--<artifactId>spring-boot-maven-plugin</artifactId>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<goals>-->
+                            <!--<goal>repackage</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
+        <!--</plugins>-->
+    <!--</build>-->
 
 </project>

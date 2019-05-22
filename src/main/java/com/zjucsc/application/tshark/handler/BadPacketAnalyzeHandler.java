@@ -1,12 +1,10 @@
 package com.zjucsc.application.tshark.handler;
 
-import com.corundumstudio.socketio.SocketIOServer;
 import com.zjucsc.application.config.DangerLevel;
 import com.zjucsc.application.config.SocketIoEvent;
 import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.application.socketio.SocketServiceCenter;
-import com.zjucsc.application.system.entity.FvDimensionFilter;
 import com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
 import com.zjucsc.application.tshark.decode.AbstractAsyncHandler;
@@ -19,16 +17,12 @@ import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.PacketDecodeUtil;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.BiConsumer;
 
-import static com.zjucsc.application.config.Common.ART_FILTER;
-import static com.zjucsc.application.config.Common.FV_DIMENSION_FILTER_PRO;
-import static com.zjucsc.application.config.Common.OPERATION_FILTER_PRO;
+import static com.zjucsc.application.config.Common.*;
 import static com.zjucsc.application.config.PACKET_PROTOCOL.MODBUS;
 import static com.zjucsc.application.config.PACKET_PROTOCOL.S7;
 
