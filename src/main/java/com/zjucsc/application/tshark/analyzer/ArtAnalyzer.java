@@ -29,7 +29,7 @@ public class ArtAnalyzer extends AbstractAnalyzer<Map<String, IArtDecode>> imple
         if ((iArtDecode = getAnalyzer().get(protocol))!=null){
             return iArtDecode.decode(CommonUtil.getGlobalArtMap(),tcpPayloadArrInByte);
         }else {
-            log.debug("can not decode art args of protocol : {}" , protocol);
+            //log.debug("can not decode art args of protocol : {}" , protocol);
             return null;
         }
     }
