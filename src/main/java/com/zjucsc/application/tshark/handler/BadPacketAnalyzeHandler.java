@@ -30,41 +30,6 @@ import static com.zjucsc.application.config.PACKET_PROTOCOL.S7;
 @Slf4j
 public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
 
-    /**
-     * 五元组分析变量【ThreadLocal】
-     */
-//    private ThreadLocal<AnalyzerConsumerForFVDimension> analyzerThreadlocalForFvDimension
-//            = ThreadLocal.withInitial(() -> {
-//                AnalyzerConsumerForFVDimension analyzerConsumerForFVDimension = new AnalyzerConsumerForFVDimension();
-//                analyzerConsumerForFVDimension.setFvOKCallback(layer -> {
-//                    //功能码分析
-//                    if (!(layer instanceof UnknownPacket.LayersBean)) {
-//                        int funCode = decodeFuncode(layer);
-//                        if (funCode!=0) {
-//                            operationAnalyze(funCode, layer);
-//                        }
-//                    }
-//                });
-//                return analyzerConsumerForFVDimension;
-//            });
-    /**
-     * 功能码操作分析
-     */
-//    private ThreadLocal<AnalyzerConsumerForOperation> analyzerThreadlocalForOperation
-//            = new ThreadLocal<AnalyzerConsumerForOperation>(){
-//        @Override
-//        protected AnalyzerConsumerForOperation initialValue() {
-//            AnalyzerConsumerForOperation analyzerConsumerForOperation = new AnalyzerConsumerForOperation();
-//            analyzerConsumerForOperation.setOkCallback(new OKCallback() {
-//                @Override
-//                public void callback(FvDimensionLayer layer) {
-//                    //工艺参数分析
-//                }
-//            });
-//            return analyzerConsumerForOperation;
-//        }
-//    };
-
     public BadPacketAnalyzeHandler(ExecutorService executor) {
         super(executor);
     }
@@ -75,6 +40,8 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
         FvDimensionLayer layer = ((FvDimensionLayer) t);
         //五元组分析，如果正常，则回调进行操作码分析，如果操作码正常，则回调进行工艺参数分析
         protocolAnalyze(layer);
+
+        //工艺参数分析
         Object res = ART_FILTER.analyze(layer.tcp_payload[0] , layer.frame_protocols[0]);
         if(res!=null){
             StatisticsData.addArtMapData((Map)res);
@@ -125,7 +92,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
                 }
             }
         }else{
-            log.debug("not define ip : {} 's fv_dimension_filter" , layer.ip_dst[0]);
+            log.debug("not define ip : {}  fv_dimension_filter" , layer.ip_dst[0]);
         }
     }
 

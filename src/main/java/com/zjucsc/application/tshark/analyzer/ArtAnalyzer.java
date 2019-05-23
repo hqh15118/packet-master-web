@@ -23,15 +23,26 @@ public class ArtAnalyzer extends AbstractAnalyzer<Map<String, IArtDecode>> imple
         //System.out.println(tcpPayload);
         String protocol = ((String) objs[1]);
         byte[] tcpPayloadArrInByte = PacketDecodeUtil.hexStringToByteArray(tcpPayload);
-        IArtDecode iArtDecode = null;
-        if (protocol.contains("s7comm")){
-            protocol = "s7comm";
-        }
+        protocol = transferProtocol(protocol);
+
+        IArtDecode iArtDecode;
         if ((iArtDecode = getAnalyzer().get(protocol))!=null){
             return iArtDecode.decode(CommonUtil.getGlobalArtMap(),tcpPayloadArrInByte);
         }else {
             log.debug("can not decode art args of protocol : {}" , protocol);
             return null;
         }
+    }
+
+    /**
+     *
+     * @param rawProtocol 原始协议字符串
+     * @return 一些协议需要更改
+     */
+    private String transferProtocol(String rawProtocol){
+        if (rawProtocol.contains("s7comm")){
+            rawProtocol = "s7comm";
+        }
+        return rawProtocol;
     }
 }
