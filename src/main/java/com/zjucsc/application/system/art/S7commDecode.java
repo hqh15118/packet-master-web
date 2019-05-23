@@ -1,11 +1,9 @@
 package com.zjucsc.application.system.art;
 
 import com.zjucsc.AttackType;
-import com.zjucsc.Bytecut;
 import com.zjucsc.IArtDecode;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
