@@ -20,5 +20,10 @@ public abstract class AbstractAnalyzer<T> implements Analyzed {
         return analyzer;
     }
 
-
+    @Override
+    public String toString() {
+        return "AbstractAnalyzer{" +
+                "analyzer=" + analyzer +
+                '}';
+    }
 }

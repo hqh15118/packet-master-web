@@ -5,6 +5,7 @@ import com.zjucsc.application.config.DangerLevel;
 import com.zjucsc.application.system.entity.FvDimensionFilter;
 import com.zjucsc.application.tshark.domain.bean.BadPacket;
 import com.zjucsc.application.tshark.domain.packet.FvDimensionLayer;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -22,6 +23,7 @@ import static com.zjucsc.application.config.PACKET_PROTOCOL.OTHER;
  * #create_time 2019-05-02 - 22:10
  */
 @Slf4j
+@Data
 public class FiveDimensionPacketFilter {
 
     private static final String DST_IP_WHITE = "dst_ip_white";
