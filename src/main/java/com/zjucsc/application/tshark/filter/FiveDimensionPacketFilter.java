@@ -5,6 +5,7 @@ import com.zjucsc.application.config.DangerLevel;
 import com.zjucsc.application.system.entity.FvDimensionFilter;
 import com.zjucsc.application.tshark.domain.bean.BadPacket;
 import com.zjucsc.application.tshark.domain.packet.FvDimensionLayer;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -22,6 +23,7 @@ import static com.zjucsc.application.config.PACKET_PROTOCOL.OTHER;
  * #create_time 2019-05-02 - 22:10
  */
 @Slf4j
+@Data
 public class FiveDimensionPacketFilter {
 
     private static final String DST_IP_WHITE = "dst_ip_white";
@@ -213,20 +215,24 @@ public class FiveDimensionPacketFilter {
 
     public BadPacket OK(FvDimensionLayer layer){
         if (protocolWhiteMap.containsKey(layer.frame_protocols[0])
-            || srcPortWhiteMap.containsKey(layer.src_port[0])
-            || dstPortWhiteMap.containsKey(layer.dst_port[0])
-            || srcIpWhiteMap.containsKey(layer.ip_src[0])
-            || dstIpWhiteMap.containsKey(layer.ip_dst[0])
-            || dstMacAddressWhite.containsKey(layer.eth_dst[0])
-            || srcMacAddressWhite.containsKey(layer.eth_src[0])) {
+            && srcPortWhiteMap.containsKey(layer.src_port[0])
+            && dstPortWhiteMap.containsKey(layer.dst_port[0])
+            && srcIpWhiteMap.containsKey(layer.ip_src[0])
+            && dstIpWhiteMap.containsKey(layer.ip_dst[0])
+            && dstMacAddressWhite.containsKey(layer.eth_dst[0])
+            && srcMacAddressWhite.containsKey(layer.eth_src[0])) {
             return null;
         }
         else{
-            return new BadPacket.Builder(FV_DIMENSION)
-                    .set_five_Dimension(layer)
-                    .setDangerLevel(DangerLevel.DANGER)
-                    .setComment("五元组不存在于白名单")
-                    .build();
+            //System.out.println(layer.frame_protocols[0]);
+            if (layer.frame_protocols[0].equals("tcp"))
+                return new BadPacket.Builder(FV_DIMENSION)
+                        .set_five_Dimension(layer)
+                        .setDangerLevel(DangerLevel.DANGER)
+                        .setComment("五元组不存在于白名单")
+                        .build();
+            else
+                return null;
         }
     }
 

@@ -1,5 +1,7 @@
 package com.zjucsc.application.system.service.impl;
 
+import com.zjucsc.application.config.KafkaConfig;
+import com.zjucsc.application.domain.bean.LogBean;
 import com.zjucsc.application.domain.bean.StatisticsDataWrapper;
 import com.zjucsc.application.system.service.iservice.IKafkaService;
 import com.zjucsc.application.tshark.domain.packet.FvDimensionLayer;
@@ -11,14 +13,9 @@ import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
 @Service
+@SuppressWarnings("unchecked")
 public class KafkaServiceImpl implements IKafkaService {
     @Autowired private KafkaTemplate kafkaTemplate;
-
-    @SuppressWarnings("unchecked")
-    public void sendMsg(){
-        kafkaTemplate.send("test","fnhafoiabovga");
-        kafkaTemplate.flush();
-    }
 
     @Override
     public void sendAllPacket(FvDimensionLayer layer) {
@@ -28,5 +25,15 @@ public class KafkaServiceImpl implements IKafkaService {
     @Override
     public void sendStatisticsData(StatisticsDataWrapper wrapper) {
 
+    }
+
+    @Override
+    public void sendImportLog(LogBean logBean) {
+        kafkaTemplate.send(KafkaConfig.SEND_NORMAL_LOG,logBean);
+    }
+
+    @Override
+    public void sendNormalLog(LogBean logBean) {
+        kafkaTemplate.send(KafkaConfig.SEND_IMPORTANT_LOG,logBean);
     }
 }

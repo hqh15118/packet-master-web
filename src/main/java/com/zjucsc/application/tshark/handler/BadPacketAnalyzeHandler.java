@@ -1,8 +1,10 @@
 package com.zjucsc.application.tshark.handler;
 
+import com.zjucsc.application.config.AttackTypePro;
 import com.zjucsc.application.config.DangerLevel;
 import com.zjucsc.application.config.SocketIoEvent;
 import com.zjucsc.application.config.StatisticsData;
+import com.zjucsc.application.domain.bean.ThreadLocalWrapper;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.application.socketio.SocketServiceCenter;
 import com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer;
@@ -34,6 +36,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
         super(executor);
     }
 
+
     @SuppressWarnings("unchecked")
     @Override
     public Void handle(Object t) {
@@ -44,7 +47,16 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
         //工艺参数分析
         Object res = ART_FILTER.analyze(layer.tcp_payload[0] , layer.frame_protocols[0]);
         if(res!=null){
-            StatisticsData.addArtMapData((Map)res);
+            ThreadLocalWrapper threadLocalWrapper = (ThreadLocalWrapper)res;
+            StatisticsData.addArtMapData(threadLocalWrapper.getFloatMap());
+            if (threadLocalWrapper.getAttackTypeList()!=null && threadLocalWrapper.getAttackTypeList().size() > 0){
+                SocketServiceCenter.updateAllClient(SocketIoEvent.ATTACK_INFO,
+                        new BadPacket.Builder(AttackTypePro.HAZARD_ART)
+                            .setDangerLevel(DangerLevel.VERY_DANGER)
+                            .set_five_Dimension(layer)
+                            .build());
+                threadLocalWrapper.getAttackTypeList().clear();
+            }
         }
         return null;
     }

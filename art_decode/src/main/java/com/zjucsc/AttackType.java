@@ -1,6 +1,7 @@
 package com.zjucsc;
 
 public enum AttackType {
-    DDOS,
-    HAZARD_ART
+    D_DOS,
+    HAZARD_ART,
+    TAMPER_ATTACK
 }

@@ -138,6 +138,7 @@ public class PacketDecodeUtil {
      * @return 功能码int
      */
     public static int decodeFuncode(String protocol , String str_fun_code ){
+        //System.out.println(protocol);
         int fun_code = -1;
         try {
             switch (protocol) {
@@ -148,7 +149,8 @@ public class PacketDecodeUtil {
                 case S7_Ack_data:
                 case S7_JOB:
                 case IEC104:
-                    fun_code = Integer.decode(str_fun_code);
+//                    System.out.println(fun_code);
+                    //fun_code = Integer.decode(str_fun_code);
                     break;
             }
         }catch (NumberFormatException e){

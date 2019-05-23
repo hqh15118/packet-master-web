@@ -14,8 +14,5 @@ public class KafkaServiceTest {
 
     @Autowired private KafkaServiceImpl kafkaServiceImpl;
 
-    @Test
-    public void sendMsg() {
-        kafkaServiceImpl.sendMsg();
-    }
+
 }

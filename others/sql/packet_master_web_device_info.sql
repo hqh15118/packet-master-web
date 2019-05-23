@@ -32,5 +32,7 @@ INSERT INTO packet_master_web.device_info (device_id, device_number, device_type
 INSERT INTO packet_master_web.device_info (device_id, device_number, device_type, device_tag, device_info, gplot_id) VALUES (49, 'test_device', 1, '192.168.0.131', 'infoinfo', 100);
 INSERT INTO packet_master_web.device_info (device_id, device_number, device_type, device_tag, device_info, gplot_id) VALUES (50, 'dfd78b21', 1, '10.30.11.5', '电脑1', 0);
 INSERT INTO packet_master_web.device_info (device_id, device_number, device_type, device_tag, device_info, gplot_id) VALUES (51, 'f2a361d1', 1, '10.30.11.120', '电脑', 0);
-INSERT INTO packet_master_web.device_info (device_id, device_number, device_type, device_tag, device_info, gplot_id) VALUES (98, '984ceb41', 1, '192.168.0.1', '123', 58);
-INSERT INTO packet_master_web.device_info (device_id, device_number, device_type, device_tag, device_info, gplot_id) VALUES (99, '785d6e76', 1, '192.168.0.11', '电脑', 58);
+INSERT INTO packet_master_web.device_info (device_id, device_number, device_type, device_tag, device_info, gplot_id) VALUES (108, 'd036a9a8', 1, '192.168.0.1', '操作员站', 58);
+INSERT INTO packet_master_web.device_info (device_id, device_number, device_type, device_tag, device_info, gplot_id) VALUES (109, 'e4dc59d4', 1, '192.168.0.121', '电脑', 58);
+INSERT INTO packet_master_web.device_info (device_id, device_number, device_type, device_tag, device_info, gplot_id) VALUES (110, '9e6d83cd', 4, '3', '采集器', 58);
+INSERT INTO packet_master_web.device_info (device_id, device_number, device_type, device_tag, device_info, gplot_id) VALUES (111, '9b5347c9', 5, '192.168.0.11', 'PLC11', 58);

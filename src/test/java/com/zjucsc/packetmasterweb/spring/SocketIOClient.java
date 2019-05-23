@@ -23,7 +23,7 @@ public class SocketIOClient {
         socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-                System.out.println("connect successfully");
+                //System.out.println("connect successfully");
                 //socket.emit("foo", "hi");
                 //socket.disconnect();
             }
@@ -42,14 +42,14 @@ public class SocketIOClient {
             public void call(Object... objects) {
                 for (Object object : objects) {
                     receivedPacket++;
-                    System.out.println("all :" + object);
+                    //System.out.println("all :" + object);
                 }
             }
         }).on(SocketIoEvent.STATISTICS_PACKET, new Emitter.Listener() {
             @Override
             public void call(Object... objects) {
                 for (Object object : objects) {
-                    System.out.println("statistics " + object);
+                    //System.out.println("statistics " + object);
                 }
             }
         }).on(SocketIoEvent.COLLECTOR_STATE, new Emitter.Listener() {
