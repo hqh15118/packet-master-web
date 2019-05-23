@@ -19,7 +19,6 @@ import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.PacketDecodeUtil;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -76,11 +75,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
     }
 
     private void protocolAnalyze(FvDimensionLayer layer) {
-        /*
-         * 调用五元组分析器进行解析【所有报文都需要进行五元组分析】
-         */
-        //FV_DIMENSION_FILTER_PRO.forEach(analyzerThreadlocalForFvDimension.get().setPacketWrapper(layer));
-        FiveDimensionAnalyzer fiveDimensionAnalyzer = null;
+        FiveDimensionAnalyzer fiveDimensionAnalyzer;
         //根据目的地址，定位到具体的报文过滤器进行分析
         if((fiveDimensionAnalyzer = FV_DIMENSION_FILTER_PRO.get(layer.ip_dst[0])) != null){
             BadPacket badPacket = ((BadPacket)fiveDimensionAnalyzer.analyze(layer));
@@ -104,7 +99,12 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
                 }
             }
         }else{
-            log.debug("not define ip : {}  fv_dimension_filter" , layer.ip_dst[0]);
+            BadPacket badPacket = new BadPacket.Builder(AttackTypePro.UNKNOW_DEVICE)
+                    .set_five_Dimension(layer)
+                    .setDangerLevel(DangerLevel.DANGER)
+                    .setComment("未知报文来源")
+                    .build();
+            SocketServiceCenter.updateAllClient(SocketIoEvent.BAD_PACKET,badPacket);
         }
     }
 

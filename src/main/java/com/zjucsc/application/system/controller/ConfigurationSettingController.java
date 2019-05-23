@@ -8,8 +8,10 @@ import com.zjucsc.application.system.service.iservice.IConfigurationSettingServi
 import com.zjucsc.application.system.service.iservice.IProtocolIdService;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.base.BaseResponse;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -41,9 +43,14 @@ public class ConfigurationSettingController {
         List<ConfigurationSetting> list = convertFrontAddingToEntity(configurationForFronts);
         if (list.size() > 0) {
             iConfigurationSettingService.saveOrUpdateBatch(list);
-        }
-        for (ConfigurationSetting configurationSetting : list) {
-
+            //更新到缓存
+            HashMap<Integer,String> funCodeMeaningMap = new HashMap<>();
+            for (ConfigurationSetting configurationSetting : list) {
+                funCodeMeaningMap.put(configurationSetting.getFunCode(),configurationSetting.getOpt());
+            }
+            CommonCacheUtil.addNewProtocolAndFuncodeMapToCache(configurationForFronts.getProtocolName(),
+                    convertNameToId(configurationForFronts.getProtocolName()),
+                    funCodeMeaningMap);
         }
         return BaseResponse.OK(convertNameToId(configurationForFronts.getProtocolName()));
     }
@@ -152,6 +159,10 @@ public class ConfigurationSettingController {
     @ApiOperation("功能码含义表查询")
     @PostMapping("/funcode_list")
     public BaseResponse selectConfigurationPageInfo(@RequestBody @Valid ConfigurationForSelect configurationForSelect){
+        return BaseResponse.OK(getConfigurationRe(configurationForSelect));
+    }
+
+    private ConfigurationForRe getConfigurationRe(ConfigurationForSelect configurationForSelect){
         List<ConfigurationWrapper> configurationWrappers = new ArrayList<>();
         for (ConfigurationSetting configuration : iConfigurationSettingService.selectConfigurationInfo(configurationForSelect)) {
             ConfigurationWrapper configurationWrapper = new ConfigurationWrapper(configuration.getFunCode() , configuration.getOpt());
@@ -161,8 +172,7 @@ public class ConfigurationSettingController {
         count.setProtocolId(configurationForSelect.getProtocolId());
         count.setCodeDes(configurationForSelect.getCodeDes());
         int count_Res = (int) getConfigurationSize(count).data;
-        ConfigurationForRe re = new ConfigurationForRe(count_Res , configurationWrappers);
-        return BaseResponse.OK(re);
+        return new ConfigurationForRe(count_Res , configurationWrappers);
     }
 
     @ApiOperation("协议ID获取")
@@ -194,6 +204,16 @@ public class ConfigurationSettingController {
         deleteCachedProtocolByID(protocolId);
         iProtocolIdService.removeByMap(map);
         return BaseResponse.OK();
+    }
+
+    @ApiOperation("查询指定协议列表下的所有功能码及含义")
+    @PostMapping("protocol_lists")
+    public BaseResponse selectConfigurationPageInfos(@RequestBody @NotEmpty @Valid List<ConfigurationForSelect> protocols){
+        List<ConfigurationForRe> list = new ArrayList<>();
+        for (ConfigurationForSelect protocol : protocols) {
+            list.add(getConfigurationRe(protocol));
+        }
+        return BaseResponse.OK(list);
     }
 
 }

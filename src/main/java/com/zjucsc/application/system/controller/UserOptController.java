@@ -1,6 +1,7 @@
 package com.zjucsc.application.system.controller;
 
 import com.zjucsc.application.config.auth.Auth;
+import com.zjucsc.application.config.auth.Log;
 import com.zjucsc.application.config.auth.Token;
 import com.zjucsc.application.system.entity.User;
 import com.zjucsc.application.system.service.iservice.UserOptService;
@@ -43,6 +44,7 @@ public class UserOptController {
 
     //@Token(Auth.ADMIN_ID)
     @PostMapping("register")
+    @Log
     public BaseResponse register(@RequestBody @Valid User.UserForFront user){
         User loginUser = userOptService.getById(user.password);
         if (loginUser!=null){

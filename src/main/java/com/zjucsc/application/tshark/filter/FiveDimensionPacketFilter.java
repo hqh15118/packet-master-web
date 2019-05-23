@@ -1,5 +1,6 @@
 package com.zjucsc.application.tshark.filter;
 
+import com.zjucsc.application.config.AttackTypePro;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.DangerLevel;
 import com.zjucsc.application.system.entity.FvDimensionFilter;
@@ -26,6 +27,8 @@ import static com.zjucsc.application.config.PACKET_PROTOCOL.OTHER;
 @Data
 public class FiveDimensionPacketFilter {
 
+    private static HashMap<String,String> EMPTY_MAP = new HashMap<>();
+
     private static final String DST_IP_WHITE = "dst_ip_white";
     private static final String SRC_IP_WHITE = "src_ip_white";
     private static final String DST_PORT_WHITE = "dst_port_white";
@@ -41,20 +44,20 @@ public class FiveDimensionPacketFilter {
     private static final String DST_MAC_ADDRESS_WHITE = "dst_mac_address_white";
     private static final String DST_MAC_ADDRESS_BLACK = "dst_mac_address_black";
 
-    private HashMap<String,String> srcIpWhiteMap = new HashMap<>(0);
-    private HashMap<String,String> srcIpBlackMap = new HashMap<>(0);
-    private HashMap<String,String> srcPortWhiteMap = new HashMap<>(0);
-    private HashMap<String,String> srcPortBlackMap = new HashMap<>(0);
-    private HashMap<String,String> protocolWhiteMap = new HashMap<>(0);
-    private HashMap<String,String> protocolBlackMap = new HashMap<>(0);
-    private HashMap<String,String> dstIpWhiteMap = new HashMap<>(0);
-    private HashMap<String,String> dstIpBlackMap = new HashMap<>(0);
-    private HashMap<String,String> dstPortWhiteMap = new HashMap<>(0);
-    private HashMap<String,String> dstPortBlackMap = new HashMap<>(0);
-    private HashMap<String,String> srcMacAddressWhite = new HashMap<>(0);
-    private HashMap<String,String> srcMacAddressBlack = new HashMap<>(0);
-    private HashMap<String,String> dstMacAddressWhite = new HashMap<>(0);
-    private HashMap<String,String> dstMacAddressBlack = new HashMap<>(0);
+    private HashMap<String,String> srcIpWhiteMap = EMPTY_MAP;
+    private HashMap<String,String> srcIpBlackMap = EMPTY_MAP;
+    private HashMap<String,String> srcPortWhiteMap = EMPTY_MAP;
+    private HashMap<String,String> srcPortBlackMap = EMPTY_MAP;
+    private HashMap<String,String> protocolWhiteMap = EMPTY_MAP;
+    private HashMap<String,String> protocolBlackMap = EMPTY_MAP;
+    private HashMap<String,String> dstIpWhiteMap = EMPTY_MAP;
+    private HashMap<String,String> dstIpBlackMap = EMPTY_MAP;
+    private HashMap<String,String> dstPortWhiteMap = EMPTY_MAP;
+    private HashMap<String,String> dstPortBlackMap = EMPTY_MAP;
+    private HashMap<String,String> srcMacAddressWhite = EMPTY_MAP;
+    private HashMap<String,String> srcMacAddressBlack = EMPTY_MAP;
+    private HashMap<String,String> dstMacAddressWhite = EMPTY_MAP;
+    private HashMap<String,String> dstMacAddressBlack = EMPTY_MAP;
 
     private String userName;
     private List<FvDimensionFilter> filterList;
@@ -86,67 +89,10 @@ public class FiveDimensionPacketFilter {
             String str = null;
             //白名单
             if (fiveDimensionFilter.getFilterType() == 0){
-                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getDstIp()))){
-                    doSet(allMap,DST_IP_WHITE,str);//将str添加到DST_IP_WHITE map的 key// 中
-                }
-                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getSrcIp()))){
-                    doSet(allMap,SRC_IP_WHITE,str);
-                }
-                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getDstPort()))){
-                    doSet(allMap,DST_PORT_WHITE,str);
-                }
-                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getSrcPort()))){
-                    doSet(allMap,SRC_PORT_WHITE,str);
-                }
-                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getDstMac()))){
-                    doSet(allMap,DST_MAC_ADDRESS_WHITE,str);
-                }
-                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getSrcMac()))){
-                    doSet(allMap,SRC_MAC_ADDRESS_WHITE,str);
-                }
-                if (fiveDimensionFilter.getProtocolId() != 0){
-                    String var = Common.PROTOCOL_STR_TO_INT.get(fiveDimensionFilter.getProtocolId());
-                    System.out.print(" ");
-                    /*
-                     * 如果添加的协议ID，map中无法找到对应的协议，那么就加other
-                     */
-                    if (var == null){
-                        doSet(allMap,PROTOCOL_WHITE,OTHER);
-                    }else{
-                        doSet(allMap,PROTOCOL_WHITE, var);
-                    }
-                }
+                setFilterMap(allMap, fiveDimensionFilter, DST_IP_WHITE, SRC_IP_WHITE, DST_PORT_WHITE, SRC_PORT_WHITE, DST_MAC_ADDRESS_WHITE, SRC_MAC_ADDRESS_WHITE, PROTOCOL_WHITE);
             }else{
                 //黑名单
-                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getDstIp()))){
-                    doSet(allMap,DST_IP_BLACK,str);
-                }
-                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getSrcIp()))){
-                    doSet(allMap,SRC_IP_BLACK,str);
-                }
-                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getDstPort()))){
-                    doSet(allMap,DST_PORT_BLACK,str);
-                }
-                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getSrcPort()))){
-                    doSet(allMap,SRC_PORT_BLACK,str);
-                }
-                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getDstMac()))){
-                    doSet(allMap,DST_MAC_ADDRESS_BLACK,str);
-                }
-                if (StringUtils.isNotBlank((str = fiveDimensionFilter.getSrcMac()))){
-                    doSet(allMap,SRC_MAC_ADDRESS_BLACK,str);
-                }
-                if (fiveDimensionFilter.getProtocolId() != 0){
-                    String var = Common.PROTOCOL_STR_TO_INT.get(fiveDimensionFilter.getProtocolId());
-                    /*
-                     * 如果添加的协议ID，map中无法找到对应的协议，那么就加other
-                     */
-                    if (var == null){
-                        doSet(allMap,PROTOCOL_BLACK,OTHER);
-                    }else{
-                        doSet(allMap,PROTOCOL_BLACK, var);
-                    }
-                }
+                setFilterMap(allMap, fiveDimensionFilter, DST_IP_BLACK, SRC_IP_BLACK, DST_PORT_BLACK, SRC_PORT_BLACK, DST_MAC_ADDRESS_BLACK, SRC_MAC_ADDRESS_BLACK, PROTOCOL_BLACK);
             }
         }
 
@@ -202,6 +148,47 @@ public class FiveDimensionPacketFilter {
         }
     }
 
+    private void setFilterMap(HashMap<String, HashMap<String, String>> allMap,
+                              FvDimensionFilter fiveDimensionFilter,
+                              String dstIpBlack,
+                              String srcIpBlack,
+                              String dstPortBlack,
+                              String srcPortBlack,
+                              String dstMacAddressBlack,
+                              String srcMacAddressBlack,
+                              String protocolBlack) {
+        String str;
+        if (StringUtils.isNotBlank((str = fiveDimensionFilter.getDstIp()))){
+            doSet(allMap, dstIpBlack,str);
+        }
+        if (StringUtils.isNotBlank((str = fiveDimensionFilter.getSrcIp()))){
+            doSet(allMap, srcIpBlack,str);
+        }
+        if (StringUtils.isNotBlank((str = fiveDimensionFilter.getDstPort()))){
+            doSet(allMap, dstPortBlack,str);
+        }
+        if (StringUtils.isNotBlank((str = fiveDimensionFilter.getSrcPort()))){
+            doSet(allMap, srcPortBlack,str);
+        }
+        if (StringUtils.isNotBlank((str = fiveDimensionFilter.getDstMac()))){
+            doSet(allMap, dstMacAddressBlack,str);
+        }
+        if (StringUtils.isNotBlank((str = fiveDimensionFilter.getSrcMac()))){
+            doSet(allMap, srcMacAddressBlack,str);
+        }
+        if (fiveDimensionFilter.getProtocolId() != 0){
+            String var = Common.PROTOCOL_STR_TO_INT.get(fiveDimensionFilter.getProtocolId());
+            /*
+             * 如果添加的协议ID，map中无法找到对应的协议，那么就加other
+             */
+            if (var == null){
+                doSet(allMap, protocolBlack,OTHER);
+            }else{
+                doSet(allMap, protocolBlack, var);
+            }
+        }
+    }
+
     /**
      *
      * @param allMap
@@ -214,94 +201,62 @@ public class FiveDimensionPacketFilter {
     }
 
     public BadPacket OK(FvDimensionLayer layer){
-        if (protocolWhiteMap.containsKey(layer.frame_protocols[0])
-            && srcPortWhiteMap.containsKey(layer.src_port[0])
-            && dstPortWhiteMap.containsKey(layer.dst_port[0])
-            && srcIpWhiteMap.containsKey(layer.ip_src[0])
-            && dstIpWhiteMap.containsKey(layer.ip_dst[0])
-            && dstMacAddressWhite.containsKey(layer.eth_dst[0])
-            && srcMacAddressWhite.containsKey(layer.eth_src[0])) {
-            return null;
+        if (!protocolWhiteMap.containsKey(layer.frame_protocols[0])){
+            return getBadPacket(layer,"协议不在白名单中",DangerLevel.DANGER);
         }
-        else{
-            //System.out.println(layer.frame_protocols[0]);
-            if (layer.frame_protocols[0].equals("tcp"))
-                return new BadPacket.Builder(FV_DIMENSION)
-                        .set_five_Dimension(layer)
-                        .setDangerLevel(DangerLevel.DANGER)
-                        .setComment("五元组不存在于白名单")
-                        .build();
-            else
-                return null;
+        if (!srcPortWhiteMap.containsKey(layer.src_port[0])){
+            return getBadPacket(layer,"源端口不在白名单中",DangerLevel.DANGER);
         }
+        if (!dstPortWhiteMap.containsKey(layer.dst_port[0])){
+            return getBadPacket(layer,"目的端口不在白名单中",DangerLevel.DANGER);
+        }
+        if (!srcIpWhiteMap.containsKey(layer.ip_src[0])){
+            return getBadPacket(layer,"源IP不在白名单中",DangerLevel.DANGER);
+        }
+        if (!dstIpWhiteMap.containsKey(layer.ip_dst[0])){
+            return getBadPacket(layer,"目的IP不在白名单中",DangerLevel.DANGER);
+        }
+        if (!dstMacAddressWhite.containsKey(layer.eth_dst[0])){
+            return getBadPacket(layer,"目的MAC不在白名单中",DangerLevel.DANGER);
+        }
+        if (!srcMacAddressWhite.containsKey(layer.eth_src[0])){
+            return getBadPacket(layer,"源MAC不在白名单中",DangerLevel.DANGER);
+        }
+        return null;
     }
 
     public BadPacket ERROR(FvDimensionLayer layer){
-        BadPacket badPacketBuilder = null;
         if (protocolBlackMap.containsKey(layer.frame_protocols[0])){
-            badPacketBuilder = new BadPacket();
-            badPacketBuilder.setLayer(layer);
-            badPacketBuilder.addComment("黑名单协议");
-            badPacketBuilder.setDangerLevel(DangerLevel.VERY_DANGER);
-            badPacketBuilder.setBadType(FV_DIMENSION);
-            badPacketBuilder.setComment(badPacketBuilder.getComment());
-            return badPacketBuilder;
+            return getBadPacket(layer, "黑名单协议",DangerLevel.VERY_DANGER);
         }
         if (srcPortBlackMap.containsKey(layer.src_port[0])){
-            badPacketBuilder = new BadPacket();
-            badPacketBuilder.setLayer(layer);
-            badPacketBuilder.setDangerLevel(DangerLevel.VERY_DANGER);
-            badPacketBuilder.addComment("黑名单源端口");
-            badPacketBuilder.setBadType(FV_DIMENSION);
-            badPacketBuilder.setComment(badPacketBuilder.getComment());
-            return badPacketBuilder;
+            return getBadPacket(layer, "黑名单源端口",DangerLevel.VERY_DANGER);
         }
         if (dstPortBlackMap.containsKey(layer.dst_port[0])){
-            badPacketBuilder = new BadPacket();
-            badPacketBuilder.setLayer(layer);
-            badPacketBuilder.setDangerLevel(DangerLevel.VERY_DANGER);
-            badPacketBuilder.addComment("黑名单目的端口");
-            badPacketBuilder.setBadType(FV_DIMENSION);
-            badPacketBuilder.setComment(badPacketBuilder.getComment());
-            return badPacketBuilder;
+            return getBadPacket(layer, "黑名单目的端口",DangerLevel.VERY_DANGER);
         }
         if (srcIpBlackMap.containsKey(layer.ip_src[0])){
-            badPacketBuilder = new BadPacket();
-            badPacketBuilder.setLayer(layer);
-            badPacketBuilder.setDangerLevel(DangerLevel.VERY_DANGER);
-            badPacketBuilder.addComment("黑名单源IP");
-            badPacketBuilder.setBadType(FV_DIMENSION);
-            badPacketBuilder.setComment(badPacketBuilder.getComment());
-            return badPacketBuilder;
+            return getBadPacket(layer, "黑名单源IP",DangerLevel.VERY_DANGER);
         }
         if (dstIpBlackMap.containsKey(layer.ip_dst[0])){
-            badPacketBuilder = new BadPacket();
-            badPacketBuilder.setLayer(layer);
-            badPacketBuilder.setDangerLevel(DangerLevel.VERY_DANGER);
-            badPacketBuilder.addComment("黑名单目的IP");
-            badPacketBuilder.setBadType(FV_DIMENSION);
-            badPacketBuilder.setComment(badPacketBuilder.getComment());
-            return badPacketBuilder;
+            return getBadPacket(layer, "黑名单目的IP",DangerLevel.VERY_DANGER);
         }
         if (dstMacAddressBlack.containsKey(layer.eth_dst[0])){
-            badPacketBuilder = new BadPacket();
-            badPacketBuilder.setLayer(layer);
-            badPacketBuilder.setDangerLevel(DangerLevel.VERY_DANGER);
-            badPacketBuilder.addComment("黑名单目的MAC");
-            badPacketBuilder.setBadType(FV_DIMENSION);
-            badPacketBuilder.setComment(badPacketBuilder.getComment());
-            return badPacketBuilder;
+            return getBadPacket(layer, "黑名单目的MAC",DangerLevel.VERY_DANGER);
         }
         if (srcMacAddressBlack.containsKey(layer.eth_src[0])){
-            badPacketBuilder = new BadPacket();
-            badPacketBuilder.setLayer(layer);
-            badPacketBuilder.setDangerLevel(DangerLevel.VERY_DANGER);
-            badPacketBuilder.addComment("黑名单源MAC");
-            badPacketBuilder.setBadType(FV_DIMENSION);
-            badPacketBuilder.setComment(badPacketBuilder.getComment());
-            return badPacketBuilder;
+            return getBadPacket(layer, "黑名单源MAC",DangerLevel.VERY_DANGER);
         }
         return null;
+    }
+
+    private BadPacket getBadPacket(FvDimensionLayer layer, String comment,DangerLevel dangerLevel) {
+        BadPacket badPacketBuilder = new BadPacket();
+        badPacketBuilder.setLayer(layer);
+        badPacketBuilder.setDangerLevel(dangerLevel);
+        badPacketBuilder.setBadType(AttackTypePro.FV_DIMENSION);
+        badPacketBuilder.setComment(comment);
+        return badPacketBuilder;
     }
 
     @Override

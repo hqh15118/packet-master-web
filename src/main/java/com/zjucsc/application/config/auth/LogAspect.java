@@ -27,10 +27,10 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Slf4j
 @Aspect
-//@Component
+@Component
 public class LogAspect {
 
-    @Autowired private KafkaTemplate<String,String> kafkaTemplate;
+    @Autowired private KafkaTemplate kafkaTemplate;
 
     @Autowired
     private ConstantConfig constantConfig;
@@ -47,8 +47,7 @@ public class LogAspect {
     public Object around(ProceedingJoinPoint point) throws Throwable {
         StringBuilder sb = builderThreadLocal.get();
         sb.delete(0,sb.length());
-
-        Object result = null;
+        Object result;
         long beginTime = System.currentTimeMillis();
         MethodSignature signature = (MethodSignature) point.getSignature();
         // 执行方法
@@ -57,7 +56,7 @@ public class LogAspect {
         HttpServletRequest request = HttpContextUtil.getHttpServletRequest();
         // 执行时长(毫秒)
         long time = System.currentTimeMillis() - beginTime;
-        if (constantConfig.isOpenAOPLog()) {
+        if (constantConfig.isSendAopLog()) {
             // 保存日志
             //TODO Kafka应该单独建一个service，分别发送重要的日志【重传】的和一般的日志
             //还需要加上查询日志等接口
@@ -69,6 +68,18 @@ public class LogAspect {
                     .request(request)
                     .result(result)
                     .build()));
+        }
+        if (constantConfig.isOpenAOPLog()){
+            sb.append("****************\n请求类-方法：")
+                    .append(point.getTarget().getClass().getName()).append("-").append(signature.getMethod().getName())
+                    .append("\n")
+                    .append("请求参数:\n")
+                    .append(JSON.toJSONString(point.getArgs()))
+                    .append("\n")
+                    .append("请求结果:\n")
+                    .append(JSON.toJSONString(result))
+                    .append("\n****************");
+            log.info("info : \n {}",sb.toString());
         }
         return result;
     }

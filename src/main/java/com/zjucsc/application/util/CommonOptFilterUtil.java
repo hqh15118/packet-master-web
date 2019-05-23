@@ -139,6 +139,6 @@ public class CommonOptFilterUtil {
 
     public static void removeAllOptFilter(){
         Common.OPERATION_FILTER_PRO.clear();
-        log.info("clear all opt dimension filter of gplotid : {} " , Common.GPLOT_ID);
+        log.info("change gplot so -> clear all opt dimension filter of gplotid : {} " , Common.GPLOT_ID);
     }
 }

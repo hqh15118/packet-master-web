@@ -13,7 +13,7 @@ public class CommonFvFilterUtil {
 
     public static void removeAllFvFilter(){
         Common.FV_DIMENSION_FILTER_PRO.clear();
-        log.info("clear all fv dimension filter of gplotid : {} " , Common.GPLOT_ID);
+        log.info("change gplot so -> clear all fv dimension filter of gplot id : {} " , Common.GPLOT_ID);
     }
 
     public synchronized static void addOrUpdateFvFilter(String deviceIp , List<FvDimensionFilter> filterList , String filterName){

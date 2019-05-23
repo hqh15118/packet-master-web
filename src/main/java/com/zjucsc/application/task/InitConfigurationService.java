@@ -7,7 +7,7 @@ import com.zjucsc.application.config.ConstantConfig;
 import com.zjucsc.application.config.PACKET_PROTOCOL;
 import com.zjucsc.application.config.auth.Auth;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
-import com.zjucsc.application.system.art.s7comm.S7commDecode;
+import com.zjucsc.application.system.art.s7comm.S7CommDecode;
 import com.zjucsc.application.system.entity.ConfigurationSetting;
 import com.zjucsc.application.system.entity.ProtocolId;
 import com.zjucsc.application.system.service.iservice.IConfigurationSettingService;
@@ -55,9 +55,6 @@ public class InitConfigurationService implements ApplicationRunner {
                 log.info("force reload [funCode Meaning]from jar file");
             }
         }
-        /***************************
-         * IGNORE PROTOCOL[统计数量，但是]
-         ***************************/
 
         /***************************
          * INIT PROTOCOL STR TO INT
@@ -73,7 +70,6 @@ public class InitConfigurationService implements ApplicationRunner {
                     String protocol_name = (String) field.get(null);
                     int protocol_id = (int) packet_protocolClass.getDeclaredField(field.getName() + "_ID").get(null);
                     Common.PROTOCOL_STR_TO_INT.put(protocol_id,protocol_name);
-                    //CommonConfigUtil.addProtocolFuncodeMeaning(protocol_name,new HashMap<>());
                     protocolIds.add(new ProtocolId(protocol_id , protocol_name));
                 }
             }
@@ -82,7 +78,6 @@ public class InitConfigurationService implements ApplicationRunner {
             List<ProtocolId> list = iProtocolIdService.list();
             for (ProtocolId protocolId : list) {
                 Common.PROTOCOL_STR_TO_INT.put(protocolId.getProtocolId() , protocolId.getProtocolName());
-                //CommonConfigUtil.addProtocolFuncodeMeaning(protocolId.getProtocolName(),new HashMap<>());
             }
         }
 
@@ -118,6 +113,7 @@ public class InitConfigurationService implements ApplicationRunner {
                         configuration.getFunCode(),configuration.getOpt());
             }
         }
+
         /***************************
          * INIT AUTH
          ***************************/
@@ -135,12 +131,12 @@ public class InitConfigurationService implements ApplicationRunner {
         /***************************
          * INIT ART_ANALYZER
          ***************************/
-        ServiceLoader<IArtDecode> artLoader = ServiceLoader.load(IArtDecode.class);
+//        ServiceLoader<IArtDecode> artLoader = ServiceLoader.load(IArtDecode.class);
         Map<String,IArtDecode> artServiceMap = new HashMap<>();
 //        for (IArtDecode iArtDecode : artLoader) {
 //            artServiceMap.put(iArtDecode.protocol(),iArtDecode);
 //        }
-        S7commDecode s7commDecode = new S7commDecode();
+        S7CommDecode s7commDecode = new S7CommDecode();
         artServiceMap.put(s7commDecode.protocol(),s7commDecode);
         ART_FILTER = new ArtAnalyzer(artServiceMap);
 

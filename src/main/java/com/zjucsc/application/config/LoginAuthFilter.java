@@ -31,7 +31,7 @@ public class LoginAuthFilter implements Filter {
 //        if(method.equalsIgnoreCase("OPTIONS")){
 //            servletResponse.getOutputStream().write("Success".getBytes("utf-8"));
 //        }else{
-            filterChain.doFilter(servletRequest, servletResponse);
+        filterChain.doFilter(servletRequest, servletResponse);
 //        }
     }
 

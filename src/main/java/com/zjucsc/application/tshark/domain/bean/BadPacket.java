@@ -18,23 +18,12 @@ public class BadPacket {
     private int badArtifactValue;
     private String comment;
     private DangerLevel dangerLevel;
-    @ToString.Exclude
-    private StringBuilder sb;
     private String deviceNumber;
 
 
-    public void addComment(String comment) {
-        if (sb == null){
-            sb = new StringBuilder();
-        }
-        sb.append(comment);
-    }
 
     public String getComment() {
-        if (sb == null){
-            return "";
-        }
-        return sb.toString();
+        return comment;
     }
 
     public static class Builder{

@@ -11,7 +11,7 @@ import static com.zjucsc.AttackType.HAZARD_ART;
 import static com.zjucsc.AttackType.TAMPER_ATTACK;
 
 @SuppressWarnings("unchecked")
-public class S7commDecode implements IArtDecode {
+public class S7CommDecode implements IArtDecode {
 
 
     @Override
@@ -128,7 +128,7 @@ public class S7commDecode implements IArtDecode {
     }
 
     public static Float bytesTofloat(byte[] payload, int offset) {// 解析4个字节中的数据，按照IEEE754的标准
-        byte[] data = com.zjucsc.Bytecut.Bytecut(payload, offset,4);
+        byte[] data = Bytecut.Bytecut(payload, offset,4);
         int s = 0;// 浮点数的符号
         float f = 0;// 浮点数
         int e = 0;// 指数
