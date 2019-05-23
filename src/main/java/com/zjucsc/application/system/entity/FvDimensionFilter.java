@@ -36,4 +36,6 @@ public class FvDimensionFilter {
     private int protocolId;
     @TableField("gplot_id")
     private int gplotId;
+    @TableField("fv_id")
+    private int fvId;
 }

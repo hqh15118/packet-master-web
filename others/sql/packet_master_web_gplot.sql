@@ -34,43 +34,21 @@ INSERT INTO packet_master_web.gplot (id, name, info, update_time) VALUES (58, '�
   "source": {
     "nodes": [
       {
-        "shape": "plc",
-        "x": 196.97390626184722,
-        "y": 463,
-        "nodeType": 5,
-        "label": "PLC1",
+        "shape": "diannao",
+        "x": 911.7315055774408,
+        "y": 109.13639846743291,
+        "nodeType": 1,
+        "label": "操作员站",
         "address": "192.168.0.1",
         "sendNum": 0,
         "receiveNum": 0,
         "attackNum": 0,
-        "id": "d49711ab"
-      },
-      {
-        "shape": "caijiqi",
-        "delay": 0,
-        "x": 390.9059910529563,
-        "y": 287,
-        "nodeType": 4,
-        "id": "9e6d83cd",
-        "label": "采集器",
-        "address": "3"
-      },
-      {
-        "shape": "plc",
-        "x": 727.8277098384979,
-        "y": 425,
-        "nodeType": 5,
-        "label": "PLC11",
-        "address": "192.168.0.11",
-        "sendNum": 0,
-        "receiveNum": 0,
-        "attackNum": 0,
-        "id": "9b5347c9"
+        "id": "d036a9a8"
       },
       {
         "shape": "diannao",
-        "x": 572.9009867744066,
-        "y": 53,
+        "x": 297.99801169714476,
+        "y": 234.86053639846745,
         "nodeType": 1,
         "label": "电脑",
         "address": "192.168.0.121",
@@ -78,28 +56,50 @@ INSERT INTO packet_master_web.gplot (id, name, info, update_time) VALUES (58, '�
         "receiveNum": 0,
         "attackNum": 0,
         "id": "e4dc59d4"
+      },
+      {
+        "shape": "caijiqi",
+        "delay": 0,
+        "x": 584.8375443801884,
+        "y": 262.0191570881225,
+        "nodeType": 4,
+        "id": "9e6d83cd",
+        "label": "采集器",
+        "address": "3"
+      },
+      {
+        "shape": "plc",
+        "x": 983.7373884558763,
+        "y": 251.13333333333344,
+        "nodeType": 5,
+        "label": "PLC11",
+        "address": "192.168.0.11",
+        "sendNum": 0,
+        "receiveNum": 0,
+        "attackNum": 0,
+        "id": "9b5347c9"
       }
     ],
     "edges": [
       {
         "shape": "polyLineFlow",
         "source": "9e6d83cd",
-        "target": "d49711ab",
-        "id": "5de410d4"
-      },
-      {
-        "shape": "polyLineFlow",
-        "source": "9e6d83cd",
-        "target": "9b5347c9",
-        "id": "2244e396"
-      },
-      {
-        "shape": "polyLineFlow",
-        "source": "9e6d83cd",
         "target": "e4dc59d4",
         "id": "7244a611"
+      },
+      {
+        "shape": "polyLineFlow",
+        "source": "9e6d83cd",
+        "target": "d036a9a8",
+        "id": "94f4fd7c"
+      },
+      {
+        "shape": "polyLineFlow",
+        "source": "9b5347c9",
+        "target": "9e6d83cd",
+        "id": "637bee54"
       }
     ]
   },
   "guides": []
-}', 'Wed May 22 20:50:19 CST 2019');
+}', 'Thu May 23 16:00:02 CST 2019');
