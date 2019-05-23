@@ -38,3 +38,7 @@ art_decode/target/
 protocolmap/src/main/resources/
 protocolmap/src/test/
 src/main/resources/templates/
+/src/main/resources/static/
+art_decode/src/main/resources/
+out/artifacts/watch_jar/
+src/main/resources/static/static/js/app.cd439c23.js

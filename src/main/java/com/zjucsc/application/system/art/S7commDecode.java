@@ -1,16 +1,14 @@
 package com.zjucsc.application.system.art;
 
+
+
 import com.zjucsc.AttackType;
 import com.zjucsc.Bytecut;
 import com.zjucsc.IArtDecode;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class S7commDecode implements IArtDecode, Serializable {
-
+public class S7commDecode implements IArtDecode {
 
     @Override
     public Map<String, Float> decode(Map<String, Float> map, byte[] bytes, Object... objects) {
@@ -28,7 +26,7 @@ public class S7commDecode implements IArtDecode, Serializable {
     }
 
     public static Float bytesTofloat(byte[] payload, int offset) {// 解析4个字节中的数据，按照IEEE754的标准
-        byte[] data = Bytecut.Bytecut(payload, offset,4);
+        byte[] data = com.zjucsc.Bytecut.Bytecut(payload, offset,4);
         int s = 0;// 浮点数的符号
         float f = 0;// 浮点数
         int e = 0;// 指数
@@ -37,7 +35,7 @@ public class S7commDecode implements IArtDecode, Serializable {
         } else {
             s = 1;
         }
-        int temp = 0;// 指数位的最后一位
+        int temp;// 指数位的最后一位
         if ((data[2] & 0xff) >= 128) {
             temp = 1;
         } else
@@ -48,12 +46,10 @@ public class S7commDecode implements IArtDecode, Serializable {
         data2[0] = data[0] & 0xff;
         data2[1] = data[1] & 0xff;
         data2[2] = data[2] & 0xff;
-        f = (data2[2] - temp * 128 + 128) / 128 + data2[1] / (128 * 256)
-                + data2[0] / (128 * 256 * 256);
+        f = (data2[2] - temp * 128 + 128) / 128 + data2[1] / (128 * 256) + data2[0] / (128 * 256 * 256);
         float result = 0;
         if (e == 0 && f != 0) {// 次正规数
             result = (float) (s * (f - 1) * Math.pow(2, -126));
-            
             return result;
         }
         if (e == 0 && f == 0) {// 有符号的0
@@ -76,43 +72,33 @@ public class S7commDecode implements IArtDecode, Serializable {
     private static float[] valve_state(byte[] bytes)
     {
         float data1,data2,data3,data4;
-        if(bytes[0]==0x02) {
-            data1 = 0;
+        if((bytes[0] & 0x02)==(byte)0x02) {
             data2 = 1f;
         }
-        else if (bytes[0]==0x04)
-        {
-            data1 = 1f;
+        else{
             data2 = 0;
         }
-        else if(bytes[0]==0x06)
+        if ((bytes[0] & 0x04)==(byte)0x04)
         {
-            data1 =1f;
-            data2 =1f;
+            data1 = 1f;
         }
         else
         {
             data1 = 0;
-            data2 = 0;
         }
-        if(bytes[1]==0x20) {
-            data3 = 0;
+        if((bytes[1] & 0x20)==(byte)0x20) {
             data4 = 1f;
         }
-        else if (bytes[1]==0x40)
-        {
-            data3 = 1f;
+        else{
             data4 = 0;
         }
-        else if(bytes[1]==0x60)
+        if ((bytes[1] & 0x40)==(byte)0x40)
         {
-            data3 =1f;
-            data4 =1f;
+            data3 = 1f;
         }
         else
         {
             data3 = 0;
-            data4 = 0;
         }
         return new float[]{data1,data2,data3,data4};
     }
@@ -134,14 +120,14 @@ public class S7commDecode implements IArtDecode, Serializable {
             techmap.put("水位5", level5);
             techmap.put("水位6", level6);
         }
-        else if(payload.length == 67)
+        else if(payload.length ==100)
         {
-            float level1 = bytesTofloat(payload,43);
-            float level2 = bytesTofloat(payload,47);
-            float level3 = bytesTofloat(payload,51);
-            float level4 = bytesTofloat(payload,55);
-            float level5 = bytesTofloat(payload,59);
-            float level6 = bytesTofloat(payload,63);
+            float level1 = bytesTofloat(payload,73);
+            float level2 = bytesTofloat(payload,77);
+            float level3 = bytesTofloat(payload,81);
+            float level4 = bytesTofloat(payload,85);
+            float level5 = bytesTofloat(payload,89);
+            float level6 = bytesTofloat(payload,93);
             techmap.put("压差0_1",level1);
             techmap.put("压差1_2",level2);
             techmap.put("压差2_3",level3);
@@ -156,21 +142,21 @@ public class S7commDecode implements IArtDecode, Serializable {
         }
         else if(payload.length ==75)
         {
-            byte[] head = Bytecut.Bytecut(payload,39,4);
+            byte[] head = com.zjucsc.Bytecut.Bytecut(payload,39,4);
             byte[] bytes1,bytes2;
             if(head[3]==(byte)0xff)
             {
-                bytes1 = Bytecut.Bytecut(payload, 43, 2);
-                bytes2 = Bytecut.Bytecut(payload, 73, 2);
+                bytes1 = com.zjucsc.Bytecut.Bytecut(payload, 43, 2);
+                bytes2 = com.zjucsc.Bytecut.Bytecut(payload, 73, 2);
             }
             else if(head[2]==(byte)0xff)
             {
-                bytes1 = Bytecut.Bytecut(payload, 42, 2);
-                bytes2 = Bytecut.Bytecut(payload, 72, 2);
+                bytes1 = com.zjucsc.Bytecut.Bytecut(payload, 42, 2);
+                bytes2 = com.zjucsc.Bytecut.Bytecut(payload, 72, 2);
             }
             else
             {
-                bytes1 = Bytecut.Bytecut(payload, 41, 2);
+                bytes1 = com.zjucsc.Bytecut.Bytecut(payload, 41, 2);
                 bytes2 = Bytecut.Bytecut(payload, 71, 2);
             }
             float[] f1=valve_state(bytes1);
@@ -185,7 +171,6 @@ public class S7commDecode implements IArtDecode, Serializable {
                 techmap.put("二号左闸关",f2[1]);
                 techmap.put("二号右闸开",f2[2]);
                 techmap.put("二号右闸关",f2[3]);
-                return techmap;
             }
             else if(head[2]==(byte)0xff)
             {
@@ -211,11 +196,11 @@ public class S7commDecode implements IArtDecode, Serializable {
             }
             else
             {
-                return techmap;
+                return null;
             }
         }
         else {
-            return techmap;
+            return null;
         }
         return techmap;
     }
