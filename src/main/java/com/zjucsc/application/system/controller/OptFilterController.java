@@ -1,6 +1,7 @@
 package com.zjucsc.application.system.controller;
 
 
+import com.zjucsc.application.config.auth.Log;
 import com.zjucsc.application.domain.bean.OptFilterForFront;
 import com.zjucsc.application.domain.bean.OptRulePullForFront;
 import com.zjucsc.application.domain.exceptions.OptFilterNotValidException;
@@ -35,6 +36,7 @@ public class OptFilterController {
 
     @ApiOperation("添加功能码规则")
     @PostMapping("new_opt_filter")
+    @Log
     public BaseResponse addNewOptFilter(@RequestBody @Valid OptFilterForFront optFilterForFront) throws ProtocolIdNotValidException, ExecutionException, InterruptedException, OptFilterNotValidException {
         CompletableFuture<Exception> future =  iOptFilterService.addOperationFilter(optFilterForFront);
         return BaseResponse.OK(future.get());
@@ -42,6 +44,7 @@ public class OptFilterController {
 
     @ApiOperation("获取功能码规则")
     @PostMapping("get_opt_filter")
+    @Log
     public BaseResponse getOptFilter(@RequestBody @Valid OptRulePullForFront optRulePullForFront) throws ProtocolIdNotValidException, ExecutionException, InterruptedException, DeviceNotValidException {
         boolean cache = false;
         if (optRulePullForFront.getCached() == 1){
@@ -62,6 +65,7 @@ public class OptFilterController {
      */
     @ApiOperation("删除功能码规则[分别根据device/protocolId/funcode删除]")
     @DeleteMapping("/delete_opt_filter")
+    @Log
     public BaseResponse deleteOptFilter(@RequestParam String deviceId , @RequestParam int funcode , @RequestParam int protocolId) throws ProtocolIdNotValidException {
         HashMap<String,Object> map = new HashMap<>();
         map.put("device_number" , deviceId);

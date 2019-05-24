@@ -50,9 +50,9 @@ public class CommonOptFilterUtil {
         Common.OPERATION_FILTER_PRO.put(deviceIp, analyzerMap);
         if (type == 0){
             //new analyze map
-            log.info("NEW operation filter map , new one {} " , analyzerMap);
+            log.info("新建设备：{} 的功能码过滤规则MAP , new one {} ",deviceIp , analyzerMap);
         }else{
-            log.info("UPDATE old operation filter map , new one {} " , analyzerMap);
+            log.info("更新设备：{} 功能码过滤规则, new one {} " , deviceIp, analyzerMap);
         }
     }
 

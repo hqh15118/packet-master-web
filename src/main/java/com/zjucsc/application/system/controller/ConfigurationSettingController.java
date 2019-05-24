@@ -1,6 +1,7 @@
 package com.zjucsc.application.system.controller;
 
 
+import com.zjucsc.application.config.auth.Log;
 import com.zjucsc.application.domain.bean.*;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.application.system.entity.ConfigurationSetting;
@@ -33,6 +34,7 @@ public class ConfigurationSettingController {
     @Autowired private IProtocolIdService iProtocolIdService;
 
 
+    @Log
     @ApiOperation(value = "添加新的协议，返回该协议对应的ID")
     @PostMapping(value = "/new_protocol")
     public BaseResponse addNewProtocol(@RequestBody @Valid @NotNull ConfigurationForNewProtocol configurationForFronts) throws ProtocolIdNotValidException {
@@ -66,6 +68,7 @@ public class ConfigurationSettingController {
         addNewProtocolToCache(protocolName , newProtocolId);    //将新增的协议添加到两个缓存中
     }
 
+    @Log
     @ApiOperation(value = "新增协议的功能码")
     @PostMapping(value = "/new_funcode")
     public BaseResponse newConfigurationFuncode(@RequestBody @Valid  ConfigurationForFront configuration) throws ProtocolIdNotValidException {
@@ -74,6 +77,7 @@ public class ConfigurationSettingController {
         return BaseResponse.OK();
     }
 
+    @Log
     @ApiOperation(value = "更新协议的功能码")
     @PostMapping(value = "/update_funcode")
     public BaseResponse updateConfigurationFuncode(@RequestBody @Valid ConfigurationForFront configuration) throws ProtocolIdNotValidException {
@@ -89,6 +93,7 @@ public class ConfigurationSettingController {
         return BaseResponse.OK();
     }
 
+    @Log
     @ApiOperation(value = "删除功能码")
     @DeleteMapping(value = "/deletecode")
     public BaseResponse deleteConfiguration(@RequestBody @Valid @NotEmpty List<ConfigurationForDelete> configurationForDeletes) throws ProtocolIdNotValidException {
@@ -156,6 +161,7 @@ public class ConfigurationSettingController {
      * @param configurationForSelect
      * @return
      */
+    @Log
     @ApiOperation("功能码含义表查询")
     @PostMapping("/funcode_list")
     public BaseResponse selectConfigurationPageInfo(@RequestBody @Valid ConfigurationForSelect configurationForSelect){
@@ -175,6 +181,7 @@ public class ConfigurationSettingController {
         return new ConfigurationForRe(count_Res , configurationWrappers);
     }
 
+    @Log
     @ApiOperation("协议ID获取")
     @GetMapping("/protocol_list")
     public BaseResponse selectAllProtocolInfo(){
@@ -195,6 +202,7 @@ public class ConfigurationSettingController {
         ));
     }
 
+    @Log
     @ApiOperation("删除协议")
     @DeleteMapping("delete_protocol")
     public BaseResponse deleteProtocol(@RequestParam int protocolId) throws ProtocolIdNotValidException {
@@ -206,6 +214,7 @@ public class ConfigurationSettingController {
         return BaseResponse.OK();
     }
 
+    @Log
     @ApiOperation("查询指定协议列表下的所有功能码及含义")
     @PostMapping("protocol_lists")
     public BaseResponse selectConfigurationPageInfos(@RequestBody @NotEmpty @Valid List<ConfigurationForSelect> protocols){

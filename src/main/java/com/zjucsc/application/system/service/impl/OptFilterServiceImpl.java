@@ -44,7 +44,6 @@ public class OptFilterServiceImpl extends ServiceImpl<OptFilterMapper, OptFilter
      * @return
      * @throws ProtocolIdNotValidException
      */
-    @Transactional
     @Async
     @Override
     public CompletableFuture<Exception> addOperationFilter(OptFilterForFront optFilterForFront) throws ProtocolIdNotValidException, OptFilterNotValidException {

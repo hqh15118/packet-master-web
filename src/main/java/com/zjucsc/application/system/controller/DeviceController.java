@@ -2,6 +2,7 @@ package com.zjucsc.application.system.controller;
 
 
 import com.zjucsc.application.config.Common;
+import com.zjucsc.application.config.auth.Log;
 import com.zjucsc.application.system.entity.Device;
 import com.zjucsc.application.system.service.iservice.IDeviceService;
 import com.zjucsc.application.util.CommonCacheUtil;
@@ -25,6 +26,7 @@ import java.util.Map;
 public class DeviceController {
     @Autowired private IDeviceService iDeviceService;
 
+    @Log
     @ApiOperation("添加设备信息【保存拓扑图时，删除所有旧设备，添加所有新设备】")
     @PostMapping("new_device")
     public BaseResponse addDeviceInfo(@RequestBody @Valid @NotEmpty List<Device> deviceList){
@@ -36,6 +38,7 @@ public class DeviceController {
         return BaseResponse.OK();
     }
 
+    @Log
     @ApiOperation("通过组态图ID发现所有设备")
     @GetMapping("gplot_devices")
     public BaseResponse getDevicesByGplotId(@RequestParam int gplotId){

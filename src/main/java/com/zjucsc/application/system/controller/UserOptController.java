@@ -23,6 +23,7 @@ public class UserOptController {
     @Autowired
     private UserOptService userOptService;
 
+    @Log
     @PostMapping("login")
     public BaseResponse login(@RequestBody @Valid User.UserForFront user){
         User loginUser = userOptService.getById(user.userName);
@@ -60,29 +61,35 @@ public class UserOptController {
         }
     }
 
+
+    @Log
     @Token(Auth.ADMIN_ID)
     @GetMapping("all_user")
     public BaseResponse getAllUser(){
         return BaseResponse.OK(userOptService.getAllUsers());
     }
 
+    @Log
     @GetMapping("logout")
     public BaseResponse logout(@RequestParam String userName){
         return userOptService.logout(userName);
     }
 
+    @Log
     @Token(Auth.ADMIN_ID)
     @PostMapping("add_user")
     public BaseResponse addUser(@RequestBody @Valid User.UserForFront user){
         return register(user);
     }
 
+    @Log
     @Token(Auth.ADMIN_ID)
     @GetMapping("all_loginned_user")
     public BaseResponse getAllLogginedUser(){
         return BaseResponse.OK(userOptService.getAllLogginedUsers());
     }
 
+    @Log
     @GetMapping("get_user_info")
     public BaseResponse getUseInfo(@RequestParam String token){
         return BaseResponse.OK(new Wrapper(Collections.singletonList(userOptService.getTokenRole(token))));

@@ -2,6 +2,7 @@ package com.zjucsc.application.system.controller;
 
 import com.corundumstudio.socketio.SocketIOClient;
 import com.zjucsc.application.config.ConstantConfig;
+import com.zjucsc.application.config.auth.Log;
 import com.zjucsc.application.domain.bean.ServiceStatus;
 import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
 import com.zjucsc.application.socketio.SocketServiceCenter;
@@ -38,6 +39,7 @@ public class PacketController {
     @Autowired private CapturePacketService capturePacketService;
     @Autowired private ConstantConfig constantConfig;
 
+    @Log
     @ApiOperation(value="开始抓包")
     @RequestMapping(value = "/start_service" , method = RequestMethod.POST)
     public BaseResponse startCaptureService(@RequestBody CaptureService service) {
@@ -83,6 +85,7 @@ public class PacketController {
         }
     }
 
+    @Log
     @ApiOperation("开启websocket服务")
     @RequestMapping(value = "/connect_socketio" , method = RequestMethod.GET)
     public BaseResponse startRecvRealTimePacket(){
@@ -106,6 +109,7 @@ public class PacketController {
         }
     }
 
+    @Log
     @ApiOperation("关闭websocket服务")
     @GetMapping(value = "/close_socketio")
     public BaseResponse closeWebSocket(){
@@ -118,12 +122,14 @@ public class PacketController {
         return BaseResponse.OK(packetService.getAllNetworkInterface());
     }
 
+    @Log
     @ApiOperation("更新并获取抓包主机所有网卡接口信息")
     @GetMapping("get_all_interface_flush")
     public BaseResponse getAllNetworkInterfacesFlush() throws SocketException {
         return BaseResponse.OK(packetService.getAllNetworkInterfaceFlush());
     }
 
+    @Log
     @ApiOperation("停止抓包")
     @GetMapping("stop_service")
     public BaseResponse stopService(@RequestParam String service_name){
@@ -138,6 +144,7 @@ public class PacketController {
         return BaseResponse.OK();
     }
 
+    @Log
     @ApiOperation("获取接口状态")
     @GetMapping("interface_status")
     public BaseResponse getInterfaceStatus(){

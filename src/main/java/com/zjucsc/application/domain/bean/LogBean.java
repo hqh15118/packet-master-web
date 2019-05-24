@@ -16,7 +16,8 @@ public class LogBean  {
     private String clazzName;
     private String methodName;
     private long costTime;
-    private Object request;
     private Object[] methodArgs;
     private Object result;
+    private int logType;
+    private Exception exception;
 }

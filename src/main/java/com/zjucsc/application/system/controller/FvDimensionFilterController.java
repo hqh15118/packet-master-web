@@ -1,6 +1,7 @@
 package com.zjucsc.application.system.controller;
 
 import com.zjucsc.application.config.Common;
+import com.zjucsc.application.config.auth.Log;
 import com.zjucsc.application.system.entity.FvDimensionFilter;
 import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
 import com.zjucsc.application.system.service.iservice.IFvDimensionFilterService;
@@ -41,6 +42,7 @@ public class FvDimensionFilterController {
 
     @Autowired private IFvDimensionFilterService iFvDimensionFilterService;
 
+    @Log
     @ApiOperation("添加/更新五元组过滤规则")
     @PostMapping("new_fv_packet_rule")
     //2019 5 17 -- ok
@@ -53,6 +55,7 @@ public class FvDimensionFilterController {
         }
     }
 
+    @Log
     @ApiOperation(value = "查询五元组异常报文规则")
     @GetMapping("/get_fv_packet_rule")
     //2019 5 17 -- ok
@@ -61,6 +64,7 @@ public class FvDimensionFilterController {
         return BaseResponse.OK(future.get());
     }
     //2019 5 17 -- ok
+    @Log
     @ApiOperation(value = "查询已经成功挂载的五元组异常报文规则[确认是否已经将规则下载到服务器]")
     @GetMapping("/get_fv_packet_rule_cached")
     public BaseResponse loadFvDimensionPacketRuleCached(@RequestParam String deviceNumber , @RequestParam String name) throws DeviceNotValidException, ExecutionException, InterruptedException {

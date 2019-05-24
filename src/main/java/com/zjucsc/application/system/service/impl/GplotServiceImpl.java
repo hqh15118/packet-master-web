@@ -68,7 +68,7 @@ public class GplotServiceImpl extends ServiceImpl<GplotMapper, Gplot> implements
             //load all opt dimension rule from fv_dimension table by device_number + gpolt_id
             List<OptFilter> optFilters = iDeviceService.loadAllOptFiterByDeviceNumberAndGplotId(deviceNumberAndIp.deviceNumber,gplotId);
             //add all opt filters to cache
-            CommonOptFilterUtil.addOrUpdateAnalyzer(deviceNumberAndIp.deviceNumber , optFilters , "xxx");
+            CommonOptFilterUtil.addOrUpdateAnalyzer(deviceNumberAndIp.deviceIp , optFilters , "xxx");
             //更新DEVICE_NUMBER和DEVICE_IP之间的对应关系
             CommonCacheUtil.addOrUpdateDeviceNumberAndIp(deviceNumberAndIp.deviceNumber , deviceNumberAndIp.deviceIp);
         }
