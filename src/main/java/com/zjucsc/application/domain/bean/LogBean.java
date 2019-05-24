@@ -20,4 +20,5 @@ public class LogBean  {
     private Object result;
     private int logType;
     private String exception;
+    private String startTime;
 }

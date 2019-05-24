@@ -56,7 +56,7 @@ spring:
     producer:
       bootstrap-servers: http://${myconfig.kafka-server-url}
       retries: 1
-      batch-size: 4096
+      batch-size: 40960
       buffer-memory: 40960
 management:
   endpoints:
