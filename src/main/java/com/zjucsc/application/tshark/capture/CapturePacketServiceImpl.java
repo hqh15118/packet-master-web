@@ -1,5 +1,6 @@
 package com.zjucsc.application.tshark.capture;
 
+import com.alibaba.fastjson.JSON;
 import com.zjucsc.application.config.SocketIoEvent;
 import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.domain.bean.CollectorState;
@@ -174,7 +175,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         if (payload.length == 0){
             log.error("fv dimension layer is : {} 没有trailer和fcs，无法解析时间戳，返回上位机系统时间" , fvDimensionLayer);
         }
-        //System.out.println(fvDimensionLayer);
+        System.out.println(JSON.toJSONString(fvDimensionLayer));
         //SocketServiceCenter.updateAllClient(SocketIoEvent.ALL_PACKET,fvDimensionLayer);
         if (newFvDimensionCallback!=null){
             newFvDimensionCallback.newCome(fvDimensionLayer);

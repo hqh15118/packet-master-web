@@ -1,5 +1,6 @@
 package com.zjucsc.application.system.service;
 
+import com.zjucsc.application.domain.bean.LogBean;
 import com.zjucsc.application.system.service.impl.KafkaServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,5 +15,18 @@ public class KafkaServiceTest {
 
     @Autowired private KafkaServiceImpl kafkaServiceImpl;
 
+    @Test
+    public void sendMsgTest(){
+        LogBean logBean = LogBean.builder()
+                .costTime(1000)
+                .clazzName("clazz_name")
+                .methodName("method_name")
+                .logType(1)
+                .methodArgs(new Object[]{1,2,3})
+                .result("result")
+                .exception("exception")
+                .build();
+        kafkaServiceImpl.sendImportLog(logBean);
+    }
 
 }

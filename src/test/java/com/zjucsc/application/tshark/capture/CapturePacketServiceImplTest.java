@@ -65,12 +65,12 @@ public class CapturePacketServiceImplTest {
     @Test
     @SuppressWarnings("unchecked")
     public void allPacketSendTest() throws InterruptedException {
-        packetController.startRecvRealTimePacket();
+        //packetController.startRecvRealTimePacket();
         CaptureService captureService = new CaptureService();
         captureService.setMacAddress(macAddressForWin);
         captureService.setService_ip("192.168.0.121");
         captureService.setService_name("en0");
         packetController.startCaptureService(captureService);
-        Thread.sleep(20000000);
+        Thread.sleep(10000);
     }
 }

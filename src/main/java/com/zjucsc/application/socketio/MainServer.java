@@ -38,14 +38,6 @@ public class MainServer {
                         server = new SocketIOServer(config);
                         server.addConnectListener(connectListener);
                         server.addDisconnectListener(disconnectListener);
-                        /*
-                        server.addListeners(new DataListener<String>() {
-                            @Override
-                            public void onData(SocketIOClient socketIOClient, String s, AckRequest ackRequest) throws Exception {
-                                //System.out.println(s);
-                            }
-                        });
-                        */
                         server.start();
                         try {
                             Thread.sleep(Integer.MAX_VALUE);

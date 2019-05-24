@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.SocketException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.zjucsc.application.config.Common.HTTP_STATUS_CODE.SYS_ERROR;
 
@@ -85,6 +86,8 @@ public class PacketController {
         }
     }
 
+    private AtomicInteger socketIoClientNumber = new AtomicInteger(0);
+
     @Log
     @ApiOperation("开启websocket服务")
     @RequestMapping(value = "/connect_socketio" , method = RequestMethod.GET)
@@ -92,12 +95,18 @@ public class PacketController {
         boolean b = MainServer.openWebSocketService(constantConfig.getGlobal_address(), Common.SOCKET_IO_PORT, new com.corundumstudio.socketio.listener.ConnectListener() {
             @Override
             public void onConnect(SocketIOClient socketIOClient) {
-                log.info(socketIOClient.getRemoteAddress().toString() + "connected...");
-                SocketServiceCenter.addConnectedClient(socketIOClient);
+                if (socketIoClientNumber.get() >= 1){
+                    socketIOClient.disconnect();
+                    log.info("reject socket io connect : {} " , socketIOClient.getRemoteAddress().toString());
+                }else{
+                    log.info(socketIOClient.getRemoteAddress().toString() + "connected...");
+                    SocketServiceCenter.addConnectedClient(socketIOClient);
+                }
             }
         }, new com.corundumstudio.socketio.listener.DisconnectListener() {
             @Override
             public void onDisconnect(SocketIOClient socketIOClient) {
+                socketIoClientNumber.decrementAndGet();
                 log.info(socketIOClient.getRemoteAddress().toString() + "disconnect...");
                 SocketServiceCenter.removeConnectedClient(socketIOClient);
             }

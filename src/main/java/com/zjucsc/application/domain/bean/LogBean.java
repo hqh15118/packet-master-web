@@ -19,5 +19,5 @@ public class LogBean  {
     private Object[] methodArgs;
     private Object result;
     private int logType;
-    private Exception exception;
+    private String exception;
 }

@@ -37,5 +37,5 @@ public class FvDimensionFilter {
     @TableField("gplot_id")
     private int gplotId;
     @TableField("fv_id")
-    private int fvId;
+    private String fvId;
 }

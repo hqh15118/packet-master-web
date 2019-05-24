@@ -91,7 +91,7 @@ public class LogAspect {
                         .append("\n");
             }
             sb.append("****************");
-            log.info("info : \n {}",sb.toString());
+            log.info("info:\n{}",sb.toString());
         }
         return result;
     }

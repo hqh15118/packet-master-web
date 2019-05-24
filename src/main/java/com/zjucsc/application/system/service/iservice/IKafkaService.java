@@ -2,6 +2,7 @@ package com.zjucsc.application.system.service.iservice;
 
 import com.zjucsc.application.domain.bean.LogBean;
 import com.zjucsc.application.domain.bean.StatisticsDataWrapper;
+import com.zjucsc.application.tshark.domain.bean.BadPacket;
 import com.zjucsc.application.tshark.domain.packet.FvDimensionLayer;
 
 public interface IKafkaService {
@@ -11,4 +12,8 @@ public interface IKafkaService {
 
     void sendImportLog(LogBean logBean);
     void sendNormalLog(LogBean logBean);
+
+    void sendExceptionPacket(BadPacket badPacket);
+
+    void sendAttackPacket(BadPacket badPacket);
 }
