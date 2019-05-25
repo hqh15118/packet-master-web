@@ -127,7 +127,9 @@ public abstract class BasePreProcessor implements PreProcessor {
         Process process = null;
         try {
             log.info("***************** {} ==> run command : {} " , this.getClass().getName() , command);
-            process = Runtime.getRuntime().exec(command);
+
+            process = Runtime.getRuntime().exec(new String[]{"bash","-c",command});
+
             CommonTsharkUtil.addTsharkProcess(process);
             doWithErrorStream(process.getErrorStream() , command);
             log.info("start running --------------------> now ");
