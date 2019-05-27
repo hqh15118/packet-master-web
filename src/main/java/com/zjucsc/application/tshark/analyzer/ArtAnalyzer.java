@@ -16,7 +16,6 @@ import java.util.Map;
 @Slf4j
 public class ArtAnalyzer extends AbstractAnalyzer<Map<String, IArtDecode>> implements Analyzed {
 
-
     public ArtAnalyzer(Map<String, IArtDecode> stringAbstractArtPacketFilterMap) {
         super(stringAbstractArtPacketFilterMap);
     }
