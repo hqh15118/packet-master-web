@@ -257,6 +257,12 @@
             <systemPath>${project.basedir}/src/main/resources/libs/protocolmap.jar</systemPath>
         </dependency>
 
+        <dependency>
+            <groupId>com.zjucsc</groupId>
+            <artifactId>kafka_service</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
     </dependencies>
 
     <!--<build>-->

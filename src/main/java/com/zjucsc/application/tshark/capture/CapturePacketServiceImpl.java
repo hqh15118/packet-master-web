@@ -21,8 +21,11 @@ import com.zjucsc.application.tshark.pre_processor.*;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.CommonConfigUtil;
 import com.zjucsc.application.util.PacketDecodeUtil;
+import com.zjucsc.kafka.KafkaConcumerCreator;
+import com.zjucsc.kafka.KafkaProducerCreator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.kafka.clients.producer.KafkaProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -45,6 +48,9 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
 
     private List<BasePreProcessor> processorList = new ArrayList<>();
     private ProcessCallback<String,String> callback;
+
+    private KafkaProducer<String,String> kafkaProducer = (KafkaProducer<String, String>) KafkaProducerCreator.getProducer("fv_dimension",
+            String.class,String.class);
 
     //恶意报文handler
     private BadPacketAnalyzeHandler badPacketAnalyzeHandler = new BadPacketAnalyzeHandler(Executors.newFixedThreadPool(5,
@@ -225,6 +231,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         if (newFvDimensionCallback!=null){
             newFvDimensionCallback.newCome(fvDimensionLayer);
         }
+
     }
 
     private void sendPacketStatisticsEvent(FvDimensionLayer fvDimensionLayer) throws DeviceNotValidException {
