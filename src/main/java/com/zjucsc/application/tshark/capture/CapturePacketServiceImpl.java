@@ -87,11 +87,11 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         this.callback = callback;
 
         try {
-            callback.start(doStart(fvDimensionLayerAbstractAsyncHandler ,
-                                   new ModbusPreProcessor() ,
-                                   new S7CommPreProcessor() ,
-                                   new IEC104PreProcessor() ,
-                                   new UnknownPreProcessor()      //必须放在解析协议的最后
+            callback.start(doStart(fvDimensionLayerAbstractAsyncHandler
+                                   //,new ModbusPreProcessor()
+                                   //,new S7CommPreProcessor()
+                                   //,new IEC104PreProcessor()
+                                   ,new UnknownPreProcessor()      //必须放在解析协议的最后
                                    ));
         } catch (InterruptedException e) {
             return CompletableFuture.completedFuture(e);
