@@ -4,6 +4,7 @@ import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.bean.CollectorState;
 import com.zjucsc.application.tshark.domain.packet.S7CommPacket;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -138,19 +139,17 @@ public class PacketDecodeUtil {
      * @return 功能码int
      */
     public static int decodeFuncode(String protocol , String str_fun_code ){
-        //System.out.println(protocol);
+        if (StringUtils.isBlank(str_fun_code)){
+            return -1;
+        }
+        System.out.println(str_fun_code);
         int fun_code = -1;
         try {
             switch (protocol) {
                 case MODBUS:
-                    //fun_code = Integer.decode(str_fun_code);
-                    //break;
                 case S7:
-                case S7_Ack_data:
-                case S7_JOB:
                 case IEC104:
-//                    System.out.println(fun_code);
-                    //fun_code = Integer.decode(str_fun_code);
+                    fun_code = Integer.decode(str_fun_code);
                     break;
             }
         }catch (NumberFormatException e){
@@ -176,6 +175,7 @@ public class PacketDecodeUtil {
             return MODBUS;
         }else if(protocolStack.endsWith("s7comm"))
         {
+            /*
             String rosctr = ((String) otherInfo[0]);
             if (S7CommPacket.ACK_DATA.equals(rosctr)){
                 return S7_Ack_data;
@@ -184,6 +184,8 @@ public class PacketDecodeUtil {
             }else{
                 return S7;
             }
+            */
+            return S7;
         }
         else if(protocolStack.endsWith("dnp3"))
         {

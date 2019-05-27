@@ -42,33 +42,34 @@ public class StatisticsData {
     public static ConcurrentHashMap<String, GraphInfoCollection> GRAPH_BY_DEVICE = new ConcurrentHashMap<>();
     public static ConcurrentHashMap<String, LinkedList<String>> ART_INFO = new ConcurrentHashMap<>();
 
-    public static void increaseNumberByDeviceIn(String deviceNumber){
+    public static void increaseNumberByDeviceIn(String deviceNumber,int delta){
         if (deviceNumber!=null) {
-            doIncrease(NUMBER_BY_DEVICE_IN.get(deviceNumber) , deviceNumber , NUMBER_BY_DEVICE_IN);
+            doIncrease(NUMBER_BY_DEVICE_IN.get(deviceNumber) , deviceNumber , NUMBER_BY_DEVICE_IN,delta);
         }
     }
 
-    public static void increaseNumberByDeviceOut(String deviceNumber){
+    public static void increaseNumberByDeviceOut(String deviceNumber , int delta){
         if (deviceNumber!=null) {
-            doIncrease(NUMBER_BY_DEVICE_OUT.get(deviceNumber) , deviceNumber , NUMBER_BY_DEVICE_OUT);
+            doIncrease(NUMBER_BY_DEVICE_OUT.get(deviceNumber) , deviceNumber , NUMBER_BY_DEVICE_OUT , delta);
         }
     }
     public static void increaseAttackByDevice(String deviceNumber){
         if (deviceNumber!=null) {
-            doIncrease(ATTACK_BY_DEVICE.get(deviceNumber) , deviceNumber , ATTACK_BY_DEVICE);
+            doIncrease(ATTACK_BY_DEVICE.get(deviceNumber) , deviceNumber , ATTACK_BY_DEVICE , 1);
         }
     }
     public static void increaseExceptionByDevice(String deviceNumber){
         if (deviceNumber!=null) {
-            doIncrease(EXCEPTION_BY_DEVICE.get(deviceNumber) , deviceNumber , EXCEPTION_BY_DEVICE);
+            doIncrease(EXCEPTION_BY_DEVICE.get(deviceNumber) , deviceNumber , EXCEPTION_BY_DEVICE , 1);
         }
     }
 
-    private static void doIncrease(AtomicInteger atomicInteger , String deviceNumber ,  ConcurrentHashMap<String, AtomicInteger> map){
+    private static void doIncrease(AtomicInteger atomicInteger , String deviceNumber ,  ConcurrentHashMap<String, AtomicInteger> map
+    ,int delta){
         if (atomicInteger!=null) {
-            atomicInteger.incrementAndGet();
+            atomicInteger.addAndGet(delta);
         }else{
-            map.put(deviceNumber , new AtomicInteger(1));
+            map.put(deviceNumber , new AtomicInteger(delta));
         }
     }
 

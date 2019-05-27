@@ -1,6 +1,7 @@
 package com.zjucsc.application.tshark.domain.packet;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.Arrays;
 
@@ -26,6 +27,10 @@ public class FvDimensionLayer {
     public String[] eth_fcs = {""};
     public String timeStamp = "";
     public String[] tcp_payload = {""};
+    @JsonIgnore
+    public String funCode;
+    @JsonIgnore
+    public String funCodeMeaning;
 
     public FvDimensionLayer setFrameProtocols(String protocol){
         if (protocol!=null) {
@@ -49,6 +54,8 @@ public class FvDimensionLayer {
                 ", eth_fcs=" + Arrays.toString(eth_fcs) +
                 ", timeStamp='" + timeStamp + '\'' +
                 ", tcp_payload=" + Arrays.toString(tcp_payload) +
+                ", funCode=" + funCode +
+                ", funCodeMeaning='" + funCodeMeaning + '\'' +
                 '}';
     }
 }

@@ -1,21 +1,28 @@
 package com.zjucsc.application.tshark.capture;
 
 import com.alibaba.fastjson.JSON;
+import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.SocketIoEvent;
 import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.domain.bean.CollectorState;
 import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
+import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.application.handler.ThreadExceptionHandler;
 import com.zjucsc.application.socketio.SocketServiceCenter;
 import com.zjucsc.application.system.service.PacketAnalyzeService;
 import com.zjucsc.application.tshark.decode.AbstractAsyncHandler;
 import com.zjucsc.application.tshark.decode.DefaultPipeLine;
 import com.zjucsc.application.tshark.domain.packet.FvDimensionLayer;
+import com.zjucsc.application.tshark.domain.packet.ModbusPacket;
+import com.zjucsc.application.tshark.domain.packet.S7CommPacket;
+import com.zjucsc.application.tshark.domain.packet.UnknownPacket;
 import com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler;
 import com.zjucsc.application.tshark.pre_processor.*;
 import com.zjucsc.application.util.CommonCacheUtil;
+import com.zjucsc.application.util.CommonConfigUtil;
 import com.zjucsc.application.util.PacketDecodeUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -26,6 +33,8 @@ import java.util.List;
 import java.util.concurrent.*;
 
 import static com.zjucsc.application.config.Common.COMMON_THREAD_EXCEPTION_HANDLER;
+import static com.zjucsc.application.config.PACKET_PROTOCOL.MODBUS;
+import static com.zjucsc.application.config.PACKET_PROTOCOL.S7;
 
 @Slf4j
 @Service
@@ -36,11 +45,12 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
 
     private List<BasePreProcessor> processorList = new ArrayList<>();
     private ProcessCallback<String,String> callback;
+
     //恶意报文handler
     private BadPacketAnalyzeHandler badPacketAnalyzeHandler = new BadPacketAnalyzeHandler(Executors.newFixedThreadPool(5,
             r -> {
                 Thread thread = new Thread(r);
-                thread.setName("bad_packet_analyze handler-");
+                thread.setName("bad_packet_analyze_handler-");
                 thread.setUncaughtExceptionHandler(COMMON_THREAD_EXCEPTION_HANDLER);
                 return thread;
             }));
@@ -68,12 +78,21 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             //如果不存在，那么sb.toString==""，hexStringToByteArray2会自动判空，
             //然后返回EMPTY=""，即payload={}空的byte数组
             byte[] payload = PacketDecodeUtil.decodeTrailerAndFsc(sb.toString());
+            //设置五元组中的功能码以及功能码对应的含义
+            try {
+                setFuncode(fvDimensionLayer);
+            } catch (ProtocolIdNotValidException e) {
+                log.error("error set Funcode" , e);
+            }
+
             sendFvDimensionPacket(fvDimensionLayer , payload);          //发送五元组所有报文
+
             try {
                 sendPacketStatisticsEvent(fvDimensionLayer);            //发送统计信息
             } catch (DeviceNotValidException e) {
                 log.error("找不到IP地址对应的设备号 {} " , e.getMsg());
             }
+
             int collectorId = PacketDecodeUtil.decodeCollectorId(payload,24);
             analyzeCollectorState(payload , collectorId);                         //分析采集器状态信息
             collectorDelayInfo(payload , collectorId);                            //解析时延信息
@@ -81,15 +100,42 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         }
     };
 
+    public void setFuncode(FvDimensionLayer layer) throws ProtocolIdNotValidException {
+        if (!(layer instanceof UnknownPacket.LayersBean)) {
+            int funCode = decodeFuncode(layer);
+            if (funCode >= 0){
+                layer.funCodeMeaning = CommonConfigUtil.
+                        getTargetProtocolFuncodeMeanning(layer.frame_protocols[0],funCode);
+                layer.funCode = String.valueOf(funCode);
+            }else{
+                layer.funCode = "--";
+            }
+        }
+    }
+
+    private int decodeFuncode(FvDimensionLayer t) {
+        String funCodeStr;
+        if (t instanceof S7CommPacket.LayersBean){
+            funCodeStr =  ((S7CommPacket.LayersBean) t).s7comm_param_func[0];
+            System.out.println("funcode str" + funCodeStr);
+            return PacketDecodeUtil.decodeFuncode(S7, funCodeStr);
+        }else if (t instanceof ModbusPacket.LayersBean){
+            funCodeStr = ((ModbusPacket.LayersBean) t).modbus_func_code[0];
+            return PacketDecodeUtil.decodeFuncode(MODBUS,funCodeStr);
+        }else{
+            log.error("can not decode funCode of protocol : {} cause it is not defined" , t.frame_protocols[0]);
+            return -1;
+        }
+    }
+
     @Async
     @Override
     public CompletableFuture<Exception> start(ProcessCallback<String,String> callback) {
         this.callback = callback;
-
         try {
             callback.start(doStart(fvDimensionLayerAbstractAsyncHandler
                                    //,new ModbusPreProcessor()
-                                   //,new S7CommPreProcessor()
+                                   ,new S7CommPreProcessor()
                                    //,new IEC104PreProcessor()
                                    ,new UnknownPreProcessor()      //必须放在解析协议的最后
                                    ));
@@ -173,9 +219,8 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         fvDimensionLayer.timeStamp = PacketDecodeUtil.decodeTimeStamp(payload,20);
         //payload如果是空的，那么timeStamp就用本地时间来代替
         if (payload.length == 0){
-            log.error("fv dimension layer is : {} 没有trailer和fcs，无法解析时间戳，返回上位机系统时间" , fvDimensionLayer);
+            Common.NON_TIMESTAMP_PACKET_COUNT ++;
         }
-        System.out.println(JSON.toJSONString(fvDimensionLayer));
         //SocketServiceCenter.updateAllClient(SocketIoEvent.ALL_PACKET,fvDimensionLayer);
         if (newFvDimensionCallback!=null){
             newFvDimensionCallback.newCome(fvDimensionLayer);
@@ -183,12 +228,15 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     }
 
     private void sendPacketStatisticsEvent(FvDimensionLayer fvDimensionLayer) throws DeviceNotValidException {
-        StatisticsData.recvPacketNumber.incrementAndGet();      //总报文数
-        //外界 --> PLC[ip_dst]  设备接收的报文数
+        int capLength = Integer.parseInt(fvDimensionLayer.frame_cap_len[0]);
 
-        StatisticsData.increaseNumberByDeviceIn(CommonCacheUtil.getTargetDeviceNumberByIp(fvDimensionLayer.ip_dst[0]));
+        StatisticsData.recvPacketNumber.addAndGet(capLength);      //总报文数
+        //外界 --> PLC[ip_dst]  设备接收的报文数
+        StatisticsData.increaseNumberByDeviceIn(CommonCacheUtil.getTargetDeviceNumberByIp(fvDimensionLayer.ip_dst[0])
+            ,capLength);
         //外界 <-- PLC[ip_src]  设备发送的报文数
-        StatisticsData.increaseNumberByDeviceOut(CommonCacheUtil.getTargetDeviceNumberByIp(fvDimensionLayer.ip_src[0]));
+        StatisticsData.increaseNumberByDeviceOut(CommonCacheUtil.getTargetDeviceNumberByIp(fvDimensionLayer.ip_src[0]),
+                capLength);
     }
 
     private void analyzeCollectorState(byte[] payload , int collectorId){

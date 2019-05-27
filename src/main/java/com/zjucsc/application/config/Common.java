@@ -21,6 +21,11 @@ public class Common {
     public static final int SOCKET_IO_PORT = 8081;
 
     /**
+     * 无trailer + fcs，无法解析时间戳的报文数量
+     */
+    public static long NON_TIMESTAMP_PACKET_COUNT = 0;
+
+    /**
      * 是否已经打开某个抓包机器上的抓包服务
      */
     public static List<String> hasStartedHost = new ArrayList<>();

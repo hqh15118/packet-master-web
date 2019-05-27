@@ -60,19 +60,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
         return null;
     }
 
-    private int decodeFuncode(Object t) {
-        String funCodeStr;
-        if (t instanceof S7CommPacket.LayersBean){
-            funCodeStr =  ((S7CommPacket.LayersBean) t).s7comm_param_func[0];
-            return PacketDecodeUtil.decodeFuncode(S7,funCodeStr);
-        }else if (t instanceof ModbusPacket.LayersBean){
-            funCodeStr = ((ModbusPacket.LayersBean) t).modbus_func_code[0];
-            return PacketDecodeUtil.decodeFuncode(MODBUS,funCodeStr);
-        }else{
-            log.error("can not decode funCode of {} cause it is not defined" , t);
-            return 0;
-        }
-    }
+
 
     private void protocolAnalyze(FvDimensionLayer layer) {
         FiveDimensionAnalyzer fiveDimensionAnalyzer;
@@ -88,10 +76,10 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
                 //五元组正常，再进行操作的匹配
                 //功能码分析
                 if (!(layer instanceof UnknownPacket.LayersBean)) {
-                    int funCode = decodeFuncode(layer);
-                    if (funCode!=0) {
+                    String funCode = layer.funCode;
+                    if (!"--".equals(funCode)) {
                         try {
-                            operationAnalyze(funCode, layer);
+                            operationAnalyze(Integer.valueOf(funCode), layer);
                         } catch (ProtocolIdNotValidException e) {
                             log.error("protocol Id not valid {} " , e.getMsg());
                         }

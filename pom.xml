@@ -12,9 +12,9 @@
     </parent>
 
     <groupId>com.zjucsc</groupId>
-    <artifactId>packet-master-web</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>packet-master-web</name>
+        <artifactId>packet-master-web</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <name>packet-master-web</name>
     <description>project for Spring Boot</description>
 
     <properties>
@@ -239,13 +239,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.springframework.kafka/spring-kafka -->
-        <dependency>
-            <groupId>org.springframework.kafka</groupId>
-            <artifactId>spring-kafka</artifactId>
-            <version>2.2.6.RELEASE</version>
         </dependency>
 
         <dependency>

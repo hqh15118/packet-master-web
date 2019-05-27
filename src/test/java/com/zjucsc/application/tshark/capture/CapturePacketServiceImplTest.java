@@ -70,9 +70,9 @@ public class CapturePacketServiceImplTest {
         //packetController.startRecvRealTimePacket();
         CaptureService captureService = new CaptureService();
         captureService.setMacAddress(macAddressForWin);
-        captureService.setService_ip(ipForMac);
+        captureService.setService_ip(ipForWin);
         captureService.setService_name("en0");
         packetController.startCaptureService(captureService);
-        Thread.sleep(5000);
+        Thread.sleep(100000);
     }
 }

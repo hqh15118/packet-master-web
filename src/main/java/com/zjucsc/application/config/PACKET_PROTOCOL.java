@@ -11,8 +11,8 @@ package com.zjucsc.application.config;
 public interface PACKET_PROTOCOL {
     String MODBUS = "modbus";
     String S7 = "s7comm";
-    String S7_JOB = "s7comm_job";
-    String S7_Ack_data = "s7comm_ack_data";
+    //String S7_JOB = "s7comm_job";
+    //String S7_Ack_data = "s7comm_ack_data";
     String TCP = "tcp";
     String IPV4 = "ipv4";
     String UDP = "udp";
