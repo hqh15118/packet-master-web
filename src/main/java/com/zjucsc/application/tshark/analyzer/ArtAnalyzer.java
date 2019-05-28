@@ -30,10 +30,7 @@ public class ArtAnalyzer extends AbstractAnalyzer<Map<String, IArtDecode>> imple
         IArtDecode iArtDecode;
         if ((iArtDecode = getAnalyzer().get(protocol))!=null){
             Map<String,Float> res = iArtDecode.decode(CommonUtil.getGlobalArtMap(),tcpPayloadArrInByte);
-            List<AttackType> attackTypeList = null;
-            if (res!=null){
-                attackTypeList = iArtDecode.attackDecode(CommonUtil.getGlobalAttackList(), tcpPayloadArrInByte,res);
-            }
+            List<AttackType> attackTypeList = iArtDecode.attackDecode(CommonUtil.getGlobalAttackList(), tcpPayloadArrInByte,res);
             return new ThreadLocalWrapper(res , attackTypeList);
         }else {
             //log.debug("can not decode art args of protocol : {}" , protocol);

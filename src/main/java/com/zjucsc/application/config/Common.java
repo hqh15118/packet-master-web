@@ -4,12 +4,14 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.zjucsc.application.domain.bean.CollectorState;
 import com.zjucsc.application.handler.ThreadExceptionHandler;
+import com.zjucsc.application.system.entity.ArtConfig;
 import com.zjucsc.application.tshark.analyzer.ArtAnalyzer;
 import com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 
 public class Common {
@@ -66,6 +68,7 @@ public class Common {
         public static final int COMMAND_NOT_VALID = 203;
         public static final int SQL_ERROR = 204;
         public static final int TOKEN_NOT_VALID = 205;
+        public static final int ART_CONFIG_NOT_VALID = 206;
     }
 
     //已经登录过的用户
@@ -98,4 +101,12 @@ public class Common {
      * 设备IP和DEVICE_NUMBER之间互相转换
      */
     public static final BiMap<String,String> DEVICE_IP_TO_NAME = HashBiMap.create();
+
+    /**
+     * 要显示的工艺参数集合【将这个set里面的工艺参数数据传输到前端，其他的不用传】
+     */
+    public static final ConcurrentSkipListSet<String> SHOW_GRAPH_SET = new ConcurrentSkipListSet<>();
+
+    public static final ConcurrentHashMap<String,ConcurrentHashMap<Integer, ArtConfig>> ART_DECODE_MAP
+            = new ConcurrentHashMap<>();
 }

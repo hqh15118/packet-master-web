@@ -40,10 +40,15 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
 
         //工艺参数分析
         Object res = ART_FILTER.analyze(layer.tcp_payload[0] , layer.frame_protocols[0]);
+        //分析结果
+        //res可能为null
         if(res!=null){
             ThreadLocalWrapper threadLocalWrapper = (ThreadLocalWrapper)res;
+            //将解析出来的数据添加到LinkedList中，发送到前端
             StatisticsData.addArtMapData(threadLocalWrapper.getFloatMap());
+            //攻击信息发送
             if (threadLocalWrapper.getAttackTypeList()!=null && threadLocalWrapper.getAttackTypeList().size() > 0){
+                //发生了工艺参数攻击
                 SocketServiceCenter.updateAllClient(SocketIoEvent.ATTACK_INFO,
                         new BadPacket.Builder(AttackTypePro.HAZARD_ART)
                             .setDangerLevel(DangerLevel.VERY_DANGER)
@@ -82,7 +87,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
                 }
             }
         }else{
-            BadPacket badPacket = new BadPacket.Builder(AttackTypePro.UNKNOW_DEVICE)
+            BadPacket badPacket = new BadPacket.Builder(AttackTypePro.UN_KNOW_DEVICE)
                     .set_five_Dimension(layer)
                     .setDangerLevel(DangerLevel.DANGER)
                     .setComment("未知报文来源")

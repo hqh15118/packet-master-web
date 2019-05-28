@@ -241,6 +241,14 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.caucho/hessian -->
+        <dependency>
+            <groupId>com.caucho</groupId>
+            <artifactId>hessian</artifactId>
+            <version>4.0.60</version>
+        </dependency>
+
+
         <dependency>
             <groupId>com.zjucsc</groupId>
             <artifactId>art_decode</artifactId>

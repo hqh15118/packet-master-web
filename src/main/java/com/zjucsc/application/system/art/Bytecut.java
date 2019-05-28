@@ -1,4 +1,4 @@
-package com.zjucsc.application.system.art.s7comm;
+package com.zjucsc.application.system.art;
 
 import java.nio.ByteBuffer;
 

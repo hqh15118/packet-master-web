@@ -5,13 +5,13 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class ConfigurationForRe {
+public class ConfigurationForReturn {
     private int count;
     private List<ConfigurationWrapper> configurationWrappers;
 
-    public ConfigurationForRe(){}
+    public ConfigurationForReturn(){}
 
-    public ConfigurationForRe(int count, List<ConfigurationWrapper> configurationWrappers) {
+    public ConfigurationForReturn(int count, List<ConfigurationWrapper> configurationWrappers) {
         this.count = count;
         this.configurationWrappers = configurationWrappers;
     }

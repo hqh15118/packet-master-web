@@ -1,4 +1,4 @@
-package com.zjucsc.application.system.art.s7comm;
+package com.zjucsc.application.system.art;
 
 import com.zjucsc.art_decode.AttackType;
 import com.zjucsc.art_decode.IArtDecode;
@@ -12,7 +12,6 @@ import static com.zjucsc.art_decode.AttackType.TAMPER_ATTACK;
 
 @SuppressWarnings("unchecked")
 public class S7CommDecode implements IArtDecode {
-
 
     @Override
     public Map<String, Float> decode(Map<String, Float> map, byte[] bytes, Object... objects) {
@@ -163,7 +162,7 @@ public class S7CommDecode implements IArtDecode {
             return result;
         }
         if (s == 1 && e == 255 && f == 0) {// 负无穷大
-            result = (float) -1111.11;
+            result = (float) - 1111.11;
             return result;
         } else {
             result = (float) (s * f * Math.pow(2, e - 127));

@@ -7,7 +7,7 @@ import com.zjucsc.application.config.ConstantConfig;
 import com.zjucsc.application.config.PACKET_PROTOCOL;
 import com.zjucsc.application.config.auth.Auth;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
-import com.zjucsc.application.system.art.s7comm.S7CommDecode;
+import com.zjucsc.application.system.art.S7CommDecode;
 import com.zjucsc.application.system.entity.ConfigurationSetting;
 import com.zjucsc.application.system.entity.ProtocolId;
 import com.zjucsc.application.system.service.iservice.IConfigurationSettingService;

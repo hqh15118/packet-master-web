@@ -40,9 +40,9 @@ public class ByteUtil {
         return result;
     }
 
-    public static short bytesToShort(byte[] bytes,int offset,int length) {
+    public static short bytesToShort(byte[] bytes,int offset) {
         ByteBuffer buffer = byteToShortByteBuffer.get();
-        buffer.put(bytes, offset, length);
+        buffer.put(bytes, offset, 2);
         buffer.flip();//need flip
         short result =  buffer.getShort();
         buffer.clear();
