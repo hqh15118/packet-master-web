@@ -1,6 +1,6 @@
 package com.zjucsc.application.util;
 
-import com.zjucsc.AttackType;
+import com.zjucsc.art_decode.AttackType;
 import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.domain.bean.ThreadLocalWrapper;
 

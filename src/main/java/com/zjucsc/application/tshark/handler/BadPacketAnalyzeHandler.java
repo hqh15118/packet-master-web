@@ -9,14 +9,11 @@ import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.application.socketio.SocketServiceCenter;
 import com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
-import com.zjucsc.application.tshark.decode.AbstractAsyncHandler;
 import com.zjucsc.application.tshark.domain.bean.BadPacket;
-import com.zjucsc.application.tshark.domain.packet.FvDimensionLayer;
-import com.zjucsc.application.tshark.domain.packet.ModbusPacket;
-import com.zjucsc.application.tshark.domain.packet.S7CommPacket;
 import com.zjucsc.application.tshark.domain.packet.UnknownPacket;
 import com.zjucsc.application.util.CommonCacheUtil;
-import com.zjucsc.application.util.PacketDecodeUtil;
+import com.zjucsc.tshark.handler.AbstractAsyncHandler;
+import com.zjucsc.tshark.packets.FvDimensionLayer;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,8 +22,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static com.zjucsc.application.config.Common.*;
-import static com.zjucsc.application.config.PACKET_PROTOCOL.MODBUS;
-import static com.zjucsc.application.config.PACKET_PROTOCOL.S7;
 
 @Slf4j
 public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
@@ -141,11 +136,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
              */
             if ((operationAnalyzer = map.get(layer.frame_protocols[0]))!=null){
                 BadPacket badPacket = null;
-                try {
-                    badPacket = (BadPacket) operationAnalyzer.analyze(funCode,layer);
-                } catch (ProtocolIdNotValidException e) {
-                    log.error(" " , e);
-                }
+                badPacket = (BadPacket) operationAnalyzer.analyze(funCode,layer);
                 if (badPacket!=null){
                     String deviceNumber = CommonCacheUtil.getTargetDeviceNumberByIp(layer.ip_dst[0]);
                     badPacket.setDeviceNumber(deviceNumber);

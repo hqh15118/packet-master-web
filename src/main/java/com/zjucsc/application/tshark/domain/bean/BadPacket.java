@@ -1,9 +1,8 @@
 package com.zjucsc.application.tshark.domain.bean;
 
 import com.zjucsc.application.config.DangerLevel;
-import com.zjucsc.application.tshark.domain.packet.FvDimensionLayer;
+import com.zjucsc.tshark.packets.FvDimensionLayer;
 import lombok.Data;
-import lombok.ToString;
 
 @Data
 public class BadPacket {

@@ -3,10 +3,11 @@ package com.zjucsc.application.tshark.analyzer;
 import com.zjucsc.application.config.DangerLevel;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.application.tshark.domain.bean.BadPacket;
-import com.zjucsc.application.tshark.domain.packet.FvDimensionLayer;
 import com.zjucsc.application.tshark.filter.OperationPacketFilter;
-import com.zjucsc.application.util.AbstractAnalyzer;
 import com.zjucsc.application.util.CommonConfigUtil;
+import com.zjucsc.tshark.analyzer.AbstractAnalyzer;
+import com.zjucsc.tshark.packets.FvDimensionLayer;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * #project packet-master-web
@@ -15,20 +16,25 @@ import com.zjucsc.application.util.CommonConfigUtil;
  * #create_time 2019-05-02 - 21:49
  */
 
+@Slf4j
 //OperationPacketFilter<Integer,String> <fun_code , fun_code_meaning>
 public class OperationAnalyzer extends AbstractAnalyzer<OperationPacketFilter<Integer,String>> {
     @Override
-    public Object analyze(Object... objs) throws ProtocolIdNotValidException {
+    public Object analyze(Object... objs){
         int fun_code = ((int) objs[0]);
         FvDimensionLayer layer = ((FvDimensionLayer) objs[1]);
         if (getAnalyzer().getBlackMap().containsKey(fun_code)){
-            return new BadPacket.Builder(layer.frame_protocols[0])
-                    .setComment("黑名单操作")
-                    .set_five_Dimension(layer)
-                    .setDangerLevel(DangerLevel.VERY_DANGER)
-                    .setFun_code(fun_code)
-                    .setOperation(getOperation(layer.frame_protocols[0],fun_code))
-                    .build();
+            try {
+                return new BadPacket.Builder(layer.frame_protocols[0])
+                        .setComment("黑名单操作")
+                        .set_five_Dimension(layer)
+                        .setDangerLevel(DangerLevel.VERY_DANGER)
+                        .setFun_code(fun_code)
+                        .setOperation(getOperation(layer.frame_protocols[0],fun_code))
+                        .build();
+            } catch (ProtocolIdNotValidException e) {
+                log.error("protocol <==> ID not valid " , e);
+            }
         }
         return null;
     }

@@ -5,7 +5,7 @@ import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.DangerLevel;
 import com.zjucsc.application.system.entity.FvDimensionFilter;
 import com.zjucsc.application.tshark.domain.bean.BadPacket;
-import com.zjucsc.application.tshark.domain.packet.FvDimensionLayer;
+import com.zjucsc.tshark.packets.FvDimensionLayer;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import static com.zjucsc.application.config.PACKET_PROTOCOL.FV_DIMENSION;
 import static com.zjucsc.application.config.PACKET_PROTOCOL.OTHER;
 
 /**

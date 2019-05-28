@@ -1,8 +1,6 @@
 package com.zjucsc.packetmasterweb.tshark_test.demos.pre_processor;
 
-import com.zjucsc.application.tshark.decode.PipeLine;
 
-import java.io.IOException;
 import java.util.List;
 
 /**

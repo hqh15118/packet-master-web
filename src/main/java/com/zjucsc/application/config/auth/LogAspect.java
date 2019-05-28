@@ -2,22 +2,16 @@ package com.zjucsc.application.config.auth;
 
 import com.alibaba.fastjson.JSON;
 import com.zjucsc.application.config.ConstantConfig;
-import com.zjucsc.application.config.SocketIoEvent;
-import com.zjucsc.application.domain.bean.LogBean;
-import com.zjucsc.application.socketio.SocketServiceCenter;
 import com.zjucsc.application.system.service.iservice.IKafkaService;
 import com.zjucsc.base.util.HttpContextUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.SecurityUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
-import springfox.documentation.spring.web.json.Json;
 
 import javax.servlet.http.HttpServletRequest;
 

@@ -1,5 +1,7 @@
 package com.zjucsc.application.tshark.domain.packet;
 
+import com.zjucsc.tshark.packets.FvDimensionLayer;
+
 import java.util.Arrays;
 
 /**
@@ -17,7 +19,7 @@ public class ModbusPacket {
 
     public LayersBean layers;
 
-    public static class LayersBean extends FvDimensionLayer{
+    public static class LayersBean extends FvDimensionLayer {
         public String[] modbus_func_code;
 
         @Override
