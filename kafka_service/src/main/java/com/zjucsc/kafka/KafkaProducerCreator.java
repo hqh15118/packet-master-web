@@ -22,8 +22,8 @@ public class KafkaProducerCreator {
      * @return
      */
     private static Properties getKafkaProperties(){
-        File file = new File("config/kafka-config.properties");
-        if (!file.exists()){
+        File file = new File("config/kafka-config-producer.properties");
+        if (file.exists()){
             Properties properties = new Properties();
             try {
                 properties.load(new FileInputStream(file));
@@ -39,16 +39,14 @@ public class KafkaProducerCreator {
 
     public static <K,V> Producer<K, V> getProducer(String service , Class<K> keyClass , Class<V> valueClass){
         Properties props = getKafkaProperties();
-        if (props != null){
-            return null;
-        }else {
+        if (props == null){
             props = new Properties();
             props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaConstant.KAFKA_BROKERS);//10.15.191.100:9092
             props.put(ProducerConfig.CLIENT_ID_CONFIG, KafkaConstant.CLIENT_ID);
             props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());
             props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-            return getProducer(props, service, keyClass, valueClass);
         }
+        return getProducer(props, service, keyClass, valueClass);
     }
 
     @SuppressWarnings("unchecked")
