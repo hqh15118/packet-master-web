@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 
@@ -15,7 +14,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class KafkaServiceTest {
 
     @Autowired private KafkaServiceImpl kafkaServiceImpl;
-    @Autowired private KafkaTemplate kafkaTemplate;
 
     @Test
     public void sendMsgTest(){
@@ -31,7 +29,7 @@ public class KafkaServiceTest {
         kafkaServiceImpl.sendImportLog(logBean);
         long time1 = System.currentTimeMillis();
         for (int i = 0; i < 100000; i++) {
-            kafkaTemplate.send("test","test_data");
+
         }
         System.out.println(System.currentTimeMillis() - time1);
     }
