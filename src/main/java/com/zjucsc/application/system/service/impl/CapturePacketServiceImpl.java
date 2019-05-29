@@ -47,6 +47,7 @@ import static com.zjucsc.application.config.PACKET_PROTOCOL.S7;
 public class CapturePacketServiceImpl implements CapturePacketService<String,String> {
 
     @Autowired private PacketAnalyzeService packetAnalyzeService;
+
     private NewFvDimensionCallback newFvDimensionCallback;
 
     private List<BasePreProcessor> processorList = new ArrayList<>();
@@ -68,7 +69,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
      * 接收协议解析好的五元组，并作五元组发送、报文流量统计处理
      * 单线程处理，保证线程安全
      */
-    private AbstractAsyncHandler<FvDimensionLayer> fvDimensionLayerAbstractAsyncHandler
+    public AbstractAsyncHandler<FvDimensionLayer> fvDimensionLayerAbstractAsyncHandler
             = new AbstractAsyncHandler<FvDimensionLayer>(Executors.newFixedThreadPool(1, r -> {
         Thread thread = new Thread(r);
         thread.setName("fv_dimension_handler_thread-");
@@ -143,7 +144,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             funCodeStr = ((ModbusPacket.LayersBean) t).modbus_func_code[0];
             return PacketDecodeUtil.decodeFuncode(MODBUS,funCodeStr);
         }else{
-            log.error("can not decode funCode of protocol : {} cause it is not defined" , t.frame_protocols[0]);
+            //log.error("can not decode funCode of protocol : {} cause it is not defined" , t.frame_protocols[0]);
             return -1;
         }
     }
