@@ -254,8 +254,9 @@
         <dependency>
             <groupId>com.caucho</groupId>
             <artifactId>hessian</artifactId>
-            <version>4.0.60</version>
+            <version>3.0.8</version>
         </dependency>
+
 
         <!--<dependency>-->
             <!--<groupId>com.zjucsc</groupId>-->

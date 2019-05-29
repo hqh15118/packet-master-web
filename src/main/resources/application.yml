@@ -9,8 +9,8 @@ myconfig:
   sendAopLog : false
 
 hessian-config:
-  hessian-url: localhost:8090
-  art_history_data: http://${hessian-config.hessian-url}/artHistory
+  hessian-url: 10.15.191.100:36955/hessian
+  art_history_data: http://${hessian-config.hessian-url}/ArtHistoryData.hessian
 
 server:
   port: ${myconfig.packet_master_web_port}

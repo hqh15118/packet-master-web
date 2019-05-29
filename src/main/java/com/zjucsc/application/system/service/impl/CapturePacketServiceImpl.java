@@ -75,9 +75,20 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         thread.setUncaughtExceptionHandler(COMMON_THREAD_EXCEPTION_HANDLER);
         return thread;
     })) {
+
+        /**
+         * 所有报文的入口方法
+         * @param t 五元组
+         * @return 返回的是设置了功能码的五元组，见setFuncode方法
+         */
         @Override
         public FvDimensionLayer handle(Object t) {
             FvDimensionLayer fvDimensionLayer = ((FvDimensionLayer) t);
+            //统计所有的IP地址
+            if (fvDimensionLayer.ip_dst[0].length() > 0){
+                CommonCacheUtil.statisticAllIpAddress(fvDimensionLayer.ip_dst[0]);
+            }
+
             StringBuilder sb = stringBuilderThreadLocal.get();
             sb.delete(0,sb.length());
             //有些报文可能没有eth_trailer和eth_fcs
