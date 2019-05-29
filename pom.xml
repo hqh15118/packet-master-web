@@ -11,6 +11,15 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
+    <modules>
+        <module>kafka-service</module>
+        <module>tshark</module>
+        <module>art-decode</module>
+        <module>attack-analyze</module>
+        <module>protocol-map</module>
+        <module>lua-engine</module>
+    </modules>
+
     <groupId>com.zjucsc</groupId>
         <artifactId>packet-master-web</artifactId>
         <version>0.0.1-SNAPSHOT</version>
@@ -248,31 +257,55 @@
             <version>4.0.60</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.zjucsc</groupId>
-            <artifactId>art_decode</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/libs/art_decode.jar</systemPath>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.zjucsc</groupId>-->
+            <!--<artifactId>art_decode</artifactId>-->
+            <!--<version>0.0.1-SNAPSHOT</version>-->
+            <!--<scope>system</scope>-->
+            <!--<systemPath>${project.basedir}/src/main/resources/libs/art_decode.jar</systemPath>-->
+        <!--</dependency>-->
 
-        <dependency>
-            <groupId>com.zjucsc</groupId>
-            <artifactId>protocolmap</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/libs/protocolmap.jar</systemPath>
-        </dependency>
-
-        <dependency>
-            <groupId>com.zjucsc</groupId>
-            <artifactId>kafka_service</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.zjucsc</groupId>-->
+            <!--<artifactId>protocolmap</artifactId>-->
+            <!--<version>1.0-SNAPSHOT</version>-->
+            <!--<scope>system</scope>-->
+            <!--<systemPath>${project.basedir}/src/main/resources/libs/protocolmap.jar</systemPath>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>com.zjucsc</groupId>
             <artifactId>tshark</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.zjucsc</groupId>
+            <artifactId>protocol-map</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.zjucsc</groupId>
+            <artifactId>art-decode</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.zjucsc</groupId>
+            <artifactId>kafka-service</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.zjucsc</groupId>
+            <artifactId>lua-engine</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.zjucsc</groupId>
+            <artifactId>attack-analyze</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 

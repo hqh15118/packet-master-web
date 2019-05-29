@@ -16,14 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/art_data/")
 public class ArtHistoryDataController {
-//    @Autowired
-//    private IArtHistoryData iArtHistoryData;
-//
-//    @ApiOperation("查询一段时间内的历史数据")
-//    @PostMapping("history")
-//    public BaseResponse getArtHistoryData(@RequestBody ArtHistoryBean artHistoryBean){
-//        return BaseResponse.OK(iArtHistoryData.getArtData(artHistoryBean.getStartTime(),
-//                artHistoryBean.getEndTime(),artHistoryBean.getArtArg() , artHistoryBean.getTimeType()));
-//    }
+    @Autowired
+    private IArtHistoryData iArtHistoryData;
+
+    @ApiOperation("查询一段时间内的历史数据")
+    @PostMapping("history")
+    public BaseResponse getArtHistoryData(@RequestBody ArtHistoryBean artHistoryBean){
+        return BaseResponse.OK(iArtHistoryData.getArtData(artHistoryBean.getStartTime(),
+                artHistoryBean.getEndTime(),artHistoryBean.getArtArg() , artHistoryBean.getTimeType()));
+    }
 
 }

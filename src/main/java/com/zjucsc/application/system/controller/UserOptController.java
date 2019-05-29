@@ -1,5 +1,6 @@
 package com.zjucsc.application.system.controller;
 
+import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.auth.Auth;
 import com.zjucsc.application.config.auth.Log;
 import com.zjucsc.application.config.auth.Token;
@@ -72,7 +73,11 @@ public class UserOptController {
     @Log
     @GetMapping("logout")
     public BaseResponse logout(@RequestParam String userName){
-        return userOptService.logout(userName);
+        if ( !userOptService.logout(userName)){
+            return BaseResponse.ERROR(Common.HTTP_STATUS_CODE.NOT_FOUND,"用户不存在或未登录");
+        }else{
+            return BaseResponse.OK();
+        }
     }
 
     @Log

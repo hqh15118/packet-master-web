@@ -8,6 +8,10 @@ myconfig:
   openAOPLog : true
   sendAopLog : false
 
+hessian-config:
+  hessian-url: localhost:8090
+  art_history_data: http://${hessian-config.hessian-url}/artHistory
+
 server:
   port: ${myconfig.packet_master_web_port}
   address: ${myconfig.global_address}
@@ -104,6 +108,3 @@ mybatis-plus:
 #    # token有效期，单位秒
 #    jwtTimeOut: 3600
 
-hessian-service-config:
-  hessian-url: "localhost:8090"
-  art-history-data: "http://${hessian_service_config.hessian_url}/artHistory"

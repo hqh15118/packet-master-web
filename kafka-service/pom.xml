@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.zjucsc</groupId>
-    <artifactId>kafka_service</artifactId>
+    <artifactId>kafka-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <description>kafka service module</description>

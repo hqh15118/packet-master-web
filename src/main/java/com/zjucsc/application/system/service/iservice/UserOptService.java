@@ -9,11 +9,9 @@ import java.util.List;
 public interface UserOptService extends IService<User> {
     List<User> getAllUsers();
 
-    BaseResponse logout(String userName);
+    boolean logout(String userName);
 
     void login(String userName);
-
-    boolean onServer(String userName);
 
     List<String> getAllLogginedUsers();
 

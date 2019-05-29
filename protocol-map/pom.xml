@@ -6,7 +6,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.zjucsc</groupId>
-    <artifactId>protocol_map</artifactId>
+    <artifactId>protocol-map</artifactId>
     <version>1.0-SNAPSHOT</version>
 
 
