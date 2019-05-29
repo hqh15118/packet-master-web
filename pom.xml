@@ -248,13 +248,6 @@
             <version>4.0.60</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.luaj/luaj-jse -->
-        <dependency>
-            <groupId>org.luaj</groupId>
-            <artifactId>luaj-jse</artifactId>
-            <version>3.0.1</version>
-        </dependency>
-
         <dependency>
             <groupId>com.zjucsc</groupId>
             <artifactId>art_decode</artifactId>
