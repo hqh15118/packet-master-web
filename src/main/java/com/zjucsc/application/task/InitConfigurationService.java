@@ -1,6 +1,6 @@
 package com.zjucsc.application.task;
 
-import com.zjucsc.art_decode.IArtDecode;
+import com.zjucsc.art_decode.base.IArtDecode;
 import com.zjucsc.IProtocolFuncodeMap;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.ConstantConfig;

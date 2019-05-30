@@ -1,14 +1,14 @@
 package com.zjucsc.application.system.art;
 
-import com.zjucsc.art_decode.AttackType;
-import com.zjucsc.art_decode.IArtDecode;
+import com.zjucsc.art_decode.other.AttackType;
+import com.zjucsc.art_decode.base.IArtDecode;
 import com.zjucsc.application.util.CommonUtil;
 
 import java.util.List;
 import java.util.Map;
 
-import static com.zjucsc.art_decode.AttackType.HAZARD_ART;
-import static com.zjucsc.art_decode.AttackType.TAMPER_ATTACK;
+import static com.zjucsc.art_decode.other.AttackType.HAZARD_ART;
+import static com.zjucsc.art_decode.other.AttackType.TAMPER_ATTACK;
 
 @SuppressWarnings("unchecked")
 public class S7CommDecode implements IArtDecode {

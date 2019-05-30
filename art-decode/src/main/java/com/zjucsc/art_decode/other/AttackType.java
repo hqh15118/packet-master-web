@@ -1,4 +1,4 @@
-package com.zjucsc.art_decode;
+package com.zjucsc.art_decode.other;
 
 public enum AttackType {
     D_DOS,

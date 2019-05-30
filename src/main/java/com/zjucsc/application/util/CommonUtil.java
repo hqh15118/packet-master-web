@@ -1,8 +1,7 @@
 package com.zjucsc.application.util;
 
 import com.zjucsc.application.system.art.CommonBiConsumer;
-import com.zjucsc.application.system.entity.ArtConfig;
-import com.zjucsc.art_decode.AttackType;
+import com.zjucsc.art_decode.other.AttackType;
 import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.domain.bean.ThreadLocalWrapper;
 

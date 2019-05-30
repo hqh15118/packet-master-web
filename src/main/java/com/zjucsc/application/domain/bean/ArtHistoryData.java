@@ -1,14 +1,12 @@
 package com.zjucsc.application.domain.bean;
 
-import lombok.Data;
-
 import java.io.Serializable;
 
 public class ArtHistoryData implements Serializable {
     private String timeStamp;
     private float artValue;
     private String artName;
-    private String timeType;
+    private int gplotId;
 
     public String getTimeStamp() {
         return timeStamp;
@@ -34,14 +32,13 @@ public class ArtHistoryData implements Serializable {
         this.artName = artName;
     }
 
-    public String getTimeType() {
-        return timeType;
+    public int getGplotId() {
+        return gplotId;
     }
 
-    public void setTimeType(String timeType) {
-        this.timeType = timeType;
+    public void setGplotId(int gplotId) {
+        this.gplotId = gplotId;
     }
-
 
     @Override
     public String toString() {
@@ -49,7 +46,7 @@ public class ArtHistoryData implements Serializable {
                 "timeStamp='" + timeStamp + '\'' +
                 ", artValue=" + artValue +
                 ", artName='" + artName + '\'' +
-                ", timeType='" + timeType + '\'' +
+                ", gplotId=" + gplotId +
                 '}';
     }
 }

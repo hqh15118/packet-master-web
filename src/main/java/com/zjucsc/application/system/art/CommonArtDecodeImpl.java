@@ -10,7 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import static com.zjucsc.application.config.Common.ART_DECODE_MAP;
 
 
-@Service
 public class CommonArtDecodeImpl implements ICommonArtDecode {
     @Override
     public Map<String, Float> decode(Map<String, Float> globalMap, byte[] payload, String protocol) {

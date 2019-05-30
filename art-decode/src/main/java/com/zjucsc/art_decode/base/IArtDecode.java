@@ -1,4 +1,6 @@
-package com.zjucsc.art_decode;
+package com.zjucsc.art_decode.base;
+
+import com.zjucsc.art_decode.other.AttackType;
 
 import java.io.Serializable;
 import java.util.List;

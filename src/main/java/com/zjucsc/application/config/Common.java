@@ -20,6 +20,8 @@ public class Common {
 
     public static int GPLOT_ID = 0;
 
+    public static volatile String FV_DIMENSION_STR_IN_REDIS = new Date().toString();
+
     public static final int SOCKET_IO_PORT = 8081;
 
     /**

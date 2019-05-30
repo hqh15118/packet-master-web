@@ -12,6 +12,11 @@ import java.util.concurrent.CompletableFuture;
  * @author hongqianhui
  */
 public interface IFvDimensionFilterService extends IService<FvDimensionFilter> {
+    /**
+     * 向数据库中批量插入
+     * @param fvDimensionFilters
+     * @return
+     */
     CompletableFuture<Exception> addFvDimensionFilter(List<FvDimensionFilter> fvDimensionFilters);
     CompletableFuture<List<FvDimensionFilter>> getTargetExistIdFilter(String deviceId , boolean cached) throws DeviceNotValidException;
     void deleteAllFilterByDeviceNumberAndGplotId(String deviceNumber , int gplotId);

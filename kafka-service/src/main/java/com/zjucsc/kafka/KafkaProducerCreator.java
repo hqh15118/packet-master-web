@@ -17,12 +17,14 @@ public class KafkaProducerCreator {
 
     private static ConcurrentHashMap<String, KafkaProducer> cachedKafkaProducer = new ConcurrentHashMap<>();
 
+
+    private static Properties properties;
     /**
      *
      * @return
      */
     private static Properties getKafkaProperties(){
-        File file = new File("config/kafka-config-producer.properties");
+        File file = new File("kafkazz-config/kafka-config-producer.properties");
         if (file.exists()){
             Properties properties = new Properties();
             try {
@@ -37,20 +39,22 @@ public class KafkaProducerCreator {
         }
     }
 
-    public static <K,V> Producer<K, V> getProducer(String service , Class<K> keyClass , Class<V> valueClass){
-        Properties props = getKafkaProperties();
-        if (props == null){
-            props = new Properties();
-            props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaConstant.KAFKA_BROKERS);//10.15.191.100:9092
-            props.put(ProducerConfig.CLIENT_ID_CONFIG, KafkaConstant.CLIENT_ID);
-            props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());
-            props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+    public static synchronized <K,V> KafkaProducer<K, V> getProducer(String service , Class<K> keyClass , Class<V> valueClass){
+        if (properties == null) {
+            properties = getKafkaProperties();
         }
-        return getProducer(props, service, keyClass, valueClass);
+        if (properties == null){
+            properties = new Properties();
+            properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaConstant.KAFKA_BROKERS);//10.15.191.100:9092
+            properties.put(ProducerConfig.CLIENT_ID_CONFIG, KafkaConstant.CLIENT_ID);
+            properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());
+            properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        }
+        return getProducer(properties, service, keyClass, valueClass);
     }
 
     @SuppressWarnings("unchecked")
-    private static <K,V> Producer<K, V> getProducer(Properties properties, String service,
+    private static <K,V> KafkaProducer<K, V> getProducer(Properties properties, String service,
                                                     Class<K> keyClass, Class<V> valueClass) {
         KafkaProducer<K,V> kafkaProducer = cachedKafkaProducer.get(service);
         if (kafkaProducer==null){
