@@ -5,6 +5,7 @@ import com.zjucsc.application.domain.bean.FuncodeStatement;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -114,5 +115,14 @@ public class CommonConfigUtil {
                 log.info("******* new protocol [{}] funcode meaning : \n  {} ", protocol, funcodeStatements);
             }
         }
+    }
+
+
+    public static synchronized void updateFvDimensionKeyInRedis(){
+        Common.FV_DIMENSION_STR_IN_REDIS = new Date().toString();
+    }
+
+    public static String getFvDimensionKeyInRedis(){
+        return Common.FV_DIMENSION_STR_IN_REDIS;
     }
 }

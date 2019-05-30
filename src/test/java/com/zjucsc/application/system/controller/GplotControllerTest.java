@@ -2,15 +2,12 @@ package com.zjucsc.application.system.controller;
 
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.application.system.entity.Gplot;
-import com.zjucsc.packetmasterweb.util.Util;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.*;
 
 
 @RunWith(SpringRunner.class)
@@ -27,10 +24,6 @@ public class GplotControllerTest {
         System.out.println(gplotController.addGplotInfo(gplotForFront));
     }
 
-    @Test
-    public void loadGplotInfo() {
-        Util.showJSON(" " , gplotController.loadGplotInfo(33));
-    }
 
     @Test
     public void loadAllGplotInfo() {

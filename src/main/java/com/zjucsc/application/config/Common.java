@@ -20,6 +20,8 @@ public class Common {
 
     public static int GPLOT_ID = 0;
 
+    public static volatile String FV_DIMENSION_STR_IN_REDIS = new Date().toString();
+
     public static final int SOCKET_IO_PORT = 8081;
 
     /**
@@ -105,8 +107,16 @@ public class Common {
     /**
      * 要显示的工艺参数集合【将这个set里面的工艺参数数据传输到前端，其他的不用传】
      */
-    public static final ConcurrentSkipListSet<String> SHOW_GRAPH_SET = new ConcurrentSkipListSet<>();
+    public static final Set<String> SHOW_GRAPH_SET = Collections.synchronizedSet(new HashSet<>());
 
+    /**
+     * 【协议 --> 【ArtConfigId，ArtConfigInstance】】
+     */
     public static final ConcurrentHashMap<String,ConcurrentHashMap<Integer, ArtConfig>> ART_DECODE_MAP
             = new ConcurrentHashMap<>();
+
+    /**
+     * 所有IP地址的统计集合
+     */
+    public static final ConcurrentHashMap<String,String> ALL_IP_ADDRESS = new ConcurrentHashMap<>();
 }

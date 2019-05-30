@@ -27,6 +27,10 @@ public abstract class AbstractAsyncHandler<T> extends AbstractHandler<T> {
         this.executor = executor;
     }
 
+    public ExecutorService getExecutor(){
+        return executor;
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public void handleAndPass(Object inValue){

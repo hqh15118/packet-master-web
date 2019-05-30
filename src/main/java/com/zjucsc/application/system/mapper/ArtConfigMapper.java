@@ -12,7 +12,6 @@ import java.util.List;
  */
 public interface ArtConfigMapper extends BaseMapper<ArtConfig> {
     void deleteArtConfigByProtocolIdAndMinLength(@Param("protocolId")int protocolId , @Param("minLength")int minLength);
-    List<ArtConfig> getAllArtConfig();
     List<ArtConfig> getConfigPaged(@Param("protocolId")int protocolId,@Param("minLength")int minLength
     ,@Param("start")int start , @Param("end")int end);
 }

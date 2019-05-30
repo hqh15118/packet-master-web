@@ -1,8 +1,11 @@
 package com.zjucsc.application.util;
 
+import com.corundumstudio.socketio.SocketIOClient;
 import com.zjucsc.application.config.Common;
+import com.zjucsc.application.config.SocketIoEvent;
 import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
+import com.zjucsc.application.socketio.SocketServiceCenter;
 import com.zjucsc.application.system.entity.ArtConfig;
 import lombok.extern.slf4j.Slf4j;
 
@@ -278,4 +281,16 @@ public class CommonCacheUtil {
         }
         map.put(artConfig.getArtConfigId(),artConfig);
     }
+
+    /*********************************
+     *
+     *  STATISTICS ALL IP ADDRESS
+     *
+     **********************************/
+    public static void statisticAllIpAddress(String ipAddress){
+        if (Common.ALL_IP_ADDRESS.put(ipAddress,"")==null){
+            SocketServiceCenter.updateAllClient(SocketIoEvent.NEW_IP,ipAddress);
+        }
+    }
+
 }

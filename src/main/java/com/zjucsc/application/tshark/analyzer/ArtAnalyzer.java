@@ -1,7 +1,7 @@
 package com.zjucsc.application.tshark.analyzer;
 
-import com.zjucsc.art_decode.AttackType;
-import com.zjucsc.art_decode.IArtDecode;
+import com.zjucsc.art_decode.other.AttackType;
+import com.zjucsc.art_decode.base.IArtDecode;
 import com.zjucsc.application.domain.bean.ThreadLocalWrapper;
 import com.zjucsc.application.util.CommonUtil;
 import com.zjucsc.application.util.PacketDecodeUtil;

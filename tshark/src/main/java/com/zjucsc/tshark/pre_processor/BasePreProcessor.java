@@ -21,11 +21,15 @@ import java.util.concurrent.Semaphore;
  * #create_time 2019-05-11 - 19:19
  *
  * 信息流向：
- *                     JSON                                 FvDimensionLayer                    FvDimensionLayer
- * xxxPreProcessor ------------> decodeThreadPool[xxxPacket] ------------> fvDimensionHandler --------------------> badpacketanalyzeHandler
- *                                                                         五元组发送 + 报文统计                             恶意报文分析
- *  输出JSON字符串                将JSON字符串解析为具体的Packet实体对象
- *                              这部分还会将传送上来的协议替换为本地的协议
+ *                     JSON                                    FvDimensionLayer                    FvDimensionLayer
+ * xxxPreProcessor1 ------------> decodeThreadPool1[xxxPacket1] ------------> fvDimensionHandler --------------------> badpacketanalyzeHandler
+ *                                                                    ↑        五元组发送 + 报文统计                             恶意报文分析
+ *  输出JSON字符串                将JSON字符串解析为具体的Packet实体对象     ↑          单线程，无限队列                              多线程，无限队列
+ *                              这部分还会将传送上来的协议替换为本地的协议    ↑
+ *                                                                    ↑
+ * xxxPreProcessor2 ------------> decodeThreadPool2[xxxPacket2] -----→J
+ *                                                                    ↑
+ * xxxPreProcessor3 ------------> decodeThreadPool3[xxxPacket3] -----→J
  */
 //@Slf4j
 public abstract class BasePreProcessor implements PreProcessor {

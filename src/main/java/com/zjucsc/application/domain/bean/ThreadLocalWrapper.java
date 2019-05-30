@@ -1,6 +1,6 @@
 package com.zjucsc.application.domain.bean;
 
-import com.zjucsc.art_decode.AttackType;
+import com.zjucsc.art_decode.other.AttackType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

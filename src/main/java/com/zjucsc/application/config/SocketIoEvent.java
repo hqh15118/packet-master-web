@@ -19,4 +19,6 @@ public class SocketIoEvent {
     public static final String ART_INFO = "art_info";
     //日志打印
     public static final String LOG_INFO = "log_info";
+    //系统中检测到新的报文
+    public static final String NEW_IP = "new_ip";
 }

@@ -11,6 +11,16 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
+    <modules>
+        <module>kafka-service</module>
+        <module>tshark</module>
+        <module>art-decode</module>
+        <module>attack-analyze</module>
+        <module>protocol-map</module>
+        <module>lua-engine</module>
+        <module>common-util</module>
+    </modules>
+
     <groupId>com.zjucsc</groupId>
         <artifactId>packet-master-web</artifactId>
         <version>0.0.1-SNAPSHOT</version>
@@ -95,11 +105,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-cache</artifactId>
         </dependency>
+
         <!-- redis -->
-        <!--<dependency>-->
-            <!--<groupId>org.springframework.boot</groupId>-->
-            <!--<artifactId>spring-boot-starter-data-redis</artifactId>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
         <!-- shiro-redis -->
         <!--<dependency>-->
             <!--<groupId>org.crazycake</groupId>-->
@@ -245,35 +256,73 @@
         <dependency>
             <groupId>com.caucho</groupId>
             <artifactId>hessian</artifactId>
-            <version>4.0.60</version>
+            <version>3.0.8</version>
         </dependency>
 
 
-        <dependency>
-            <groupId>com.zjucsc</groupId>
-            <artifactId>art_decode</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/libs/art_decode.jar</systemPath>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.zjucsc</groupId>-->
+            <!--<artifactId>art_decode</artifactId>-->
+            <!--<version>0.0.1-SNAPSHOT</version>-->
+            <!--<scope>system</scope>-->
+            <!--<systemPath>${project.basedir}/src/main/resources/libs/art_decode.jar</systemPath>-->
+        <!--</dependency>-->
 
-        <dependency>
-            <groupId>com.zjucsc</groupId>
-            <artifactId>protocolmap</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/libs/protocolmap.jar</systemPath>
-        </dependency>
-
-        <dependency>
-            <groupId>com.zjucsc</groupId>
-            <artifactId>kafka_service</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.zjucsc</groupId>-->
+            <!--<artifactId>protocolmap</artifactId>-->
+            <!--<version>1.0-SNAPSHOT</version>-->
+            <!--<scope>system</scope>-->
+            <!--<systemPath>${project.basedir}/src/main/resources/libs/protocolmap.jar</systemPath>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>com.zjucsc</groupId>
             <artifactId>tshark</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.zjucsc</groupId>
+            <artifactId>protocol-map</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.zjucsc</groupId>
+            <artifactId>art-decode</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.zjucsc</groupId>
+            <artifactId>kafka-service</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.kafka/spring-kafka -->
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+            <version>2.2.6.RELEASE</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>com.zjucsc</groupId>
+            <artifactId>lua-engine</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.zjucsc</groupId>
+            <artifactId>attack-analyze</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.zjucsc</groupId>
+            <artifactId>common-util</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 

@@ -14,6 +14,7 @@ public abstract class SinglePreProcessor<P> extends BasePreProcessor{
     @Override
     public void decodeJSONString(String packetJSON) {
         decodeThreadPool.execute(() -> {
+            //将数据推入到pipeLine中
             pipeLine.pushDataAtHead(decode(JSON.parseObject(packetJSON,decodeType())));
         });
     }

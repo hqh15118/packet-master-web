@@ -1,9 +1,11 @@
 package com.zjucsc.application.system.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.SocketIoEvent;
 import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.domain.bean.CollectorState;
+import com.zjucsc.application.domain.bean.FvDimensionWrapper;
 import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.application.socketio.SocketServiceCenter;
@@ -28,6 +30,8 @@ import com.zjucsc.tshark.pre_processor.BasePreProcessor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -47,6 +51,14 @@ import static com.zjucsc.application.config.PACKET_PROTOCOL.S7;
 public class CapturePacketServiceImpl implements CapturePacketService<String,String> {
 
     @Autowired private PacketAnalyzeService packetAnalyzeService;
+
+    private ListOperations<String,String> optForList;
+
+    @Autowired
+    public CapturePacketServiceImpl(RedisTemplate<String,String> redisTemplate){
+        optForList = redisTemplate.opsForList();
+    }
+
     private NewFvDimensionCallback newFvDimensionCallback;
 
     private List<BasePreProcessor> processorList = new ArrayList<>();
@@ -56,7 +68,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             String.class,String.class);
 
     //恶意报文handler
-    private BadPacketAnalyzeHandler badPacketAnalyzeHandler = new BadPacketAnalyzeHandler(Executors.newFixedThreadPool(5,
+    private BadPacketAnalyzeHandler badPacketAnalyzeHandler = new BadPacketAnalyzeHandler(Executors.newFixedThreadPool(1,
             r -> {
                 Thread thread = new Thread(r);
                 thread.setName("bad_packet_analyze_handler-");
@@ -68,16 +80,27 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
      * 接收协议解析好的五元组，并作五元组发送、报文流量统计处理
      * 单线程处理，保证线程安全
      */
-    private AbstractAsyncHandler<FvDimensionLayer> fvDimensionLayerAbstractAsyncHandler
+    public AbstractAsyncHandler<FvDimensionLayer> fvDimensionLayerAbstractAsyncHandler
             = new AbstractAsyncHandler<FvDimensionLayer>(Executors.newFixedThreadPool(1, r -> {
         Thread thread = new Thread(r);
         thread.setName("fv_dimension_handler_thread-");
         thread.setUncaughtExceptionHandler(COMMON_THREAD_EXCEPTION_HANDLER);
         return thread;
     })) {
+
+        /**
+         * 所有报文的入口方法
+         * @param t 五元组
+         * @return 返回的是设置了功能码的五元组，见setFuncode方法
+         */
         @Override
         public FvDimensionLayer handle(Object t) {
             FvDimensionLayer fvDimensionLayer = ((FvDimensionLayer) t);
+            //统计所有的IP地址
+            if (fvDimensionLayer.ip_dst[0].length() > 0){
+                CommonCacheUtil.statisticAllIpAddress(fvDimensionLayer.ip_dst[0]);
+            }
+
             StringBuilder sb = stringBuilderThreadLocal.get();
             sb.delete(0,sb.length());
             //有些报文可能没有eth_trailer和eth_fcs
@@ -104,7 +127,15 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
 
             int collectorId = PacketDecodeUtil.decodeCollectorId(payload,24);
             analyzeCollectorState(payload , collectorId);                         //分析采集器状态信息
-            collectorDelayInfo(payload , collectorId);                            //解析时延信息
+            int delay = collectorDelayInfo(payload , collectorId);                //解析时延信息
+
+            //TODO TEST
+            optForList.leftPush(CommonConfigUtil.getFvDimensionKeyInRedis(),
+                    JSON.toJSONString(FvDimensionWrapper.builder()
+                    .collectorId(collectorId)
+                    .delay(delay)
+                    .layer(fvDimensionLayer)
+                    .build()));
             return fvDimensionLayer;                                              //将五元组发送给BadPacketHandler
         }
     };
@@ -132,7 +163,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             funCodeStr = ((ModbusPacket.LayersBean) t).modbus_func_code[0];
             return PacketDecodeUtil.decodeFuncode(MODBUS,funCodeStr);
         }else{
-            log.error("can not decode funCode of protocol : {} cause it is not defined" , t.frame_protocols[0]);
+            //log.error("can not decode funCode of protocol : {} cause it is not defined" , t.frame_protocols[0]);
             return -1;
         }
     }
@@ -154,16 +185,19 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         return CompletableFuture.completedFuture(null);
     }
 
-    private void collectorDelayInfo(byte[] payload , int collectorId) {
+    private int collectorDelayInfo(byte[] payload , int collectorId) {
         if (payload.length > 0){
             if (collectorId > 0){
                 //valid packet
                 int collectorDelay = PacketDecodeUtil.decodeCollectorDelay(payload,4);
                 //设置ID和延时用于发送
                 //System.out.println("delay : " + collectorDelay);
-                packetAnalyzeService.setCollectorDelay(collectorId,collectorDelay);
+                //packetAnalyzeService.setCollectorDelay(collectorId,collectorDelay);
+                return collectorDelay;
             }
+            return -1;
         }
+        return -1;
     }
 
     @Async

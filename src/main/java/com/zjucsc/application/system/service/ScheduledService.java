@@ -6,18 +6,26 @@ import com.zjucsc.application.domain.bean.GraphInfo;
 import com.zjucsc.application.domain.bean.StatisticsDataWrapper;
 import com.zjucsc.application.socketio.SocketServiceCenter;
 import com.zjucsc.application.system.service.iservice.CapturePacketService;
+import com.zjucsc.application.util.CommonConfigUtil;
 import com.zjucsc.application.util.CommonUtil;
+import com.zjucsc.kafka.KafkaProducerCreator;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.security.Key;
 import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
+import static com.zjucsc.application.config.KafkaConfig.SEND_ALL_PACKET_FV_DIMENSION;
 import static com.zjucsc.application.config.StatisticsData.*;
 
 @Slf4j
@@ -26,10 +34,12 @@ public class ScheduledService {
 
     @Autowired public PacketAnalyzeService packetAnalyzeService;
 
+    @Autowired private RedisTemplate<String,String> redisTemplate;
+
     private LinkedBlockingQueue<FvDimensionLayer> fvDimensionLayers = new LinkedBlockingQueue<>(5);
 
     @Autowired
-    public ScheduledService(CapturePacketService capturePacketService){
+    public ScheduledService(CapturePacketService capturePacketService ){
         capturePacketService.setNewFvDimensionCallback(layer -> {
             fvDimensionLayers.offer(layer);
         });
@@ -80,6 +90,33 @@ public class ScheduledService {
         for (int i = 0; i < 5; i++) {
             doSend(fvDimensionLayers.poll());
         }
+
+    }
+
+
+
+    //@Scheduled(fixedRate = 2000)
+    private void sendToRemoteByKafka() {
+        ListOperations<String,String> opsForList = redisTemplate.opsForList();
+        //先取出旧值
+        String key = CommonConfigUtil.getFvDimensionKeyInRedis();
+        //先更新Redis中的键
+        CommonConfigUtil.updateFvDimensionKeyInRedis();
+        //取出已经存储好的所有五元组
+        List<String> fvDimensionStr = opsForList.range(key,0,-1);
+        KafkaProducer<String,String> kafkaProducer = KafkaProducerCreator.getProducer("send_fv_dimension",
+                String.class,String.class);
+        if (fvDimensionStr!=null){
+            long time1 = System.currentTimeMillis();
+            for (String fv : fvDimensionStr) {
+                ProducerRecord<String,String> record = new ProducerRecord<>(SEND_ALL_PACKET_FV_DIMENSION,fv);
+                kafkaProducer.send(record);
+            }
+            log.info("发送 {} 条五元组数据花费了 {} ms",fvDimensionStr.size() , System.currentTimeMillis() - time1);
+        }else{
+            log.error("redis缓存中不存在键{} 对应的五元组数据集合",key);
+        }
+        redisTemplate.delete(key);
     }
 
     @Scheduled(fixedRate = 5000)

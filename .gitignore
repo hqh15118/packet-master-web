@@ -31,12 +31,12 @@ HELP.md
 
 ### tshark
 /src/main/resources/tshark
-protocol_map/target/generated-sources/
+protocol-map/target/generated-sources/
 /log/
 art_decode/src/main/java/com/zjucsc/bean/
 art_decode/target/
-protocol_map/src/main/resources/
-protocol_map/src/test/
+protocol-map/src/main/resources/
+protocol-map/src/test/
 src/main/resources/templates/
 /src/main/resources/static/
 art_decode/src/main/resources/

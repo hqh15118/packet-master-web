@@ -25,13 +25,13 @@ public class UserOptServiceImpl extends ServiceImpl<UserOptMapper, User> impleme
     }
 
     @Override
-    public BaseResponse logout(String userName) {
+    public boolean logout(String userName) {
         if (Common.LOGGINED_USERS.contains(userName)){
             Common.LOGGINED_USERS.remove(userName);
-            return BaseResponse.OK();
+            return true;
         }
         else{
-            return BaseResponse.ERROR(Common.HTTP_STATUS_CODE.NOT_FOUND,"用户不存在或未登录");
+            return false;
         }
     }
 
@@ -40,13 +40,6 @@ public class UserOptServiceImpl extends ServiceImpl<UserOptMapper, User> impleme
         Common.LOGGINED_USERS.add(userName);
     }
 
-    @Transactional
-    @Override
-    public boolean onServer(String userName) {
-        return Common.LOGGINED_USERS.contains(userName);
-    }
-
-    @Transactional
     @Override
     public List<String> getAllLogginedUsers() {
         return Common.LOGGINED_USERS;
