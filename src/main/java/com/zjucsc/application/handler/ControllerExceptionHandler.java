@@ -3,10 +3,7 @@ package com.zjucsc.application.handler;
 
 import com.alibaba.fastjson.JSONException;
 import com.zjucsc.application.config.Common;
-import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
-import com.zjucsc.application.domain.exceptions.OpenCaptureServiceException;
-import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
-import com.zjucsc.application.domain.exceptions.TokenNotValidException;
+import com.zjucsc.application.domain.exceptions.*;
 import com.zjucsc.base.BaseResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.jdbc.SQL;
@@ -77,6 +74,13 @@ public class ControllerExceptionHandler {
         return BaseResponse.ERROR(Common.HTTP_STATUS_CODE.TOKEN_NOT_VALID,e.getMsg());
     }
 
+    @ExceptionHandler(ArtConfigNotValidException.class)
+    @ResponseBody
+    public BaseResponse handleArtConfigNotValidException(ArtConfigNotValidException e){
+        printException(e);
+        return BaseResponse.ERROR(Common.HTTP_STATUS_CODE.ART_CONFIG_NOT_VALID,e.getMsg());
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public BaseResponse handleUnKnowException(Exception e){
@@ -84,8 +88,7 @@ public class ControllerExceptionHandler {
         return BaseResponse.ERROR(500,e.getMessage());
     }
 
-
     private void printException(Exception e){
-        log.error("class : {} ; msg : {}" , e.getClass() , e.getMessage());
+        log.error("catch controller exception : \n **************\nclass : {} ; msg : {} \n**************" , e.getClass() , e.getMessage());
     }
 }

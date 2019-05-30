@@ -2,6 +2,7 @@ package com.zjucsc.application.tshark.domain.packet;
 
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.zjucsc.tshark.packets.FvDimensionLayer;
 
 import java.util.Arrays;
 

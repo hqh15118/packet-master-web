@@ -113,6 +113,10 @@ public class StatisticsData {
         ART_INFO.putIfAbsent(artArg,new LinkedList<>());
     }
 
+    public static void removeArtArgs(String artArg){
+        ART_INFO.remove(artArg);
+    }
+
     public static void addArtData(String artArg , String value){
         LinkedList<String> var = ART_INFO.get(artArg);
         if (var == null){

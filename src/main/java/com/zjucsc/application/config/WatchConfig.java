@@ -23,6 +23,8 @@ public class WatchConfig {
         map.put("DEVICE_IP_TO_NAME" , Common.DEVICE_IP_TO_NAME);
         map.put("ART_FILTER", JSON.toJSON(Common.ART_FILTER));
         map.put("GPLOT_ID" , Common.GPLOT_ID);
+        map.put("SHOW_GRAPH_SET",Common.SHOW_GRAPH_SET);
+        map.put("ART_DECODE_MAP",Common.ART_DECODE_MAP);
         return map;
     }
 

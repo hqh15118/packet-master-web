@@ -105,3 +105,7 @@ mybatis-plus:
 #    # token有效期，单位秒
 #    jwtTimeOut: 3600
 
+
+hessian_service_config :
+  hessian_url : localhost:8090
+    art_history_data : http://${hessian_service_config.hessian_url}/artHistory

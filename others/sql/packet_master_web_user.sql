@@ -1,2 +1,0 @@
-INSERT INTO packet_master_web.user (name, password, role, last_login_time, token) VALUES ('admin', '83a42d2c012f351e449c724cefdc4a1c', 'admin', 'Tue May 07 10:40:17 CST 2019', '51db0a97b002a36934e9abada38d4107_token');
-INSERT INTO packet_master_web.user (name, password, role, last_login_time, token) VALUES ('hongqianhui', '297254e9bfe0b8f39c682eda30bb9be0', 'admin', 'Tue May 07 10:38:09 CST 2019', 'c5044a18839c2e553c91b5dfa0caa397_token');

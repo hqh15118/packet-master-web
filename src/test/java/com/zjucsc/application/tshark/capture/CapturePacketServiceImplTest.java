@@ -1,20 +1,14 @@
 package com.zjucsc.application.tshark.capture;
 
 import com.zjucsc.application.domain.bean.CaptureService;
-import com.zjucsc.application.system.controller.DeviceController;
 import com.zjucsc.application.system.controller.PacketController;
-import com.zjucsc.application.system.service.iservice.PacketService;
-import com.zjucsc.application.tshark.pre_processor.BasePreProcessor;
-import com.zjucsc.application.util.CommonCacheUtil;
+import com.zjucsc.application.system.service.impl.CapturePacketServiceImpl;
+import com.zjucsc.tshark.pre_processor.BasePreProcessor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.util.Scanner;
-
-import static org.junit.Assert.*;
 
 /**
  * #project packet-master-web

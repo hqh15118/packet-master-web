@@ -9,14 +9,11 @@ import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.application.socketio.SocketServiceCenter;
 import com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
-import com.zjucsc.application.tshark.decode.AbstractAsyncHandler;
 import com.zjucsc.application.tshark.domain.bean.BadPacket;
-import com.zjucsc.application.tshark.domain.packet.FvDimensionLayer;
-import com.zjucsc.application.tshark.domain.packet.ModbusPacket;
-import com.zjucsc.application.tshark.domain.packet.S7CommPacket;
 import com.zjucsc.application.tshark.domain.packet.UnknownPacket;
 import com.zjucsc.application.util.CommonCacheUtil;
-import com.zjucsc.application.util.PacketDecodeUtil;
+import com.zjucsc.tshark.handler.AbstractAsyncHandler;
+import com.zjucsc.tshark.packets.FvDimensionLayer;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,8 +22,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static com.zjucsc.application.config.Common.*;
-import static com.zjucsc.application.config.PACKET_PROTOCOL.MODBUS;
-import static com.zjucsc.application.config.PACKET_PROTOCOL.S7;
 
 @Slf4j
 public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
@@ -45,10 +40,15 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
 
         //工艺参数分析
         Object res = ART_FILTER.analyze(layer.tcp_payload[0] , layer.frame_protocols[0]);
+        //分析结果
+        //res可能为null
         if(res!=null){
             ThreadLocalWrapper threadLocalWrapper = (ThreadLocalWrapper)res;
+            //将解析出来的数据添加到LinkedList中，发送到前端
             StatisticsData.addArtMapData(threadLocalWrapper.getFloatMap());
+            //攻击信息发送
             if (threadLocalWrapper.getAttackTypeList()!=null && threadLocalWrapper.getAttackTypeList().size() > 0){
+                //发生了工艺参数攻击
                 SocketServiceCenter.updateAllClient(SocketIoEvent.ATTACK_INFO,
                         new BadPacket.Builder(AttackTypePro.HAZARD_ART)
                             .setDangerLevel(DangerLevel.VERY_DANGER)
@@ -87,7 +87,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
                 }
             }
         }else{
-            BadPacket badPacket = new BadPacket.Builder(AttackTypePro.UNKNOW_DEVICE)
+            BadPacket badPacket = new BadPacket.Builder(AttackTypePro.UN_KNOW_DEVICE)
                     .set_five_Dimension(layer)
                     .setDangerLevel(DangerLevel.DANGER)
                     .setComment("未知报文来源")
@@ -141,11 +141,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
              */
             if ((operationAnalyzer = map.get(layer.frame_protocols[0]))!=null){
                 BadPacket badPacket = null;
-                try {
-                    badPacket = (BadPacket) operationAnalyzer.analyze(funCode,layer);
-                } catch (ProtocolIdNotValidException e) {
-                    log.error(" " , e);
-                }
+                badPacket = (BadPacket) operationAnalyzer.analyze(funCode,layer);
                 if (badPacket!=null){
                     String deviceNumber = CommonCacheUtil.getTargetDeviceNumberByIp(layer.ip_dst[0]);
                     badPacket.setDeviceNumber(deviceNumber);

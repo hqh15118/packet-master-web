@@ -1,6 +1,7 @@
 package com.zjucsc.application.tshark.domain.packet;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.zjucsc.tshark.packets.FvDimensionLayer;
 
 /**
  * #project packet-master-web
@@ -13,7 +14,7 @@ public class Dnp3_0Packet {
     @JSONField(name = "layers")
     public LayersBean layers;
 
-    public static class LayersBean extends FvDimensionLayer{
+    public static class LayersBean extends FvDimensionLayer {
         public String[] dnp3_ctl_dir;
         public String[] dnp3_ctl_prm;
         public String[] dnp3_ctl_dfc;

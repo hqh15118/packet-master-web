@@ -1,13 +1,12 @@
 package com.zjucsc.application.tshark.analyzer;
 
-import com.zjucsc.AttackType;
-import com.zjucsc.IArtDecode;
-import com.zjucsc.application.config.Common;
+import com.zjucsc.art_decode.AttackType;
+import com.zjucsc.art_decode.IArtDecode;
 import com.zjucsc.application.domain.bean.ThreadLocalWrapper;
-import com.zjucsc.application.util.AbstractAnalyzer;
-import com.zjucsc.application.util.Analyzed;
 import com.zjucsc.application.util.CommonUtil;
 import com.zjucsc.application.util.PacketDecodeUtil;
+import com.zjucsc.tshark.analyzer.AbstractAnalyzer;
+import com.zjucsc.tshark.analyzer.Analyzed;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -31,10 +30,7 @@ public class ArtAnalyzer extends AbstractAnalyzer<Map<String, IArtDecode>> imple
         IArtDecode iArtDecode;
         if ((iArtDecode = getAnalyzer().get(protocol))!=null){
             Map<String,Float> res = iArtDecode.decode(CommonUtil.getGlobalArtMap(),tcpPayloadArrInByte);
-            List<AttackType> attackTypeList = null;
-            if (res!=null){
-                attackTypeList = iArtDecode.attackDecode(CommonUtil.getGlobalAttackList(), tcpPayloadArrInByte,res);
-            }
+            List<AttackType> attackTypeList = iArtDecode.attackDecode(CommonUtil.getGlobalAttackList(), tcpPayloadArrInByte,res);
             return new ThreadLocalWrapper(res , attackTypeList);
         }else {
             //log.debug("can not decode art args of protocol : {}" , protocol);
