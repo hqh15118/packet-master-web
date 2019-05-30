@@ -4,11 +4,11 @@ myconfig:
   # 注册spring admin 的端口地址
   admin_server_port : 9090
   # kafka 服务地址
-  kafka-server-url : 10.15.191.100:9092
+  #kafka-server-url : 10.15.191.100:9092
   #JDBC address
-  mysql_address : localhost:3306
   # database name
-  mysql_db_name : packet_master_web
+  redis_host : localhost
+  redis_port : 6379
 
 spring:
   application:
@@ -48,17 +48,9 @@ spring:
         instance:
           prefer-ip: true
 
-  kafka:
-    producer:
-      bootstrap-servers: http://${myconfig.kafka-server-url}
-      retries: 1
-      batch-size: 40960
-      buffer-memory: 40960
-
-
   redis:
-    host: 10.15.191.100
-    port: 6379
+    host: ${myconfig.redis_host}
+    port: ${myconfig.redis_port}
     password:
     jedis:
       pool:

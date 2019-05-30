@@ -31,6 +31,9 @@ public class FvDimensionLayer  {
     public String funCode;
     @JSONField(deserialize = false)
     public String funCodeMeaning;
+    //long格式的时间戳 , ns 为单位
+    @JSONField(deserialize = false,serialize = false)
+    public long timeStampInLong;
 
     public FvDimensionLayer setFrameProtocols(String protocol){
         if (protocol!=null) {

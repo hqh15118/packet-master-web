@@ -1,4 +1,4 @@
-package com.zjucsc;
+package com.zjucsc.attack.bean;
 
 import java.time.Duration;
 import java.util.HashSet;
