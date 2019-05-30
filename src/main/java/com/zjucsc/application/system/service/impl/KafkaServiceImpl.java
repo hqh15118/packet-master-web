@@ -1,5 +1,6 @@
 package com.zjucsc.application.system.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.zjucsc.application.config.KafkaConfig;
 import com.zjucsc.application.domain.bean.LogBean;
 import com.zjucsc.application.domain.bean.StatisticsDataWrapper;
@@ -22,7 +23,8 @@ public class KafkaServiceImpl implements IKafkaService {
 
     @Override
     public void sendAllPacket(FvDimensionLayer layer) {
-        ListenableFuture<SendResult> listenableFuture =  kafkaTemplate.send(KafkaConfig.SEND_ALL_PACKET_FV_DIMENSION,layer);
+        String str = JSON.toJSONString(layer);
+        ListenableFuture<SendResult> listenableFuture =  kafkaTemplate.send(KafkaConfig.SEND_ALL_PACKET_FV_DIMENSION,str);
         listenableFuture.addCallback(new ListenableFutureCallback<SendResult>() {
             @Override
             public void onFailure(Throwable throwable) {

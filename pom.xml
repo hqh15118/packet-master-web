@@ -18,6 +18,7 @@
         <module>attack-analyze</module>
         <module>protocol-map</module>
         <module>lua-engine</module>
+        <module>common-util</module>
     </modules>
 
     <groupId>com.zjucsc</groupId>
@@ -316,6 +317,12 @@
         <dependency>
             <groupId>com.zjucsc</groupId>
             <artifactId>attack-analyze</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.zjucsc</groupId>
+            <artifactId>common-util</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 

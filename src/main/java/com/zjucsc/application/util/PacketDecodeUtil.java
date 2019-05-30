@@ -3,6 +3,7 @@ package com.zjucsc.application.util;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.bean.CollectorState;
 import com.zjucsc.application.tshark.domain.packet.S7CommPacket;
+import com.zjucsc.common_util.ByteUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 

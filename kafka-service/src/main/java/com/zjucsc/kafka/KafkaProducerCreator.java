@@ -24,7 +24,7 @@ public class KafkaProducerCreator {
      * @return
      */
     private static Properties getKafkaProperties(){
-        File file = new File("kafkazz-config/kafka-config-producer.properties");
+        File file = new File("config/kafka-config-producer.properties");
         if (file.exists()){
             Properties properties = new Properties();
             try {
@@ -47,7 +47,7 @@ public class KafkaProducerCreator {
             properties = new Properties();
             properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaConstant.KAFKA_BROKERS);//10.15.191.100:9092
             properties.put(ProducerConfig.CLIENT_ID_CONFIG, KafkaConstant.CLIENT_ID);
-            properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());
+            properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
             properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         }
         return getProducer(properties, service, keyClass, valueClass);

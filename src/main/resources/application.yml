@@ -4,7 +4,7 @@ myconfig:
   global_address : 192.168.0.121
   admin_server_port : 8989
   packet_master_web_port : 8080
-  kafka-server-url : 10.15.191.100:9092
+  kafka-server-url : localhost:9092
   openAOPLog : true
   sendAopLog : false
   redis_ip : 10.15.191.100
@@ -13,6 +13,15 @@ myconfig:
 hessian-config:
   hessian-url: 10.15.191.100:36955/hessian
   art_history_data: http://${hessian-config.hessian-url}/ArtHistoryData.hessian
+  art_config: http://${hessian-config.hessian-url}/ArtConfigMapper.hessian
+  configuration_setting: http://${hessian-config.hessian-url}/ConfigurationSettingMapper.hessian
+  device: http://${hessian-config.hessian-url}/DeviceMapper.hessian
+  fv_dimension_filter: http://${hessian-config.hessian-url}/FvDimensionFilterMapper.hessian
+  gplot: http://${hessian-config.hessian-url}/GplotMapper.hessian
+  opt_filter: http://${hessian-config.hessian-url}/OptFilterMapper.hessian
+  protocol_id: http://${hessian-config.hessian-url}/ProtocolIdMapper.hessian
+  user_opt: http://${hessian-config.hessian-url}/UserOptMapper.hessian
+
 
 server:
   port: ${myconfig.packet_master_web_port}
@@ -58,12 +67,12 @@ spring:
         instance:
           prefer-ip: true
           service-base-url: http://${myconfig.global_address}:${myconfig.packet_master_web_port}
-  kafka:
-    producer:
-      bootstrap-servers: ${myconfig.kafka-server-url}
-      retries: 1
-      batch-size: 40960
-      buffer-memory: 40960
+#  kafka:
+#    producer:
+#      bootstrap-servers: ${myconfig.kafka-server-url}
+#      retries: 1
+#      batch-size: 40960
+#      buffer-memory: 40960
 
   redis:
     host: ${myconfig.redis_ip}
