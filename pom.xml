@@ -44,36 +44,36 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- 动态数据源 -->
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
-            <version>2.5.4</version>
-        </dependency>
-        <!-- mybatis-plus -->
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>${mybatis-plus.version}</version>
-        </dependency>
-        <!-- 代码生成器 -->
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-generator</artifactId>
-            <version>${mybatis-plus.version}</version>
-        </dependency>
+        <!--&lt;!&ndash; 动态数据源 &ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>com.baomidou</groupId>-->
+            <!--<artifactId>dynamic-datasource-spring-boot-starter</artifactId>-->
+            <!--<version>2.5.4</version>-->
+        <!--</dependency>-->
+        <!--&lt;!&ndash; mybatis-plus &ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>com.baomidou</groupId>-->
+            <!--<artifactId>mybatis-plus-boot-starter</artifactId>-->
+            <!--<version>${mybatis-plus.version}</version>-->
+        <!--</dependency>-->
+        <!--&lt;!&ndash; 代码生成器 &ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>com.baomidou</groupId>-->
+            <!--<artifactId>mybatis-plus-generator</artifactId>-->
+            <!--<version>${mybatis-plus.version}</version>-->
+        <!--</dependency>-->
         <!-- free_maker引擎 -->
         <dependency>
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
             <version>2.3.28</version>
         </dependency>
-        <!-- sql 打印 -->
-        <dependency>
-            <groupId>p6spy</groupId>
-            <artifactId>p6spy</artifactId>
-            <version>3.8.1</version>
-        </dependency>
+        <!--&lt;!&ndash; sql 打印 &ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>p6spy</groupId>-->
+            <!--<artifactId>p6spy</artifactId>-->
+            <!--<version>3.8.1</version>-->
+        <!--</dependency>-->
         <!-- commons -->
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -84,11 +84,11 @@
             <artifactId>commons-io</artifactId>
             <version>2.6</version>
         </dependency>
-        <!-- mysql -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-        </dependency>
+        <!--&lt;!&ndash; mysql &ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>mysql</groupId>-->
+            <!--<artifactId>mysql-connector-java</artifactId>-->
+        <!--</dependency>-->
         <!-- aop依赖 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

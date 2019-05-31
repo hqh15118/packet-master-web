@@ -1,12 +1,8 @@
 package com.zjucsc.application.domain.bean;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 /**
@@ -19,7 +15,6 @@ import java.util.List;
 @Data
 public class ArtifactFilterEntity {
     private String userName;
-    @TableField("content")
     private String content;
 
     @Data
