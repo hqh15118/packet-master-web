@@ -1,19 +1,15 @@
 package com.zjucsc.application.system.service;
 
 import com.zjucsc.application.config.Common;
-import com.zjucsc.application.domain.bean.CollectorDelay;
-import com.zjucsc.application.system.service.iservice.IDeviceService;
+import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.function.BiConsumer;
 
-import static com.zjucsc.application.config.StatisticsData.*;
+import static com.zjucsc.application.config.StatisticsData.COLLECTOR_DELAY_MAP;
 
 /**
  * #project packet-master-web

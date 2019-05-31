@@ -1,8 +1,7 @@
 package com.zjucsc.application.system.service.hessian_impl;
 
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zjucsc.application.config.Common;
-import com.zjucsc.application.system.entity.FvDimensionFilter;
+import com.zjucsc.application.domain.bean.FvDimensionFilter;
 import com.zjucsc.application.system.mapper.base.BaseServiceImpl;
 import com.zjucsc.application.system.service.hessian_iservice.IFvDimensionFilterService;
 import com.zjucsc.application.system.service.hessian_mapper.FvDimensionFilterMapper;

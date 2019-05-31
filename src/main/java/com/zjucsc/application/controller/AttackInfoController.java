@@ -2,7 +2,7 @@ package com.zjucsc.application.controller;
 
 
 import com.zjucsc.application.config.Common;
-import com.zjucsc.application.system.service.iservice.IAttackInfoService;
+import com.zjucsc.application.system.service.hessian_iservice.IAttackInfoService;
 import com.zjucsc.base.BaseResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,12 +14,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/attack")
 public class AttackInfoController {
 
-    @Autowired
-    private IAttackInfoService service;
+    @Autowired private IAttackInfoService iAttackInfoService;
 
     @RequestMapping(value = "/get_all_attack_info" , method = RequestMethod.GET)
     public BaseResponse getAttackInfo(){
-        return BaseResponse.OK(service.list());
+        return BaseResponse.OK(iAttackInfoService.selectAll());
     }
 
     /**

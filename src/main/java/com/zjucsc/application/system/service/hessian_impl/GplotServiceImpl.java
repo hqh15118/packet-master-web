@@ -1,16 +1,15 @@
 package com.zjucsc.application.system.service.hessian_impl;
 
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.bean.DeviceNumberAndIp;
+import com.zjucsc.application.domain.bean.FvDimensionFilter;
 import com.zjucsc.application.domain.bean.Gplot;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
-import com.zjucsc.application.system.entity.FvDimensionFilter;
-import com.zjucsc.application.system.entity.OptFilter;
+import com.zjucsc.application.domain.bean.OptFilter;
 import com.zjucsc.application.system.mapper.base.BaseServiceImpl;
+import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
 import com.zjucsc.application.system.service.hessian_iservice.IGplotService;
 import com.zjucsc.application.system.service.hessian_mapper.GplotMapper;
-import com.zjucsc.application.system.service.iservice.IDeviceService;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.CommonFvFilterUtil;
 import com.zjucsc.application.util.CommonOptFilterUtil;
@@ -72,6 +71,11 @@ public class GplotServiceImpl extends BaseServiceImpl<GplotMapper, Gplot> implem
         }
         log.info("***************\n切换组态图,从数据库中重新加载新该组态图下的所有规则，新规则为：\n 五元组规则：{} \n 功能码规则：{} \n ***************" , Common.FV_DIMENSION_FILTER_PRO,
                 Common.OPERATION_FILTER_PRO);
+    }
+
+    @Override
+    public List<Gplot> selectAll() {
+        return this.baseMapper.selectAll();
     }
 
 }

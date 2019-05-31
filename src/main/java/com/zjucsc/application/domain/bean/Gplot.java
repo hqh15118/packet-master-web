@@ -22,4 +22,9 @@ public class Gplot implements Serializable {
                 ", updateTime='" + updateTime + '\'' +
                 '}';
     }
+
+    public static class GplotForFront{
+        public String name;
+        public String info;
+    }
 }

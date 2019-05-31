@@ -2,8 +2,8 @@ package com.zjucsc.application.controller;
 
 import com.caucho.hessian.client.HessianProxyFactory;
 import com.zjucsc.application.domain.bean.Gplot;
+import com.zjucsc.application.system.service.hessian_iservice.IArtHistoryData;
 import com.zjucsc.application.system.service.hessian_mapper.GplotMapper;
-import com.zjucsc.application.system.service.iservice.IArtHistoryData;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

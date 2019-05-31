@@ -1,9 +1,5 @@
 package com.zjucsc.application.system.service.hessian_impl;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.zjucsc.application.domain.bean.DeviceNumberAndIp;
-import com.zjucsc.application.system.entity.Device;
-import com.zjucsc.application.system.entity.FvDimensionFilter;
-import com.zjucsc.application.system.entity.OptFilter;
+import com.zjucsc.application.domain.bean.*;
 import com.zjucsc.application.system.mapper.base.BaseServiceImpl;
 import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
 import com.zjucsc.application.system.service.hessian_mapper.DeviceMapper;
@@ -59,5 +55,15 @@ public class DeviceServiceImpl extends BaseServiceImpl<DeviceMapper, Device> imp
     @Override
     public void removeAllDevicesByGplotId(int gplotId) {
         this.baseMapper.removeAllDevicesByGplotId(gplotId);
+    }
+
+    @Override
+    public void saveBatch(List<Device> devices) {
+        this.baseMapper.saveBatch(devices);
+    }
+
+    @Override
+    public Gplot selectByGplotId(int gplotId) {
+        return this.baseMapper.selectByGplotId(gplotId);
     }
 }

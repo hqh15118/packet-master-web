@@ -3,7 +3,7 @@ package com.zjucsc.application.config.auth;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.exceptions.AuthNotValidException;
 import com.zjucsc.application.domain.exceptions.TokenNotValidException;
-import com.zjucsc.application.system.service.iservice.UserOptService;
+import com.zjucsc.application.system.service.hessian_iservice.UserOptService;
 import com.zjucsc.base.util.HttpContextUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;

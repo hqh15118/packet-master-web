@@ -24,6 +24,8 @@ public class HessianConfig {
     private String opt_filter;
     private String protocol_id;
     private String user_opt;
+    private String art_filter;
+    private String attack_info;
 
 
     @Bean
@@ -71,4 +73,13 @@ public class HessianConfig {
         return (UserOptMapper) new HessianProxyFactory().create(UserOptMapper.class, user_opt);
     }
 
+    @Bean
+    public AttackInfoMapper attackInfoHessianBean() throws MalformedURLException {
+        return (AttackInfoMapper) new HessianProxyFactory().create(AttackInfoMapper.class, attack_info);
+    }
+
+    @Bean
+    public ArtifactFilterMapper artifactFilterHessianBean() throws MalformedURLException {
+        return (ArtifactFilterMapper) new HessianProxyFactory().create(ArtifactFilterMapper.class, art_filter);
+    }
 }

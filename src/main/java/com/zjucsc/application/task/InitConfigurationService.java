@@ -1,5 +1,8 @@
 package com.zjucsc.application.task;
 
+import com.zjucsc.application.domain.bean.ConfigurationSetting;
+import com.zjucsc.application.system.service.hessian_iservice.IConfigurationSettingService;
+import com.zjucsc.application.system.service.hessian_iservice.IProtocolIdService;
 import com.zjucsc.art_decode.base.IArtDecode;
 import com.zjucsc.IProtocolFuncodeMap;
 import com.zjucsc.application.config.Common;
@@ -8,10 +11,7 @@ import com.zjucsc.application.config.PACKET_PROTOCOL;
 import com.zjucsc.application.config.auth.Auth;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.application.system.art.S7CommDecode;
-import com.zjucsc.application.system.entity.ConfigurationSetting;
-import com.zjucsc.application.system.entity.ProtocolId;
-import com.zjucsc.application.system.service.iservice.IConfigurationSettingService;
-import com.zjucsc.application.system.service.iservice.IProtocolIdService;
+import com.zjucsc.application.domain.bean.ProtocolId;
 import com.zjucsc.application.tshark.analyzer.ArtAnalyzer;
 import com.zjucsc.application.util.CommonCacheUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -61,7 +61,7 @@ public class InitConfigurationService implements ApplicationRunner {
          ***************************/
         //如果数据库中没有条目，就从代码中加载之前配置好的，如果数据库中有条目，
         //就判断是否需要重新加载使用数据库中的条目初始化 PROTOCOL_STR_TO_INT ， 用户协议ID和协议字符串之间的转换
-        if (iProtocolIdService.list().size() == 0 ){
+        if (iProtocolIdService.selectAll().size() == 0 ){
             List<ProtocolId> protocolIds = new ArrayList<>();
             Class<PACKET_PROTOCOL> packet_protocolClass = PACKET_PROTOCOL.class;
             Field[] allField = packet_protocolClass.getDeclaredFields();
@@ -75,13 +75,13 @@ public class InitConfigurationService implements ApplicationRunner {
             }
             iProtocolIdService.saveOrUpdateBatch(protocolIds);
         }else{
-            List<ProtocolId> list = iProtocolIdService.list();
+            List<ProtocolId> list = iProtocolIdService.selectAll();
             for (ProtocolId protocolId : list) {
                 Common.PROTOCOL_STR_TO_INT.put(protocolId.getProtocolId() , protocolId.getProtocolName());
             }
         }
 
-        if(reload || iConfigurationSettingService.list().size() == 0) {
+        if(reload || iConfigurationSettingService.selectAll().size() == 0) {
             if(!reload) {
                 log.info("no configuration in database and ready to load from libs ... ");
             }
@@ -104,11 +104,11 @@ public class InitConfigurationService implements ApplicationRunner {
                     configurationSetting.setFunCode(fun_code);
                     configurationSettings.add(configurationSetting);
                 }
-                iConfigurationSettingService.saveBatch(configurationSettings);
+                iConfigurationSettingService.saveOrUpdateBatch(configurationSettings);
                 addProtocolFuncodeMeaning(protocolName,funcodeStatements);
             }
         }else{
-            for (ConfigurationSetting configuration : iConfigurationSettingService.list()) {
+            for (ConfigurationSetting configuration : iConfigurationSettingService.selectAll()) {
                 addProtocolFuncodeMeaning(convertIdToName(configuration.getProtocolId()),
                         configuration.getFunCode(),configuration.getOpt());
             }

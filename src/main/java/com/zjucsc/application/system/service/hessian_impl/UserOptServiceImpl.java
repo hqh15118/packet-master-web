@@ -1,7 +1,5 @@
 package com.zjucsc.application.system.service.hessian_impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.bean.User;
 import com.zjucsc.application.system.mapper.base.BaseServiceImpl;

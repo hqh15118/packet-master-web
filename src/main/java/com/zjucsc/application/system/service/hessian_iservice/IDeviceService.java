@@ -1,9 +1,5 @@
 package com.zjucsc.application.system.service.hessian_iservice;
-import com.baomidou.mybatisplus.extension.service.IService;
-import com.zjucsc.application.domain.bean.DeviceNumberAndIp;
-import com.zjucsc.application.system.entity.Device;
-import com.zjucsc.application.system.entity.FvDimensionFilter;
-import com.zjucsc.application.system.entity.OptFilter;
+import com.zjucsc.application.domain.bean.*;
 
 import java.util.List;
 
@@ -19,4 +15,7 @@ public interface IDeviceService {
     List<OptFilter> loadAllOptFiterByDeviceNumberAndGplotId(String deviceNumber, int gplotId);
     void removeDeviceByDeviceNumberAndGplotId(String deviceNumber, int gplotId);
     void removeAllDevicesByGplotId(int gplotId);
+    void saveBatch(List<Device> devices);
+
+    Gplot selectByGplotId(int gplotId);
 }

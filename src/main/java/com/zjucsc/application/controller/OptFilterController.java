@@ -7,7 +7,7 @@ import com.zjucsc.application.domain.bean.OptRulePullForFront;
 import com.zjucsc.application.domain.exceptions.OptFilterNotValidException;
 import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
-import com.zjucsc.application.system.service.iservice.IOptFilterService;
+import com.zjucsc.application.system.service.hessian_iservice.IOptFilterService;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.CommonOptFilterUtil;
 import com.zjucsc.base.BaseResponse;
@@ -77,7 +77,17 @@ public class OptFilterController {
         }else{
             CommonOptFilterUtil.removeTargetDeviceAnalyzer(deviceIp);
         }
-        iOptFilterService.removeByMap(map);
+        if (map.containsKey("fun_code")){
+            iOptFilterService.deleteByDeviceNumberAndPorocolIdAndFuncode(
+                    (String) map.get("device_number"),(int)map.get("protocol_id"),(int)map.get("fun_code")
+            );
+        }else if(map.containsKey("protocol_id")){
+            iOptFilterService.deleteByDeviceNumberAndProtocolId((String) map.get("device_number"),(int)map.get("protocol_id"));
+        }else if(map.containsKey("device_number")){
+            iOptFilterService.deleteByDeviceNumber((String) map.get("device_number"));
+        }else{
+            System.err.println("error......");
+        }
         return BaseResponse.OK();
     }
 }

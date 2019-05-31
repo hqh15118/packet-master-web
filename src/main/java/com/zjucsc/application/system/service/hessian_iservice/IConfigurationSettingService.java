@@ -1,8 +1,7 @@
 package com.zjucsc.application.system.service.hessian_iservice;
 
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.zjucsc.application.domain.bean.ConfigurationForSelect;
-import com.zjucsc.application.system.entity.ConfigurationSetting;
+import com.zjucsc.application.domain.bean.ConfigurationSetting;
 
 import java.util.List;
 
@@ -20,4 +19,12 @@ public interface IConfigurationSettingService {
     int selectConfigurationCount(String codeDes, int protocolId);
 
     void updateFuncode(int protocolId, int fun_code, String opt);
+
+    List<ConfigurationSetting> selectAll();
+
+    void saveOrUpdateBatch(List<ConfigurationSetting> configurationSettings);
+
+    void deleteByProtocolIdAndFuncode(int protocolId,int funCode);
+
+    void deleteByProtocolId(int protocolId);
 }

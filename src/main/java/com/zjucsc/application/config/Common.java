@@ -2,16 +2,15 @@ package com.zjucsc.application.config;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.zjucsc.application.domain.bean.ArtConfig;
 import com.zjucsc.application.domain.bean.CollectorState;
 import com.zjucsc.application.handler.ThreadExceptionHandler;
-import com.zjucsc.application.system.entity.ArtConfig;
 import com.zjucsc.application.tshark.analyzer.ArtAnalyzer;
 import com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 

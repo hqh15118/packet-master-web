@@ -2,23 +2,15 @@ package com.zjucsc.application.services;
 
 import com.alibaba.fastjson.JSON;
 import com.zjucsc.application.domain.bean.FvDimensionWrapper;
-import com.zjucsc.application.domain.bean.LogBean;
-import com.zjucsc.application.system.service.impl.KafkaServiceImpl;
-import com.zjucsc.application.system.service.iservice.IKafkaService;
+import com.zjucsc.application.system.service.hessian_iservice.IKafkaService;
 import com.zjucsc.kafka.KafkaProducerCreator;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 
 //@RunWith(SpringRunner.class)

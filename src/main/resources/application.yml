@@ -1,8 +1,8 @@
 myconfig:
   #global_address : 192.168.1.106
   #global_address : 192.168.0.114
-  global_address : 10.180.81.207
-  #global_address : 192.168.0.121
+  #global_address : 10.180.81.207
+  global_address : 192.168.0.121
   admin_server_port : 8989
   packet_master_web_port : 8080
   kafka-server-url : 10.15.191.100:9092
@@ -22,6 +22,8 @@ hessian-config:
   opt_filter: http://${hessian-config.hessian-url}/OptFilterMapper.hessian
   protocol_id: http://${hessian-config.hessian-url}/ProtocolIdMapper.hessian
   user_opt: http://${hessian-config.hessian-url}/UserOptMapper.hessian
+  art_filter : http://${hessian-config.hessian-url}/ArtifactFilterMapper.hessian
+  attack_info : http://${hessian-config.hessian-url}/AttackInfoMapper.hessian
 
 
 server:

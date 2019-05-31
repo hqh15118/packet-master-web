@@ -1,7 +1,7 @@
 package com.zjucsc.application.util;
 
 import com.zjucsc.application.config.Common;
-import com.zjucsc.application.system.entity.FvDimensionFilter;
+import com.zjucsc.application.domain.bean.FvDimensionFilter;
 import com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer;
 import com.zjucsc.application.tshark.filter.FiveDimensionPacketFilter;
 import lombok.extern.slf4j.Slf4j;

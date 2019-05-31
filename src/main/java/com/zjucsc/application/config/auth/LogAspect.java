@@ -2,7 +2,7 @@ package com.zjucsc.application.config.auth;
 
 import com.alibaba.fastjson.JSON;
 import com.zjucsc.application.config.ConstantConfig;
-import com.zjucsc.application.system.service.iservice.IKafkaService;
+import com.zjucsc.application.system.service.hessian_iservice.IKafkaService;
 import com.zjucsc.base.util.HttpContextUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;

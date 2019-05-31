@@ -1,4 +1,4 @@
-package com.zjucsc.application.system.entity;
+package com.zjucsc.application.domain.bean;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;

@@ -4,8 +4,8 @@ import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.auth.Auth;
 import com.zjucsc.application.config.auth.Log;
 import com.zjucsc.application.config.auth.Token;
-import com.zjucsc.application.system.entity.User;
-import com.zjucsc.application.system.service.iservice.UserOptService;
+import com.zjucsc.application.domain.bean.User;
+import com.zjucsc.application.system.service.hessian_iservice.UserOptService;
 import com.zjucsc.base.BaseResponse;
 import com.zjucsc.base.util.MD5Util;
 import lombok.Data;
@@ -57,7 +57,7 @@ public class UserOptController {
             user1.setPassword(MD5Util.encrypt(user.password));
             user1.setDate(new Date().toString());
             user1.setRole(Auth.ADMIN);
-            userOptService.save(user1);
+            userOptService.insertById(user1);
             return BaseResponse.OK();
         }
     }

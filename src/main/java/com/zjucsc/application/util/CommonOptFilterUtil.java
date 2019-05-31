@@ -3,7 +3,7 @@ package com.zjucsc.application.util;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.exceptions.OptFilterNotValidException;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
-import com.zjucsc.application.system.entity.OptFilter;
+import com.zjucsc.application.domain.bean.OptFilter;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
 import com.zjucsc.application.tshark.filter.OperationPacketFilter;
 import lombok.extern.slf4j.Slf4j;

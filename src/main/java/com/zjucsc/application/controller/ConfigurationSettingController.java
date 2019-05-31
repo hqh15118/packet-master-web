@@ -4,9 +4,8 @@ package com.zjucsc.application.controller;
 import com.zjucsc.application.config.auth.Log;
 import com.zjucsc.application.domain.bean.*;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
-import com.zjucsc.application.system.entity.ConfigurationSetting;
-import com.zjucsc.application.system.service.iservice.IConfigurationSettingService;
-import com.zjucsc.application.system.service.iservice.IProtocolIdService;
+import com.zjucsc.application.system.service.hessian_iservice.IConfigurationSettingService;
+import com.zjucsc.application.system.service.hessian_iservice.IProtocolIdService;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.base.BaseResponse;
 import io.swagger.annotations.ApiOperation;
@@ -57,11 +56,11 @@ public class ConfigurationSettingController {
 
     private void addNewProtocolToCacheFirst(ConfigurationForNewProtocol configurationForFronts) throws ProtocolIdNotValidException {
         String protocolName = configurationForFronts.getProtocolName();
-        com.zjucsc.application.system.entity.ProtocolId protocolIdAndName = new com.zjucsc.application.system.entity.ProtocolId();
+        ProtocolId protocolIdAndName = new ProtocolId();
         protocolIdAndName.setProtocolName(protocolName);
         protocolIdAndName.setProtocolId(iProtocolIdService.getMax());
 
-        iProtocolIdService.save(protocolIdAndName);
+        iProtocolIdService.insertById(protocolIdAndName);
         int newProtocolId = protocolIdAndName.getProtocolId();  //新增协议对应的协议ID
         addNewProtocolToCache(protocolName , newProtocolId);    //将新增的协议添加到两个缓存中
     }
@@ -71,7 +70,7 @@ public class ConfigurationSettingController {
     @PostMapping(value = "/new_funcode")
     public BaseResponse newConfigurationFuncode(@RequestBody @Valid  ConfigurationForFront configuration) throws ProtocolIdNotValidException {
         List<ConfigurationSetting> list = convertFrontUpdateToEntity(Collections.singletonList(configuration));
-        iConfigurationSettingService.saveBatch(list);
+        iConfigurationSettingService.saveOrUpdateBatch(list);
         return BaseResponse.OK();
     }
 
@@ -96,12 +95,8 @@ public class ConfigurationSettingController {
     @DeleteMapping(value = "/deletecode")
     public BaseResponse deleteConfiguration(@RequestBody @Valid @NotEmpty List<ConfigurationForDelete> configurationForDeletes) throws ProtocolIdNotValidException {
         List<ConfigurationSetting> list = convertFrontToEntity(configurationForDeletes);
-        HashMap<String,Object> map = new HashMap<>();
         for (ConfigurationSetting configuration : list) {
-            map.clear();
-            map.put("protocol_id" , configuration.getProtocolId());
-            map.put("fun_code" , configuration.getFunCode());
-            iConfigurationSettingService.removeByMap(map);
+            iConfigurationSettingService.deleteByProtocolIdAndFuncode(configuration.getProtocolId(),configuration.getFunCode());
             deleteCachedFuncodeById(configuration.getProtocolId() , configuration.getFunCode());
         }
         return BaseResponse.OK();
@@ -184,7 +179,7 @@ public class ConfigurationSettingController {
     @GetMapping("/protocol_list")
     public BaseResponse selectAllProtocolInfo(){
         List<com.zjucsc.application.domain.bean.Protocol> protocolIds = new ArrayList<>();
-        for (com.zjucsc.application.system.entity.ProtocolId protocolId : iProtocolIdService.list()) {
+        for (ProtocolId protocolId : iProtocolIdService.selectAll()) {
             if (protocolId.getProtocolId() < 0){
                 continue;
             }
@@ -204,11 +199,9 @@ public class ConfigurationSettingController {
     @ApiOperation("删除协议")
     @DeleteMapping("delete_protocol")
     public BaseResponse deleteProtocol(@RequestParam int protocolId) throws ProtocolIdNotValidException {
-        Map<String,Object> map = new HashMap<>();
-        map.put("protocol_id" , protocolId);
-        iConfigurationSettingService.removeByMap(map);
+        iConfigurationSettingService.deleteByProtocolId(protocolId);
         deleteCachedProtocolByID(protocolId);
-        iProtocolIdService.removeByMap(map);
+        iProtocolIdService.deleteByProtocolId(protocolId);
         return BaseResponse.OK();
     }
 

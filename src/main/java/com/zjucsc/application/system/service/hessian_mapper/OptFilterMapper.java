@@ -1,5 +1,5 @@
 package com.zjucsc.application.system.service.hessian_mapper;
-import com.zjucsc.application.system.entity.OptFilter;
+import com.zjucsc.application.domain.bean.OptFilter;
 import com.zjucsc.application.system.mapper.base.BaseMapper;
 
 import java.util.List;
@@ -15,4 +15,10 @@ public interface OptFilterMapper extends BaseMapper<OptFilter> {
     void saveBatch(List<OptFilter> optFilters);
 
     void deleteByDeviceNumber(String deviceNumber);
+
+    void deleteByDeviceNumberAndProtocolId(String deviceNumber,int protocolId);
+
+    void deleteByDeviceNumberAndPorocolIdAndFuncode(String deviceNumber,int protocolId,int funCode);
+
+
 }

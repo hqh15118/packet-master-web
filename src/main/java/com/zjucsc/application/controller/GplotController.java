@@ -2,9 +2,9 @@ package com.zjucsc.application.controller;
 
 
 import com.zjucsc.application.config.auth.Log;
+import com.zjucsc.application.domain.bean.Gplot;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
-import com.zjucsc.application.system.entity.Gplot;
-import com.zjucsc.application.system.service.iservice.IGplotService;
+import com.zjucsc.application.system.service.hessian_iservice.IGplotService;
 import com.zjucsc.base.BaseResponse;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +51,7 @@ public class GplotController {
     @ApiOperation("加载所有的组态图")
     @GetMapping("load_all_gplot")
     public BaseResponse loadAllGplotInfo(){
-        List<Gplot> gplots = iGplotService.list();
+        List<Gplot> gplots = iGplotService.selectAll();
         gplots.sort((o1, o2) -> {
             if (o1.getId() <= o2.getId()){return 1;}
             return -1;
@@ -73,7 +73,7 @@ public class GplotController {
     @ApiOperation("删除组态图设备位置信息")
     @DeleteMapping("delete_gplot")
     public BaseResponse deleteGplotInfo(@RequestParam int gplotId){
-        iGplotService.removeById(gplotId);
+        iGplotService.deleteById(gplotId);
         return BaseResponse.OK();
     }
 

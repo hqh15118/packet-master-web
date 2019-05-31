@@ -2,10 +2,9 @@ package com.zjucsc.application.controller;
 
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.bean.ArtArgShowState;
+import com.zjucsc.application.domain.bean.ArtConfig;
 import com.zjucsc.application.domain.bean.ArtConfigPaged;
-import com.zjucsc.application.domain.exceptions.ArtConfigNotValidException;
-import com.zjucsc.application.system.entity.ArtConfig;
-import com.zjucsc.application.system.service.iservice.IArtConfigService;
+import com.zjucsc.application.system.service.hessian_iservice.IArtConfigService;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.CommonUtil;
 import com.zjucsc.base.BaseResponse;
@@ -28,7 +27,7 @@ public class ArtConfigController {
 
     @ApiOperation("添加/更新工艺参数配置，artConfig > 0表示更新；不填表示添加新的配置，顺序返回记录的ID列表")
     @PostMapping("new_art_config")
-    public BaseResponse addOrUpdateArtConfig(@RequestBody @Valid List<ArtConfig> artConfig) throws ArtConfigNotValidException {
+    public BaseResponse addOrUpdateArtConfig(@RequestBody @Valid List<ArtConfig> artConfig) {
         //先更新缓存
         CommonCacheUtil.addOrUpdateDecodeInstances(artConfig);
         //更新数据库
@@ -44,7 +43,7 @@ public class ArtConfigController {
                 iArtConfigService.updateById(config);
             }else{
                 //添加新的工艺参数配置到数据库
-                iArtConfigService.save(config);
+                iArtConfigService.insertById(config);
                 //初始化工艺参数配置
                 CommonUtil.initArtMap(config.getTag());
             }
@@ -69,7 +68,6 @@ public class ArtConfigController {
     @ApiOperation("根据ID删除工艺参数配置")
     @PostMapping("delete_art_config")
     public BaseResponse deleteArtConfig(@RequestBody List<Integer> artConfigId){
-        boolean t = true;
         ArtConfig artConfig =  null;
         for (Integer integer : artConfigId) {
             //移除缓存
@@ -77,15 +75,15 @@ public class ArtConfigController {
             CommonCacheUtil.removeArtDecodeInstanceByProtocolAndId(artConfig.getProtocolId(),integer);
             CommonUtil.removeArtMap(artConfig.getTag());
             //移除数据库
-            t = t && iArtConfigService.removeById(integer);
+            iArtConfigService.deleteById(integer);
         }
-        return BaseResponse.OK(t);
+        return BaseResponse.OK();
     }
 
     @ApiOperation("获取所有工艺参数配置")
     @GetMapping("get_all_art_config")
     public BaseResponse getAllArtConfig(){
-        return BaseResponse.OK(iArtConfigService.list());
+        return BaseResponse.OK(iArtConfigService.selectAllConfig());
     }
 
     @ApiOperation("分页获取工艺参数配置，可以选择协议和minLength")

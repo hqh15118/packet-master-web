@@ -1,12 +1,8 @@
 package com.zjucsc.application.util;
 
-import com.corundumstudio.socketio.SocketIOClient;
 import com.zjucsc.application.config.Common;
-import com.zjucsc.application.config.SocketIoEvent;
-import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
+import com.zjucsc.application.domain.bean.ArtConfig;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
-import com.zjucsc.application.socketio.SocketServiceCenter;
-import com.zjucsc.application.system.entity.ArtConfig;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;

@@ -1,7 +1,7 @@
 package com.zjucsc.application.system.art;
 
 import com.zjucsc.application.config.Common;
-import com.zjucsc.application.system.entity.ArtConfig;
+import com.zjucsc.application.domain.bean.ArtConfig;
 import com.zjucsc.application.util.CommonUtil;
 
 import java.util.Map;

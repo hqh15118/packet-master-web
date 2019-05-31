@@ -1,16 +1,14 @@
 package com.zjucsc.application.system.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.SocketIoEvent;
 import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.domain.bean.CollectorState;
-import com.zjucsc.application.domain.bean.FvDimensionWrapper;
 import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.application.socketio.SocketServiceCenter;
 import com.zjucsc.application.system.service.PacketAnalyzeService;
-import com.zjucsc.application.system.service.iservice.CapturePacketService;
+import com.zjucsc.application.system.service.hessian_iservice.CapturePacketService;
 import com.zjucsc.application.tshark.capture.NewFvDimensionCallback;
 import com.zjucsc.application.tshark.capture.ProcessCallback;
 import com.zjucsc.application.tshark.domain.packet.ModbusPacket;
@@ -50,14 +48,6 @@ import static com.zjucsc.application.config.PACKET_PROTOCOL.S7;
 @Service
 public class CapturePacketServiceImpl implements CapturePacketService<String,String> {
 
-    @Autowired private PacketAnalyzeService packetAnalyzeService;
-
-    private ListOperations<String,String> optForList;
-
-    @Autowired
-    public CapturePacketServiceImpl(RedisTemplate<String,String> redisTemplate){
-        optForList = redisTemplate.opsForList();
-    }
 
     private NewFvDimensionCallback newFvDimensionCallback;
 

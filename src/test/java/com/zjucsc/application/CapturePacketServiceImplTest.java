@@ -38,7 +38,7 @@ public class CapturePacketServiceImplTest {
     @Test
     public void start() throws InterruptedException {
         String deviceName = "en0";
-        CapturePacketServiceImpl capturePacketService = new CapturePacketServiceImpl(redisTemplate);
+        CapturePacketServiceImpl capturePacketService = new CapturePacketServiceImpl();
         BasePreProcessor.setCaptureDeviceNameAndMacAddress(macAddressForWin,deviceName);
         for (int i = 0; i < 10; i++) {
             capturePacketService.start(new ProcessCallback<String, String>() {
@@ -109,7 +109,7 @@ public class CapturePacketServiceImplTest {
         fvDimensionLayer.eth_trailer = new String[]{trailer};
         String fcs = "0x00000067";
         fvDimensionLayer.eth_fcs = new String[]{fcs};
-        CapturePacketServiceImpl capturePacketService = new CapturePacketServiceImpl(redisTemplate);
+        CapturePacketServiceImpl capturePacketService = new CapturePacketServiceImpl();
         long time1 = System.currentTimeMillis();
         for (int i = 0; i < 100000; i++) {
             capturePacketService.fvDimensionLayerAbstractAsyncHandler.handleAndPass(fvDimensionLayer);

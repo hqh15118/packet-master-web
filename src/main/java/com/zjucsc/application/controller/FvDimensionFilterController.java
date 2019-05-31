@@ -2,9 +2,9 @@ package com.zjucsc.application.controller;
 
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.auth.Log;
-import com.zjucsc.application.system.entity.FvDimensionFilter;
+import com.zjucsc.application.domain.bean.FvDimensionFilter;
 import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
-import com.zjucsc.application.system.service.iservice.IFvDimensionFilterService;
+import com.zjucsc.application.system.service.hessian_iservice.IFvDimensionFilterService;
 import com.zjucsc.base.BaseResponse;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;

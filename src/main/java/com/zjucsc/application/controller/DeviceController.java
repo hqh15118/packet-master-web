@@ -3,8 +3,8 @@ package com.zjucsc.application.controller;
 
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.auth.Log;
-import com.zjucsc.application.system.entity.Device;
-import com.zjucsc.application.system.service.iservice.IDeviceService;
+import com.zjucsc.application.domain.bean.Device;
+import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.base.BaseResponse;
 import io.swagger.annotations.ApiOperation;
@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author hongqianhui
@@ -41,9 +39,7 @@ public class DeviceController {
     @ApiOperation("通过组态图ID发现所有设备")
     @GetMapping("gplot_devices")
     public BaseResponse getDevicesByGplotId(@RequestParam int gplotId){
-        Map<String,Object> findByGplotId = new HashMap<>();
-        findByGplotId.put("gplot_id" , gplotId);
-        return BaseResponse.OK(iDeviceService.listByMap(findByGplotId));
+        return BaseResponse.OK(iDeviceService.selectByGplotId(gplotId));
     }
 
 }

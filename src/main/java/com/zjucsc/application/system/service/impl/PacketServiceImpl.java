@@ -2,7 +2,7 @@ package com.zjucsc.application.system.service.impl;
 
 import com.zjucsc.application.domain.bean.NetworkInterface;
 import com.zjucsc.application.system.service.PacketAnalyzeService;
-import com.zjucsc.application.system.service.iservice.PacketService;
+import com.zjucsc.application.system.service.hessian_iservice.PacketService;
 import com.zjucsc.application.util.NetworkInterfaceUtil;
 import com.zjucsc.application.util.PcapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -15,9 +15,7 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service("packet_service")
 public class PacketServiceImpl implements PacketService {

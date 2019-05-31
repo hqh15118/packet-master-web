@@ -12,4 +12,5 @@ public interface ArtConfigMapper extends BaseMapper<ArtConfig> {
     void deleteArtConfigByProtocolIdAndMinLength(int protocolId, int minLength);
     List<ArtConfig> getConfigPaged(int protocolId, int minLength
             , int start, int end);
+    List<ArtConfig> selectAllConfig();
 }

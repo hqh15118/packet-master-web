@@ -1,12 +1,11 @@
 package com.zjucsc.application.system.service.hessian_impl;
 
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.bean.OptFilterForFront;
 import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
 import com.zjucsc.application.domain.exceptions.OptFilterNotValidException;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
-import com.zjucsc.application.system.entity.OptFilter;
+import com.zjucsc.application.domain.bean.OptFilter;
 import com.zjucsc.application.system.mapper.base.BaseServiceImpl;
 import com.zjucsc.application.system.service.hessian_iservice.IOptFilterService;
 import com.zjucsc.application.system.service.hessian_mapper.OptFilterMapper;
@@ -20,9 +19,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
@@ -136,5 +133,20 @@ public class OptFilterServiceImpl extends BaseServiceImpl<OptFilterMapper, OptFi
     @Override
     public List<Integer> selectTargetOptFilter(String device, int type, int protocolId) {
         return this.baseMapper.selectTargetOptFilter(device,type,protocolId);
+    }
+
+    @Override
+    public void deleteByDeviceNumber(String deviceNumber) {
+        this.baseMapper.deleteByDeviceNumber(deviceNumber);
+    }
+
+    @Override
+    public void deleteByDeviceNumberAndProtocolId(String deviceNumber, int protocolId) {
+        this.baseMapper.deleteByDeviceNumberAndProtocolId(deviceNumber, protocolId);
+    }
+
+    @Override
+    public void deleteByDeviceNumberAndPorocolIdAndFuncode(String deviceNumber, int protocolId, int funCode) {
+        this.baseMapper.deleteByDeviceNumberAndPorocolIdAndFuncode(deviceNumber, protocolId, funCode);
     }
 }
