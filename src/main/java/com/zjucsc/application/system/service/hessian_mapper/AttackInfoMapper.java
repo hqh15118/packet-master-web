@@ -9,7 +9,7 @@ import java.util.List;
  * @author hongqianhui
  */
 public interface AttackInfoMapper extends BaseMapper<AttackInfo> {
-    public void saveAttackInfo(List<AttackInfo> infoList);
+    void saveAttackInfo(List<AttackInfo> infoList);
 
-    public List<AttackInfo> selectAll();
+    List<AttackInfo> selectAll();
 }

@@ -5,7 +5,7 @@ import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.domain.bean.CaptureService;
 import com.zjucsc.application.domain.bean.FvDimensionWrapper;
 import com.zjucsc.application.controller.PacketController;
-import com.zjucsc.application.system.service.impl.CapturePacketServiceImpl;
+import com.zjucsc.application.system.service.common_impl.CapturePacketServiceImpl;
 import com.zjucsc.application.tshark.capture.ProcessCallback;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import com.zjucsc.tshark.pre_processor.BasePreProcessor;
@@ -27,7 +27,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class CapturePacketServiceImplTest {
+public class CaptureNetworkInterfaceServiceImplTest {
 
     private String macAddressForWin = "28:D2:44:5F:69:E1";
     private String macAddressForMac = "8c:85:90:93:15:a2";

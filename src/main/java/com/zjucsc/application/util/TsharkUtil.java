@@ -6,4 +6,19 @@ public class TsharkUtil {
             return null;
     }
 
+
+    public static String checkTsharkValid(){
+        String str = System.getenv("PATH");
+        String[] allPathVar = null;
+        if (str.contains(":")){
+            allPathVar = str.split(":");
+        }
+        assert allPathVar!=null;
+        for (String var : allPathVar) {
+            if (var.toLowerCase().contains("wireshark")){
+                return var;
+            }
+        }
+        return null;
+    }
 }

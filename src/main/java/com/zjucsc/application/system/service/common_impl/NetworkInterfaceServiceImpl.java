@@ -1,8 +1,8 @@
-package com.zjucsc.application.system.service.impl;
+package com.zjucsc.application.system.service.common_impl;
 
 import com.zjucsc.application.domain.bean.NetworkInterface;
 import com.zjucsc.application.system.service.PacketAnalyzeService;
-import com.zjucsc.application.system.service.hessian_iservice.PacketService;
+import com.zjucsc.application.system.service.common_iservice.INetworkInterfaceService;
 import com.zjucsc.application.util.NetworkInterfaceUtil;
 import com.zjucsc.application.util.PcapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-@Service("packet_service")
-public class PacketServiceImpl implements PacketService {
+@Service
+public class NetworkInterfaceServiceImpl implements INetworkInterfaceService {
 
     @Autowired
     public PacketAnalyzeService packetAnalyzeService;

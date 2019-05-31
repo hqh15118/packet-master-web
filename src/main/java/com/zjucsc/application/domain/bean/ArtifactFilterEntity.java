@@ -1,5 +1,6 @@
 package com.zjucsc.application.domain.bean;
 
+import com.zjucsc.application.domain.BaseBean;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -13,7 +14,7 @@ import java.util.List;
  */
 @EqualsAndHashCode(callSuper = false)
 @Data
-public class ArtifactFilterEntity {
+public class ArtifactFilterEntity extends BaseBean {
     private String userName;
     private String content;
 

@@ -1,5 +1,6 @@
 package com.zjucsc.application.domain.bean;
 
+import com.zjucsc.application.domain.BaseBean;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -13,7 +14,7 @@ import java.io.Serializable;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class ArtConfig implements Serializable {
+public class ArtConfig extends BaseBean implements Serializable {
 
     private int artConfigId;
 

@@ -2,7 +2,7 @@ package com.zjucsc.application.services;
 
 import com.alibaba.fastjson.JSON;
 import com.zjucsc.application.domain.bean.FvDimensionWrapper;
-import com.zjucsc.application.system.service.hessian_iservice.IKafkaService;
+import com.zjucsc.application.system.service.common_iservice.IKafkaService;
 import com.zjucsc.kafka.KafkaProducerCreator;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import org.apache.kafka.clients.producer.KafkaProducer;

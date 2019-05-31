@@ -1,11 +1,11 @@
-package com.zjucsc.application.system.service.impl;
+package com.zjucsc.application.system.service.common_impl;
 
 import com.alibaba.fastjson.JSON;
 import com.zjucsc.application.config.KafkaConfig;
 import com.zjucsc.application.domain.bean.FvDimensionWrapper;
 import com.zjucsc.application.domain.bean.LogBean;
 import com.zjucsc.application.domain.bean.StatisticsDataWrapper;
-import com.zjucsc.application.system.service.hessian_iservice.IKafkaService;
+import com.zjucsc.application.system.service.common_iservice.IKafkaService;
 import com.zjucsc.application.tshark.domain.bean.BadPacket;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
