@@ -12,6 +12,7 @@ import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class Common {
@@ -29,10 +30,14 @@ public class Common {
      */
     public static long NON_TIMESTAMP_PACKET_COUNT = 0;
 
+    public static volatile long maxFlowInByte = Long.MAX_VALUE;
+
     /**
      * 是否已经打开某个抓包机器上的抓包服务
      */
     public static List<String> hasStartedHost = new ArrayList<>();
+
+    public static final AtomicInteger FLOW = new AtomicInteger(0);
 
     /** cache7
      * 所有可配置的协议
@@ -71,6 +76,7 @@ public class Common {
         public static final int SQL_ERROR = 204;
         public static final int TOKEN_NOT_VALID = 205;
         public static final int ART_CONFIG_NOT_VALID = 206;
+        public static final int DATA_REPEAT = 207;
     }
 
     //已经登录过的用户
@@ -94,7 +100,9 @@ public class Common {
 
     public static final BiMap<Integer,String> AUTH_MAP = HashBiMap.create();
 
-
+    /**
+     * 给tshark用的，表示设置的要捕获的协议集合
+     */
     public static final Set<String> CAPTURE_PROTOCOL = new HashSet<>();
 
     public static final List<Process> TSHARK_RUNNING_PROCESS = new ArrayList<>();
@@ -115,8 +123,4 @@ public class Common {
     public static final ConcurrentHashMap<String,ConcurrentHashMap<Integer, ArtConfig>> ART_DECODE_MAP
             = new ConcurrentHashMap<>();
 
-    /**
-     * 所有IP地址的统计集合
-     */
-    public static final ConcurrentHashMap<String,String> ALL_IP_ADDRESS = new ConcurrentHashMap<>();
 }

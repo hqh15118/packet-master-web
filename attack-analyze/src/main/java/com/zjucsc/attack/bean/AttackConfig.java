@@ -18,7 +18,7 @@ public class AttackConfig {
      * 连续收到【2】个以上（可动态设置）来自一个IP地址（站点）的TCP连接
      * 建立请求报文，即同址TCP-DOS攻击。
      ****************************************************/
-    private static volatile Duration CO_SITE_TIME_GAP = Duration.ofMinutes(1);
+    private static volatile int CO_SITE_TIME_GAP = 60 * 1000;   //60s
     private static volatile int CO_SITE_NUM = 2;
 
     /****************************************************
@@ -26,7 +26,7 @@ public class AttackConfig {
      * 连续收到2个（可动态设置）以上来自不同IP地址（站点）发出的TCP
      * 连接建立请求报文，即多址TCP-DOS攻击。
      ****************************************************/
-    private static volatile Duration MULTI_SITE_TIME_GAP = Duration.ofSeconds(1);
+    private static volatile int MULTI_SITE_TIME_GAP = 1000;     //1s
     private static volatile int MULTI_SITE_NUM = 2;
 
     /****************************************************
@@ -34,7 +34,7 @@ public class AttackConfig {
      * 连续收到2个（可动态设置）以上来自同一IP地址（站点）发出的工控协议报
      * 文，即允许工控协议同址占用信道攻击；
      *****************************************************/
-    private static volatile Duration CO_SITE_CHANNEL_HOLD_TIME_GAP = Duration.ofMillis(10);
+    private static volatile int CO_SITE_CHANNEL_HOLD_TIME_GAP = 10;     //10ms
     private static volatile int CO_SITE_CHANNEL_HOLD_NUM = 2;
 
     /****************************************************
@@ -139,11 +139,13 @@ public class AttackConfig {
         SNIFF_LAN_IPS = sniffLanIps;
     }
 
-    public static void setCoSiteTimeGap(Duration duration){
-        CO_SITE_TIME_GAP = duration;
-    }
-    public static Duration getCoSiteTimeGap(){
+
+    public static int getCoSiteTimeGap() {
         return CO_SITE_TIME_GAP;
+    }
+
+    public static void setCoSiteTimeGap(int coSiteTimeGap) {
+        CO_SITE_TIME_GAP = coSiteTimeGap;
     }
 
     public static int getCoSiteNum() {
@@ -154,11 +156,11 @@ public class AttackConfig {
         CO_SITE_NUM = coSiteNum;
     }
 
-    public static Duration getMultiSiteTimeGap() {
+    public static int getMultiSiteTimeGap() {
         return MULTI_SITE_TIME_GAP;
     }
 
-    public static void setMultiSiteTimeGap(Duration multiSiteTimeGap) {
+    public static void setMultiSiteTimeGap(int multiSiteTimeGap) {
         MULTI_SITE_TIME_GAP = multiSiteTimeGap;
     }
 
@@ -170,11 +172,11 @@ public class AttackConfig {
         MULTI_SITE_NUM = multiSiteNum;
     }
 
-    public static Duration getCoSiteChannelHoldTimeGap() {
+    public static int getCoSiteChannelHoldTimeGap() {
         return CO_SITE_CHANNEL_HOLD_TIME_GAP;
     }
 
-    public static void setCoSiteChannelHoldTimeGap(Duration coSiteChannelHoldTimeGap) {
+    public static void setCoSiteChannelHoldTimeGap(int coSiteChannelHoldTimeGap) {
         CO_SITE_CHANNEL_HOLD_TIME_GAP = coSiteChannelHoldTimeGap;
     }
 

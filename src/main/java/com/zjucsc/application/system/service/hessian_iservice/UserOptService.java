@@ -1,11 +1,11 @@
 package com.zjucsc.application.system.service.hessian_iservice;
 
-import com.baomidou.mybatisplus.extension.service.IService;
-import com.zjucsc.application.system.entity.User;
+
+import com.zjucsc.application.domain.bean.User;
 
 import java.util.List;
 
-public interface UserOptService  {
+public interface UserOptService {
     List<User> getAllUsers();
 
     boolean logout(String userName);

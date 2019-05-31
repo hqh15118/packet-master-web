@@ -9,6 +9,7 @@ import lombok.experimental.Accessors;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import java.io.Serializable;
 
 /**
  * 
@@ -18,7 +19,7 @@ import javax.validation.constraints.Min;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class ArtConfig{
+public class ArtConfig implements Serializable {
 
     //每一条配置对应唯一一个ID
     @TableId(value = "id" , type = IdType.AUTO)

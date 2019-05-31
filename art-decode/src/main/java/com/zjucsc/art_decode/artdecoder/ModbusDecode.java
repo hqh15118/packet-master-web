@@ -1,6 +1,5 @@
 package com.zjucsc.art_decode.artdecoder;
 
-
 import com.zjucsc.common_util.ByteUtil;
 import com.zjucsc.common_util.Bytecut;
 
@@ -19,17 +18,23 @@ public class ModbusDecode {
         payload_map.put(4,new byte[]{0x00,0x00});
     }
 
-    public  Map<Integer,byte[]> Reg_map = new HashMap<>();
+    public  Map<Integer,byte[]> Input_reg_map = new HashMap<>();
+
+    public  Map<Integer,byte[]> Holding_reg_map = new HashMap<>();
 
     public  Map<Integer,Boolean> Coil_map = new HashMap<>();
 
-    private  Map<String,Map> map= new HashMap<>();
+    public  Map<Integer,Boolean> Dis_input_map = new HashMap<>();
+
+    private Map<String,Map> map= new HashMap<>();
 
 
     public Map<String,Map> decode( byte[] bytes) {
         renewmap(bytes);
-        map.put("线圈值",Coil_map);
-        map.put("寄存器值",Reg_map);
+        map.put("离散量输入",Dis_input_map);
+        map.put("线圈",Coil_map);
+        map.put("保持寄存器",Holding_reg_map);
+        map.put("输出寄存器",Input_reg_map);
         return map;
     }
 
@@ -43,12 +48,15 @@ public class ModbusDecode {
         {
             if((payload[0]==payload_map.get(i)[0]) && (payload[1]==payload_map.get(i)[1]))
             {
-                int addr_head = (int) ByteUtil.bytesToShort(payload_map.get(i),8);
-                int addr_len = (int) ByteUtil.bytesToShort(payload_map.get(i),10);
+                int addr_head = (int)ByteUtil.bytesToShort(payload_map.get(i),8);
+                int addr_len = (int)ByteUtil.bytesToShort(payload_map.get(i),10);
                 int a=(int)payload[8];
                 for(int s=0;s<a;s++) {
                     for (int j = 0; (j < 8) && ((j+8*s )<addr_len); j++) {
-                        Coil_map.put((addr_head + j + 8*s), !((payload[9+s] & (1<<j))==0));
+                        if(i==1)
+                        {Coil_map.put((addr_head + j + 8*s), !((payload[9+s] & (1<<j))==0));}
+                        else
+                        {Dis_input_map.put((addr_head + j + 8*s), !((payload[9+s] & (1<<j))==0));}
                     }
                 }
             }
@@ -62,11 +70,14 @@ public class ModbusDecode {
             if((payload[0]==payload_map.get(i)[0]) && (payload[1]==payload_map.get(i)[1]))
             {
                 int addr_head =(int)ByteUtil.bytesToShort(payload_map.get(i),8);
-                int addr_len = (int)ByteUtil.bytesToShort(payload_map.get(i),10);
+                int addr_len = (int) ByteUtil.bytesToShort(payload_map.get(i),10);
                 for(int j=0;j<addr_len;j++)
                 {
                     byte[] Reg_valve = Bytecut.Bytecut(payload, 9+2*j,2);
-                    Reg_map.put((addr_head + j ) , Reg_valve);
+                    if(i==3)
+                    {Holding_reg_map.put((addr_head + j ) , Reg_valve);}
+                    else
+                    {Input_reg_map.put((addr_head + j ) , Reg_valve);}
                 }
             }
             else if(payload.length==12)

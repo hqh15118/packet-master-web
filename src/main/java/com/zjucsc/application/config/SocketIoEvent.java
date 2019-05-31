@@ -21,4 +21,6 @@ public class SocketIoEvent {
     public static final String LOG_INFO = "log_info";
     //系统中检测到新的报文
     public static final String NEW_IP = "new_ip";
+    //一定时间内最大流量报警
+    public static final String MAX_FLOW_ATTACK = "max_flow";
 }

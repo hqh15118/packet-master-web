@@ -282,15 +282,6 @@ public class CommonCacheUtil {
         map.put(artConfig.getArtConfigId(),artConfig);
     }
 
-    /*********************************
-     *
-     *  STATISTICS ALL IP ADDRESS
-     *
-     **********************************/
-    public static void statisticAllIpAddress(String ipAddress){
-        if (Common.ALL_IP_ADDRESS.put(ipAddress,"")==null){
-            SocketServiceCenter.updateAllClient(SocketIoEvent.NEW_IP,ipAddress);
-        }
-    }
+
 
 }

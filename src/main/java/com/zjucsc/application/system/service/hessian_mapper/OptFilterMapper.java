@@ -11,4 +11,8 @@ public interface OptFilterMapper extends BaseMapper<OptFilter> {
 
     List<Integer> selectTargetOptFilter(String device, int type,
                                          int protocolId);
+
+    void saveBatch(List<OptFilter> optFilters);
+
+    void deleteByDeviceNumber(String deviceNumber);
 }

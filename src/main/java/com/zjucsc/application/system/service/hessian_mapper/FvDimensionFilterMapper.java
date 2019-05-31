@@ -12,4 +12,6 @@ public interface FvDimensionFilterMapper extends BaseMapper<FvDimensionFilter> {
     List<FvDimensionFilter> selectByDeviceId( String deviceId);
 
     void deleteAllFilterByDeviceNumberAndGplotId(String deviceNumber,  int gplotId);
+
+    void saveOrUpdateBatch(List<FvDimensionFilter> fvDimensionFilterList);
 }

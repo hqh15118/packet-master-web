@@ -5,7 +5,9 @@ import com.zjucsc.attack.bean.RedisConfigNotFoundException;
 import com.zjucsc.attack.util.IObservable;
 import com.zjucsc.attack.util.Observer;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -41,7 +43,7 @@ public class Common {
 
     //懒加载单例模式
     private static final class JEDIS_HOLDER{
-        static Jedis jedis;
+        static JedisPool jedisPool;
         static {
             File file = new File("config/attack-redis.properties");
             if (!file.exists()){
@@ -67,7 +69,8 @@ public class Common {
                 e.printStackTrace();
             }
             if (port != null) {
-                jedis = new Jedis(host, Integer.valueOf(port), 10000);
+                GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
+                jedisPool = new JedisPool(poolConfig,host,Integer.valueOf(port));
             }else{
                 System.err.println("attack-service jedis未正确初始化，port参数为null");
             }
@@ -78,12 +81,12 @@ public class Common {
         observer.register(observables);
     }
 
-    static void updateAll(AttackBean attackBean){
+    public static void updateAll(AttackBean attackBean){
         observer.updateAll(attackBean);
     }
 
     static Jedis getJedisClient(){
-        return JEDIS_HOLDER.jedis;
+        return JEDIS_HOLDER.jedisPool.getResource();
     }
 
 

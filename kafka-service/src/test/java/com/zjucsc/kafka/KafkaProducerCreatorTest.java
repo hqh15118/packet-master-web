@@ -21,6 +21,8 @@ public class KafkaProducerCreatorTest {
 
     @Test
     public void getProperties(){
+        File file1 = new File("");
+        System.out.println(file1.getAbsolutePath());
         File file = new File("config/kafka-config-producer.properties");
         assert file.exists();
         if (file.exists()){

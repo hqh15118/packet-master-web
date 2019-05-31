@@ -257,6 +257,12 @@ public abstract class BasePreProcessor implements PreProcessor {
         if (!fields.contains("tcp.payload")){
             fields.add("tcp.payload");
         }
+        if (!fields.contains("tcp.flags.syn")){
+            fields.add("tcp.flags.syn");
+        }
+        if (!fields.contains("tcp.flags.ack")){
+            fields.add("tcp.flags.ack");
+        }
     }
 
     public abstract void decodeJSONString(String packetJSON);

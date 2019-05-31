@@ -11,6 +11,7 @@ import java.util.Set;
  * #create_time 2019-05-14 - 20:59
  */
 public class CommonTsharkUtil {
+
     public static synchronized void addCaptureProtocol(String[] protocols){
         Common.CAPTURE_PROTOCOL.addAll(Arrays.asList(protocols));
     }

@@ -1,7 +1,7 @@
 package com.zjucsc.kafka;
 
 public interface KafkaConstant {
-    String KAFKA_BROKERS = "localhost:9092";
+    String KAFKA_BROKERS = "10.15.191.100:9092";
 
     Integer MESSAGE_COUNT=10000;
 

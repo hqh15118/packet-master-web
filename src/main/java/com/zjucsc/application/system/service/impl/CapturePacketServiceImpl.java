@@ -98,8 +98,10 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             FvDimensionLayer fvDimensionLayer = ((FvDimensionLayer) t);
             //统计所有的IP地址
             if (fvDimensionLayer.ip_dst[0].length() > 0){
-                CommonCacheUtil.statisticAllIpAddress(fvDimensionLayer.ip_dst[0]);
+                StatisticsData.statisticAllIpAddress(fvDimensionLayer.ip_dst[0]);
             }
+            //统计协议
+            StatisticsData.addProtocolNum(fvDimensionLayer.frame_protocols[0],1);
 
             StringBuilder sb = stringBuilderThreadLocal.get();
             sb.delete(0,sb.length());
@@ -130,12 +132,12 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             int delay = collectorDelayInfo(payload , collectorId);                //解析时延信息
 
             //TODO TEST
-            optForList.leftPush(CommonConfigUtil.getFvDimensionKeyInRedis(),
-                    JSON.toJSONString(FvDimensionWrapper.builder()
-                    .collectorId(collectorId)
-                    .delay(delay)
-                    .layer(fvDimensionLayer)
-                    .build()));
+//            optForList.leftPush(CommonConfigUtil.getFvDimensionKeyInRedis(),
+//                    JSON.toJSONString(FvDimensionWrapper.builder()
+//                    .collectorId(collectorId)
+//                    .delay(delay)
+//                    .layer(fvDimensionLayer)
+//                    .build()));
             return fvDimensionLayer;                                              //将五元组发送给BadPacketHandler
         }
     };
@@ -273,6 +275,8 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
 
     private void sendPacketStatisticsEvent(FvDimensionLayer fvDimensionLayer) throws DeviceNotValidException {
         int capLength = Integer.parseInt(fvDimensionLayer.frame_cap_len[0]);
+
+        Common.FLOW.addAndGet(capLength);                          //计算报文流量
 
         StatisticsData.recvPacketNumber.addAndGet(capLength);      //总报文数
         //外界 --> PLC[ip_dst]  设备接收的报文数

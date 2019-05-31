@@ -2,15 +2,14 @@ package com.zjucsc.application.config;
 
 import com.zjucsc.application.domain.bean.GraphInfo;
 import com.zjucsc.application.domain.bean.GraphInfoCollection;
+import com.zjucsc.application.socketio.SocketServiceCenter;
 import com.zjucsc.application.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiConsumer;
 
 @Slf4j
@@ -21,9 +20,19 @@ public class StatisticsData {
     public static AtomicInteger recvPacketNumber = new AtomicInteger(0);
 
     /**
+     * 所有已经捕获到的协议及其数量
+     */
+    private static final ConcurrentHashMap<String, AtomicLong> PROTOCOL_NUM = new ConcurrentHashMap<>();
+
+    /**
      * 采集器的时延，key是采集器的ID，value是解析出来的最大时延
      */
     public static ConcurrentHashMap<Integer,Integer> COLLECTOR_DELAY_MAP = new ConcurrentHashMap<>();
+
+    /**
+     * 所有IP地址的统计集合
+     */
+    private static final ConcurrentHashMap<String,String> ALL_IP_ADDRESS = new ConcurrentHashMap<>();
 
     /**
      * 异常【既不在黑名单也不在白名单】
@@ -139,5 +148,39 @@ public class StatisticsData {
             }
         });
     }
+
+    /*********************************
+     *
+     *  STATISTICS  PROTOCOL NUM e.g. [S7comm,20] [Modbus,30]
+     *
+     **********************************/
+    public static void addProtocolNum(String protocolName,int deltaNumber){
+        AtomicLong atomicLong = PROTOCOL_NUM.get(protocolName);
+        if (atomicLong == null){
+            PROTOCOL_NUM.putIfAbsent(protocolName,new AtomicLong(1));
+        }else{
+            atomicLong.addAndGet(deltaNumber);
+        }
+    }
+
+    public static Map<String,AtomicLong> getProtocolNum(){
+        return PROTOCOL_NUM;
+    }
+
+    /*********************************
+     *
+     *  STATISTICS ALL IP ADDRESS
+     *
+     **********************************/
+    public static void statisticAllIpAddress(String ipAddress){
+        if (ALL_IP_ADDRESS.put(ipAddress,"")==null){
+            SocketServiceCenter.updateAllClient(SocketIoEvent.NEW_IP,ipAddress);
+        }
+    }
+
+    public static Collection<String> getAllIpCollections(){
+        return ALL_IP_ADDRESS.keySet();
+    }
+
 
 }
