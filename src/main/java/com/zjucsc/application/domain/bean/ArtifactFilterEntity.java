@@ -17,13 +17,9 @@ import java.util.List;
  */
 @EqualsAndHashCode(callSuper = false)
 @Data
-@TableName("artifact_filter")
 public class ArtifactFilterEntity {
-    @TableId("user_name")
     private String userName;
-    @NotBlank(message = "过滤器种类不能为空")
     @TableField("content")
-    @NotBlank(message = "组态内容不能为空")
     private String content;
 
     @Data

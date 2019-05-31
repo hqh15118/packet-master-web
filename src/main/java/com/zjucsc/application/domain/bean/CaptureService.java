@@ -6,10 +6,7 @@ import javax.validation.constraints.NotBlank;
 
 @Data
 public class CaptureService {
-    @NotBlank
     public String service_ip;
-    @NotBlank
     public String service_name;
-    @NotBlank
     public String macAddress;
 }
