@@ -34,8 +34,8 @@ public class FvDimensionLayer  {
     //long格式的时间戳 , ns 为单位
     @JSONField(deserialize = false,serialize = false)
     public long timeStampInLong;
-    public String[] tcp_flags_ack;
-    public String[] tcp_flags_syn;
+    public String[] tcp_flags_ack={""};
+    public String[] tcp_flags_syn={""};
 
     public FvDimensionLayer setFrameProtocols(String protocol){
         if (protocol!=null) {

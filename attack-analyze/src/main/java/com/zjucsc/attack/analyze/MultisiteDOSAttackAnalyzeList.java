@@ -8,7 +8,7 @@ public class MultisiteDOSAttackAnalyzeList extends TcpAttackAnalyzeList {
 
 
     @Override
-    protected void analyze(int index, LinkedList<FvDimensionLayer> fvDimensionLayers, FvDimensionLayer layer) {
-
+    protected boolean analyze(int index, LinkedList<FvDimensionLayer> fvDimensionLayers, FvDimensionLayer layer) {
+        return false;
     }
 }
