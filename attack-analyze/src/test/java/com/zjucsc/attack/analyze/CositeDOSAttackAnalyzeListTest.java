@@ -1,5 +1,6 @@
 package com.zjucsc.attack.analyze;
 
+import com.zjucsc.attack.bean.AttackConfig;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import org.junit.Test;
 
@@ -21,9 +22,13 @@ public class CositeDOSAttackAnalyzeListTest {
     public void cositeDOSAttackTest(){
         CositeDOSAttackAnalyzeList cositeDOSAttackAnalyzeList = new CositeDOSAttackAnalyzeList();
         long time1 = System.currentTimeMillis();
-        List<FvDimensionLayer> fvDimensionLayers = createFvDimensionList(1000000);
+        //[0,5,10,15,20,25,...,495]
+        //false true true true
+        List<FvDimensionLayer> fvDimensionLayers = createFvDimensionList(100);
+        AttackConfig.setCoSiteNum(2);
+        AttackConfig.setCoSiteTimeGap(10);
         for (FvDimensionLayer fvDimensionLayer : fvDimensionLayers) {
-            cositeDOSAttackAnalyzeList.append(fvDimensionLayer);
+            System.out.println(cositeDOSAttackAnalyzeList.append(fvDimensionLayer));
         }
         System.out.println(System.currentTimeMillis() - time1);
         System.out.println(cositeDOSAttackAnalyzeList.getSize());
@@ -36,7 +41,7 @@ public class CositeDOSAttackAnalyzeListTest {
             layer.frame_protocols[0] = "tcp";
             layer.tcp_flags_syn[0] = "1";
             layer.tcp_flags_ack[0] = "0";
-            layer.timeStampInLong = j * 10;
+            layer.timeStampInLong = j * 5;
             fvDimensionLayers.add(layer);
         }
         return fvDimensionLayers;
