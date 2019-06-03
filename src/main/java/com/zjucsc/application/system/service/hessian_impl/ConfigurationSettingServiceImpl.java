@@ -17,7 +17,6 @@ import java.util.List;
 @Service
 public class ConfigurationSettingServiceImpl extends BaseServiceImpl<ConfigurationSettingMapper, ConfigurationSetting> implements IConfigurationSettingService {
 
-    @Transactional
     @Override
     public List<ConfigurationSetting> selectConfigurationInfo(ConfigurationForSelect configurationForSelect) {
         int page = configurationForSelect.page;
@@ -27,7 +26,7 @@ public class ConfigurationSettingServiceImpl extends BaseServiceImpl<Configurati
         String codeDes = configurationForSelect.codeDes;
         return  this.baseMapper.selectPageInfo(codeDes , startIndex , endIndex , configurationForSelect.protocolId);
     }
-    @Transactional
+
     @Override
     public int selectConfigurationCount(String codeDes, int protocolId) {
         return this.baseMapper.selectLikeCount(codeDes,protocolId);

@@ -1,10 +1,9 @@
 package com.zjucsc.application.domain.bean;
 
-import com.zjucsc.application.domain.BaseBean;
 import lombok.Data;
 
 @Data
-public class AttackInfo extends BaseBean {
+public class AttackInfo {
     private int id;
     private String time;
     private String type;

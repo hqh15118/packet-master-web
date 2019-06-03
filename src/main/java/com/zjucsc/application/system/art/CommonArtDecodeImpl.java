@@ -2,7 +2,7 @@ package com.zjucsc.application.system.art;
 
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.bean.ArtConfig;
-import com.zjucsc.application.util.CommonUtil;
+import com.zjucsc.application.util.AppCommonUtil;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,7 +16,7 @@ public class CommonArtDecodeImpl implements ICommonArtDecode {
             //未定义该协议的payload解析
             return globalMap;
         }
-        map.forEach(CommonUtil.getThreadLocalBiConsumer().setPayload(payload));
+        map.forEach(AppCommonUtil.getThreadLocalBiConsumer().setPayload(payload));
         return globalMap;
     }
 

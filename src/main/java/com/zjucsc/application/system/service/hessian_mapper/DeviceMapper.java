@@ -4,6 +4,7 @@ import com.zjucsc.application.domain.bean.*;
 import com.zjucsc.application.system.mapper.base.BaseMapper;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author hongqianhui
@@ -30,4 +31,15 @@ public interface DeviceMapper extends BaseMapper<Device> {
     void saveBatch(List<Device> devices);
 
     Gplot selectByGplotId(int gplotId);
+
+    /**
+     * @param deviceId
+     * @param startTime
+     * @param endTime
+     * @param intervalType
+     * @return
+     */
+    StatisticInfo selectHistoryDeviceRunInfo(String deviceId, String startTime, String endTime, String intervalType);
+
+    void saveStatisticInfo(Map<String,StatisticInfoSaveBean> map);
 }

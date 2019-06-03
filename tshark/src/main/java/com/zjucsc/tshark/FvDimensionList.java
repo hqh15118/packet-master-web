@@ -2,12 +2,13 @@ package com.zjucsc.tshark;
 
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 
+import java.awt.event.ItemListener;
 import java.util.LinkedList;
 
 /**
  * 注意，大的在前面，小的在后面
  */
-public class FvDimensionList {
+public class FvDimensionList implements IList {
     private volatile int cap = -1;
     private LinkedList<FvDimensionLayer> fvDimensionLayers;
     private long centerCount = 0;
@@ -26,6 +27,7 @@ public class FvDimensionList {
      * @param layer 五元组
      * @return 针对新增的五元组是否检测到攻击
      */
+    @Override
     public synchronized boolean append(FvDimensionLayer layer){
         index = 0;
         if (fvDimensionLayers.size() == 0){

@@ -4,6 +4,7 @@ import com.zjucsc.application.domain.bean.ArtHistoryData;
 import com.zjucsc.application.system.mapper.base.BaseMapper;
 
 import java.util.List;
+import java.util.Set;
 
 public interface ArtHistoryDataMapper extends BaseMapper<ArtHistoryData> {
     /**
@@ -22,5 +23,5 @@ public interface ArtHistoryDataMapper extends BaseMapper<ArtHistoryData> {
      * @param timeType 查询的时间类型，年、月、日、时
      * @return
      */
-    List<ArtHistoryData> getArtData(String startTime, String endTime, String artName, String timeType);
+    List<String> getArtData(String startTime, String endTime, String artName, String timeType);
 }

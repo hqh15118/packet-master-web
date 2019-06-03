@@ -4,6 +4,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.zjucsc.application.domain.bean.ArtConfig;
 import com.zjucsc.application.domain.bean.CollectorState;
+import com.zjucsc.application.domain.bean.StatisticInfoSaveBean;
 import com.zjucsc.application.handler.ThreadExceptionHandler;
 import com.zjucsc.application.tshark.analyzer.ArtAnalyzer;
 import com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer;
@@ -52,6 +53,8 @@ public class Common {
     public static ConcurrentHashMap<String,ConcurrentHashMap<String, OperationAnalyzer>> OPERATION_FILTER_PRO =
             new ConcurrentHashMap<>();
 
+    public static final ConcurrentHashMap<String, StatisticInfoSaveBean> STATISTICS_INFO_BEAN =
+            new ConcurrentHashMap<>();
     /** cache5
      * DEVICE_IP 五元组过滤器
      */
@@ -76,6 +79,7 @@ public class Common {
         public static final int TOKEN_NOT_VALID = 205;
         public static final int ART_CONFIG_NOT_VALID = 206;
         public static final int DATA_REPEAT = 207;
+        public static final int SCRIPT_UP_LOAD_FAIL = 208;
     }
 
     //已经登录过的用户

@@ -14,7 +14,7 @@ import java.io.Serializable;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class ArtConfig extends BaseBean implements Serializable {
+public class ArtConfig  implements Serializable {
 
     private int artConfigId;
 

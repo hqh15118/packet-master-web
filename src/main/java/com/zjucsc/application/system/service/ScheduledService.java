@@ -5,11 +5,15 @@ import com.zjucsc.application.config.SocketIoEvent;
 import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.domain.bean.FlowError;
 import com.zjucsc.application.domain.bean.GraphInfo;
+import com.zjucsc.application.domain.bean.StatisticInfoSaveBean;
 import com.zjucsc.application.domain.bean.StatisticsDataWrapper;
 import com.zjucsc.application.socketio.SocketServiceCenter;
 import com.zjucsc.application.system.service.common_iservice.CapturePacketService;
+import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
+import com.zjucsc.application.system.service.hessian_mapper.DeviceMapper;
+import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.CommonConfigUtil;
-import com.zjucsc.application.util.CommonUtil;
+import com.zjucsc.application.util.AppCommonUtil;
 import com.zjucsc.kafka.KafkaProducerCreator;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +42,8 @@ public class ScheduledService {
     @Autowired public PacketAnalyzeService packetAnalyzeService;
 
     @Autowired private RedisTemplate<String,String> redisTemplate;
+
+    @Autowired private IDeviceService iDeviceService;
 
     private LinkedBlockingQueue<FvDimensionLayer> fvDimensionLayers = new LinkedBlockingQueue<>(5);
 
@@ -78,6 +84,9 @@ public class ScheduledService {
      */
     //@Scheduled(fixedRate = 5000)
     private void sendPacketStatisticsMsg(){
+        SEND_CONSUMER.setTimeStamp(new Date().toString());
+        CommonCacheUtil.resetSaveBean();
+
         final HashMap<String,Integer> DELAY_INFO = packetAnalyzeService.getCollectorNumToDelayList();
         ATTACK_BY_DEVICE.forEach(SEND_CONSUMER.setMap(attackByDevice , 1));
         EXCEPTION_BY_DEVICE.forEach(SEND_CONSUMER.setMap(exceptionByDevice , 2));
@@ -100,6 +109,9 @@ public class ScheduledService {
 
         graphInfoInList.forEach(GRAPH_INFO_CONSUMER);
         SocketServiceCenter.updateAllClient(SocketIoEvent.GRAPH_INFO,StatisticsData.GRAPH_BY_DEVICE);
+
+        //保存每个设备当前时间间隔内的统计信息
+        iDeviceService.saveStatisticInfo(Common.STATISTICS_INFO_BEAN);
     }
 
     //@Scheduled(fixedRate = 1000)
@@ -108,8 +120,6 @@ public class ScheduledService {
             doSend(fvDimensionLayers.poll());
         }
     }
-
-
 
     //@Scheduled(fixedRate = 2000)
     private void sendToRemoteByKafka() {
@@ -141,7 +151,7 @@ public class ScheduledService {
     //@Scheduled(fixedRate = 5000)
     private void sendGraphInfo(){
         SocketServiceCenter.updateAllClient(SocketIoEvent.ART_INFO, StatisticsData.ART_INFO);
-        addArtData("timestamp", CommonUtil.getDateFormat().format(new Date()));
+        addArtData("timestamp", AppCommonUtil.getDateFormat().format(new Date()));
         //System.out.println(StatisticsData.ART_INFO);
     }
 
@@ -165,6 +175,7 @@ public class ScheduledService {
         private HashMap<String,Integer> map;
         private int index;
         private HashMap<String,GraphInfo> graphMap;
+        private String timeStamp;
         @Override
         public void accept(String deviceNumber, Object obj) {
             GraphInfo graphInfo = graphMap.get(deviceNumber);
@@ -175,32 +186,32 @@ public class ScheduledService {
             int res;
             if (obj instanceof AtomicInteger) {            //除时延之外的信息
                 AtomicInteger data = ((AtomicInteger) obj);//非时延信息，需要转换减去旧数据
-//                Integer var = null;
-//                if ((var = map.get(deviceNumber)) == null) {//未添加过该设备
-//                    res = data.getAndSet(0);
-//                    map.put(deviceNumber, res);
-//                } else {
-//                    int var1 = data.get();
-//                    res = var1 - var;
-//                    map.put(deviceNumber, res);
-//                }
                 res = data.getAndSet(0);
                 map.put(deviceNumber , res);
             }else{
                 res = ((Integer) obj);
             }
+            /**
+             * 设置需要保存的统计信息
+             */
+            StatisticInfoSaveBean bean = Common.STATISTICS_INFO_BEAN.get(deviceNumber);
+            bean.setTime(timeStamp);
             switch (index){
                 case 1://ATTACK_BY_DEVICE
                     graphInfo.setAttack(res);
+                    bean.setAttack(res);
                     break;
                 case 2://EXCEPTION_BY_DEVICE
                     graphInfo.setException(res);
+                    bean.setException(res);
                     break;
                 case 3://NUMBER_BY_DEVICE_IN
                     graphInfo.setPacketIn(res);
+                    bean.setDownload(res);
                     break;
                 case 4://NUMBER_BY_DEVICE_OUT
                     graphInfo.setPacketOut(res);
+                    bean.setUpload(res);
                     break;
                 case 5://DELAY_INFO
                     graphInfo.setDelay(res);
@@ -216,6 +227,10 @@ public class ScheduledService {
         }
         public void setListMap(HashMap<String,GraphInfo> graphMap){
             this.graphMap = graphMap;
+        }
+
+        public void setTimeStamp(String timeStamp){
+            this.timeStamp = timeStamp;
         }
     }
 }

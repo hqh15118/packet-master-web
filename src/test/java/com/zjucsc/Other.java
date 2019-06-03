@@ -7,6 +7,9 @@ import jdk.internal.util.xml.impl.Input;
 import org.junit.Test;
 
 import java.io.*;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.net.URLStreamHandlerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -95,6 +98,43 @@ public class Other {
 
         String osPath = System.getenv("PATH");
         System.out.println(osPath);
+    }
+
+
+    @Test
+    public void beanJSONGenerate() throws ClassNotFoundException, IOException, IllegalAccessException, InstantiationException {
+        File file = new File("E:\\IdeaProjects\\packet-master-web\\target\\classes\\com\\zjucsc\\application\\domain\\bean");
+        String path = file.getAbsolutePath();
+        File[] clazzFiles = file.listFiles();
+        assert clazzFiles!=null;
+        MyClassLoader myClassLoader = new MyClassLoader();
+        for (File clazzFile : clazzFiles) {
+            String filePath = clazzFile.getAbsolutePath();
+            Class<?> clazz = Class.forName(filePath,true,myClassLoader);
+            Object obj = clazz.newInstance();
+        }
+    }
+
+
+    private static class MyClassLoader extends ClassLoader{
+
+        @Override
+        protected Class<?> findClass(String name) throws ClassNotFoundException {
+            File file = new File(name);
+            assert file.exists();
+            FileInputStream fis;
+            try {
+                fis = new FileInputStream(file);
+                int size = fis.available();
+                byte[] bytes = new byte[size];
+                fis.read(bytes,0,size);
+                String clazzName = name.replace(".class","").replace("\\",".");
+                return defineClass(clazzName,bytes,0,bytes.length);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
     }
 
 }

@@ -10,7 +10,7 @@ import com.zjucsc.application.config.ConstantConfig;
 import com.zjucsc.application.config.PACKET_PROTOCOL;
 import com.zjucsc.application.config.auth.Auth;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
-import com.zjucsc.application.system.art.S7CommDecode;
+import com.zjucsc.art_decode.artdecoder.S7CommDecode;
 import com.zjucsc.application.domain.bean.Protocol;
 import com.zjucsc.application.tshark.analyzer.ArtAnalyzer;
 import com.zjucsc.application.util.CommonCacheUtil;
@@ -18,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -31,7 +30,7 @@ import static com.zjucsc.application.util.CommonConfigUtil.addProtocolFuncodeMea
  * 加载组态配置到内存中 + 保存到本地数据库
  */
 @Slf4j
-@Component
+//@Component
 public class InitConfigurationService implements ApplicationRunner {
 
     private final String str_name = "java.lang.String";

@@ -6,15 +6,20 @@ import com.zjucsc.application.domain.bean.ArtConfig;
 import com.zjucsc.application.domain.bean.ArtConfigPaged;
 import com.zjucsc.application.system.service.hessian_iservice.IArtConfigService;
 import com.zjucsc.application.util.CommonCacheUtil;
-import com.zjucsc.application.util.CommonUtil;
+import com.zjucsc.application.util.AppCommonUtil;
 import com.zjucsc.base.BaseResponse;
+import io.netty.util.concurrent.CompleteFuture;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author hongqianhui
@@ -45,7 +50,7 @@ public class ArtConfigController {
                 //添加新的工艺参数配置到数据库
                 iArtConfigService.insertById(config);
                 //初始化工艺参数配置
-                CommonUtil.initArtMap(config.getTag());
+                AppCommonUtil.initArtMap(config.getTag());
             }
             artConfigId.add(config.getArtConfigId());
             if (config.isShowGraph()){
@@ -73,7 +78,7 @@ public class ArtConfigController {
             //移除缓存
             artConfig = iArtConfigService.getById(integer);
             CommonCacheUtil.removeArtDecodeInstanceByProtocolAndId(artConfig.getProtocolId(),integer);
-            CommonUtil.removeArtMap(artConfig.getTag());
+            AppCommonUtil.removeArtMap(artConfig.getTag());
             //移除数据库
             iArtConfigService.deleteById(integer);
         }
@@ -104,4 +109,24 @@ public class ArtConfigController {
         }
     }
 
+    @ApiOperation("添加工艺参数脚本")
+    @PostMapping("uploadScript")
+    public BaseResponse uploadScript(MultipartFile scriptFile){
+        try {
+            CompletableFuture<Exception> completeFuture = iArtConfigService.saveScriptFile(scriptFile.getInputStream(),scriptFile.getOriginalFilename());
+            if (completeFuture.get()==null){
+                return BaseResponse.OK();
+            }else{
+                return BaseResponse.ERROR(Common.HTTP_STATUS_CODE.SCRIPT_UP_LOAD_FAIL,"脚本文件上传失败");
+            }
+        } catch (IOException | InterruptedException | ExecutionException e) {
+            return BaseResponse.ERROR(Common.HTTP_STATUS_CODE.SCRIPT_UP_LOAD_FAIL,"脚本文件上传失败");
+        }
+    }
+
+    @ApiOperation("判断制定脚本文件是否存在")
+    @GetMapping("script_exist")
+    public BaseResponse checkScriptExistOrNot(@RequestParam String scriptName){
+        return BaseResponse.OK(iArtConfigService.scriptExistOrNot(scriptName));
+    }
 }

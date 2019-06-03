@@ -27,7 +27,8 @@ import java.util.concurrent.ThreadFactory;
 public class Common {
     private static Observer observer = new Observer();
 
-    private ExecutorService service = Executors.newSingleThreadExecutor(
+    private static ExecutorService ATTACK_MAIN_SERVICE = Executors.newFixedThreadPool(
+            5,
             r -> {
                 Thread thread = new Thread(r);
                 thread.setName("attack-service-");
@@ -89,8 +90,11 @@ public class Common {
         return JEDIS_HOLDER.jedisPool.getResource();
     }
 
-
-    public static void addFvDimension(FvDimensionLayer layer){
-
+    /**
+     * 添加五元组进行分析
+     * @param layer
+     */
+    public static void appendFvDimension(final FvDimensionLayer layer){
+        ATTACK_MAIN_SERVICE.execute(new AnalyzeTask(layer));
     }
 }

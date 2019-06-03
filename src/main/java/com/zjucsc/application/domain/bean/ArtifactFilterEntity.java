@@ -14,7 +14,7 @@ import java.util.List;
  */
 @EqualsAndHashCode(callSuper = false)
 @Data
-public class ArtifactFilterEntity extends BaseBean {
+public class ArtifactFilterEntity {
     private String userName;
     private String content;
 

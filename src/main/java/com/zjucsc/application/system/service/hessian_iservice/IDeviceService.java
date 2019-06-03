@@ -2,6 +2,7 @@ package com.zjucsc.application.system.service.hessian_iservice;
 import com.zjucsc.application.domain.bean.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author hongqianhui
@@ -18,4 +19,8 @@ public interface IDeviceService {
     void saveBatch(List<Device> devices);
 
     Gplot selectByGplotId(int gplotId);
+
+    StatisticInfo selectHistoryDeviceRunInfo(String deviceId,String startTime,String endTime,String intervalType);
+
+    void saveStatisticInfo(Map<String,StatisticInfoSaveBean> map);
 }

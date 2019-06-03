@@ -2,8 +2,11 @@ package com.zjucsc.application.controller;
 
 
 import com.zjucsc.application.config.Common;
+import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.config.auth.Log;
 import com.zjucsc.application.domain.bean.Device;
+import com.zjucsc.application.domain.bean.StatisticInfo;
+import com.zjucsc.application.domain.bean.StatisticSelect;
 import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.base.BaseResponse;
@@ -28,6 +31,7 @@ public class DeviceController {
     @PostMapping("new_device")
     public BaseResponse addDeviceInfo(@RequestBody @Valid @NotEmpty List<Device> deviceList){
         iDeviceService.removeAllDevicesByGplotId(Common.GPLOT_ID);
+        CommonCacheUtil.removeAllCachedDeviceNumber();
         for (Device device : deviceList) {
             CommonCacheUtil.addOrUpdateDeviceNumberAndIp(device.getDeviceNumber(), device.getDeviceTag());
         }
@@ -40,6 +44,18 @@ public class DeviceController {
     @GetMapping("gplot_devices")
     public BaseResponse getDevicesByGplotId(@RequestParam int gplotId){
         return BaseResponse.OK(iDeviceService.selectByGplotId(gplotId));
+    }
+
+    @Log
+    @ApiOperation("获取设备统计信息")
+    @PostMapping("statistic")
+    public BaseResponse getDeviceHistoryRuninfo(@RequestBody StatisticSelect statisticSelect){
+        return BaseResponse.OK(iDeviceService.selectHistoryDeviceRunInfo(
+                statisticSelect.getDeviceId(),
+                statisticSelect.getStart(),
+                statisticSelect.getEnd(),
+                statisticSelect.getIntervalType()
+        ));
     }
 
 }

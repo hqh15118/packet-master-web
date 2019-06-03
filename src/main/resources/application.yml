@@ -77,15 +77,15 @@ spring:
 #      batch-size: 40960
 #      buffer-memory: 40960
 
-#  redis:
-#    host: ${myconfig.redis_ip}
-#    port: ${myconfig.redis_port}
-#    password:
-#    jedis:
-#      pool:
-#        min-idle: 8
-#        max-idle: 500
-#        max-active: 2000
+  redis:
+    host: ${myconfig.redis_ip}
+    port: ${myconfig.redis_port}
+    password:
+    jedis:
+      pool:
+        min-idle: 8
+        max-idle: 500
+        max-active: 2000
 
 management:
   endpoints:

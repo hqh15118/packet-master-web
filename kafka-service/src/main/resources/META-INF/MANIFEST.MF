@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Class-Path: zookeeper-3.4.13.jar audience-annotations-0.5.0.jar zkclie
+ nt-0.11.jar jackson-core-2.9.8.jar kafka-clients-2.2.0.jar jackson-da
+ tabind-2.9.8.jar jackson-datatype-jdk8-2.9.8.jar jopt-simple-5.0.4.ja
+ r lz4-java-1.5.0.jar metrics-core-2.2.0.jar jackson-annotations-2.9.0
+ .jar scala-logging_2.12-3.9.0.jar zstd-jni-1.3.8-1.jar scala-library-
+ 2.12.8.jar slf4j-api-1.7.25.jar kafka_2.12-2.2.0.jar scala-reflect-2.
+ 12.8.jar snappy-java-1.1.7.2.jar
+

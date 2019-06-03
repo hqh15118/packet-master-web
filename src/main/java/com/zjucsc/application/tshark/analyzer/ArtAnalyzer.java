@@ -3,7 +3,7 @@ package com.zjucsc.application.tshark.analyzer;
 import com.zjucsc.art_decode.other.AttackType;
 import com.zjucsc.art_decode.base.IArtDecode;
 import com.zjucsc.application.domain.bean.ThreadLocalWrapper;
-import com.zjucsc.application.util.CommonUtil;
+import com.zjucsc.application.util.AppCommonUtil;
 import com.zjucsc.application.util.PacketDecodeUtil;
 import com.zjucsc.tshark.analyzer.AbstractAnalyzer;
 import com.zjucsc.tshark.analyzer.Analyzed;
@@ -29,8 +29,8 @@ public class ArtAnalyzer extends AbstractAnalyzer<Map<String, IArtDecode>> imple
 
         IArtDecode iArtDecode;
         if ((iArtDecode = getAnalyzer().get(protocol))!=null){
-            Map<String,Float> res = iArtDecode.decode(CommonUtil.getGlobalArtMap(),tcpPayloadArrInByte);
-            List<AttackType> attackTypeList = iArtDecode.attackDecode(CommonUtil.getGlobalAttackList(), tcpPayloadArrInByte,res);
+            Map<String,Float> res = iArtDecode.decode(AppCommonUtil.getGlobalArtMap(),tcpPayloadArrInByte);
+            List<AttackType> attackTypeList = iArtDecode.attackDecode(AppCommonUtil.getGlobalAttackList(), tcpPayloadArrInByte,res);
             return new ThreadLocalWrapper(res , attackTypeList);
         }else {
             //log.debug("can not decode art args of protocol : {}" , protocol);

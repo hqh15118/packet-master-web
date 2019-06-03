@@ -2,6 +2,7 @@ package com.zjucsc.application.util;
 
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.bean.ArtConfig;
+import com.zjucsc.application.domain.bean.StatisticInfoSaveBean;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -9,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
 
 import static com.zjucsc.application.config.Common.CONFIGURATION_MAP;
 import static com.zjucsc.application.config.Common.PROTOCOL_STR_TO_INT;
@@ -183,11 +185,13 @@ public class CommonCacheUtil {
 
     public static void addOrUpdateDeviceNumberAndIp(String deviceNumber , String deviceIp){
         Common.DEVICE_IP_TO_NAME.put(deviceIp , deviceNumber);
+        Common.STATISTICS_INFO_BEAN.put(deviceNumber,new StatisticInfoSaveBean());
         log.info("add device number : {} [ip : {} ] and DEVICE_IP_TO_NAME {}" , deviceNumber , deviceIp , Common.DEVICE_IP_TO_NAME);
     }
 
     public static void removeDeviceNumer(String deviceNumber){
         Common.DEVICE_IP_TO_NAME.remove(deviceNumber);
+        Common.STATISTICS_INFO_BEAN.remove(deviceNumber);
         log.info("remove device number : {} [ip : {} ]" , deviceNumber , Common.DEVICE_IP_TO_NAME.inverse().get(deviceNumber));
     }
 
@@ -202,6 +206,7 @@ public class CommonCacheUtil {
 
     public static void removeAllCachedDeviceNumber(){
         Common.DEVICE_IP_TO_NAME.clear();
+        Common.STATISTICS_INFO_BEAN.clear();
     }
 
     /*********************************
@@ -278,6 +283,28 @@ public class CommonCacheUtil {
         map.put(artConfig.getArtConfigId(),artConfig);
     }
 
+    /**********************************
+     *
+     * Common STATISTICS_INFO_BEAN 发送到数据库的统计信息Map
+     *
+     *********************************/
 
+    private static BiConsumer<String,StatisticInfoSaveBean> biConsumer =
+            new BiConsumer<String, StatisticInfoSaveBean>() {
+                @Override
+                public void accept(String s, StatisticInfoSaveBean saveBean) {
+                    saveBean.setAttack(0);
+                    saveBean.setDeviceNumber(s);
+                    saveBean.setDownload(0);
+                    saveBean.setException(0);
+                    saveBean.setUpload(0);
+                }
+            };
 
+    /**
+     * 重置，每次统计时都需要重置统计信息
+     */
+    public static void resetSaveBean(){
+        Common.STATISTICS_INFO_BEAN.forEach(biConsumer);
+    }
 }

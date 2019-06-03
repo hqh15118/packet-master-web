@@ -47,7 +47,6 @@ public class AttackConfig {
     private static volatile Duration MULTI_SITE_CHANNEL_HOLD_TIME_GAP = Duration.ofMillis(10);
     private static volatile int MULTI_SITE_CHANNEL_HOLD_NUM = 2;
 
-
     /***************************************************
      *
      * Ⅱ ： 嗅探攻击

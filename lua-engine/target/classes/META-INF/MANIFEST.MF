@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Class-Path: luaj-jse-3.0.1.jar
+Main-Class: 
+

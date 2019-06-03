@@ -3,7 +3,7 @@ package com.zjucsc.application.config;
 import com.zjucsc.application.domain.bean.GraphInfo;
 import com.zjucsc.application.domain.bean.GraphInfoCollection;
 import com.zjucsc.application.socketio.SocketServiceCenter;
-import com.zjucsc.application.util.CommonUtil;
+import com.zjucsc.application.util.AppCommonUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
@@ -44,6 +44,9 @@ public class StatisticsData {
      */
     public static AtomicInteger attackNumber = new AtomicInteger(0);
 
+    /**
+     * key 是 设备名 deviceNumber
+     */
     public static ConcurrentHashMap<String, AtomicInteger> NUMBER_BY_DEVICE_IN = new ConcurrentHashMap<>();
     public static ConcurrentHashMap<String,AtomicInteger> NUMBER_BY_DEVICE_OUT = new ConcurrentHashMap<>();
     public static ConcurrentHashMap<String,AtomicInteger> ATTACK_BY_DEVICE = new ConcurrentHashMap<>();
@@ -108,9 +111,9 @@ public class StatisticsData {
     private static void addTimeStamp(LinkedList<String> timeStamps){
         if (timeStamps.size() >= 12){
             timeStamps.removeFirst();
-            timeStamps.addLast(CommonUtil.getDateFormat().format(new Date()));
+            timeStamps.addLast(AppCommonUtil.getDateFormat().format(new Date()));
         }else{
-            timeStamps.addLast(CommonUtil.getDateFormat().format(new Date()));
+            timeStamps.addLast(AppCommonUtil.getDateFormat().format(new Date()));
         }
     }
 

@@ -6,6 +6,7 @@ import com.zjucsc.application.system.service.hessian_mapper.DeviceMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author hongqianhui
@@ -65,5 +66,15 @@ public class DeviceServiceImpl extends BaseServiceImpl<DeviceMapper, Device> imp
     @Override
     public Gplot selectByGplotId(int gplotId) {
         return this.baseMapper.selectByGplotId(gplotId);
+    }
+
+    @Override
+    public StatisticInfo selectHistoryDeviceRunInfo(String deviceId, String startTime, String endTime, String intervalType) {
+        return this.baseMapper.selectHistoryDeviceRunInfo(deviceId, startTime, endTime, intervalType);
+    }
+
+    @Override
+    public void saveStatisticInfo(Map<String,StatisticInfoSaveBean> map) {
+        this.baseMapper.saveStatisticInfo(map);
     }
 }

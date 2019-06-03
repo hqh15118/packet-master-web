@@ -14,7 +14,6 @@ import java.util.List;
 
 @Slf4j
 @Service
-@Transactional(propagation = Propagation.SUPPORTS, readOnly = true, rollbackFor = Exception.class)
 public class UserOptServiceImpl extends BaseServiceImpl<UserOptMapper, User> implements UserOptService {
 
     @Override

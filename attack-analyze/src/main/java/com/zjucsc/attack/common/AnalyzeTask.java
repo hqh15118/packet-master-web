@@ -24,7 +24,6 @@ public class AnalyzeTask implements Runnable {
 
     @Override
     public void run() {
-        Jedis jedisClient = Common.getJedisClient();
         String srcIp = layer.ip_src[0];
         //D_DOS1
 

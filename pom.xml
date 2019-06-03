@@ -93,6 +93,15 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
+
+
+        <!-- https://mvnrepository.com/artifact/org.springframework/spring-tx -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>5.1.7.RELEASE</version>
+        </dependency>
+
         <!-- shiro-spring -->
         <dependency>
             <groupId>org.apache.shiro</groupId>
@@ -106,10 +115,10 @@
         </dependency>
 
         <!-- redis -->
-        <!--<dependency>-->
-            <!--<groupId>org.springframework.boot</groupId>-->
-            <!--<artifactId>spring-boot-starter-data-redis</artifactId>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
         <!-- shiro-redis -->
         <!--<dependency>-->
             <!--<groupId>org.crazycake</groupId>-->
