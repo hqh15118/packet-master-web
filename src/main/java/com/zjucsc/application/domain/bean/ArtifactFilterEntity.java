@@ -1,12 +1,9 @@
 package com.zjucsc.application.domain.bean;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.zjucsc.application.domain.BaseBean;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 /**
@@ -17,13 +14,8 @@ import java.util.List;
  */
 @EqualsAndHashCode(callSuper = false)
 @Data
-@TableName("artifact_filter")
-public class ArtifactFilterEntity {
-    @TableId("user_name")
+public class ArtifactFilterEntity extends BaseBean {
     private String userName;
-    @NotBlank(message = "过滤器种类不能为空")
-    @TableField("content")
-    @NotBlank(message = "组态内容不能为空")
     private String content;
 
     @Data

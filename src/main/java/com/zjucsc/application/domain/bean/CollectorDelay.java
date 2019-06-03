@@ -1,6 +1,5 @@
 package com.zjucsc.application.domain.bean;
 
-import lombok.Data;
 
 public class CollectorDelay {
 

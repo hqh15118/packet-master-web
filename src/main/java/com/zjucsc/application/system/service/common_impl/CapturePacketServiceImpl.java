@@ -1,4 +1,4 @@
-package com.zjucsc.application.system.service.impl;
+package com.zjucsc.application.system.service.common_impl;
 
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.SocketIoEvent;
@@ -8,7 +8,7 @@ import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.application.socketio.SocketServiceCenter;
 import com.zjucsc.application.system.service.PacketAnalyzeService;
-import com.zjucsc.application.system.service.hessian_iservice.CapturePacketService;
+import com.zjucsc.application.system.service.common_iservice.CapturePacketService;
 import com.zjucsc.application.tshark.capture.NewFvDimensionCallback;
 import com.zjucsc.application.tshark.capture.ProcessCallback;
 import com.zjucsc.application.tshark.domain.packet.ModbusPacket;
@@ -28,8 +28,6 @@ import com.zjucsc.tshark.pre_processor.BasePreProcessor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.ListOperations;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +46,8 @@ import static com.zjucsc.application.config.PACKET_PROTOCOL.S7;
 @Service
 public class CapturePacketServiceImpl implements CapturePacketService<String,String> {
 
+
+    @Autowired private PacketAnalyzeService packetAnalyzeService;
 
     private NewFvDimensionCallback newFvDimensionCallback;
 
@@ -184,7 +184,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                 int collectorDelay = PacketDecodeUtil.decodeCollectorDelay(payload,4);
                 //设置ID和延时用于发送
                 //System.out.println("delay : " + collectorDelay);
-                //packetAnalyzeService.setCollectorDelay(collectorId,collectorDelay);
+                packetAnalyzeService.setCollectorDelay(collectorId,collectorDelay);
                 return collectorDelay;
             }
             return -1;

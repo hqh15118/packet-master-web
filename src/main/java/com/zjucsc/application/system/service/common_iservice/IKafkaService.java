@@ -1,4 +1,4 @@
-package com.zjucsc.application.system.service.hessian_iservice;
+package com.zjucsc.application.system.service.common_iservice;
 
 import com.zjucsc.application.domain.bean.FvDimensionWrapper;
 import com.zjucsc.application.domain.bean.LogBean;

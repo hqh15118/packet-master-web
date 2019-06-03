@@ -6,7 +6,6 @@ import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.exceptions.*;
 import com.zjucsc.base.BaseResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.jdbc.SQL;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;

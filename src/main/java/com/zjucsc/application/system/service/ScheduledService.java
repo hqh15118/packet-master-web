@@ -7,7 +7,7 @@ import com.zjucsc.application.domain.bean.FlowError;
 import com.zjucsc.application.domain.bean.GraphInfo;
 import com.zjucsc.application.domain.bean.StatisticsDataWrapper;
 import com.zjucsc.application.socketio.SocketServiceCenter;
-import com.zjucsc.application.system.service.hessian_iservice.CapturePacketService;
+import com.zjucsc.application.system.service.common_iservice.CapturePacketService;
 import com.zjucsc.application.util.CommonConfigUtil;
 import com.zjucsc.application.util.CommonUtil;
 import com.zjucsc.kafka.KafkaProducerCreator;

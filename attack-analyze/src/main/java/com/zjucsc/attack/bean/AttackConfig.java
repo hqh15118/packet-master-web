@@ -7,6 +7,8 @@ import java.util.Set;
 
 public class AttackConfig {
 
+    public static boolean debug = false;
+
     /***************************************************
      *
      * Ⅰ ： D_DOS攻击

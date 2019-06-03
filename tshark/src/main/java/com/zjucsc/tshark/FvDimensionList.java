@@ -22,11 +22,15 @@ public class FvDimensionList {
         this.cap = cap;
     }
 
-    public synchronized void append(FvDimensionLayer layer){
+    /**
+     * @param layer 五元组
+     * @return 针对新增的五元组是否检测到攻击
+     */
+    public synchronized boolean append(FvDimensionLayer layer){
         index = 0;
         if (fvDimensionLayers.size() == 0){
             fvDimensionLayers.addLast(layer);
-            return;
+            return false;
         }
         if (fvDimensionLayers.getLast().timeStampInLong < layer.timeStampInLong){
             fvDimensionLayers.addFirst(layer);
@@ -40,7 +44,7 @@ public class FvDimensionList {
         }
         allCount += 1;
         cutList();
-        analyze(index,fvDimensionLayers,layer);
+        return analyze(index,fvDimensionLayers,layer);
     }
 
     private void cutList(){
@@ -75,9 +79,14 @@ public class FvDimensionList {
      * @param layer 新插入的五元组
      * @param index 新插入的五元组所在的索引
      * @param fvDimensionLayers 新增加的五元组
+     * @return 是否检测到攻击，true表示检测到，false表示没有检测到
      */
-    protected void analyze(int index,LinkedList<FvDimensionLayer> fvDimensionLayers,FvDimensionLayer layer){
+    protected boolean analyze(int index,LinkedList<FvDimensionLayer> fvDimensionLayers,FvDimensionLayer layer){
+        return false;
+    }
 
+    public int getSize(){
+        return fvDimensionLayers.size();
     }
 
     @Override

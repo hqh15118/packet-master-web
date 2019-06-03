@@ -5,8 +5,8 @@ import com.zjucsc.application.config.ConstantConfig;
 import com.zjucsc.application.config.auth.Log;
 import com.zjucsc.application.domain.bean.ServiceStatus;
 import com.zjucsc.application.socketio.SocketServiceCenter;
-import com.zjucsc.application.system.service.hessian_iservice.CapturePacketService;
-import com.zjucsc.application.system.service.impl.PacketServiceImpl;
+import com.zjucsc.application.system.service.common_iservice.CapturePacketService;
+import com.zjucsc.application.system.service.common_impl.NetworkInterfaceServiceImpl;
 import com.zjucsc.application.tshark.capture.ProcessCallback;
 import com.zjucsc.base.BaseResponse;
 import com.zjucsc.application.config.Common;
@@ -17,7 +17,6 @@ import com.zjucsc.tshark.pre_processor.BasePreProcessor;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.SocketException;
@@ -32,8 +31,7 @@ import static com.zjucsc.application.config.Common.HTTP_STATUS_CODE.SYS_ERROR;
 @RequestMapping("/service")
 public class PacketController {
 
-    @Qualifier("packet_service")
-    @Autowired private PacketServiceImpl packetService;
+    @Autowired private NetworkInterfaceServiceImpl networkInterfaceService;
     @Autowired private CapturePacketService capturePacketService;
     @Autowired private ConstantConfig constantConfig;
 
@@ -125,14 +123,14 @@ public class PacketController {
     @ApiOperation("获取抓包主机所有网卡接口信息")
     @GetMapping("get_all_interface")
     public BaseResponse getAllNetworkInterfaces() throws SocketException {
-        return BaseResponse.OK(packetService.getAllNetworkInterface());
+        return BaseResponse.OK(networkInterfaceService.getAllNetworkInterface());
     }
 
     @Log
     @ApiOperation("更新并获取抓包主机所有网卡接口信息")
     @GetMapping("get_all_interface_flush")
     public BaseResponse getAllNetworkInterfacesFlush() throws SocketException {
-        return BaseResponse.OK(packetService.getAllNetworkInterfaceFlush());
+        return BaseResponse.OK(networkInterfaceService.getAllNetworkInterfaceFlush());
     }
 
     @Log
