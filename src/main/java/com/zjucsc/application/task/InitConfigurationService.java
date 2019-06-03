@@ -11,7 +11,7 @@ import com.zjucsc.application.config.PACKET_PROTOCOL;
 import com.zjucsc.application.config.auth.Auth;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.application.system.art.S7CommDecode;
-import com.zjucsc.application.domain.bean.ProtocolId;
+import com.zjucsc.application.domain.bean.Protocol;
 import com.zjucsc.application.tshark.analyzer.ArtAnalyzer;
 import com.zjucsc.application.util.CommonCacheUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -62,7 +62,7 @@ public class InitConfigurationService implements ApplicationRunner {
         //如果数据库中没有条目，就从代码中加载之前配置好的，如果数据库中有条目，
         //就判断是否需要重新加载使用数据库中的条目初始化 PROTOCOL_STR_TO_INT ， 用户协议ID和协议字符串之间的转换
         if (iProtocolIdService.selectAll().size() == 0 ){
-            List<ProtocolId> protocolIds = new ArrayList<>();
+            List<Protocol> protocols = new ArrayList<>();
             Class<PACKET_PROTOCOL> packet_protocolClass = PACKET_PROTOCOL.class;
             Field[] allField = packet_protocolClass.getDeclaredFields();
             for (Field field : allField) {
@@ -70,14 +70,14 @@ public class InitConfigurationService implements ApplicationRunner {
                     String protocol_name = (String) field.get(null);
                     int protocol_id = (int) packet_protocolClass.getDeclaredField(field.getName() + "_ID").get(null);
                     Common.PROTOCOL_STR_TO_INT.put(protocol_id,protocol_name);
-                    protocolIds.add(new ProtocolId(protocol_id , protocol_name));
+                    protocols.add(new Protocol(protocol_id , protocol_name));
                 }
             }
-            iProtocolIdService.saveOrUpdateBatch(protocolIds);
+            iProtocolIdService.saveOrUpdateBatch(protocols);
         }else{
-            List<ProtocolId> list = iProtocolIdService.selectAll();
-            for (ProtocolId protocolId : list) {
-                Common.PROTOCOL_STR_TO_INT.put(protocolId.getProtocolId() , protocolId.getProtocolName());
+            List<Protocol> list = iProtocolIdService.selectAll();
+            for (Protocol protocol : list) {
+                Common.PROTOCOL_STR_TO_INT.put(protocol.getProtocolId() , protocol.getProtocolName());
             }
         }
 

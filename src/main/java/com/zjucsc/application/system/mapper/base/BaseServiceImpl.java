@@ -1,6 +1,11 @@
 package com.zjucsc.application.system.mapper.base;
 
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 public class BaseServiceImpl<S extends BaseMapper<U>, U> implements IService<U>{
+
+    @Autowired
     protected S baseMapper;
 
     @Override

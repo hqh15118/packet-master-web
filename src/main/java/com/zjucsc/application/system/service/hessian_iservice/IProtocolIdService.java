@@ -1,6 +1,6 @@
 package com.zjucsc.application.system.service.hessian_iservice;
 
-import com.zjucsc.application.domain.bean.ProtocolId;
+import com.zjucsc.application.domain.bean.Protocol;
 import com.zjucsc.application.system.mapper.base.IService;
 
 import java.util.List;
@@ -8,12 +8,12 @@ import java.util.List;
 /**
  * @author hongqianhui
  */
-public interface IProtocolIdService extends IService<ProtocolId> {
+public interface IProtocolIdService extends IService<Protocol> {
     int getMax();
 
-    void saveOrUpdateBatch(List<ProtocolId> protocol);
+    void saveOrUpdateBatch(List<Protocol> protocol);
 
-    List<ProtocolId> selectAll();
+    List<Protocol> selectAll();
 
     void deleteByProtocolId(int protocolId);
 }

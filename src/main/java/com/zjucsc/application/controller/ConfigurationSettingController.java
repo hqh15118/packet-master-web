@@ -56,12 +56,12 @@ public class ConfigurationSettingController {
 
     private void addNewProtocolToCacheFirst(ConfigurationForNewProtocol configurationForFronts) throws ProtocolIdNotValidException {
         String protocolName = configurationForFronts.getProtocolName();
-        ProtocolId protocolIdAndName = new ProtocolId();
-        protocolIdAndName.setProtocolName(protocolName);
-        protocolIdAndName.setProtocolId(iProtocolIdService.getMax());
+        Protocol protocolAndName = new Protocol();
+        protocolAndName.setProtocolName(protocolName);
+        protocolAndName.setProtocolId(iProtocolIdService.getMax());
 
-        iProtocolIdService.insertById(protocolIdAndName);
-        int newProtocolId = protocolIdAndName.getProtocolId();  //新增协议对应的协议ID
+        iProtocolIdService.insertById(protocolAndName);
+        int newProtocolId = protocolAndName.getProtocolId();  //新增协议对应的协议ID
         addNewProtocolToCache(protocolName , newProtocolId);    //将新增的协议添加到两个缓存中
     }
 
@@ -178,14 +178,14 @@ public class ConfigurationSettingController {
     @ApiOperation("协议ID获取")
     @GetMapping("/protocol_list")
     public BaseResponse selectAllProtocolInfo(){
-        List<com.zjucsc.application.domain.bean.Protocol> protocolIds = new ArrayList<>();
-        for (ProtocolId protocolId : iProtocolIdService.selectAll()) {
-            if (protocolId.getProtocolId() < 0){
+        List<Protocol> protocols = new ArrayList<>();
+        for (Protocol protocol : iProtocolIdService.selectAll()) {
+            if (protocol.getProtocolId() < 0){
                 continue;
             }
-            protocolIds.add(new com.zjucsc.application.domain.bean.Protocol(protocolId.getProtocolId(),protocolId.getProtocolName()));
+            protocols.add(new Protocol(protocol.getProtocolId(), protocol.getProtocolName()));
         }
-        return BaseResponse.OK(protocolIds);
+        return BaseResponse.OK(protocols);
     }
 
     public BaseResponse getConfigurationSize(ConfigurationForSelectCount configurationForSelectCount){

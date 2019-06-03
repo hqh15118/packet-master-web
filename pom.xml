@@ -45,23 +45,23 @@
         </dependency>
 
         <!-- 动态数据源 -->
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
-            <version>2.5.4</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.baomidou</groupId>-->
+            <!--<artifactId>dynamic-datasource-spring-boot-starter</artifactId>-->
+            <!--<version>2.5.4</version>-->
+        <!--</dependency>-->
         <!-- mybatis-plus -->
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>${mybatis-plus.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.baomidou</groupId>-->
+            <!--<artifactId>mybatis-plus-boot-starter</artifactId>-->
+            <!--<version>${mybatis-plus.version}</version>-->
+        <!--</dependency>-->
         <!-- 代码生成器 -->
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-generator</artifactId>
-            <version>${mybatis-plus.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.baomidou</groupId>-->
+            <!--<artifactId>mybatis-plus-generator</artifactId>-->
+            <!--<version>${mybatis-plus.version}</version>-->
+        <!--</dependency>-->
         <!-- free_maker引擎 -->
         <dependency>
             <groupId>org.freemarker</groupId>
@@ -69,11 +69,11 @@
             <version>2.3.28</version>
         </dependency>
         <!-- sql 打印 -->
-        <dependency>
-            <groupId>p6spy</groupId>
-            <artifactId>p6spy</artifactId>
-            <version>3.8.1</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>p6spy</groupId>-->
+            <!--<artifactId>p6spy</artifactId>-->
+            <!--<version>3.8.1</version>-->
+        <!--</dependency>-->
         <!-- commons -->
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -85,10 +85,10 @@
             <version>2.6</version>
         </dependency>
         <!-- mysql -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>mysql</groupId>-->
+            <!--<artifactId>mysql-connector-java</artifactId>-->
+        <!--</dependency>-->
         <!-- aop依赖 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -107,10 +107,10 @@
         </dependency>
 
         <!-- redis -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.springframework.boot</groupId>-->
+            <!--<artifactId>spring-boot-starter-data-redis</artifactId>-->
+        <!--</dependency>-->
         <!-- shiro-redis -->
         <!--<dependency>-->
             <!--<groupId>org.crazycake</groupId>-->
@@ -118,11 +118,11 @@
             <!--<version>3.1.0</version>-->
         <!--</dependency>-->
         <!-- ip2region -->
-        <dependency>
-            <groupId>org.lionsoul</groupId>
-            <artifactId>ip2region</artifactId>
-            <version>1.7.2</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.lionsoul</groupId>-->
+            <!--<artifactId>ip2region</artifactId>-->
+            <!--<version>1.7.2</version>-->
+        <!--</dependency>-->
         <!-- jwt -->
         <dependency>
             <groupId>com.auth0</groupId>
@@ -140,11 +140,11 @@
             <!--<artifactId>quartz</artifactId>-->
         <!--</dependency>-->
         <!-- Excel工具 -->
-        <dependency>
-            <groupId>com.wuwenze</groupId>
-            <artifactId>ExcelKit</artifactId>
-            <version>2.0.7</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.wuwenze</groupId>-->
+            <!--<artifactId>ExcelKit</artifactId>-->
+            <!--<version>2.0.7</version>-->
+        <!--</dependency>-->
 
         <!--swagger-->
         <dependency>
