@@ -12,6 +12,7 @@ public class CommonUtil {
             };
 
     public static StringBuilder getGlobalStringBuilder(){
-        return GLOBAL_THREAD_LOCAL_STRINGBUILDER.get();
+        StringBuilder sb = GLOBAL_THREAD_LOCAL_STRINGBUILDER.get();
+        return sb.delete(0,sb.length());
     }
 }

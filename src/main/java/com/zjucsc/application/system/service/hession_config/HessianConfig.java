@@ -75,11 +75,6 @@ public class HessianConfig {
     }
 
     @Bean
-    public AttackInfoMapper attackInfoHessianBean() throws MalformedURLException {
-        return (AttackInfoMapper) new HessianProxyFactory().create(AttackInfoMapper.class, attack_info);
-    }
-
-    @Bean
     public ArtifactFilterMapper artifactFilterHessianBean() throws MalformedURLException {
         return (ArtifactFilterMapper) new HessianProxyFactory().create(ArtifactFilterMapper.class, art_filter);
     }

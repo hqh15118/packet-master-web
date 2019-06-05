@@ -6,16 +6,18 @@ import java.util.List;
 
 public interface IPacketInfoService {
 
-    List<AttackForSelect> selectAttackHistory(AttackHistoryBean attackHistoryBean);
+    void saveAttackInfo(SavedAttackPacket savedAttackPacket);
 
-    List<AttackForSelect> exportAttackHistory(AttackInfoExport attackInfoExport);
+    AttackForSelect selectAttackHistory(AttackHistoryBean attackHistoryBean);
 
-    List<ExceptionForSelect> selectExceptionHistory(ExceptionHistoryBean exceptionHistoryBean);
+    AttackForSelect exportAttackHistory(AttackInfoExport attackInfoExport);
 
-    List<ExceptionForSelect> exportExceptionHistory(ExceptionInfoExport exceptionInfoExport);
+    ExceptionForSelect selectExceptionHistory(ExceptionHistoryBean exceptionHistoryBean);
 
-    List<PacketForSelect> selectPacketHistory(PacketHistoryBean packetHistoryBean);
+    ExceptionForSelect exportExceptionHistory(ExceptionInfoExport exceptionInfoExport);
 
-    List<PacketForSelect> exportPacketHistory(PacketInfoExport packetInfoExport);
+    PacketForSelect selectPacketHistory(PacketHistoryBean packetHistoryBean);
+
+    PacketForSelect exportPacketHistory(PacketInfoExport packetInfoExport);
 
 }

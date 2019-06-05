@@ -18,7 +18,7 @@ public class ArtDecodeCommon {
      */
     public static void init(){
         ART_DECODE_CONCURRENT_HASH_MAP.put("modbus",new ModbusArtDecoder(new ModbusDecode()));
-        ART_DECODE_CONCURRENT_HASH_MAP.put("s7comm",new S7CommArtDecoder(new S7CommDecode()));
+        //ART_DECODE_CONCURRENT_HASH_MAP.put("s7comm",new S7CommArtDecoder(new S7CommDecode()));
     }
 
     public static Map<String,Float> artDecodeEntry(Map<String,Float> artMap,byte[] payload,

@@ -4,12 +4,14 @@ package com.zjucsc.application.controller;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.auth.Log;
 import com.zjucsc.application.domain.bean.CositeDosConfigBean;
-import com.zjucsc.application.system.service.hessian_iservice.IAttackInfoService;
+import com.zjucsc.application.system.service.hessian_mapper.PacketInfoMapper;
 import com.zjucsc.attack.bean.AttackConfig;
 import com.zjucsc.base.BaseResponse;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author hongqianhui
@@ -18,13 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/attack")
 public class AttackInfoController {
 
-    @Autowired private IAttackInfoService iAttackInfoService;
-
-    @RequestMapping(value = "/get_all_attack_info" , method = RequestMethod.GET)
-    public BaseResponse getAttackInfo(){
-        return BaseResponse.OK(iAttackInfoService.selectAll());
-    }
-
+    @Autowired private PacketInfoMapper packetInfoMapper;
     /**
      * 配置一定时间内的最大流量，超过报警
      * @param flowInByte
@@ -56,5 +52,16 @@ public class AttackInfoController {
         return BaseResponse.OK();
     }
 
+    @ApiOperation("攻击报文已处理")
+    @PostMapping("handle_attacks")
+    @Log
+    public BaseResponse handleAttacks(List<String> attackPacketTimeStamp){
+        int i = packetInfoMapper.handleAttackPacket(attackPacketTimeStamp);
+        if (i != attackPacketTimeStamp.size()){
+            //发送的报文数量和处理的报文数量相等
+            return BaseResponse.ERROR(Common.HTTP_STATUS_CODE.ATTACK_HANDLE_ERROR,"攻击报文处理异常");
+        }
+        return BaseResponse.OK();
+    }
 
 }

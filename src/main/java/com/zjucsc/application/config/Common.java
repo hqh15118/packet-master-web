@@ -83,6 +83,7 @@ public class Common {
         public static final int DATA_REPEAT = 207;
         public static final int SCRIPT_UP_LOAD_FAIL = 208;
         public static final int ART_DELETE_FAIL = 209;
+        public static final int ATTACK_HANDLE_ERROR = 210;
     }
 
     //已经登录过的用户

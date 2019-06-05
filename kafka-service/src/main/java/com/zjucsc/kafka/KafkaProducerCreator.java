@@ -17,7 +17,6 @@ public class KafkaProducerCreator {
 
     private static ConcurrentHashMap<String, KafkaProducer> cachedKafkaProducer = new ConcurrentHashMap<>();
 
-
     private static Properties properties;
     /**
      *

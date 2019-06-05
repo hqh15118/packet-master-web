@@ -1,5 +1,6 @@
 package com.zjucsc.application.config;
 
+
 public class KafkaConfig {
     /*****************
      * Kafka Topics
@@ -14,4 +15,5 @@ public class KafkaConfig {
     public static final String SEND_PACKET_EXCEPTION = "packet_exception";
     //攻击事件
     public static final String SEND_PACKET_ATTACK = "packet_attack";
+
 }

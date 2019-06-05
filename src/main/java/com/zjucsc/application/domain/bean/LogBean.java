@@ -16,9 +16,11 @@ public class LogBean  {
     private String clazzName;
     private String methodName;
     private long costTime;
-    private Object[] methodArgs;
-    private Object result;
+    private String methodArgs;
+    private String result;
     private int logType;
     private String exception;
     private String startTime;
+
+    public static final int NORMAL_LOG = 1 , IMPORTANT_LOG = 2;
 }

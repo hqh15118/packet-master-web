@@ -2,8 +2,10 @@ package com.zjucsc.application.config.auth;
 
 import com.alibaba.fastjson.JSON;
 import com.zjucsc.application.config.ConstantConfig;
-import com.zjucsc.application.system.service.common_iservice.IKafkaService;
+import com.zjucsc.application.config.KafkaConfig;
+import com.zjucsc.application.domain.bean.LogBean;
 import com.zjucsc.base.util.HttpContextUtil;
+import com.zjucsc.kafka.KafkaThread;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 
 /**
  * AOP 记录用户操作日志
@@ -25,7 +28,8 @@ import javax.servlet.http.HttpServletRequest;
 @Component
 public class LogAspect {
 
-    @Autowired private IKafkaService iKafkaService;
+    private final KafkaThread<LogBean> LOG_BEAN_SEND_KAFKA_THREAD =
+            KafkaThread.createNewKafkaThread("normal_log", KafkaConfig.SEND_NORMAL_LOG);
 
     @Autowired
     private ConstantConfig constantConfig;
@@ -53,20 +57,24 @@ public class LogAspect {
             exception = e;
         }
         // 获取 request
-        HttpServletRequest request = HttpContextUtil.getHttpServletRequest();
+        //HttpServletRequest request = HttpContextUtil.getHttpServletRequest();
         // 执行时长(毫秒)
         long time = System.currentTimeMillis() - beginTime;
         if (constantConfig.isSendAopLog()) {
             // 保存日志
-            //TODO Kafka应该单独建一个service，分别发送重要的日志【重传】的和一般的日志
-            //还需要加上查询日志等接口
-//            kafkaTemplate.send("log_info",JSON.toJSONString(LogBean.builder()
-////                    .clazzName(point.getTarget().getClass().getName())
-////                    .costTime(time)
-////                    .methodArgs(point.getArgs())
-////                    .methodName(signature.getMethod().getName())
-////                    .result(result)
-////                    .build()));
+            LogBean.LogBeanBuilder builder = LogBean.builder()
+                    .methodArgs(JSON.toJSONString(point.getArgs()))
+                    .result(JSON.toJSONString(result))
+
+                    .clazzName(point.getTarget().getClass().getName())
+                    .methodName(signature.getMethod().getName())
+                    .logType(LogBean.NORMAL_LOG)
+                    .costTime(time)
+                    .startTime(new Date(beginTime).toString());
+            if (exception!=null){
+                builder.exception(exception.getMessage());
+            }
+            LOG_BEAN_SEND_KAFKA_THREAD.sendMsg(builder.build());
         }
         if (constantConfig.isOpenAOPLog()){
             sb.append("****************\n请求类-方法：")
@@ -77,6 +85,9 @@ public class LogAspect {
                     .append("\n")
                     .append("请求结果:")
                     .append(JSON.toJSONString(result))
+                    .append("\n")
+                    .append("耗时：")
+                    .append(time)
                     .append("\n");
             if (exception != null){
                 sb.append("异常：>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n")

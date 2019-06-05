@@ -1,11 +1,19 @@
 package com.zjucsc.attack.bean;
 
-import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
-
-
 public class AttackConfig {
+    /***************************************************
+     *
+     * 攻击类型
+     *
+     **************************************************/
+    public static final int DOS = 21,               //DOS攻击
+                            SNIFF = 38,             //嗅探攻击
+                            CONTROL_TAMPER = 15,    //控制篡改
+                            DATA_TAMPER = 35,       //数据篡改
+                            CODE_TAMPER = 54,       //代码篡改
+                            CONFIG_TAMPER = 4;      //配置篡改
 
     public static boolean debug = false;
 

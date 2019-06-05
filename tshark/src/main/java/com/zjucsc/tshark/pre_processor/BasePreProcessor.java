@@ -107,7 +107,7 @@ public abstract class BasePreProcessor implements PreProcessor {
             commandBuilder.append(s).append(" ");
         }
         commandBuilder.append("\"");   // 最后的部分 + s7comm/...用于过滤
-        commandBuilder.append(" -M 10000");    //设置十万条之后重置回话
+        commandBuilder.append(" -M 10000");    //设置n条之后重置回话
         String command = commandBuilder.toString();
         if (commandBuildFinishCallback!=null){
             commandBuildFinishCallback.commandBuildFinish();

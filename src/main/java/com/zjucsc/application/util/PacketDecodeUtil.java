@@ -123,7 +123,7 @@ public class PacketDecodeUtil {
 
         return sb.append(year).append("-")
                 .append(month).append("-")
-                .append(day).append("-")
+                .append(day).append(" ")
                 .append(hour).append(":")
                 .append(minute).append(":")
                 .append(second).append(":")

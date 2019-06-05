@@ -21,6 +21,7 @@ import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.CommonConfigUtil;
 import com.zjucsc.application.util.PacketDecodeUtil;
 import com.zjucsc.kafka.KafkaProducerCreator;
+import com.zjucsc.kafka.KafkaThread;
 import com.zjucsc.tshark.handler.AbstractAsyncHandler;
 import com.zjucsc.tshark.handler.DefaultPipeLine;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
@@ -46,8 +47,10 @@ import static com.zjucsc.application.config.PACKET_PROTOCOL.S7;
 @Service
 public class CapturePacketServiceImpl implements CapturePacketService<String,String> {
 
-
     @Autowired private PacketAnalyzeService packetAnalyzeService;
+
+    //五元kafka发送线程
+    private final KafkaThread<FvDimensionLayer> FV_D_SENDER = KafkaThread.createNewKafkaThread("fv_dimension","fv_dimension");
 
     private NewFvDimensionCallback newFvDimensionCallback;
 
@@ -109,7 +112,9 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                 log.error("error set Funcode" , e);
             }
 
-            sendFvDimensionPacket(fvDimensionLayer , payload);          //发送五元组所有报文
+            sendFvDimensionPacket(fvDimensionLayer , payload);          //发送五元组所有报文到前端
+
+            FV_D_SENDER.sendMsg(fvDimensionLayer);                      //发送消息到数据库服务器
 
             try {
                 sendPacketStatisticsEvent(fvDimensionLayer);            //发送统计信息
