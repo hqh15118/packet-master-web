@@ -2,6 +2,7 @@ package com.zjucsc.application.config;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.zjucsc.kafka.KafkaCommon;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +26,7 @@ public class WatchConfig {
         map.put("GPLOT_ID" , Common.GPLOT_ID);
         map.put("SHOW_GRAPH_SET",Common.SHOW_GRAPH_SET);
         map.put("ART_DECODE_MAP",Common.ART_DECODE_MAP);
+        map.put("KAFKA_SERVICE", KafkaCommon.getKafkaServiceState());
         return map;
     }
 

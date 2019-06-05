@@ -89,8 +89,9 @@ public class Other {
 
     @Test
     public void beanJSONGenerate() throws ClassNotFoundException, IOException, IllegalAccessException, InstantiationException {
-        File file = new File("E:\\IdeaProjects\\packet-master-web\\target\\classes\\com\\zjucsc\\application\\domain\\bean");
-        String path = file.getAbsolutePath();
+        //String path = "E:\\IdeaProjects\\packet-master-web\\target\\classes\\com\\zjucsc\\application\\domain\\bean";
+        String path1 = "/Users/hongqianhui/JavaProjects/packet-master-web/target/classes/com/zjucsc/application/domain/bean";
+        File file = new File(path1);
         File[] clazzFiles = file.listFiles();
         assert clazzFiles!=null;
         MyClassLoader myClassLoader = new MyClassLoader();
@@ -115,6 +116,7 @@ public class Other {
                 byte[] bytes = new byte[size];
                 fis.read(bytes,0,size);
                 String clazzName = name.replace(".class","").replace("\\",".");
+                System.out.println(name);
                 return defineClass(clazzName,bytes,0,bytes.length);
             } catch (IOException e) {
                 e.printStackTrace();

@@ -21,20 +21,11 @@ import java.util.concurrent.ThreadPoolExecutor;
 @EnableAsync
 public class ServiceConfig {
 
-    @Bean(name = "packet_analyze_service")
-    public PacketAnalyzeService initPacketAnalyzeService(){
-        return new PacketAnalyzeService();
-    }
-
     @Bean("global_single_thread_executor")
     public Executor asyncThreadPoolConfig(){
         return getNewExecutor("global_single_thread_executor");
     }
 
-    @Bean("attack_info_thread_pool")
-    public Executor async_attack_info(){
-        return getNewExecutor("attack_info_thread_pool");
-    }
 
     private Executor getNewExecutor(String name){
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
