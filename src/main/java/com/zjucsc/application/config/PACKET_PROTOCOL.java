@@ -10,15 +10,17 @@ package com.zjucsc.application.config;
  */
 public interface PACKET_PROTOCOL {
     String MODBUS = "modbus";
+    @ProtocolIgnore
     String S7 = "s7comm";
-    //String S7_JOB = "s7comm_job";
-    //String S7_Ack_data = "s7comm_ack_data";
+    String S7_JOB = "s7comm_job";
+    String S7_Ack_data = "s7comm_ack_data";
     String TCP = "tcp";
     String IPV4 = "ipv4";
     String UDP = "udp";
     String OTHER = "unknown packet";
     String ARP = "arp";
     String IPV6 = "ipv6";
+    @ProtocolIgnore
     String FV_DIMENSION = "five_dimension";
     String DNS = "dns";
     String ETHERNET = "ethernet";
@@ -33,6 +35,7 @@ public interface PACKET_PROTOCOL {
     String ICMPV6 = "icmpv6";
     String IGMP = "igmp";
     String LLDP = "lldp";
+    @ProtocolIgnore
     String UNKNOWN = "unknown";
 
     int MODBUS_ID = 1;

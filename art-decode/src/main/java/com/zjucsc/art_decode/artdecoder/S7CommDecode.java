@@ -5,6 +5,7 @@ import com.zjucsc.art_decode.base.IArtDecode;
 import com.zjucsc.common_util.Bytecut;
 import com.zjucsc.common_util.CommonUtil;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -208,44 +209,34 @@ public class S7CommDecode implements IArtDecode {
     private Map<String, Float> decode_tech (byte[] payload,Map<String, Float> techmap)
     {
         decode1(techmap,payload);
-
-        if(payload.length == 64 )
-        {
-            float level1 = bytesTofloat(payload,40);
-            float level2 = bytesTofloat(payload,44);
-            float level3 = bytesTofloat(payload,48);
-            float level4 = bytesTofloat(payload,52);
-            float level5 = bytesTofloat(payload,56);
-            float level6 = bytesTofloat(payload,60);
-            techmap.put("水位1", level1);
-            techmap.put("水位2", level2);
-            techmap.put("水位3", level3);
-            techmap.put("水位4", level4);
-            techmap.put("水位5", level5);
-            techmap.put("水位6", level6);
-            return techmap;
-        }
-        else if(payload.length ==100)
-        {
-            float level1 = bytesTofloat(payload,73);
-            float level2 = bytesTofloat(payload,77);
-            float level3 = bytesTofloat(payload,81);
-            float level4 = bytesTofloat(payload,85);
-            float level5 = bytesTofloat(payload,89);
-            float level6 = bytesTofloat(payload,93);
-            techmap.put("压差0_1",level1);
-            techmap.put("压差1_2",level2);
-            techmap.put("压差2_3",level3);
-            techmap.put("压差3_4",level4);
-            techmap.put("压差4_5",level5);
-            techmap.put("压差5_6",level6);
-            return techmap;
-        }
-        else if(payload.length == 47)
-        {
-            float level0 = bytesTofloat(payload ,40);
-            techmap.put("水位0",level0);
-            return techmap;
+        if (Arrays.equals(Bytecut.Bytecut(payload, 7, 2),new byte[]{0x32,0x07}) && payload[21] == 0x12) {
+            if (payload.length == 64) {
+                techmap.put("水位1", bytesTofloat(payload, 40));
+                techmap.put("水位2", bytesTofloat(payload, 44));
+                techmap.put("水位3", bytesTofloat(payload, 48));
+                techmap.put("水位4", bytesTofloat(payload, 52));
+                techmap.put("水位5", bytesTofloat(payload, 56));
+                techmap.put("水位6", bytesTofloat(payload, 60));
+                return techmap;
+            } else if (payload.length == 97) {
+                techmap.put("压差0_1", bytesTofloat(payload, 73));
+                techmap.put("压差1_2", bytesTofloat(payload, 77));
+                techmap.put("压差2_3", bytesTofloat(payload, 81));
+                techmap.put("压差3_4", bytesTofloat(payload, 85));
+                techmap.put("压差4_5", bytesTofloat(payload, 89));
+                techmap.put("压差5_6", bytesTofloat(payload, 93));
+                techmap.put("水位0",bytesTofloat(payload,42));
+                techmap.put("水位1",bytesTofloat(payload,46));
+                techmap.put("水位2",bytesTofloat(payload,50));
+                techmap.put("水位3",bytesTofloat(payload,54));
+                techmap.put("水位4",bytesTofloat(payload,58));
+                techmap.put("水位5",bytesTofloat(payload,62));
+                techmap.put("水位6",bytesTofloat(payload,66));
+                return techmap;
+            } else if (payload.length == 47) {
+                techmap.put("水位0", bytesTofloat(payload, 40));
+                return techmap;
+            }
         }
         return techmap;
     }

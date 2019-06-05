@@ -1,20 +1,21 @@
 package com.zjucsc.art_decode.artconfig;
 
-public class ModBusConfig {
-    private String tech_name;
+
+public class ModBusConfig extends BaseConfig{
+    /**
+     *
+     *  tech_name 工艺参数名
+     *  type 类型 数据类型
+     *  length 数据长度
+     *  addr_head 偏移
+     *  reg_coil 寄存器类型 1 2 3 4
+     *  range float数组 量程最大值最小值
+     */
     private String type;
     private int length;
     private int addr_head;
     private int reg_coil;
     private float[] range;
-
-
-    public ModBusConfig()
-    { }
-
-    public String getTech_name(){
-        return tech_name;
-    }
 
     public String getType()
     {
@@ -39,11 +40,6 @@ public class ModBusConfig {
     public float[] getRange()
     {
         return range;
-    }
-
-    public void setTech_name( String  tech_name)
-    {
-        this.tech_name = tech_name;
     }
 
     public void setType( String type)
@@ -71,22 +67,22 @@ public class ModBusConfig {
         this.range =range ;
     }
 
-    public ModBusConfig(String tech_name, String type, int length, int addr_head, int reg_coil, float[] range) {
-        this.tech_name = tech_name;
-        this.type = type;
-        this.length = length;
-        this.addr_head = addr_head;
-        this.reg_coil = reg_coil;
-        this.range = range;
-    }
-
     private static ModBusConfig modBusConfig = null;
 
-    public static void setModBusConfig(String tech_name, String type, int length, int addr_head, int reg_coil, float[] range){
-        modBusConfig = new ModBusConfig(tech_name,type,length,addr_head,reg_coil,range);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ModBusConfig)) return false;
+        ModBusConfig that = (ModBusConfig) o;
+        if (that.artName == null || this.artName == null){
+            return false;
+        }else{
+            return that.artName.equals(this.artName);
+        }
     }
 
-    public static ModBusConfig getModbusConfig(){
-        return modBusConfig;
+    @Override
+    public int hashCode() {
+        return this.artName.hashCode();
     }
 }

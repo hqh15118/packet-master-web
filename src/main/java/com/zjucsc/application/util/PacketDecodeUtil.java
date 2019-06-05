@@ -176,17 +176,15 @@ public class PacketDecodeUtil {
             return MODBUS;
         }else if(protocolStack.endsWith("s7comm"))
         {
-            /*
             String rosctr = ((String) otherInfo[0]);
             if (S7CommPacket.ACK_DATA.equals(rosctr)){
                 return S7_Ack_data;
             }else if (S7CommPacket.JOB.equals(rosctr)) {
                 return S7_JOB;
             }else{
+                log.error("S7协议无法分为ACK_DATA/JOB，返回s7comm");
                 return S7;
             }
-            */
-            return S7;
         }
         else if(protocolStack.endsWith("dnp3"))
         {

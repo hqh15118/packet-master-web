@@ -24,6 +24,7 @@ hessian-config:
   user_opt: http://${hessian-config.hessian-url}/UserOptMapper.hessian
   art_filter : http://${hessian-config.hessian-url}/ArtifactFilterMapper.hessian
   attack_info : http://${hessian-config.hessian-url}/AttackInfoMapper.hessian
+  packet_history: http://${hessian-config.hessian-url}/PacketInfoMapper.hessian
 
 
 server:

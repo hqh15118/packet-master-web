@@ -4,6 +4,7 @@ import com.zjucsc.application.config.AttackTypePro;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.DangerLevel;
 import com.zjucsc.application.domain.bean.FvDimensionFilter;
+import com.zjucsc.application.domain.bean.Rule;
 import com.zjucsc.application.tshark.domain.bean.BadPacket;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import lombok.Data;
@@ -59,7 +60,7 @@ public class FiveDimensionPacketFilter {
     private HashMap<String,String> dstMacAddressBlack = EMPTY_MAP;
 
     private String userName;
-    private List<FvDimensionFilter> filterList;
+    private List<Rule> filterList;
     private String filterName;
     public FiveDimensionPacketFilter(String filterName){
         this.filterName = filterName;
@@ -73,26 +74,27 @@ public class FiveDimensionPacketFilter {
         this.userName = userName;
     }
 
-    public List<FvDimensionFilter> getFilterList(){
+    public List<Rule> getFilterList(){
         return this.filterList;
     }
 
     /**
      * @param filterList 前端配置的针对某个设备的五元组过滤器组
      */
-    public void setFilterList(List<FvDimensionFilter> filterList){
+    public void setFilterList(List<Rule> filterList){
         this.filterList = filterList;
         //key : 类型，【目的IP】【白】名单 value：过滤用的map
         HashMap<String,HashMap<String, String>> allMap = new HashMap<>();
-        for (FvDimensionFilter fiveDimensionFilter : filterList) {
+        for (Rule rule : filterList) {
             String str = null;
-            //白名单
-            if (fiveDimensionFilter.getFilterType() == 0){
-                setFilterMap(allMap, fiveDimensionFilter, DST_IP_WHITE, SRC_IP_WHITE, DST_PORT_WHITE, SRC_PORT_WHITE, DST_MAC_ADDRESS_WHITE, SRC_MAC_ADDRESS_WHITE, PROTOCOL_WHITE);
-            }else{
-                //黑名单
-                setFilterMap(allMap, fiveDimensionFilter, DST_IP_BLACK, SRC_IP_BLACK, DST_PORT_BLACK, SRC_PORT_BLACK, DST_MAC_ADDRESS_BLACK, SRC_MAC_ADDRESS_BLACK, PROTOCOL_BLACK);
-            }
+//            //白名单
+//            if (rule.getFvDimensionFilter() == 0){
+//                setFilterMap(allMap, fiveDimensionFilter, DST_IP_WHITE, SRC_IP_WHITE, DST_PORT_WHITE, SRC_PORT_WHITE, DST_MAC_ADDRESS_WHITE, SRC_MAC_ADDRESS_WHITE, PROTOCOL_WHITE);
+//            }else{
+//                //黑名单
+//                setFilterMap(allMap, fiveDimensionFilter, DST_IP_BLACK, SRC_IP_BLACK, DST_PORT_BLACK, SRC_PORT_BLACK, DST_MAC_ADDRESS_BLACK, SRC_MAC_ADDRESS_BLACK, PROTOCOL_BLACK);
+//            }
+            setFilterMap(allMap, rule.getFvDimensionFilter(), DST_IP_WHITE, SRC_IP_WHITE, DST_PORT_WHITE, SRC_PORT_WHITE, DST_MAC_ADDRESS_WHITE, SRC_MAC_ADDRESS_WHITE, PROTOCOL_WHITE);
         }
 
         Set<String> stringSet = allMap.keySet();

@@ -1,0 +1,46 @@
+package com.zjucsc.application.system.service.hessian_impl;
+
+import com.zjucsc.application.domain.bean.*;
+import com.zjucsc.application.system.service.hessian_iservice.IPacketInfoService;
+import com.zjucsc.application.system.service.hessian_mapper.PacketInfoMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class PacketInfoServiceImpl  implements IPacketInfoService {
+
+    @Autowired private PacketInfoMapper packetInfoMapper;
+
+    @Override
+    public List<AttackForSelect> selectAttackHistory(AttackHistoryBean attackHistoryBean) {
+        return packetInfoMapper.selectAttackHistory(attackHistoryBean);
+    }
+
+    @Override
+    public List<AttackForSelect> exportAttackHistory(AttackInfoExport attackInfoExport) {
+        return packetInfoMapper.exportAttackHistory(attackInfoExport);
+    }
+
+    @Override
+    public List<ExceptionForSelect> selectExceptionHistory(ExceptionHistoryBean exceptionHistoryBean) {
+        return packetInfoMapper.selectExceptionHistory(exceptionHistoryBean);
+    }
+
+    @Override
+    public List<ExceptionForSelect> exportExceptionHistory(ExceptionInfoExport exceptionInfoExport) {
+        return packetInfoMapper.exportExceptionHistory(exceptionInfoExport);
+    }
+
+    @Override
+    public List<PacketForSelect> selectPacketHistory(PacketHistoryBean packetHistoryBean) {
+        return packetInfoMapper.selectPacketHistory(packetHistoryBean);
+    }
+
+    @Override
+    public List<PacketForSelect> exportPacketHistory(PacketInfoExport packetInfoExport) {
+        return packetInfoMapper.exportPacketHistory(packetInfoExport);
+    }
+
+}

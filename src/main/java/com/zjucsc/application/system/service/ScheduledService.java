@@ -68,15 +68,21 @@ public class ScheduledService {
 
     @Scheduled(fixedRate = 1000)
     public void commonScheduledService(){
-        count++;
-        //每5秒
-        if (count % 5 == 0){
-            sendPacketStatisticsMsg();
-            sendGraphInfo();
-            statisticFlow();
+        if (CommonCacheUtil.getScheduleServiceRunningState()){
+            count++;
+            //每5秒
+            if (count % 5 == 0){
+                //发送报文统计信息
+                sendPacketStatisticsMsg();
+                //发送图表统计数据
+                sendGraphInfo();
+                //统计流量
+                statisticFlow();
+            }
+            //每1秒
+            //发送所有五元组
+            sendAllFvDimensionPacket();
         }
-        //每1秒
-        sendAllFvDimensionPacket();
     }
 
     /**

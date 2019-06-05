@@ -3,7 +3,6 @@ package com.zjucsc.attack.util;
 import com.zjucsc.attack.analyze.analyzer.CositeDOSAttackAnalyzer;
 import com.zjucsc.attack.analyze.analyzer.MultisiteDOSAttackAnalyzer;
 import com.zjucsc.attack.analyze.analyzer_util.MultisiteDOSAttackAnalyzeList;
-import com.zjucsc.attack.common.Common;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 
 import java.util.Arrays;
@@ -49,7 +48,7 @@ public class AttackAnalyzeUtil {
     public static void analyzePacketStatus(FvDimensionLayer layer){
         for (IAttack iAttack : ATTACK_LIST) {
             if (iAttack.analyze(layer)){
-                //Common.updateAll();
+                //AttackCommon.updateAll();
             }
         }
     }

@@ -12,7 +12,7 @@ import java.util.Arrays;
  * #create_time 2019-05-11 - 21:23
  */
 
-public class FvDimensionLayer  {
+public class FvDimensionLayer {
     public String[] frame_protocols = {""};
     public String[] eth_dst = {""};
     public String[] frame_cap_len = {""};

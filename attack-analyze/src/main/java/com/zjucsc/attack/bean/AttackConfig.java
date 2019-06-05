@@ -44,7 +44,7 @@ public class AttackConfig {
      * 连续收到2个（可动态设置）以上来自不同IP地址（站点）发出的工控协议报
      * 文，即允许工控协议多址占用信道攻击；
      ****************************************************/
-    private static volatile Duration MULTI_SITE_CHANNEL_HOLD_TIME_GAP = Duration.ofMillis(10);
+    private static volatile int MULTI_SITE_CHANNEL_HOLD_TIME_GAP = 10;
     private static volatile int MULTI_SITE_CHANNEL_HOLD_NUM = 2;
 
     /***************************************************
@@ -80,13 +80,13 @@ public class AttackConfig {
      * 一、某节点（IP地址为目的站点）接收的报文中，发出工控协议(节点允许协议，如modbus,profinet,s7,103,104,OPC等)
      * 读、写指令的站点（源IP地址）不在“被允许的控制节点”队列（针对重要节点，需配置“被允许的控制节点”，
      * 是否应配置控制节点的MAC，请商讨）中，即非法控制站点攻击，可区分本地控制系统局域网内、外两种情况，以区别内外的嗅探。
-     * 【功能码黑名单？】
+     * 【功能码黑名单】
      ***************************************************/
 
     /***************************************************
      * 二、某节点（IP地址为目的站点）接收的报文中，发出工控协议(节点允许协议，如modbus,profinet,s7,103,104,OPC等)读、
      * 写指令的站点（源IP地址）在“被允许的控制节点”队列中，但在一段时间（暂定为10毫秒，可动态设置）内，连续发出差异比较大
-     * （（本条指令操作数据-上条指令操作数据）/上条指令操作数据>50%），即异常控制数据攻击。此条包括两种类型，即传感器数据篡改
+     * （（本条指令操作数据-上条指令操作数据）/ 上条指令操作数据>50%），即异常控制数据攻击。此条包括两种类型，即传感器数据篡改
      * （读指令）、控制器操作指令（写指令）篡改，可区分。
      * 【。。。】
      ***************************************************/
@@ -189,11 +189,11 @@ public class AttackConfig {
         CO_SITE_CHANNEL_HOLD_NUM = coSiteChannelHoldNum;
     }
 
-    public static Duration getMultiSiteChannelHoldTimeGap() {
+    public static int getMultiSiteChannelHoldTimeGap() {
         return MULTI_SITE_CHANNEL_HOLD_TIME_GAP;
     }
 
-    public static void setMultiSiteChannelHoldTimeGap(Duration multiSiteChannelHoldTimeGap) {
+    public static void setMultiSiteChannelHoldTimeGap(int multiSiteChannelHoldTimeGap) {
         MULTI_SITE_CHANNEL_HOLD_TIME_GAP = multiSiteChannelHoldTimeGap;
     }
 

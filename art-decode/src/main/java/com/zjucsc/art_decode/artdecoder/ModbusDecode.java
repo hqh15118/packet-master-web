@@ -4,8 +4,8 @@ import com.zjucsc.art_decode.artconfig.ModBusConfig;
 import com.zjucsc.common_util.ByteUtil;
 import com.zjucsc.common_util.Bytecut;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 public class ModbusDecode {
 
@@ -29,6 +29,20 @@ public class ModbusDecode {
 
     private Map<String,Map> map= new HashMap<>();
 
+    private Set<ModBusConfig> modbustechconfig = new ConcurrentSkipListSet<>();
+
+    public  void renewconfig(ModBusConfig techconfig)
+    {
+        if(techconfig!=null)
+        {
+            modbustechconfig.remove(techconfig);
+            modbustechconfig.add(techconfig);
+        }
+    }
+
+    public void deleteConfig(ModBusConfig config){
+        modbustechconfig.remove(config);
+    }
 
     private Map<String,Map> decode( byte[] bytes) {
         renewmap(bytes);
@@ -43,7 +57,7 @@ public class ModbusDecode {
         return "modbus";
     }
 
-    private void renewmap(byte[] payload ){
+    public void renewmap(byte[] payload ){
         int i = (int)payload[7];
         if(i==1 || i==2)
         {
@@ -88,8 +102,18 @@ public class ModbusDecode {
         }
     }
 
-    public Map<String ,Float> decode_tech(Map<String , Float> tech_map,ModBusConfig modbus,byte[] payload){
+    public Map<String ,Float> decode_tech(Map<String , Float> tech_map,byte[] payload){
+        if (modbustechconfig.size() == 0){
+            return tech_map;
+        }
         renewmap(payload);
+        for (ModBusConfig modBusConfig : modbustechconfig) {
+            doDecode(tech_map, modBusConfig);
+        }
+        return tech_map;
+    }
+
+    private void doDecode(Map<String , Float> tech_map,ModBusConfig modbus){
         if(modbus.getLength() ==4) {
             byte[] byte1 = null;
             byte[] byte2 = null;
@@ -107,13 +131,11 @@ public class ModbusDecode {
                 byte[] byte_all=new byte[]{byte1[0], byte1[1], byte2[0], byte2[1]};
                 if(modbus.getType().equals( "float" )){
                     float tech_value = Bytecut.BytesTofloat( byte_all,0);
-                    tech_map.put(modbus.getTech_name(), tech_value);
-                    return tech_map;
+                    tech_map.put(modbus.getArtName(), tech_value);
                 }
                 else if(modbus.getType().equals("int")){
                     float tech_value = modbus.getRange()[0] + ByteUtil.bytesToInt(byte_all,0)*(modbus.getRange()[1]-modbus.getRange()[0])/(2^32);
-                    tech_map.put(modbus.getTech_name(),tech_value);
-                    return tech_map;
+                    tech_map.put(modbus.getArtName(),tech_value);
                 }
             }
         }
@@ -130,8 +152,7 @@ public class ModbusDecode {
                     byte1 = Input_reg_map.get(modbus.getAddr_head());
                 }
                 float tech_value = modbus.getRange()[0] + ByteUtil.bytesToShort(byte1,0)*(modbus.getRange()[1]-modbus.getRange()[0])/(2^16);
-                tech_map.put(modbus.getTech_name(),tech_value);
-                return tech_map;
+                tech_map.put(modbus.getArtName(),tech_value);
             }
         }
         else if(modbus.getType().equals("bool"))
@@ -140,27 +161,24 @@ public class ModbusDecode {
             {
                 if(Dis_input_map.get(modbus.getAddr_head()))
                 {
-                    tech_map.put(modbus.getTech_name(),1f);
+                    tech_map.put(modbus.getArtName(),1f);
                 }
                 else
                 {
-                    tech_map.put(modbus.getTech_name(),0f);
+                    tech_map.put(modbus.getArtName(),0f);
                 }
-                return tech_map;
             }
             else if(modbus.getReg_coil()==2)///////////读线圈
             {
                 if(Coil_map.get(modbus.getAddr_head()))
                 {
-                    tech_map.put(modbus.getTech_name(),1f);
+                    tech_map.put(modbus.getArtName(),1f);
                 }
                 else
                 {
-                    tech_map.put(modbus.getTech_name(),0f);
+                    tech_map.put(modbus.getArtName(),0f);
                 }
-                return tech_map;
             }
         }
-        return null;
-    };
+    }
 }

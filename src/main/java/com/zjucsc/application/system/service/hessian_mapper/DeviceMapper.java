@@ -20,9 +20,9 @@ public interface DeviceMapper extends BaseMapper<Device> {
 
     List<DeviceNumberAndIp> loadAllDevicesByGplotId(int gplotId);
 
-    List<FvDimensionFilter> loadAllFvDimensionFilterByDeviceNumberAndGplotId(String deviceNumber, int gplotId);
+    List<Rule> loadAllFvDimensionFilterByDeviceNumberAndGplotId(String deviceNumber, int gplotId);
 
-    List<OptFilter> loadAllOptFilterByDeviceNumberAndGplotId( String deviceNumber,  int gplotId);
+    List<OptFilterForFront> loadAllOptFilterByDeviceNumberAndGplotId( String deviceNumber,  int gplotId);
 
     void removeDeviceByDeviceNumberAndGplotId( String deviceNumber,  int gplotId);
 
@@ -39,7 +39,8 @@ public interface DeviceMapper extends BaseMapper<Device> {
      * @param intervalType
      * @return
      */
-    StatisticInfo selectHistoryDeviceRunInfo(String deviceId, String startTime, String endTime, String intervalType);
+    StatisticInfo selectHistoryDeviceRunInfo(String deviceId, String startTime, String endTime, String intervalType,
+                                             int gplotId);
 
-    void saveStatisticInfo(Map<String,StatisticInfoSaveBean> map);
+    void saveStatisticInfo(Map<String,StatisticInfoSaveBean> map , int gplotId);
 }

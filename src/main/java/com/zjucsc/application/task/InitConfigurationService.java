@@ -1,8 +1,11 @@
 package com.zjucsc.application.task;
 
+import com.zjucsc.application.config.ProtocolIgnore;
 import com.zjucsc.application.domain.bean.ConfigurationSetting;
 import com.zjucsc.application.system.service.hessian_iservice.IConfigurationSettingService;
 import com.zjucsc.application.system.service.hessian_iservice.IProtocolIdService;
+import com.zjucsc.art_decode.ArtDecodeCommon;
+import com.zjucsc.art_decode.artdecoder.S7CommDecode;
 import com.zjucsc.art_decode.base.IArtDecode;
 import com.zjucsc.IProtocolFuncodeMap;
 import com.zjucsc.application.config.Common;
@@ -10,7 +13,6 @@ import com.zjucsc.application.config.ConstantConfig;
 import com.zjucsc.application.config.PACKET_PROTOCOL;
 import com.zjucsc.application.config.auth.Auth;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
-import com.zjucsc.art_decode.artdecoder.S7CommDecode;
 import com.zjucsc.application.domain.bean.Protocol;
 import com.zjucsc.application.tshark.analyzer.ArtAnalyzer;
 import com.zjucsc.application.util.CommonCacheUtil;
@@ -18,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -30,7 +33,7 @@ import static com.zjucsc.application.util.CommonConfigUtil.addProtocolFuncodeMea
  * 加载组态配置到内存中 + 保存到本地数据库
  */
 @Slf4j
-//@Component
+@Component
 public class InitConfigurationService implements ApplicationRunner {
 
     private final String str_name = "java.lang.String";
@@ -65,7 +68,8 @@ public class InitConfigurationService implements ApplicationRunner {
             Class<PACKET_PROTOCOL> packet_protocolClass = PACKET_PROTOCOL.class;
             Field[] allField = packet_protocolClass.getDeclaredFields();
             for (Field field : allField) {
-                if (field.getType().getTypeName().equals(str_name)){
+                field.setAccessible(true);
+                if (field.getType().getTypeName().equals(str_name) && field.getAnnotation(ProtocolIgnore.class) == null){
                     String protocol_name = (String) field.get(null);
                     int protocol_id = (int) packet_protocolClass.getDeclaredField(field.getName() + "_ID").get(null);
                     Common.PROTOCOL_STR_TO_INT.put(protocol_id,protocol_name);
@@ -130,14 +134,15 @@ public class InitConfigurationService implements ApplicationRunner {
         /***************************
          * INIT ART_ANALYZER
          ***************************/
-//        ServiceLoader<IArtDecode> artLoader = ServiceLoader.load(IArtDecode.class);
         Map<String,IArtDecode> artServiceMap = new HashMap<>();
-//        for (IArtDecode iArtDecode : artLoader) {
-//            artServiceMap.put(iArtDecode.protocol(),iArtDecode);
-//        }
         S7CommDecode s7commDecode = new S7CommDecode();
         artServiceMap.put(s7commDecode.protocol(),s7commDecode);
         ART_FILTER = new ArtAnalyzer(artServiceMap);
+
+        /***************************
+         * INIT ART DECODER
+         ***************************/
+        ArtDecodeCommon.init();
 
         /**************************
          *  PRINT INIT RESULT

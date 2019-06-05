@@ -12,8 +12,8 @@ public interface IDeviceService {
     Device selectDeviceByIdAndGplot(String deviceId, int plotId);
     String selectDeviceNumberByCollectorTag(String collectorId, int gplotId);
     List<DeviceNumberAndIp> loadAllDevicesByGplotId(int gplotId);
-    List<FvDimensionFilter> loadAllFvDimensionFilterByDeviceNumberAndGplotId(String deviceNumber, int gplotId);
-    List<OptFilter> loadAllOptFiterByDeviceNumberAndGplotId(String deviceNumber, int gplotId);
+    List<Rule> loadAllFvDimensionFilterByDeviceNumberAndGplotId(String deviceNumber, int gplotId);
+    List<OptFilterForFront> loadAllOptFilterByDeviceNumberAndGplotId(String deviceNumber, int gplotId);
     void removeDeviceByDeviceNumberAndGplotId(String deviceNumber, int gplotId);
     void removeAllDevicesByGplotId(int gplotId);
     void saveBatch(List<Device> devices);

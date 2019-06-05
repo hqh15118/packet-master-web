@@ -1,7 +1,7 @@
 package com.zjucsc.application.util;
 
 import com.zjucsc.application.config.Common;
-import com.zjucsc.application.domain.bean.FvDimensionFilter;
+import com.zjucsc.application.domain.bean.Rule;
 import com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer;
 import com.zjucsc.application.tshark.filter.FiveDimensionPacketFilter;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +16,7 @@ public class CommonFvFilterUtil {
         log.info("change gplot so -> clear all fv dimension filter of gplot id : {} " , Common.GPLOT_ID);
     }
 
-    public synchronized static void addOrUpdateFvFilter(String deviceIp , List<FvDimensionFilter> filterList , String filterName){
+    public synchronized static void addOrUpdateFvFilter(String deviceIp , List<Rule> filterList , String filterName){
         FiveDimensionAnalyzer analyzer;
         if ((analyzer = Common.FV_DIMENSION_FILTER_PRO.get(deviceIp))==null){
             FiveDimensionPacketFilter fiveDimensionPacketFilter = new FiveDimensionPacketFilter(filterName);

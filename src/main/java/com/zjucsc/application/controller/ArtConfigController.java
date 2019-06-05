@@ -7,6 +7,8 @@ import com.zjucsc.application.domain.bean.ArtConfigPaged;
 import com.zjucsc.application.system.service.hessian_iservice.IArtConfigService;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.AppCommonUtil;
+import com.zjucsc.art_decode.ArtDecodeCommon;
+import com.zjucsc.art_decode.artconfig.ModBusConfig;
 import com.zjucsc.base.BaseResponse;
 import io.netty.util.concurrent.CompleteFuture;
 import io.swagger.annotations.ApiOperation;
@@ -31,10 +33,8 @@ public class ArtConfigController {
     private IArtConfigService iArtConfigService;
 
     @ApiOperation("添加/更新工艺参数配置，artConfig > 0表示更新；不填表示添加新的配置，顺序返回记录的ID列表")
-    @PostMapping("new_art_config")
+    @PostMapping("new_art_config1")
     public BaseResponse addOrUpdateArtConfig(@RequestBody @Valid List<ArtConfig> artConfig) {
-        //先更新缓存
-        CommonCacheUtil.addOrUpdateDecodeInstances(artConfig);
         //更新数据库
         List<Integer> artConfigId = new ArrayList<>();
         List<ArtConfig> errorArtConfig = new ArrayList<>();
@@ -50,6 +50,7 @@ public class ArtConfigController {
                 //添加新的工艺参数配置到数据库
                 iArtConfigService.insertById(config);
                 //初始化工艺参数配置
+                //将该工艺参数添加到MAP中
                 AppCommonUtil.initArtMap(config.getTag());
             }
             artConfigId.add(config.getArtConfigId());
@@ -59,6 +60,9 @@ public class ArtConfigController {
                 CommonCacheUtil.removeShowGraph(config.getProtocolId(),config.getTag());
             }
         }
+        //更新缓存
+        artConfig.remove(errorArtConfig);       //移除所有不合法的配置
+        CommonCacheUtil.addOrUpdateDecodeInstances(artConfig);  //合法配置添加到缓存
         if (errorArtConfig.size() == 0)
             return BaseResponse.OK(artConfigId);
         else
@@ -128,5 +132,19 @@ public class ArtConfigController {
     @GetMapping("script_exist")
     public BaseResponse checkScriptExistOrNot(@RequestParam String scriptName){
         return BaseResponse.OK(iArtConfigService.scriptExistOrNot(scriptName));
+    }
+
+    @ApiOperation("删除MODBUS工艺参数配置")
+    @PostMapping("del_art_config_modbus")
+    public BaseResponse delModbusArtConfig(@RequestBody ModBusConfig modBusConfig){
+        boolean b = ArtDecodeCommon.deleteArtConfig(modBusConfig);
+        return b?BaseResponse.OK() : BaseResponse.ERROR(Common.HTTP_STATUS_CODE.ART_DELETE_FAIL,"modbus工艺参数删除失败");
+    }
+
+    @ApiOperation("添加MODBUS工艺参数配置")
+    @PostMapping("new_art_config_modbus")
+    public BaseResponse addOrUpdateModbusArtConfig(@RequestBody ModBusConfig modBusConfig){
+        boolean b = ArtDecodeCommon.addArtDecodeConfig(modBusConfig);
+        return b?BaseResponse.OK() : BaseResponse.ERROR(Common.HTTP_STATUS_CODE.ART_DELETE_FAIL,"modbus工艺参数添加失败");
     }
 }

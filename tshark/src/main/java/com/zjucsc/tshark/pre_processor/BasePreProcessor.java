@@ -265,8 +265,6 @@ public abstract class BasePreProcessor implements PreProcessor {
         }
     }
 
-    public abstract void decodeJSONString(String packetJSON);
-
     private String tsharkMacPath = " tshark ";
     private String tsharkWinPath = " tshark";
     private String pcapFilePathForMac = " /Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap/104_dnp_packets.pcapng ";

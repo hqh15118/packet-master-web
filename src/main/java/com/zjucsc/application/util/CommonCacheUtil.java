@@ -196,7 +196,7 @@ public class CommonCacheUtil {
     }
 
     public static String getTargetDeviceNumberByIp(String deviceIp) {
-        //System.out.println("get " + deviceIp + "xxxxxx" + Common.DEVICE_IP_TO_NAME.get(deviceIp));
+        //System.out.println("get " + deviceIp + "xxxxxx" + AttackCommon.DEVICE_IP_TO_NAME.get(deviceIp));
         return Common.DEVICE_IP_TO_NAME.get(deviceIp);
     }
 
@@ -285,7 +285,7 @@ public class CommonCacheUtil {
 
     /**********************************
      *
-     * Common STATISTICS_INFO_BEAN 发送到数据库的统计信息Map
+     * AttackCommon STATISTICS_INFO_BEAN 发送到数据库的统计信息Map
      *
      *********************************/
 
@@ -306,5 +306,18 @@ public class CommonCacheUtil {
      */
     public static void resetSaveBean(){
         Common.STATISTICS_INFO_BEAN.forEach(biConsumer);
+    }
+
+    /**********************************
+     *
+     * 设置 SCHEDULE SERVICE 运行状态
+     *
+     *********************************/
+    public static void setScheduleServiceRunningState(boolean running){
+        Common.SCHEDULE_RUNNING = running;
+    }
+
+    public static boolean getScheduleServiceRunningState(){
+        return Common.SCHEDULE_RUNNING;
     }
 }

@@ -1,11 +1,8 @@
 package com.zjucsc.application.system.service.hessian_impl;
 
 import com.zjucsc.application.config.Common;
-import com.zjucsc.application.domain.bean.DeviceNumberAndIp;
-import com.zjucsc.application.domain.bean.FvDimensionFilter;
-import com.zjucsc.application.domain.bean.Gplot;
+import com.zjucsc.application.domain.bean.*;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
-import com.zjucsc.application.domain.bean.OptFilter;
 import com.zjucsc.application.system.mapper.base.BaseServiceImpl;
 import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
 import com.zjucsc.application.system.service.hessian_iservice.IGplotService;
@@ -57,16 +54,18 @@ public class GplotServiceImpl extends BaseServiceImpl<GplotMapper, Gplot> implem
         for (DeviceNumberAndIp deviceNumberAndIp : deviceNumbers) {
             sb.delete(0 , sb.length());
             //load all fv dimension rule from fv_dimension table by device_number + gpolt_id
-            List<FvDimensionFilter> fvDimensionFilters = iDeviceService.
+            List<Rule> rules = iDeviceService.
                     loadAllFvDimensionFilterByDeviceNumberAndGplotId(deviceNumberAndIp.deviceNumber,gplotId);
             //add all fv filters to cache
-            CommonFvFilterUtil.addOrUpdateFvFilter(deviceNumberAndIp.deviceIp,fvDimensionFilters,
+            CommonFvFilterUtil.addOrUpdateFvFilter(deviceNumberAndIp.deviceIp, rules,
                     sb.append("device_name-").append(deviceNumberAndIp.deviceNumber).
                     append(" g_plot_id-").append(gplotId).toString());
-            //load all opt dimension rule from fv_dimension table by device_number + gpolt_id
-            List<OptFilter> optFilters = iDeviceService.loadAllOptFiterByDeviceNumberAndGplotId(deviceNumberAndIp.deviceNumber,gplotId);
+            //load all opt dimension rule from opt filter table by device_number + gplot_id
+            List<OptFilterForFront> optFilters = iDeviceService.loadAllOptFilterByDeviceNumberAndGplotId(deviceNumberAndIp.deviceNumber,gplotId);
             //add all opt filters to cache
-            CommonOptFilterUtil.addOrUpdateAnalyzer(deviceNumberAndIp.deviceIp , optFilters , "xxx");
+            for (OptFilterForFront optFilter : optFilters) {
+                CommonOptFilterUtil.addOrUpdateAnalyzer(deviceNumberAndIp.deviceIp , optFilter , optFilter.toString());
+            }
             //更新DEVICE_NUMBER和DEVICE_IP之间的对应关系
             //更新DEVICE_NUMBER和StatisticInfoSaveBean【设备upload、download等报文信息】
             CommonCacheUtil.addOrUpdateDeviceNumberAndIp(deviceNumberAndIp.deviceNumber , deviceNumberAndIp.deviceIp);

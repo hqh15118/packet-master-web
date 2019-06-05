@@ -1,6 +1,7 @@
 package com.zjucsc.application.util;
 
 import com.zjucsc.application.config.Common;
+import com.zjucsc.application.domain.bean.OptFilterForFront;
 import com.zjucsc.application.domain.exceptions.OptFilterNotValidException;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.application.domain.bean.OptFilter;
@@ -24,30 +25,34 @@ public class CommonOptFilterUtil {
      * @param filterName 过滤器名字，随便写一个就好
      * @throws ProtocolIdNotValidException
      */
-    public static void addOrUpdateAnalyzer(String deviceIp , List<OptFilter> optFilters , String filterName) throws ProtocolIdNotValidException {
+    public static void addOrUpdateAnalyzer(String deviceIp , OptFilterForFront optFilterForFront , String filterName) throws ProtocolIdNotValidException {
         ConcurrentHashMap<String, OperationAnalyzer> analyzerMap = null;
         int type = 0;
         if ((analyzerMap = Common.OPERATION_FILTER_PRO.get(deviceIp)) == null){
             //新建设备
             analyzerMap = new ConcurrentHashMap<>();
+            Common.OPERATION_FILTER_PRO.put(deviceIp, analyzerMap);
         }else{
             type = 1;
         }
 
-        for (OptFilter optFilter : optFilters) {
-            String protocolName = CommonCacheUtil.convertIdToName(optFilter.getProtocolId());
+        for (Integer funCode : optFilterForFront.getFunCodes()) {
+            String protocolName = CommonCacheUtil.convertIdToName(optFilterForFront.getProtocolId());
             analyzerMap.putIfAbsent(protocolName,new OperationAnalyzer(new OperationPacketFilter<>(filterName)));
-            int filterType = optFilter.getFilterType();
-            if (filterType == 0){
-                //white
-                analyzerMap.get(protocolName).getAnalyzer().addWhiteRule(optFilter.getFunCode(),
-                        CommonConfigUtil.getTargetProtocolFuncodeMeanning(protocolName,optFilter.getFunCode()));
-            }else{
-                analyzerMap.get(protocolName).getAnalyzer().addBlackRule(optFilter.getFunCode(),
-                        CommonConfigUtil.getTargetProtocolFuncodeMeanning(protocolName,optFilter.getFunCode()));
-            }
+//            int filterType = optFilter.getFilterType();
+//            if (filterType == 0){
+//                //white
+//                analyzerMap.get(protocolName).getAnalyzer().addWhiteRule(optFilter.getFunCode(),
+//                        CommonConfigUtil.getTargetProtocolFuncodeMeanning(protocolName,optFilter.getFunCode()));
+//            }else{
+//                analyzerMap.get(protocolName).getAnalyzer().addBlackRule(optFilter.getFunCode(),
+//                        CommonConfigUtil.getTargetProtocolFuncodeMeanning(protocolName,optFilter.getFunCode()));
+//            }
+            //white
+            analyzerMap.get(protocolName).getAnalyzer().addWhiteRule(funCode,
+                    CommonConfigUtil.getTargetProtocolFuncodeMeanning(protocolName,funCode));
         }
-        Common.OPERATION_FILTER_PRO.put(deviceIp, analyzerMap);
+
         if (type == 0){
             //new analyze map
             log.info("新建设备：{} 的功能码过滤规则MAP , 新的规律规则为 {} ",deviceIp , analyzerMap);

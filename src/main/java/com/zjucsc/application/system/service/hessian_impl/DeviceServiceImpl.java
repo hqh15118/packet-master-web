@@ -1,4 +1,5 @@
 package com.zjucsc.application.system.service.hessian_impl;
+import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.bean.*;
 import com.zjucsc.application.system.mapper.base.BaseServiceImpl;
 import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
@@ -11,7 +12,7 @@ import java.util.Map;
 /**
  * @author hongqianhui
  */
-@Service("deviceservice")
+@Service
 public class DeviceServiceImpl extends BaseServiceImpl<DeviceMapper, Device> implements IDeviceService {
 
     @Override
@@ -39,12 +40,12 @@ public class DeviceServiceImpl extends BaseServiceImpl<DeviceMapper, Device> imp
     }
 
     @Override
-    public List<FvDimensionFilter> loadAllFvDimensionFilterByDeviceNumberAndGplotId(String deviceNumber, int gplotId) {
+    public List<Rule> loadAllFvDimensionFilterByDeviceNumberAndGplotId(String deviceNumber, int gplotId) {
         return this.baseMapper.loadAllFvDimensionFilterByDeviceNumberAndGplotId(deviceNumber,gplotId);
     }
 
     @Override
-    public List<OptFilter> loadAllOptFiterByDeviceNumberAndGplotId(String deviceNumber, int gplotId) {
+    public List<OptFilterForFront> loadAllOptFilterByDeviceNumberAndGplotId(String deviceNumber, int gplotId) {
         return this.baseMapper.loadAllOptFilterByDeviceNumberAndGplotId(deviceNumber , gplotId);
     }
 
@@ -70,11 +71,11 @@ public class DeviceServiceImpl extends BaseServiceImpl<DeviceMapper, Device> imp
 
     @Override
     public StatisticInfo selectHistoryDeviceRunInfo(String deviceId, String startTime, String endTime, String intervalType) {
-        return this.baseMapper.selectHistoryDeviceRunInfo(deviceId, startTime, endTime, intervalType);
+        return this.baseMapper.selectHistoryDeviceRunInfo(deviceId, startTime, endTime, intervalType,Common.GPLOT_ID);
     }
 
     @Override
     public void saveStatisticInfo(Map<String,StatisticInfoSaveBean> map) {
-        this.baseMapper.saveStatisticInfo(map);
+        this.baseMapper.saveStatisticInfo(map, Common.GPLOT_ID);
     }
 }

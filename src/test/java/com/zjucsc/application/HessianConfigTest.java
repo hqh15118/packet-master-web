@@ -1,6 +1,7 @@
 package com.zjucsc.application;
 
 
+import com.zjucsc.application.config.Common;
 import com.zjucsc.application.system.service.hessian_mapper.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,7 +49,7 @@ public class HessianConfigTest {
 
     @Test
     public void FvDimensionFilterMapper(){
-        System.out.println(fvDimensionFilterMapper.selectByDeviceId("asdfasdf"));
+        System.out.println(fvDimensionFilterMapper.selectByDeviceId("asdfasdf", Common.GPLOT_ID));
     }
 
     @Test

@@ -38,115 +38,92 @@ public class OptFilterServiceImpl extends BaseServiceImpl<OptFilterMapper, OptFi
      * 会将该设备ID下的map[协议，分析器]整个替换掉。
      * @param
      * @return
+     */
+    @Async
+    @Override
+    public CompletableFuture<Exception> addOperationFilter(OptFilterForFront optFilterForFront) throws DeviceNotValidException {
+        String deviceIp = CommonCacheUtil.getTargetDeviceIpByNumber(optFilterForFront.getDeviceNumber());
+        if (deviceIp == null){
+            throw new DeviceNotValidException("未发现设备号为["+optFilterForFront.getDeviceNumber() +"]的设备");
+        }
+        try {
+            //更新缓存
+            CommonOptFilterUtil.addOrUpdateAnalyzer(deviceIp,optFilterForFront,optFilterForFront.toString());
+        } catch (ProtocolIdNotValidException e) {
+            return CompletableFuture.completedFuture(e);
+        }
+        //更新数据库
+        this.baseMapper.saveOrUpdateBatch(optFilterForFront,Common.GPLOT_ID);
+        return CompletableFuture.completedFuture(null);
+    }
+
+    /**
+     * 获取某个设备针对某个协议的功能码配置
+     * @param deviceNumber 设备
+     * @param cached 是否从缓存里面找
+     * @param protocolId 协议
+     * @return
      * @throws ProtocolIdNotValidException
      */
     @Async
     @Override
-    public CompletableFuture<Exception> addOperationFilter(OptFilterForFront optFilterForFront) throws ProtocolIdNotValidException, OptFilterNotValidException {
-        StringBuilder sb = new StringBuilder();
-        String deviceNumber = optFilterForFront.getDeviceNumber();
-        String deviceIp = CommonCacheUtil.getTargetDeviceIpByNumber(deviceNumber);
-        if (deviceIp == null){
-            log.error("异常，设备[deviceNumber] :  {} 对应的IP地址未添加到缓存中");
-            return CompletableFuture.completedFuture(new DeviceNotValidException("未发现 " + optFilterForFront.getDeviceNumber() +" 的设备IP"));
-        }
-        String userName = optFilterForFront.getUserName();
-        int protocolId = optFilterForFront.getProtocolId();
-
-        this.baseMapper.deleteByDeviceNumber(deviceNumber);
-        //ConcurrentHashMap<String,OperationAnalyzer> analyzerMap = new ConcurrentHashMap<>(); //每一个设备都需要这样一个map，key是协议类型，value是该协议下对应的分析器
-        List<OptFilter> optFilters = new ArrayList<>();
-        OperationPacketFilter<Integer,String> operationPacketFilter = new OperationPacketFilter<>
-                (sb.append(deviceNumber).append(" : ").append(userName).append(convertIdToName(protocolId)).toString());//该协议对应的分析器的报文过滤器
-        for (OptFilterForFront.IOptFilter iOptFilter : optFilterForFront.getIOptFilters()) {
-            String protocol = convertIdToName(protocolId);
-            //实例化数据库实体
-            OptFilter optFilter = new OptFilter();
-            optFilter.setFilterType(iOptFilter.getFilterType());
-            optFilter.setDeviceNumber(deviceNumber);
-            optFilter.setUserName(userName);
-            optFilter.setProtocolId(protocolId);
-            optFilter.setFunCode(iOptFilter.getFunCode());
-            optFilter.setGplotId(Common.GPLOT_ID);
-            optFilters.add(optFilter);
-            //更新该协议下的过滤器
-            if (iOptFilter.getFilterType() == 0){
-                //白名单
-                operationPacketFilter.addWhiteRule(iOptFilter.getFunCode(),
-                        CommonConfigUtil.getTargetProtocolFuncodeMeanning(protocol , iOptFilter.getFunCode()));//添加功能码以及该功能码对应的含义
-            }else{
-                //黑名单
-                operationPacketFilter.addBlackRule(iOptFilter.getFunCode(),
-                        CommonConfigUtil.getTargetProtocolFuncodeMeanning(protocol , iOptFilter.getFunCode()));//添加功能码以及该功能码对应的含义
-            }
-        }
-        //analyzerMap.put(convertIdToName(protocolId) , new OperationAnalyzer(operationPacketFilter));
-        this.baseMapper.saveBatch(optFilters);                              //将新的过滤规则保存到数据库
-        CommonOptFilterUtil.addOrUpdateAnalyzer(deviceIp,convertIdToName(protocolId),new OperationAnalyzer(operationPacketFilter));  //替换旧的过滤规则
-        log.info("addOperationFilter [device number :  {} ; device ip {} ;protocol id : {} protocol name {} ] : new operation filter of {} \n" +
-                        "and OPERATION_FILTER is {} " ,
-                deviceNumber , deviceIp , protocolId , convertIdToName(protocolId) , operationPacketFilter , Common.OPERATION_FILTER_PRO);
-        return CompletableFuture.completedFuture(null);
-    }
-
-    @Async
-    @Override
-    public CompletableFuture<List<Integer>> getTargetExistIdFilter(String deviceId, int type , boolean cached , int protocolId) throws ProtocolIdNotValidException {
+    public CompletableFuture<List<Integer>> getTargetExistIdFilter(String deviceNumber, boolean cached , int protocolId) throws ProtocolIdNotValidException {
         if (cached){
-            String deviceIp = CommonCacheUtil.getTargetDeviceIpByNumber(deviceId);
+            String deviceIp = CommonCacheUtil.getTargetDeviceIpByNumber(deviceNumber);
             ConcurrentHashMap<String, OperationAnalyzer> map = Common.OPERATION_FILTER_PRO.get(deviceIp);
             if (map == null){
-                throw new ProtocolIdNotValidException("缓存中不存在ID为 " + deviceId + " 的规则");
+                throw new ProtocolIdNotValidException("缓存中不存在ID为 " + deviceNumber + " 的规则");
             }
             final List<Integer> optFilterList  = new ArrayList<>();
             OperationAnalyzer analyzer = map.get(convertIdToName(protocolId));
-            try {
-                if (type == 0) {
-                    analyzer.getAnalyzer().getWhiteMap().forEach(new BiConsumer<Integer, String>() {
-                        @Override
-                        public void accept(Integer integer, String s) {
-                            optFilterList.add(integer);
-                        }
-                    });
-                } else {
-                    analyzer.getAnalyzer().getBlackMap().forEach(new BiConsumer<Integer, String>() {
-                        @Override
-                        public void accept(Integer integer, String s) {
-                            optFilterList.add(integer);
-                        }
-                    });
-                }
-            }catch (NullPointerException e){
-                return null;
+//                if (type == 0) {
+//                    analyzer.getAnalyzer().getWhiteMap().forEach(new BiConsumer<Integer, String>() {
+//                        @Override
+//                        public void accept(Integer integer, String s) {
+//                            optFilterList.add(integer);
+//                        }
+//                    });
+//                } else {
+//                    analyzer.getAnalyzer().getBlackMap().forEach(new BiConsumer<Integer, String>() {
+//                        @Override
+//                        public void accept(Integer integer, String s) {
+//                            optFilterList.add(integer);
+//                        }
+//                    });
+//                }
+            if (analyzer == null || analyzer.getAnalyzer() == null || analyzer.getAnalyzer().getWhiteMap() == null){
+                return CompletableFuture.completedFuture(new ArrayList<>(0));
             }
+            analyzer.getAnalyzer().getWhiteMap().forEach(new BiConsumer<Integer, String>() {
+                @Override
+                public void accept(Integer integer, String s) {
+                    optFilterList.add(integer);
+                }
+            });
             return CompletableFuture.completedFuture(optFilterList);
         }else{
-            return CompletableFuture.completedFuture(selectTargetOptFilter(deviceId , type , protocolId));
+            return CompletableFuture.completedFuture(selectTargetOptFilter(deviceNumber  , protocolId));
         }
     }
 
     @Override
-    public CompletableFuture<Exception> deleteTargetDeviceFilters(int deviceId) {
-        return null;
-    }
-
-    @Override
-    public List<Integer> selectTargetOptFilter(String device, int type, int protocolId) {
-        return this.baseMapper.selectTargetOptFilter(device,type,protocolId);
+    public List<Integer> selectTargetOptFilter(String device, int protocolId) {
+        return this.baseMapper.selectTargetOptFilter(device,protocolId,Common.GPLOT_ID);
     }
 
     @Override
     public void deleteByDeviceNumber(String deviceNumber) {
-        this.baseMapper.deleteByDeviceNumber(deviceNumber);
+        this.baseMapper.deleteByDeviceNumber(deviceNumber,Common.GPLOT_ID);
     }
+
 
     @Override
     public void deleteByDeviceNumberAndProtocolId(String deviceNumber, int protocolId) {
-        this.baseMapper.deleteByDeviceNumberAndProtocolId(deviceNumber, protocolId);
+        this.baseMapper.deleteByDeviceNumberAndProtocolId(deviceNumber, protocolId,Common.GPLOT_ID);
     }
 
     @Override
-    public void deleteByDeviceNumberAndPorocolIdAndFuncode(String deviceNumber, int protocolId, int funCode) {
-        this.baseMapper.deleteByDeviceNumberAndPorocolIdAndFuncode(deviceNumber, protocolId, funCode);
+    public void deleteByDeviceNumberAndProtocolIdAndFuncode(String deviceNumber, int protocolId, int funCode) {
+        this.baseMapper.deleteByDeviceNumberAndProtocolIdAndFuncode(deviceNumber, protocolId, funCode,Common.GPLOT_ID);
     }
 }

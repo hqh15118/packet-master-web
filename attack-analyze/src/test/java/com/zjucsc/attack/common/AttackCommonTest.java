@@ -3,11 +3,8 @@ package com.zjucsc.attack.common;
 import com.zjucsc.attack.util.AttackAnalyzeUtil;
 import org.junit.Test;
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.Pipeline;
 
 import java.util.Set;
-
-import static org.junit.Assert.*;
 
 /**
  * #project packet-master-web
@@ -15,11 +12,11 @@ import static org.junit.Assert.*;
  * @author hongqianhui
  * #create_time 2019-05-30 - 22:42
  */
-public class CommonTest {
+public class AttackCommonTest {
 
     @Test
     public void jedisTest(){
-        Jedis jedis = Common.getJedisClient();
+        Jedis jedis = AttackCommon.getJedisClient();
         System.out.println(jedis.get("test"));//value
         System.out.println(jedis.get("test1"));//null
         System.out.println(jedis.getSet("test","value1"));
@@ -28,7 +25,7 @@ public class CommonTest {
 
     @Test
     public void jedisTestZset(){
-        Jedis jedis = Common.getJedisClient();
+        Jedis jedis = AttackCommon.getJedisClient();
         //jedis.del("zset");
         long time1 = System.currentTimeMillis();
         for (int i = 0; i < 100; i++) {

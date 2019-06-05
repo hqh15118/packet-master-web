@@ -17,16 +17,16 @@ import lombok.extern.slf4j.Slf4j;
  */
 
 @Slf4j
-//OperationPacketFilter<Integer,String> <fun_code , fun_code_meaning>
+//OperationPacketFilter<Integer,String>   --->    <fun_code , fun_code_meaning>
 public class OperationAnalyzer extends AbstractAnalyzer<OperationPacketFilter<Integer,String>> {
     @Override
     public Object analyze(Object... objs){
         int fun_code = ((int) objs[0]);
         FvDimensionLayer layer = ((FvDimensionLayer) objs[1]);
-        if (getAnalyzer().getBlackMap().containsKey(fun_code)){
+        if (!getAnalyzer().getWhiteMap().containsKey(fun_code)){
             try {
                 return new BadPacket.Builder(layer.frame_protocols[0])
-                        .setComment("黑名单操作")
+                        .setComment("为允许操作")
                         .set_five_Dimension(layer)
                         .setDangerLevel(DangerLevel.VERY_DANGER)
                         .setFun_code(fun_code)

@@ -9,14 +9,17 @@ import java.util.List;
 @Data
 public class OptFilterForFront {
     private int protocolId;
-    private String userName;
+    private String fvId;
+    private List<Integer> funCodes;
     private String deviceNumber;
-    @NotEmpty
-    private List<IOptFilter> iOptFilters;
 
-    @Data
-    public static class IOptFilter{
-        private int filterType;
-        private int funCode;
+    @Override
+    public String toString() {
+        return "OptFilterForFront{" +
+                "protocolId=" + protocolId +
+                ", fvId='" + fvId + '\'' +
+                ", funCodes=" + funCodes +
+                ", deviceNumber='" + deviceNumber + '\'' +
+                '}';
     }
 }

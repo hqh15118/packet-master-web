@@ -1,7 +1,5 @@
 package com.zjucsc.application.domain.bean;
 
-import com.zjucsc.application.domain.BaseBean;
-
 import java.io.Serializable;
 
 public class ArtHistoryData implements Serializable {

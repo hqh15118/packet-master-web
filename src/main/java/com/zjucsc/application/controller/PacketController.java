@@ -8,6 +8,7 @@ import com.zjucsc.application.socketio.SocketServiceCenter;
 import com.zjucsc.application.system.service.common_iservice.CapturePacketService;
 import com.zjucsc.application.system.service.common_impl.NetworkInterfaceServiceImpl;
 import com.zjucsc.application.tshark.capture.ProcessCallback;
+import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.base.BaseResponse;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.socketio.MainServer;
@@ -39,6 +40,7 @@ public class PacketController {
     @ApiOperation(value="开始抓包")
     @RequestMapping(value = "/start_service" , method = RequestMethod.POST)
     public BaseResponse startCaptureService(@RequestBody CaptureService service) {
+        CommonCacheUtil.setScheduleServiceRunningState(true);
         return BaseResponse.OK(doStartService(service));
     }
 
@@ -137,6 +139,7 @@ public class PacketController {
     @ApiOperation("停止抓包")
     @GetMapping("stop_service")
     public BaseResponse stopService(@RequestParam String service_name){
+        CommonCacheUtil.setScheduleServiceRunningState(false);
         synchronized (lock1){
             if (!Common.hasStartedHost.contains(service_name)){
                 return BaseResponse.ERROR(500,service_name + " not open");

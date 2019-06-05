@@ -83,6 +83,7 @@ public class LogAspect {
                     .append(exception.getClass().getName()).append("--")
                         .append(exception.getMessage())
                         .append("\n");
+                log.error("detail : " , exception);
             }
             sb.append("****************");
             log.info("info:\n{}",sb.toString());

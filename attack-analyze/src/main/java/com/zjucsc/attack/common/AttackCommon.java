@@ -24,7 +24,7 @@ import java.util.concurrent.ThreadFactory;
  * @author hongqianhui
  * #create_time 2019-05-30 - 20:00
  */
-public class Common {
+public class AttackCommon {
     private static Observer observer = new Observer();
 
     private static ExecutorService ATTACK_MAIN_SERVICE = Executors.newFixedThreadPool(

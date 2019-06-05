@@ -25,6 +25,8 @@ public class Common {
 
     public static final int SOCKET_IO_PORT = 8081;
 
+    public static volatile boolean SCHEDULE_RUNNING = false;
+
     /**
      * 无trailer + fcs，无法解析时间戳的报文数量
      */
@@ -80,6 +82,7 @@ public class Common {
         public static final int ART_CONFIG_NOT_VALID = 206;
         public static final int DATA_REPEAT = 207;
         public static final int SCRIPT_UP_LOAD_FAIL = 208;
+        public static final int ART_DELETE_FAIL = 209;
     }
 
     //已经登录过的用户

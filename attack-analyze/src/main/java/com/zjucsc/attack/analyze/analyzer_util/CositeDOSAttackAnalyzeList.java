@@ -33,18 +33,18 @@ public class CositeDOSAttackAnalyzeList extends TcpAttackAnalyzeList {
         //            long newTime = fvDimensionLayers.get(0).timeStampInLong;    //最新一条报文到达时间戳
         //            long oldTime = fvDimensionLayers.get(1).timeStampInLong;    //上一条报文到达时间戳
         //            if (doAnalyze(newTime,oldTime)){
-        //                Common.updateAll(new AttackBean(layer,"同源TCP-DOS统计"));
+        //                AttackCommon.updateAll(new AttackBean(layer,"同源TCP-DOS统计"));
         //            }
         //        }else{//时间戳发生错位，插入的位置不是最大的
         //            long newerTime = fvDimensionLayers.get(index - 1).timeStampInLong;
         //            long newTime = fvDimensionLayers.get(index).timeStampInLong;
         //            long olderTime = fvDimensionLayers.get(index + 1).timeStampInLong;
         //            if (doAnalyze(newerTime,newTime)){
-        //                Common.updateAll(new AttackBean(layer,"同源TCP-DOS统计"));
+        //                AttackCommon.updateAll(new AttackBean(layer,"同源TCP-DOS统计"));
         //                return true;
         //            }else{
         //                if (doAnalyze(newTime,olderTime)){
-        //                    Common.updateAll(new AttackBean(layer,"同源TCP-DOS统计"));
+        //                    AttackCommon.updateAll(new AttackBean(layer,"同源TCP-DOS统计"));
         //                    return true;
         //                }
         //            }

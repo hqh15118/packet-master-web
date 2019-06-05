@@ -65,14 +65,14 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
     private void protocolAnalyze(FvDimensionLayer layer) {
         FiveDimensionAnalyzer fiveDimensionAnalyzer;
         //根据目的地址，定位到具体的报文过滤器进行分析
-        if((fiveDimensionAnalyzer = FV_DIMENSION_FILTER_PRO.get(layer.ip_dst[0])) != null){
-            BadPacket badPacket = ((BadPacket)fiveDimensionAnalyzer.analyze(layer));
-            if (badPacket!=null){
+        if ((fiveDimensionAnalyzer = FV_DIMENSION_FILTER_PRO.get(layer.ip_dst[0])) != null) {
+            BadPacket badPacket = ((BadPacket) fiveDimensionAnalyzer.analyze(layer));
+            if (badPacket != null) {
                 String deviceNumber = CommonCacheUtil.getTargetDeviceNumberByIp(layer.ip_dst[0]);
                 badPacket.setDeviceNumber(deviceNumber);
                 //恶意报文统计
-                statisticsBadPacket(badPacket , deviceNumber);
-            }else{
+                statisticsBadPacket(badPacket, deviceNumber);
+            } else {
                 //五元组正常，再进行操作的匹配
                 //功能码分析
                 if (!(layer instanceof UnknownPacket.LayersBean)) {
@@ -81,52 +81,22 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
                         try {
                             operationAnalyze(Integer.valueOf(funCode), layer);
                         } catch (ProtocolIdNotValidException e) {
-                            log.error("protocol Id not valid {} " , e.getMsg());
+                            log.error("protocol Id not valid {} ", e.getMsg());
                         }
                     }
                 }
             }
-        }else{
+        } else {
             BadPacket badPacket = new BadPacket.Builder(AttackTypePro.UN_KNOW_DEVICE)
                     .set_five_Dimension(layer)
                     .setDangerLevel(DangerLevel.DANGER)
                     .setComment("未知报文来源")
                     .build();
-            SocketServiceCenter.updateAllClient(SocketIoEvent.BAD_PACKET,badPacket);
+            SocketServiceCenter.updateAllClient(SocketIoEvent.BAD_PACKET, badPacket);
         }
     }
 
-    /*
-        private static class AnalyzerConsumerForFVDimension extends AbstractAnalyzerConsumer implements BiConsumer<String, FiveDimensionAnalyzer>{
-
-            private FvDimensionLayer fvDimensionLayer;
-            private OKCallback fvPacketOKCallback;
-
-            public AnalyzerConsumerForFVDimension setPacketWrapper(FvDimensionLayer fvDimensionLayer){
-                this.fvDimensionLayer = fvDimensionLayer;
-                return this;
-            }
-            @Override
-            public void accept(String deviceNumber, FiveDimensionAnalyzer fiveDimensionAnalyzer) {
-                BadPacket badPacket = ((BadPacket)fiveDimensionAnalyzer.analyze(fvDimensionLayer));
-                if (badPacket!=null){
-                    badPacket.setDeviceId(deviceNumber);
-                    //恶意报文统计
-                    statisticsBadPacket(badPacket , deviceNumber);
-                }else{
-                    //五元组正常，再进行操作的匹配
-                    fvPacketOKCallback.callback(fvDimensionLayer);
-                }
-            }
-
-            public void setFvOKCallback(OKCallback fvOKCallback){
-                this.fvPacketOKCallback = fvOKCallback;
-            }
-        }
-        */
-
     private void operationAnalyze(int funCode , FvDimensionLayer layer) throws ProtocolIdNotValidException {
-        //OPERATION_FILTER_PRO.forEach(analyzerThreadlocalForOperation.get().setPacketWrapper(layer,funCode));
         //根据目的IP地址获取对应的功能码分析器
         ConcurrentHashMap<String, OperationAnalyzer> map = OPERATION_FILTER_PRO.get(layer.ip_dst[0]);
         if (map != null){
@@ -159,7 +129,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
         }
     }
 
-    public static Executor sendBadPacketThreadPool = Executors.newSingleThreadExecutor(
+    private static Executor sendBadPacketThreadPool = Executors.newSingleThreadExecutor(
             r -> {
                 Thread thread = new Thread(r);
                 thread.setName("-BadPacketAnalyzeHandler-");
@@ -189,85 +159,5 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
             StatisticsData.increaseExceptionByDevice(deviceNumber);     //按设备+1
         }
     }
-
-    //    private static class AnalyzerConsumerForOperation extends AbstractAnalyzerConsumer implements BiConsumer<String, ConcurrentHashMap<String, OperationAnalyzer>>{
-//
-//        private FvDimensionLayer layer;
-//        private int funCode;
-//        private OKCallback optOkCallback;
-//
-//        @Override                                               //String是协议，OperationAnalyzer是对应的报文规则器
-//        public void accept(String deviceNumber, ConcurrentHashMap<String, OperationAnalyzer> stringOperationAnalyzerConcurrentHashMap) {
-//            OperationAnalyzer operationAnalyzer = null;
-//            /**
-//             * 只有定义了分析器的报文[即配置了过滤规则的]才需要功能码解析，其他的报文直接略过
-//             * layer.frame_protocols[0] 这个协议已经被统一过了
-//             */
-//            if ((operationAnalyzer = stringOperationAnalyzerConcurrentHashMap.get(layer.frame_protocols[0]))!=null){
-//                BadPacket badPacket = null;
-//                try {
-//                    badPacket = (BadPacket) operationAnalyzer.analyze(funCode,layer);
-//                } catch (ProtocolIdNotValidException e) {
-//                    log.error(" " , e);
-//                }
-//                if (badPacket!=null){
-//                    badPacket.setDeviceNumber(deviceNumber);
-//                    statisticsBadPacket(badPacket , deviceNumber);
-//                }else{
-//                    optOkCallback.callback(layer);
-//                }
-//            }else{
-//                //log.error("********************* \n not define {} 's operation analyzer , please check . \n *********************");
-//            }
-//        }
-//
-//        public AnalyzerConsumerForOperation setPacketWrapper(FvDimensionLayer layer , int fun_code){
-//            this.layer = layer;
-//            this.funCode = fun_code;
-//            return this;
-//        }
-//
-//        public void setOkCallback(OKCallback optOkCallback){
-//            this.optOkCallback = optOkCallback;
-//        }
-//    }
-//
-//    private static class AbstractAnalyzerConsumer {
-//
-//        public static Executor sendBadPacketThreadPool = Executors.newSingleThreadExecutor(
-//                r -> {
-//                    Thread thread = new Thread(r);
-//                    thread.setName("-BadPacketAnalyzeHandler-");
-//                    return thread;
-//                }
-//        );
-//
-//        private void sendBadPacket(BadPacket badPacket) {
-//            sendBadPacketThreadPool.execute(new Runnable() {
-//                @Override
-//                public void run() {
-//                    //System.out.println("send bad packet : " + badPacket);
-//                    //System.out.println("**********************");
-//                    SocketServiceCenter.updateAllClient(SocketIoEvent.BAD_PACKET,badPacket);
-//                }
-//            });
-//        }
-//
-//        void statisticsBadPacket(BadPacket badPacket,String deviceNumber){
-//            sendBadPacket(badPacket);       //发送恶意报文
-//            if (badPacket.getDangerLevel() == DangerLevel.VERY_DANGER){     //统计恶意报文
-//                StatisticsData.attackNumber.incrementAndGet();
-//                StatisticsData.increaseAttackByDevice(deviceNumber);
-//            }else {
-//                StatisticsData.exceptionNumber.incrementAndGet();
-//                StatisticsData.increaseExceptionByDevice(deviceNumber);
-//            }
-//        }
-//    }
-//
-//    public interface OKCallback{
-//        void callback(FvDimensionLayer layer);
-//    }
-
 
 }

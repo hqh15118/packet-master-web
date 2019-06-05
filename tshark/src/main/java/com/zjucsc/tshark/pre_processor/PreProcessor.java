@@ -31,4 +31,6 @@ public interface PreProcessor {
 
     //-f "not ether src 28:d2:44:5f:69:e1 and tcp"
     String filter();
+
+    void decodeJSONString(String packetJSON);
 }

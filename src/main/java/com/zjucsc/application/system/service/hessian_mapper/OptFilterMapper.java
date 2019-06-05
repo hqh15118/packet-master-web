@@ -1,5 +1,6 @@
 package com.zjucsc.application.system.service.hessian_mapper;
 import com.zjucsc.application.domain.bean.OptFilter;
+import com.zjucsc.application.domain.bean.OptFilterForFront;
 import com.zjucsc.application.system.mapper.base.BaseMapper;
 
 import java.util.List;
@@ -9,16 +10,15 @@ import java.util.List;
  */
 public interface OptFilterMapper extends BaseMapper<OptFilter> {
 
-    List<Integer> selectTargetOptFilter(String device, int type,
-                                         int protocolId);
+        List<Integer> selectTargetOptFilter(String device, int protocolId,int gplotId);
 
-    void saveBatch(List<OptFilter> optFilters);
+        void saveOrUpdateBatch(OptFilterForFront optFilterForFront,int gplotId);
 
-    void deleteByDeviceNumber(String deviceNumber);
+        void deleteByDeviceNumber(String deviceNumber,int gplotId);
 
-    void deleteByDeviceNumberAndProtocolId(String deviceNumber,int protocolId);
+        void deleteByDeviceNumberAndProtocolId(String deviceNumber,int protocolId,int gplotId);
 
-    void deleteByDeviceNumberAndPorocolIdAndFuncode(String deviceNumber,int protocolId,int funCode);
+        void deleteByDeviceNumberAndProtocolIdAndFuncode(String deviceNumber,int protocolId,int funCode,int gplotId);
 
 
 }
