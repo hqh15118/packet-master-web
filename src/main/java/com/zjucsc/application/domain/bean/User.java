@@ -12,12 +12,6 @@ public class User  extends BaseResponse implements Serializable {
     private String date;
     private String token;
 
-    public static final class ROLE {
-        public static final String ADMINISTRACOR = "ADMINISTRACTOR";
-        public static final String OPERATOR = "OPERATOR";
-        public static final String VISITOR = "VISITOR";
-    }
-
     @Override
     public String toString() {
         return "User{" +

@@ -83,9 +83,9 @@ public class Other {
 
     @Test
     public void beanJSONGenerate() throws ClassNotFoundException, IOException, IllegalAccessException, InstantiationException {
-        //String path = "E:\\IdeaProjects\\packet-master-web\\target\\classes\\com\\zjucsc\\application\\domain\\bean";
-        String path1 = "/Users/hongqianhui/JavaProjects/packet-master-web/target/classes/com/zjucsc/application/domain/bean";
-        File file = new File(path1);
+        String path = "E:\\IdeaProjects\\packet-master-web\\target\\classes\\com\\zjucsc\\application\\domain\\bean";
+        //String path1 = "/Users/hongqianhui/JavaProjects/packet-master-web/target/classes/com/zjucsc/application/domain/bean";
+        File file = new File(path);
         File[] clazzFiles = file.listFiles();
         assert clazzFiles!=null;
         MyClassLoader myClassLoader = new MyClassLoader();
@@ -109,9 +109,11 @@ public class Other {
                 int size = fis.available();
                 byte[] bytes = new byte[size];
                 fis.read(bytes,0,size);
-                String clazzName = name.replace(".class","").replace("\\",".");
-                System.out.println(name);
-                return defineClass(clazzName,bytes,0,bytes.length);
+                String clazzName = name.replace(".class","");
+                name = clazzName.replace("//",".");
+                String[] realNames = name.split(".");
+                String realName = "com.zjucsc.application.domain.bean."+realNames[realNames.length-1];
+                return defineClass(realName,bytes,0,bytes.length);
             } catch (IOException e) {
                 e.printStackTrace();
             }

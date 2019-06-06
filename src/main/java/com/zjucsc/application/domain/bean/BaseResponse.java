@@ -1,10 +1,17 @@
 package com.zjucsc.application.domain.bean;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.io.Serializable;
 
+@ApiModel(description = "return")
 public class BaseResponse implements Serializable {
+    @ApiModelProperty(value = "code")
     public int code;
+    @ApiModelProperty(value = "msg")
     public String msg;
+    @ApiModelProperty(value = "data")
     public Object data;
     private final static BaseResponse OK = new BaseResponse();
     public static BaseResponse ERROR(int errorCode, String errorMsg){
