@@ -1,20 +1,15 @@
 package com.zjucsc;
 
 import com.alibaba.fastjson.JSON;
-import com.zjucsc.application.domain.bean.LogBean;
+import com.zjucsc.application.tshark.domain.packet.UnknownPacket;
+import com.zjucsc.application.util.PacketDecodeUtil;
+import com.zjucsc.common_util.ByteUtil;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
-import jdk.internal.util.xml.impl.Input;
 import org.junit.Test;
 
 import java.io.*;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.net.URLStreamHandlerFactory;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static org.json.simple.JSONValue.toJSONString;
 
 public class Other {
 
@@ -55,11 +50,8 @@ public class Other {
         fvDimensionLayer.eth_src = new String[]{"11:22:22:33:44:66"};
         fvDimensionLayer.ip_src = new String[]{"192.168.0.122"};
         fvDimensionLayer.frame_cap_len = new String[]{"10"};
-        String trailer = "00:03:0d:0d:fc:6b:07:e4:ae:78:63:b0:fc:6b:07:e4:ae:78:64:20";
-        fvDimensionLayer.eth_trailer = new String[]{trailer};
-        String fcs = "0x00000067";
 
-        fvDimensionLayer.eth_fcs = new String[]{fcs};
+
         long time1 = System.currentTimeMillis();
         for (int i = 0; i < 1000000; i++) {
             JSON.toJSONString(fvDimensionLayer);
@@ -125,4 +117,31 @@ public class Other {
         }
     }
 
+
+    @Test
+    public void tsharkDecodeTest() throws IOException {
+        //-e custom_ext_raw_data
+        String command = "tshark -n -l -T ek -e frame.protocols -e eth.dst -i \\Device\\NPF_{1A0E9386-C7CE-4D46-A22B-B4FE974A324E} -M 10000";
+        //String command = "tshark -n -l -T ek -e frame.protocols -e eth.dst  -c 2000 -r E:\\IdeaProjects\\packet-master-web\\z-other\\others\\pcap\\104_dnp_packets.pcapng";
+        int i = 0;
+        Process process = Runtime.getRuntime().exec(command);
+        InputStream is = process.getInputStream();
+        BufferedReader bfr = new BufferedReader(new InputStreamReader(is));
+        long startTime = System.currentTimeMillis();
+        for (;;){
+            String line = bfr.readLine();
+            if (line==null){
+                break;
+            }else{
+                if (line.length() > 90) {
+                    i++;
+                    //UnknownPacket layer = JSON.parseObject(line,UnknownPacket.class);
+                    //byte[] bytes = ByteUtil.hexStringToByteArray(layer.layers.custom_ext_raw_data[0],0);
+                    //System.out.println(PacketDecodeUtil.decodeTimeStamp(bytes,20));
+                    System.out.println(i);
+                }
+            }
+        }
+        System.out.println(System.currentTimeMillis() - startTime);
+    }
 }

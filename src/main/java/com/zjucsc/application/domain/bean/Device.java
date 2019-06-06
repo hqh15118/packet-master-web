@@ -18,4 +18,5 @@ public class Device implements Serializable {
     private String deviceTag;
     private String deviceInfo;
     private int gPlotId;
+    private String deviceMac;
 }

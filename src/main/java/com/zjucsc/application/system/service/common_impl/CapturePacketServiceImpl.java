@@ -20,6 +20,7 @@ import com.zjucsc.application.tshark.pre_processor.UnknownPreProcessor;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.CommonConfigUtil;
 import com.zjucsc.application.util.PacketDecodeUtil;
+import com.zjucsc.common_util.ByteUtil;
 import com.zjucsc.kafka.KafkaProducerCreator;
 import com.zjucsc.kafka.KafkaThread;
 import com.zjucsc.tshark.handler.AbstractAsyncHandler;
@@ -95,16 +96,8 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             }
             //统计协议
             StatisticsData.addProtocolNum(fvDimensionLayer.frame_protocols[0],1);
-
-            StringBuilder sb = stringBuilderThreadLocal.get();
-            sb.delete(0,sb.length());
-            //有些报文可能没有eth_trailer和eth_fcs
-            if (fvDimensionLayer.eth_trailer[0].length() > 0) {
-                sb.append(fvDimensionLayer.eth_trailer[0]).append(fvDimensionLayer.eth_fcs[0]);
-            }
-            //如果不存在，那么sb.toString==""，hexStringToByteArray2会自动判空，
-            //然后返回EMPTY=""，即payload={}空的byte数组
-            byte[] payload = PacketDecodeUtil.decodeTrailerAndFsc(sb.toString());
+            //解析原始数据
+            byte[] payload = ByteUtil.hexStringToByteArray(fvDimensionLayer.custom_ext_raw_data[0]);
             //设置五元组中的功能码以及功能码对应的含义
             try {
                 setFuncode(fvDimensionLayer);
@@ -114,8 +107,6 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
 
             sendFvDimensionPacket(fvDimensionLayer , payload);          //发送五元组所有报文到前端
 
-            FV_D_SENDER.sendMsg(fvDimensionLayer);                      //发送消息到数据库服务器
-
             try {
                 sendPacketStatisticsEvent(fvDimensionLayer);            //发送统计信息
             } catch (DeviceNotValidException e) {
@@ -124,15 +115,9 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
 
             int collectorId = PacketDecodeUtil.decodeCollectorId(payload,24);
             analyzeCollectorState(payload , collectorId);                         //分析采集器状态信息
-            int delay = collectorDelayInfo(payload , collectorId);                //解析时延信息
-
-            //TODO TEST
-//            optForList.leftPush(CommonConfigUtil.getFvDimensionKeyInRedis(),
-//                    JSON.toJSONString(FvDimensionWrapper.builder()
-//                    .collectorId(collectorId)
-//                    .delay(delay)
-//                    .layer(fvDimensionLayer)
-//                    .build()));
+            fvDimensionLayer.delay = collectorDelayInfo(payload,collectorId);     //解析时延信息
+            fvDimensionLayer.collectorId = collectorId;                           //设置报文采集器ID
+            FV_D_SENDER.sendMsg(fvDimensionLayer);                                //发送消息到数据库服务器
             return fvDimensionLayer;                                              //将五元组发送给BadPacketHandler
         }
     };
@@ -265,7 +250,6 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         if (newFvDimensionCallback!=null){
             newFvDimensionCallback.newCome(fvDimensionLayer);
         }
-
     }
 
     private void sendPacketStatisticsEvent(FvDimensionLayer fvDimensionLayer) throws DeviceNotValidException {

@@ -57,6 +57,7 @@ public class KafkaThread<V> extends Thread implements IKafka<V> {
     }
 
     private String convertObjectToString(V v){
+        //性能瓶颈？
         return JSON.toJSONString(v);
     }
 

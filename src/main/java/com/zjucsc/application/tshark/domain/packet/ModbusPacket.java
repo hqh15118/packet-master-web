@@ -21,29 +21,6 @@ public class ModbusPacket {
 
     public static class LayersBean extends FvDimensionLayer {
         public String[] modbus_func_code;
-
-        @Override
-        public String toString() {
-            return "LayersBean{" +
-                    "modbus_func_code=" + Arrays.toString(modbus_func_code) +
-                    ", frame_protocols=" + Arrays.toString(frame_protocols) +
-                    ", eth_dst=" + Arrays.toString(eth_dst) +
-                    ", frame_cap_len=" + Arrays.toString(frame_cap_len) +
-                    ", eth_src=" + Arrays.toString(eth_src) +
-                    ", ip_src=" + Arrays.toString(ip_src) +
-                    ", ip_dst=" + Arrays.toString(ip_dst) +
-                    ", tcp_srcport=" + Arrays.toString(src_port) +
-                    ", tcp_dstport=" + Arrays.toString(dst_port) +
-                    ", eth_eth_trailer=" + Arrays.toString(eth_trailer) +
-                    ", eth_eth_fcs=" + Arrays.toString(eth_fcs) +
-                    '}';
-        }
     }
 
-    @Override
-    public String toString() {
-        return "ModbusPacket{" +
-                "layers=" + layers +
-                '}';
-    }
 }

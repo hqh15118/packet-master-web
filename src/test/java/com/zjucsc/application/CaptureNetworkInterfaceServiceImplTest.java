@@ -106,9 +106,6 @@ public class CaptureNetworkInterfaceServiceImplTest {
         fvDimensionLayer.frame_cap_len = new String[]{"10"};
 
         String trailer = "00:03:0d:0d:fc:6b:07:e4:ae:78:63:b0:fc:6b:07:e4:ae:78:64:20";
-        fvDimensionLayer.eth_trailer = new String[]{trailer};
-        String fcs = "0x00000067";
-        fvDimensionLayer.eth_fcs = new String[]{fcs};
         CapturePacketServiceImpl capturePacketService = new CapturePacketServiceImpl();
         long time1 = System.currentTimeMillis();
         for (int i = 0; i < 100000; i++) {
@@ -146,9 +143,6 @@ public class CaptureNetworkInterfaceServiceImplTest {
         fvDimensionLayer.frame_cap_len = new String[]{"10"};
         fvDimensionLayer.timeStamp = "2019-06-02:xxxx";
         String trailer = "00:03:0d:0d:fc:6b:07:e4:ae:78:63:b0:fc:6b:07:e4:ae:78:64:20";
-        fvDimensionLayer.eth_trailer = new String[]{trailer};
-        String fcs = "0x00000067";
-        fvDimensionLayer.eth_fcs = new String[]{fcs};
         System.out.println(JSON.toJSONString(FvDimensionWrapper.builder()
                 .collectorId(3)
                 .delay(100)

@@ -1,6 +1,7 @@
 package com.zjucsc.tshark.packets;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.oracle.webservices.internal.api.databinding.DatabindingMode;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -23,8 +24,8 @@ public class FvDimensionLayer {
     public String[] src_port = {""};
     @JSONField(name = "tcp_dstport")
     public String[] dst_port = {""};
-    public String[] eth_trailer = {""};
-    public String[] eth_fcs = {""};
+    //public String[] eth_trailer = {""};
+    //public String[] eth_fcs = {""};
     public String timeStamp = "";
     public String[] tcp_payload = {""};
     @JSONField(deserialize = false)
@@ -36,6 +37,12 @@ public class FvDimensionLayer {
     public long timeStampInLong;
     public String[] tcp_flags_ack={""};
     public String[] tcp_flags_syn={""};
+    //raw data
+    public String[] custom_ext_raw_data = {""};
+    @JSONField(serialize = false)
+    public int delay;
+    @JSONField(serialize = false)
+    public int collectorId;
 
     public FvDimensionLayer setFrameProtocols(String protocol){
         if (protocol!=null) {
@@ -55,8 +62,6 @@ public class FvDimensionLayer {
                 ", ip_dst=" + Arrays.toString(ip_dst) +
                 ", src_port=" + Arrays.toString(src_port) +
                 ", dst_port=" + Arrays.toString(dst_port) +
-                ", eth_trailer=" + Arrays.toString(eth_trailer) +
-                ", eth_fcs=" + Arrays.toString(eth_fcs) +
                 ", timeStamp='" + timeStamp + '\'' +
                 ", tcp_payload=" + Arrays.toString(tcp_payload) +
                 ", funCode=" + funCode +

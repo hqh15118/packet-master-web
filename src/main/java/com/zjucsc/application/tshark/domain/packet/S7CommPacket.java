@@ -28,31 +28,5 @@ public class S7CommPacket{
     public static class LayersBean extends FvDimensionLayer {
         public String[] s7comm_param_func={""};
         public String[] s7comm_header_rosctr={""};
-
-        @Override
-        public String toString() {
-            return "LayersBean{" +
-                    "s7comm_param_func=" + Arrays.toString(s7comm_param_func) +
-                    ", s7comm_header_rosctr=" + Arrays.toString(s7comm_header_rosctr) +
-                    ", frame_protocols=" + Arrays.toString(frame_protocols) +
-                    ", eth_dst=" + Arrays.toString(eth_dst) +
-                    ", frame_cap_len=" + Arrays.toString(frame_cap_len) +
-                    ", eth_src=" + Arrays.toString(eth_src) +
-                    ", ip_src=" + Arrays.toString(ip_src) +
-                    ", ip_dst=" + Arrays.toString(ip_dst) +
-                    ", tcp_srcport=" + Arrays.toString(src_port) +
-                    ", tcp_dstport=" + Arrays.toString(dst_port) +
-                    ", eth_trailer=" + Arrays.toString(eth_trailer) +
-                    ", eth_fcs=" + Arrays.toString(eth_fcs) +
-                    ", timeStamp='" + timeStamp + '\'' +
-                    '}';
-        }
-    }
-
-    @Override
-    public String toString() {
-        return "S7CommPacket{" +
-                "layersX=" + layersX +
-                '}';
     }
 }

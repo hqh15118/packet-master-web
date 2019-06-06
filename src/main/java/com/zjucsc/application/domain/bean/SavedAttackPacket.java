@@ -20,7 +20,7 @@ public class SavedAttackPacket implements Serializable {
      */
 
     private String timeStamp;
-    private int protocolId;
+    private String protocolName;
     private String srcMac;
     private String dstMac;
     private String srcIp;
