@@ -13,7 +13,7 @@ import java.util.Map;
  * @author hongqianhui
  */
 @Service
-public class DeviceServiceImpl extends BaseServiceImpl<DeviceMapper, Device> implements IDeviceService {
+public class DeviceServiceImpl extends BaseServiceImpl< Device , DeviceMapper> implements IDeviceService {
 
     @Override
     public void updateDeviceInfo(Device device) {

@@ -27,7 +27,7 @@ public class SavedAttackPacket implements Serializable {
     private String dstIp;
     private String srcPort;
     private String dstPort;
-    private String funcode;
+    private int funcode;
     private String length;
     private int badType;
     private int danger;

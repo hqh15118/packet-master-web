@@ -12,7 +12,7 @@ import java.util.Set;
  * @author hongqianhui
  * #create_time 2019-05-30 - 22:42
  */
-public class AttackCommonTest {
+public class AttackTsharkCommonTest {
 
     @Test
     public void jedisTest(){

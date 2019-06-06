@@ -2,7 +2,7 @@ package com.zjucsc.application.controller;
 
 import com.zjucsc.application.domain.bean.ArtHistoryBean;
 import com.zjucsc.application.system.service.hessian_iservice.IArtHistoryDataService;
-import com.zjucsc.base.BaseResponse;
+import com.zjucsc.application.domain.bean.BaseResponse;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;

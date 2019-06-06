@@ -14,7 +14,7 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class UserOptServiceImpl extends BaseServiceImpl<UserOptMapper, User> implements UserOptService {
+public class UserOptServiceImpl extends BaseServiceImpl< User,UserOptMapper> implements UserOptService {
 
     @Override
     public List<User> getAllUsers() {

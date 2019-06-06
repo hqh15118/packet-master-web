@@ -1,12 +1,14 @@
 package com.zjucsc.application.domain.bean;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
 
 @Data
-public class Rule {
+@EqualsAndHashCode(callSuper = false)
+public class Rule extends BaseResponse{
     private FvDimensionFilter fvDimensionFilter;
     private List<Integer> funCodes;
 }

@@ -24,4 +24,6 @@ public class ConstantConfig {
 
     private boolean sendAopLog;
 
+    private boolean openMapperAop;
+
 }

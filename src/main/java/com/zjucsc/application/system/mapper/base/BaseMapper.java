@@ -1,9 +1,11 @@
 package com.zjucsc.application.system.mapper.base;
 
 
-public interface BaseMapper<T> {
+import com.zjucsc.application.domain.bean.BaseResponse;
+
+public interface BaseMapper<T extends BaseResponse> {
     T getById(Object id);
-    void deleteById(Object id);
-    void updateById(T t);
-    void insertById(T t);
+    BaseResponse deleteById(Object id);
+    BaseResponse updateById(T t);
+    BaseResponse insertById(T t);
 }

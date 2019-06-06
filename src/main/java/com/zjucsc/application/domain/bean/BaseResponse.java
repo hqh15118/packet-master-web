@@ -1,6 +1,8 @@
-package com.zjucsc.base;
+package com.zjucsc.application.domain.bean;
 
-public class BaseResponse {
+import java.io.Serializable;
+
+public class BaseResponse implements Serializable {
     public int code;
     public String msg;
     public Object data;
@@ -33,7 +35,7 @@ public class BaseResponse {
         return this;
     }
 
-    private BaseResponse(){
+    public BaseResponse(){
 
     }
 }

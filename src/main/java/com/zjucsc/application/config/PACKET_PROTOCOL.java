@@ -17,6 +17,7 @@ public interface PACKET_PROTOCOL {
     String TCP = "tcp";
     String IPV4 = "ipv4";
     String UDP = "udp";
+    @ProtocolIgnore
     String OTHER = "unknown packet";
     String ARP = "arp";
     String IPV6 = "ipv6";

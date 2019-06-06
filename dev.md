@@ -25,5 +25,35 @@ BiMap<Integer,String> PROTOCOL_STR_TO_INT = HashBiMap.create();
 
 + DEVICE_IP_TO_NAME
 
-
-
++ tshark性能测试
+```java
+public class Test{
+    public void tsharkDecodeTest() throws IOException {
+        //-e custom_ext_raw_data
+        String command = "tshark -n -l -T ek -e frame.protocols -e eth.dst -e custom_ext_raw_data -i \\Device\\NPF_{1A0E9386-C7CE-4D46-A22B-B4FE974A324E} -M 50000";
+        //String command = "tshark -n -l -T ek -e frame.protocols -e eth.dst  -c 2000 -r E:\\IdeaProjects\\packet-master-web\\z-other\\others\\pcap\\104_dnp_packets.pcapng";
+        int i = 0;
+        Process process = Runtime.getRuntime().exec(command);
+        InputStream is = process.getInputStream();
+        BufferedReader bfr = new BufferedReader(new InputStreamReader(is));
+        long startTime = System.currentTimeMillis();
+        for (;;){
+            String line = bfr.readLine();
+            if (line==null){
+                break;
+            }else{
+                if (line.length() > 90) {
+                    i++;
+                    //UnknownPacket layer = JSON.parseObject(line,UnknownPacket.class);
+                    //byte[] bytes = ByteUtil.hexStringToByteArray(layer.layers.custom_ext_raw_data[0],0);
+                    //System.out.println(PacketDecodeUtil.decodeTimeStamp(bytes,20));
+                    //log.info("number : {} , info : {} " , i);
+                }
+            }
+        }
+        System.out.println(System.currentTimeMillis() - startTime);
+    }
+}
+```
+``结论：tshark字符串输出性能有瓶颈，2000条/秒左右【跟输出的字符串长度有关系】，但是tshark会将未处理的任务缓存起来，
+-M 10000由于清空已经处理的任务（即已经输出的字符串）``

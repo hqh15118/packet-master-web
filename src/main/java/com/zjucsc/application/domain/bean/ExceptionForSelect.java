@@ -2,12 +2,14 @@ package com.zjucsc.application.domain.bean;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.util.List;
 
 @Data
-public class ExceptionForSelect implements Serializable {
+@EqualsAndHashCode(callSuper = false)
+public class ExceptionForSelect extends BaseResponse implements Serializable {
 
     /**
      * list : [{"timeStamp":" 1","protocolName":"1 ","srcMac":"1 ","dstMac":"1 ","srcIp":"1 ","dstIp":"1 ","srcPort":" 1","dstPort":"1 ","funcode":"1 ","length":"1 "}]
@@ -56,7 +58,7 @@ public class ExceptionForSelect implements Serializable {
         private String dstIp;
         private String srcPort;
         private String dstPort;
-        private String funcode;
+        private int funcode;
         private String length;
         private int badType;
         private int danger;
@@ -125,11 +127,11 @@ public class ExceptionForSelect implements Serializable {
             this.dstPort = dstPort;
         }
 
-        public String getFuncode() {
+        public int getFuncode() {
             return funcode;
         }
 
-        public void setFuncode(String funcode) {
+        public void setFuncode(int funcode) {
             this.funcode = funcode;
         }
 

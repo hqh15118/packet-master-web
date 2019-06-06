@@ -27,7 +27,7 @@ import static com.zjucsc.application.config.PACKET_PROTOCOL.FV_DIMENSION;
  * @author hongqianhui
  */
 @Service
-public class FvDimensionFilterServiceImpl extends BaseServiceImpl<FvDimensionFilterMapper, Rule> implements IFvDimensionFilterService {
+public class FvDimensionFilterServiceImpl extends BaseServiceImpl<Rule,FvDimensionFilterMapper> implements IFvDimensionFilterService {
 
     @Autowired
     private IOptFilterService iOptFilterService;

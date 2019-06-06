@@ -20,6 +20,7 @@ import com.zjucsc.application.tshark.pre_processor.UnknownPreProcessor;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.CommonConfigUtil;
 import com.zjucsc.application.util.PacketDecodeUtil;
+import com.zjucsc.attack.common.AttackCommon;
 import com.zjucsc.common_util.ByteUtil;
 import com.zjucsc.kafka.KafkaProducerCreator;
 import com.zjucsc.kafka.KafkaThread;
@@ -57,9 +58,6 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
 
     private List<BasePreProcessor> processorList = new ArrayList<>();
     private ProcessCallback<String,String> callback;
-
-    private KafkaProducer<String,String> kafkaProducer = (KafkaProducer<String, String>) KafkaProducerCreator.getProducer("fv_dimension",
-            String.class,String.class);
 
     //恶意报文handler
     private BadPacketAnalyzeHandler badPacketAnalyzeHandler = new BadPacketAnalyzeHandler(Executors.newFixedThreadPool(1,
@@ -102,22 +100,17 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             try {
                 setFuncode(fvDimensionLayer);
             } catch (ProtocolIdNotValidException e) {
-                log.error("error set Funcode" , e);
+                //缓存中找不到该五元组对应的协议
+                log.error("error set Funcode , msg : {} [缓存中找不到该五元组协议：{}对应的功能码表]" , e.getMsg(),fvDimensionLayer.frame_protocols[0]);
             }
-
-            sendFvDimensionPacket(fvDimensionLayer , payload);          //发送五元组所有报文到前端
-
-            try {
-                sendPacketStatisticsEvent(fvDimensionLayer);            //发送统计信息
-            } catch (DeviceNotValidException e) {
-                log.error("找不到IP地址对应的设备号 {} " , e.getMsg());
-            }
-
+            sendFvDimensionPacket(fvDimensionLayer , payload);                    //发送五元组所有报文到前端
+            sendPacketStatisticsEvent(fvDimensionLayer);                          //发送统计信息
             int collectorId = PacketDecodeUtil.decodeCollectorId(payload,24);
             analyzeCollectorState(payload , collectorId);                         //分析采集器状态信息
             fvDimensionLayer.delay = collectorDelayInfo(payload,collectorId);     //解析时延信息
             fvDimensionLayer.collectorId = collectorId;                           //设置报文采集器ID
             FV_D_SENDER.sendMsg(fvDimensionLayer);                                //发送消息到数据库服务器
+            AttackCommon.appendFvDimension(fvDimensionLayer);                     //将五元组发送添加到攻击分析模块中分析
             return fvDimensionLayer;                                              //将五元组发送给BadPacketHandler
         }
     };
@@ -135,11 +128,16 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         }
     }
 
+    /**
+     * 解析功能码，一些协议有些报文有功能码有些报文没有功能码，要做区分
+     * 没有功能码返回-1
+     * @param t 五元组
+     * @return 功能码
+     */
     private int decodeFuncode(FvDimensionLayer t) {
         String funCodeStr;
         if (t instanceof S7CommPacket.LayersBean){
             funCodeStr =  ((S7CommPacket.LayersBean) t).s7comm_param_func[0];
-            System.out.println("funcode str" + funCodeStr);
             return PacketDecodeUtil.decodeFuncode(S7, funCodeStr);
         }else if (t instanceof ModbusPacket.LayersBean){
             funCodeStr = ((ModbusPacket.LayersBean) t).modbus_func_code[0];
@@ -252,7 +250,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         }
     }
 
-    private void sendPacketStatisticsEvent(FvDimensionLayer fvDimensionLayer) throws DeviceNotValidException {
+    private void sendPacketStatisticsEvent(FvDimensionLayer fvDimensionLayer) {
         int capLength = Integer.parseInt(fvDimensionLayer.frame_cap_len[0]);
 
         Common.FLOW.addAndGet(capLength);                          //计算报文流量

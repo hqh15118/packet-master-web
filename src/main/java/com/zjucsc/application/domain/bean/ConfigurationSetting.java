@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class ConfigurationSetting implements Serializable {
+public class ConfigurationSetting  extends BaseResponse implements Serializable {
     private int id;
     private int protocolId;
     private int funCode;

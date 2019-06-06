@@ -2,21 +2,18 @@ package com.zjucsc.application.controller;
 
 
 import com.zjucsc.application.config.auth.Log;
-import com.zjucsc.application.domain.bean.OptFilterForFront;
 import com.zjucsc.application.domain.bean.OptRulePullForFront;
-import com.zjucsc.application.domain.exceptions.OptFilterNotValidException;
 import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.application.system.service.hessian_iservice.IOptFilterService;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.CommonOptFilterUtil;
-import com.zjucsc.base.BaseResponse;
+import com.zjucsc.application.domain.bean.BaseResponse;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;

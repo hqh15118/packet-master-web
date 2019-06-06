@@ -7,7 +7,7 @@ import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.application.system.service.hessian_iservice.IConfigurationSettingService;
 import com.zjucsc.application.system.service.hessian_iservice.IProtocolIdService;
 import com.zjucsc.application.util.CommonCacheUtil;
-import com.zjucsc.base.BaseResponse;
+import com.zjucsc.application.domain.bean.BaseResponse;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -58,9 +58,8 @@ public class ConfigurationSettingController {
         String protocolName = configurationForFronts.getProtocolName();
         Protocol protocolAndName = new Protocol();
         protocolAndName.setProtocolName(protocolName);
-        protocolAndName.setProtocolId(iProtocolIdService.getMax());
-
         iProtocolIdService.insertById(protocolAndName);
+        protocolAndName.setProtocolId((Integer) protocolAndName.data);
         int newProtocolId = protocolAndName.getProtocolId();  //新增协议对应的协议ID
         addNewProtocolToCache(protocolName , newProtocolId);    //将新增的协议添加到两个缓存中
     }

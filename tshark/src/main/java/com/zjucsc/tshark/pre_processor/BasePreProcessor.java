@@ -1,6 +1,6 @@
 package com.zjucsc.tshark.pre_processor;
 
-import com.zjucsc.tshark.Common;
+import com.zjucsc.tshark.TsharkCommon;
 import com.zjucsc.tshark.CommonTsharkUtil;
 import com.zjucsc.tshark.handler.PipeLine;
 
@@ -40,11 +40,12 @@ public abstract class BasePreProcessor implements PreProcessor {
     private String filePath = null;
     private volatile boolean processRunning = false;
     private static final Semaphore semaphore = new Semaphore(1);
-    protected PipeLine pipeLine;
-    protected ExecutorService decodeThreadPool = Executors.newSingleThreadExecutor(r -> {
+    PipeLine pipeLine;
+    //用于每个tshark进程解析
+    ExecutorService decodeThreadPool = Executors.newSingleThreadExecutor(r -> {
         Thread thread = new Thread(r);
         thread.setName(BasePreProcessor.this.getClass().getName() + " -pre_process_thread");
-        thread.setUncaughtExceptionHandler(Common.uncaughtExceptionHandler);
+        thread.setUncaughtExceptionHandler(TsharkCommon.uncaughtExceptionHandler);
         return thread;
     });
 
@@ -179,21 +180,17 @@ public abstract class BasePreProcessor implements PreProcessor {
         String str;
         try {
             if ((str = bufferedReader.readLine()) != null) {
-                System.out.println("error stream : " + str);
+                System.out.println("error stream : [如果是capture xxx表示正常运行] >> " + str);
                 /**
                  * 当接收到capture on xxx的时候，就表示该tshark进程已经开启完毕了，那么就可以释放
                  * 信号量，让下一个线程打开tshark
                  */
                 semaphore.release();
+                //统一设置错误流
+                TsharkCommon.handleTsharkErrorStream(command.split("-Y")[1],bufferedReader);
             }
         } catch (IOException e) {
             //log.error("" , e);//TODO LOG HERE
-        } finally {
-            try {
-                bufferedReader.close();
-            } catch (IOException e) {
-                //log.error("" , e);//TODO LOG HERE
-            }
         }
     }
 
@@ -205,7 +202,7 @@ public abstract class BasePreProcessor implements PreProcessor {
 
     @Override
     public void pcapFilePath(int limit) {
-        System.out.println("*** operation name is : " + Common.OS_NAME);
+        System.out.println("*** operation name is : " + TsharkCommon.OS_NAME);
         if (limit < 0)
             filePath =  " -r  " + pcapFilePathForWin;
         else
@@ -214,8 +211,9 @@ public abstract class BasePreProcessor implements PreProcessor {
 
     @Override
     public void stopProcess() {
-        CommonTsharkUtil.shotDownAllRunningTsharkProcess();
-        processRunning = false;
+        CommonTsharkUtil.shotDownAllRunningTsharkProcess(); //退出所有的tshark进程
+        processRunning = false; //停止读取数据流
+        decodeThreadPool.shutdown();
     }
 
     public void setPipeLine(PipeLine pipeLine) {
@@ -262,6 +260,9 @@ public abstract class BasePreProcessor implements PreProcessor {
         }
         if (!fields.contains("tcp.flags.ack")){
             fields.add("tcp.flags.ack");
+        }
+        if (!fields.contains("-e custom_ext_raw_data")){
+            fields.add("-e custom_ext_raw_data");
         }
     }
 

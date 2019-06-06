@@ -1,9 +1,10 @@
 package com.zjucsc.application.system.mapper.base;
 
 
+import com.zjucsc.application.domain.bean.BaseResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class BaseServiceImpl<S extends BaseMapper<U>, U> implements IService<U>{
+public class BaseServiceImpl<U extends BaseResponse,S extends BaseMapper<U>> implements IService<U>{
 
     @Autowired
     protected S baseMapper;
@@ -14,17 +15,17 @@ public class BaseServiceImpl<S extends BaseMapper<U>, U> implements IService<U>{
     }
 
     @Override
-    public void deleteById(Object id) {
-        baseMapper.deleteById(id);
+    public BaseResponse deleteById(Object id) {
+        return baseMapper.deleteById(id);
     }
 
     @Override
-    public void updateById(U t) {
-        baseMapper.updateById(t);
+    public BaseResponse updateById(U t) {
+        return baseMapper.updateById(t);
     }
 
     @Override
-    public void insertById(U t) {
-        baseMapper.insertById(t);
+    public BaseResponse insertById(U t) {
+        return baseMapper.insertById(t);
     }
 }

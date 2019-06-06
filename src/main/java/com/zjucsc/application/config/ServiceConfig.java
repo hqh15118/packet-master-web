@@ -21,12 +21,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 @EnableAsync
 public class ServiceConfig {
 
-    @Bean("global_single_thread_executor")
-    public Executor asyncThreadPoolConfig(){
-        return getNewExecutor("global_single_thread_executor");
-    }
-
-
     private Executor getNewExecutor(String name){
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
         taskExecutor.setQueueCapacity(100);

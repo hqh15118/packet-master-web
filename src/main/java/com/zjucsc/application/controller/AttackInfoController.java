@@ -6,7 +6,7 @@ import com.zjucsc.application.config.auth.Log;
 import com.zjucsc.application.domain.bean.CositeDosConfigBean;
 import com.zjucsc.application.system.service.hessian_mapper.PacketInfoMapper;
 import com.zjucsc.attack.bean.AttackConfig;
-import com.zjucsc.base.BaseResponse;
+import com.zjucsc.application.domain.bean.BaseResponse;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

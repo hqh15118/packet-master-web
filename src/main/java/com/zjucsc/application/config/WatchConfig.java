@@ -3,6 +3,7 @@ package com.zjucsc.application.config;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.zjucsc.kafka.KafkaCommon;
+import com.zjucsc.tshark.TsharkCommon;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.context.annotation.Configuration;
@@ -27,8 +28,7 @@ public class WatchConfig {
         map.put("SHOW_GRAPH_SET",Common.SHOW_GRAPH_SET);
         map.put("ART_DECODE_MAP",Common.ART_DECODE_MAP);
         map.put("KAFKA_SERVICE", KafkaCommon.getKafkaServiceState());
+        map.put("TSHARK_ERROR_STREAM_THREAD_NUMBER", TsharkCommon.getErrorProcessThreadNumber());
         return map;
     }
-
-
 }

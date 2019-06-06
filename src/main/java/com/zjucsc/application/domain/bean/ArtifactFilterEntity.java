@@ -1,9 +1,9 @@
 package com.zjucsc.application.domain.bean;
 
-import com.zjucsc.application.domain.BaseBean;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -14,7 +14,7 @@ import java.util.List;
  */
 @EqualsAndHashCode(callSuper = false)
 @Data
-public class ArtifactFilterEntity {
+public class ArtifactFilterEntity  extends BaseResponse implements Serializable {
     private String userName;
     private String content;
 

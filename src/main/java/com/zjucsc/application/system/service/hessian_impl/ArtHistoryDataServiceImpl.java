@@ -16,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
 
 
 @Service
-public class ArtHistoryDataServiceImpl extends BaseServiceImpl<ArtHistoryDataMapper, ArtHistoryData> implements IArtHistoryDataService {
+public class ArtHistoryDataServiceImpl extends BaseServiceImpl<ArtHistoryData,ArtHistoryDataMapper> implements IArtHistoryDataService {
 
     @Autowired private IArtConfigService iArtConfigService;
 

@@ -1,18 +1,11 @@
 package com.zjucsc.application.socketio;
 
-import com.corundumstudio.socketio.AckRequest;
 import com.corundumstudio.socketio.Configuration;
-import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.listener.ConnectListener;
-import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
 import com.zjucsc.application.config.Common;
-import com.zjucsc.base.BaseResponse;
-
-import java.io.IOException;
-import java.util.EventObject;
-import java.util.concurrent.atomic.AtomicBoolean;
+import com.zjucsc.application.domain.bean.BaseResponse;
 
 public class MainServer {
 

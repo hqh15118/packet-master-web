@@ -5,12 +5,14 @@ import com.zjucsc.application.tshark.domain.packet.UnknownPacket;
 import com.zjucsc.application.util.PacketDecodeUtil;
 import com.zjucsc.common_util.ByteUtil;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
 import java.io.*;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 public class Other {
 
 
@@ -121,7 +123,7 @@ public class Other {
     @Test
     public void tsharkDecodeTest() throws IOException {
         //-e custom_ext_raw_data
-        String command = "tshark -n -l -T ek -e frame.protocols -e eth.dst -i \\Device\\NPF_{1A0E9386-C7CE-4D46-A22B-B4FE974A324E} -M 10000";
+        String command = "tshark -n -l -T ek -e frame.protocols -e eth.dst -e custom_ext_raw_data -i \\Device\\NPF_{1A0E9386-C7CE-4D46-A22B-B4FE974A324E} -M 50000";
         //String command = "tshark -n -l -T ek -e frame.protocols -e eth.dst  -c 2000 -r E:\\IdeaProjects\\packet-master-web\\z-other\\others\\pcap\\104_dnp_packets.pcapng";
         int i = 0;
         Process process = Runtime.getRuntime().exec(command);
@@ -138,7 +140,7 @@ public class Other {
                     //UnknownPacket layer = JSON.parseObject(line,UnknownPacket.class);
                     //byte[] bytes = ByteUtil.hexStringToByteArray(layer.layers.custom_ext_raw_data[0],0);
                     //System.out.println(PacketDecodeUtil.decodeTimeStamp(bytes,20));
-                    System.out.println(i);
+                    //log.info("number : {} , info : {} " , i);
                 }
             }
         }

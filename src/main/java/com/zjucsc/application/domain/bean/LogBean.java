@@ -21,6 +21,7 @@ public class LogBean  {
     private int logType;
     private String exception;
     private String startTime;
+    private String comment;
 
     public static final int NORMAL_LOG = 1 , IMPORTANT_LOG = 2;
 }

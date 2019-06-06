@@ -10,6 +10,7 @@ myconfig:
   sendAopLog : false
   redis_ip : 10.15.191.100
   redis_port : 6379
+  openMapperAop : true
 
 hessian-config:
   hessian-url: 10.15.191.100:36955/hessian

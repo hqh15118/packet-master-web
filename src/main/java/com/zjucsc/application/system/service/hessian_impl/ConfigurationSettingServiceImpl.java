@@ -15,7 +15,7 @@ import java.util.List;
  * @author hongqianhui
  */
 @Service
-public class ConfigurationSettingServiceImpl extends BaseServiceImpl<ConfigurationSettingMapper, ConfigurationSetting> implements IConfigurationSettingService {
+public class ConfigurationSettingServiceImpl extends BaseServiceImpl<ConfigurationSetting,ConfigurationSettingMapper > implements IConfigurationSettingService {
 
     @Override
     public List<ConfigurationSetting> selectConfigurationInfo(ConfigurationForSelect configurationForSelect) {

@@ -5,7 +5,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public class User implements Serializable {
+public class User  extends BaseResponse implements Serializable {
     private String name;
     private String password;
     private String role;

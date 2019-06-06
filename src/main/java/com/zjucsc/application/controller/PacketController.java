@@ -9,7 +9,7 @@ import com.zjucsc.application.system.service.common_iservice.CapturePacketServic
 import com.zjucsc.application.system.service.common_impl.NetworkInterfaceServiceImpl;
 import com.zjucsc.application.tshark.capture.ProcessCallback;
 import com.zjucsc.application.util.CommonCacheUtil;
-import com.zjucsc.base.BaseResponse;
+import com.zjucsc.application.domain.bean.BaseResponse;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.socketio.MainServer;
 import com.zjucsc.application.domain.bean.CaptureService;

@@ -19,9 +19,9 @@ public class CommonConfigUtil {
     public static boolean SHOW_LOG = false;
 
     public static HashMap<Integer,String> getTargetProtocolAllFuncodeMeaning(String protocol) throws ProtocolIdNotValidException {
-        HashMap<Integer,String> map = null;
+        HashMap<Integer,String> map;
         if ((map = CONFIGURATION_MAP.get(protocol)) == null){
-            throw new ProtocolIdNotValidException("can not find  the target protocl " + protocol + " in CONFIGURATION_MAP \n CONFIGURATION_MAP is : " +
+            throw new ProtocolIdNotValidException("can not find  the target protocol " + protocol + " in CONFIGURATION_MAP \n CONFIGURATION_MAP is : " +
                     CONFIGURATION_MAP);
         }else{
             return map;

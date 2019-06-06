@@ -4,11 +4,12 @@ package com.zjucsc.application.handler;
 import com.alibaba.fastjson.JSONException;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.exceptions.*;
-import com.zjucsc.base.BaseResponse;
+import com.zjucsc.application.domain.bean.BaseResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
@@ -80,12 +81,20 @@ public class ControllerExceptionHandler {
         return BaseResponse.ERROR(Common.HTTP_STATUS_CODE.ART_CONFIG_NOT_VALID,e.getMsg());
     }
 
+    @ExceptionHandler(DataAccessException.class)
+    @ResponseBody
+    public BaseResponse handleDataAccessException(DataAccessException e){
+        printException(e);
+        return BaseResponse.ERROR(e.getCode(),e.getMsg());
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public BaseResponse handleUnKnowException(Exception e){
         printException(e);
         return BaseResponse.ERROR(500,e.getMessage());
     }
+
 
     private void printException(Exception e){
         log.error("catch controller exception : \n **************\nclass : {} ; msg : {} \n**************" , e.getClass() , e.getMessage());

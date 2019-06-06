@@ -12,12 +12,7 @@ import java.util.List;
  * @author hongqianhui
  */
 @Service
-public class ProtocolIdServiceImpl extends BaseServiceImpl<ProtocolIdMapper, Protocol> implements IProtocolIdService {
-
-    @Override
-    public int getMax() {
-        return this.baseMapper.getMax();
-    }
+public class ProtocolIdServiceImpl extends BaseServiceImpl<Protocol,ProtocolIdMapper> implements IProtocolIdService {
 
     @Override
     public void saveOrUpdateBatch(List<Protocol> protocol) {

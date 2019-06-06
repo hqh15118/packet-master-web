@@ -2,11 +2,13 @@ package com.zjucsc.application.domain.bean;
 
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 
 @Data
-public class Gplot implements Serializable {
+@EqualsAndHashCode(callSuper = false)
+public class Gplot extends BaseResponse implements Serializable {
     private int id;
     private String name;
     private String info;

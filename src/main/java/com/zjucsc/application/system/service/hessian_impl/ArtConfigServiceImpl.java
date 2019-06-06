@@ -14,7 +14,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 @Service
-public class ArtConfigServiceImpl extends BaseServiceImpl<ArtConfigMapper, ArtConfig> implements IArtConfigService {
+public class ArtConfigServiceImpl extends BaseServiceImpl<ArtConfig,ArtConfigMapper> implements IArtConfigService {
     @Override
     public void deleteByProtocolIdAndMinLength(int protocolId, int minLength) {
         this.baseMapper.deleteArtConfigByProtocolIdAndMinLength(protocolId, minLength);

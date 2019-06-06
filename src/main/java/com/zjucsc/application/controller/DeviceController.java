@@ -2,14 +2,12 @@ package com.zjucsc.application.controller;
 
 
 import com.zjucsc.application.config.Common;
-import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.config.auth.Log;
 import com.zjucsc.application.domain.bean.Device;
-import com.zjucsc.application.domain.bean.StatisticInfo;
 import com.zjucsc.application.domain.bean.StatisticSelect;
 import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
 import com.zjucsc.application.util.CommonCacheUtil;
-import com.zjucsc.base.BaseResponse;
+import com.zjucsc.application.domain.bean.BaseResponse;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

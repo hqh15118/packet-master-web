@@ -6,7 +6,7 @@ import com.zjucsc.application.config.auth.Log;
 import com.zjucsc.application.config.auth.Token;
 import com.zjucsc.application.domain.bean.User;
 import com.zjucsc.application.system.service.hessian_iservice.UserOptService;
-import com.zjucsc.base.BaseResponse;
+import com.zjucsc.application.domain.bean.BaseResponse;
 import com.zjucsc.base.util.MD5Util;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;

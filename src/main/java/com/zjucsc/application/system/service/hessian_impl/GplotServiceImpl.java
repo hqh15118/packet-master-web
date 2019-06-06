@@ -23,7 +23,7 @@ import java.util.List;
  */
 @Service("gplotservice")
 @Slf4j
-public class GplotServiceImpl extends BaseServiceImpl<GplotMapper, Gplot> implements IGplotService {
+public class GplotServiceImpl extends BaseServiceImpl<Gplot,GplotMapper> implements IGplotService {
 
     @Autowired private IDeviceService iDeviceService;
 
@@ -34,7 +34,7 @@ public class GplotServiceImpl extends BaseServiceImpl<GplotMapper, Gplot> implem
     }
 
     @Transactional
-    @Async(value = "global_single_thread_executor")
+    @Async
     @Override
     public void changeGplot(int gplotId) throws ProtocolIdNotValidException {
         //更新缓存中的组态图ID

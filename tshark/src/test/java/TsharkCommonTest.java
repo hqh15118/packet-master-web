@@ -10,7 +10,7 @@ import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.Random;
 
-public class CommonTest {
+public class TsharkCommonTest {
 
     @Test
     public void FvDimensionCompareTest(){

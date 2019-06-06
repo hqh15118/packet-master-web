@@ -31,7 +31,7 @@ import static com.zjucsc.application.util.CommonCacheUtil.convertIdToName;
  */
 @Slf4j
 @Service
-public class OptFilterServiceImpl extends BaseServiceImpl<OptFilterMapper, OptFilter> implements IOptFilterService {
+public class OptFilterServiceImpl extends BaseServiceImpl<OptFilter,OptFilterMapper> implements IOptFilterService {
 
     /**
      * 每次传的时候，都传功能码那里所有协议下的所有配置

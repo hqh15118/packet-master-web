@@ -9,7 +9,6 @@ import java.util.List;
  * @author hongqianhui
  */
 public interface IProtocolIdService extends IService<Protocol> {
-    int getMax();
 
     void saveOrUpdateBatch(List<Protocol> protocol);
 
