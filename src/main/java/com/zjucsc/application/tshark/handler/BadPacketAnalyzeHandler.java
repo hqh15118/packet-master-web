@@ -61,14 +61,14 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
     }
 
 
-
     private void protocolAnalyze(FvDimensionLayer layer) {
         FiveDimensionAnalyzer fiveDimensionAnalyzer;
         //根据目的地址，定位到具体的报文过滤器进行分析
-        if ((fiveDimensionAnalyzer = FV_DIMENSION_FILTER_PRO.get(layer.ip_dst[0])) != null) {
+        String tag = CommonCacheUtil.getPacketFilterDstStatement(layer);
+        if ((fiveDimensionAnalyzer = FV_DIMENSION_FILTER_PRO.get(tag)) != null) {
             BadPacket badPacket = ((BadPacket) fiveDimensionAnalyzer.analyze(layer));
             if (badPacket != null) {
-                String deviceNumber = CommonCacheUtil.getTargetDeviceNumberByIp(layer.ip_dst[0]);
+                String deviceNumber = CommonCacheUtil.getTargetDeviceNumberByTag(tag);
                 badPacket.setDeviceNumber(deviceNumber);
                 //恶意报文统计
                 statisticsBadPacket(badPacket, deviceNumber);
@@ -78,11 +78,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
                 if (!(layer instanceof UnknownPacket.LayersBean)) {
                     String funCode = layer.funCode;
                     if (!"--".equals(funCode)) {
-                        try {
-                            operationAnalyze(Integer.valueOf(funCode), layer);
-                        } catch (ProtocolIdNotValidException e) {
-                            log.error("protocol Id not valid {} ", e.getMsg());
-                        }
+                        operationAnalyze(Integer.valueOf(funCode), layer);
                     }
                 }
             }
@@ -96,9 +92,10 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
         }
     }
 
-    private void operationAnalyze(int funCode , FvDimensionLayer layer) throws ProtocolIdNotValidException {
-        //根据目的IP地址获取对应的功能码分析器
-        ConcurrentHashMap<String, OperationAnalyzer> map = OPERATION_FILTER_PRO.get(layer.ip_dst[0]);
+    private void operationAnalyze(int funCode , FvDimensionLayer layer) {
+        //根据目的IP/MAC地址获取对应的功能码分析器
+        String tag = CommonCacheUtil.getPacketFilterDstStatement(layer);
+        ConcurrentHashMap<String, OperationAnalyzer> map = OPERATION_FILTER_PRO.get(tag);
         if (map != null){
             OperationAnalyzer operationAnalyzer = null;
             /**
@@ -110,10 +107,10 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
              * @see com.zjucsc.application.config.Common 的 【PROTOCOL_STR_TO_INT】
              */
             if ((operationAnalyzer = map.get(layer.frame_protocols[0]))!=null){
-                BadPacket badPacket = null;
+                BadPacket badPacket;
                 badPacket = (BadPacket) operationAnalyzer.analyze(funCode,layer);
                 if (badPacket!=null){
-                    String deviceNumber = CommonCacheUtil.getTargetDeviceNumberByIp(layer.ip_dst[0]);
+                    String deviceNumber = CommonCacheUtil.getTargetDeviceNumberByTag(tag);
                     badPacket.setDeviceNumber(deviceNumber);
                     statisticsBadPacket(badPacket , deviceNumber);
                 }else{

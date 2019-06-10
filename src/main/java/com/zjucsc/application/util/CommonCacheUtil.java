@@ -4,6 +4,7 @@ import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.bean.ArtConfig;
 import com.zjucsc.application.domain.bean.StatisticInfoSaveBean;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
+import com.zjucsc.tshark.packets.FvDimensionLayer;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
@@ -182,30 +183,34 @@ public class CommonCacheUtil {
      *  DEVICE_IP_TO_NAME
      *
      **********************************/
-
-    public static void addOrUpdateDeviceNumberAndIp(String deviceNumber , String deviceIp){
-        Common.DEVICE_IP_TO_NAME.put(deviceIp , deviceNumber);
+    /**
+     *
+     * @param deviceNumber
+     * @param deviceTag device 的 ip地址或者mac地址
+     */
+    public static void addOrUpdateDeviceNumberAndTAG(String deviceNumber , String deviceTag){
+        Common.DEVICE_TAG_TO_NAME.put(deviceTag , deviceNumber);
         Common.STATISTICS_INFO_BEAN.put(deviceNumber,new StatisticInfoSaveBean());
-        log.info("add device number : {} [ip : {} ] and DEVICE_IP_TO_NAME {}" , deviceNumber , deviceIp , Common.DEVICE_IP_TO_NAME);
+        log.info("add device number : {} [tag : {} ] and DEVICE_TAG_TO_NAME {}" , deviceNumber , deviceTag , Common.DEVICE_TAG_TO_NAME);
     }
 
     public static void removeDeviceNumer(String deviceNumber){
-        Common.DEVICE_IP_TO_NAME.remove(deviceNumber);
+        Common.DEVICE_TAG_TO_NAME.remove(deviceNumber);
         Common.STATISTICS_INFO_BEAN.remove(deviceNumber);
-        log.info("remove device number : {} [ip : {} ]" , deviceNumber , Common.DEVICE_IP_TO_NAME.inverse().get(deviceNumber));
+        log.info("remove device number : {} [ip : {} ]" , deviceNumber , Common.DEVICE_TAG_TO_NAME.inverse().get(deviceNumber));
     }
 
-    public static String getTargetDeviceNumberByIp(String deviceIp) {
+    public static String getTargetDeviceNumberByTag(String deviceTag) {
         //System.out.println("get " + deviceIp + "xxxxxx" + AttackCommon.DEVICE_IP_TO_NAME.get(deviceIp));
-        return Common.DEVICE_IP_TO_NAME.get(deviceIp);
+        return Common.DEVICE_TAG_TO_NAME.get(deviceTag);
     }
 
-    public static String getTargetDeviceIpByNumber(String deviceNumber){
-        return Common.DEVICE_IP_TO_NAME.inverse().get(deviceNumber);
+    public static String getTargetDeviceTagByNumber(String deviceNumber){
+        return Common.DEVICE_TAG_TO_NAME.inverse().get(deviceNumber);
     }
 
     public static void removeAllCachedDeviceNumber(){
-        Common.DEVICE_IP_TO_NAME.clear();
+        Common.DEVICE_TAG_TO_NAME.clear();
         Common.STATISTICS_INFO_BEAN.clear();
     }
 
@@ -319,5 +324,18 @@ public class CommonCacheUtil {
 
     public static boolean getScheduleServiceRunningState(){
         return Common.SCHEDULE_RUNNING;
+    }
+
+    /**********************************
+     *
+     * 获取报文TAG ==> 是按照设备的IP地址还是MAC地址来存储过滤器
+     *
+     *********************************/
+    public static String getPacketFilterSrcStatement(FvDimensionLayer layer){
+        return Common.filterStatement == 0 ? layer.ip_src[0] : layer.eth_src[0];
+    }
+
+    public static String getPacketFilterDstStatement(FvDimensionLayer layer){
+        return Common.filterStatement == 0 ? layer.ip_dst[0] : layer.eth_dst[0];
     }
 }

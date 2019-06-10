@@ -52,16 +52,16 @@ public class OptFilterController {
     @DeleteMapping("/delete_opt_filter")
     @Log
     public BaseResponse deleteOptFilter(@RequestParam String deviceId , @RequestParam int funcode , @RequestParam int protocolId) throws ProtocolIdNotValidException {
-        String deviceIp = CommonCacheUtil.getTargetDeviceIpByNumber(deviceId);
+        String deviceTag = CommonCacheUtil.getTargetDeviceTagByNumber(deviceId);
 
         if (funcode > 0 ){
-            CommonOptFilterUtil.removeTargetDeviceAnalyzerFuncode(deviceIp , funcode , protocolId);
+            CommonOptFilterUtil.removeTargetDeviceAnalyzerFuncode(deviceTag , funcode , protocolId);
             iOptFilterService.deleteByDeviceNumberAndProtocolIdAndFuncode(deviceId, funcode, protocolId);
         }else if(protocolId > 0){
-            CommonOptFilterUtil.removeTargetDeviceAnalyzerProtocol(deviceIp  , protocolId);
+            CommonOptFilterUtil.removeTargetDeviceAnalyzerProtocol(deviceTag  , protocolId);
             iOptFilterService.deleteByDeviceNumberAndProtocolId(deviceId,protocolId);
         }else{
-            CommonOptFilterUtil.removeTargetDeviceAnalyzer(deviceIp);
+            CommonOptFilterUtil.removeTargetDeviceAnalyzer(deviceTag);
             iOptFilterService.deleteByDeviceNumber(deviceId);
         }
         return BaseResponse.OK();

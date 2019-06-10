@@ -42,7 +42,7 @@ public class OptFilterServiceImpl extends BaseServiceImpl<OptFilter,OptFilterMap
     @Async
     @Override
     public CompletableFuture<Exception> addOperationFilter(OptFilterForFront optFilterForFront) throws DeviceNotValidException {
-        String deviceIp = CommonCacheUtil.getTargetDeviceIpByNumber(optFilterForFront.getDeviceNumber());
+        String deviceIp = CommonCacheUtil.getTargetDeviceNumberByTag(optFilterForFront.getDeviceNumber());
         if (deviceIp == null){
             throw new DeviceNotValidException("未发现设备号为["+optFilterForFront.getDeviceNumber() +"]的设备");
         }
@@ -69,8 +69,8 @@ public class OptFilterServiceImpl extends BaseServiceImpl<OptFilter,OptFilterMap
     @Override
     public CompletableFuture<List<Integer>> getTargetExistIdFilter(String deviceNumber, boolean cached , int protocolId) throws ProtocolIdNotValidException {
         if (cached){
-            String deviceIp = CommonCacheUtil.getTargetDeviceIpByNumber(deviceNumber);
-            ConcurrentHashMap<String, OperationAnalyzer> map = Common.OPERATION_FILTER_PRO.get(deviceIp);
+            String deviceTag = CommonCacheUtil.getTargetDeviceTagByNumber(deviceNumber);
+            ConcurrentHashMap<String, OperationAnalyzer> map = Common.OPERATION_FILTER_PRO.get(deviceTag);
             if (map == null){
                 throw new ProtocolIdNotValidException("缓存中不存在ID为 " + deviceNumber + " 的规则");
             }

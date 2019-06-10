@@ -65,7 +65,7 @@ public class Common {
     public static final ConcurrentHashMap<String, StatisticInfoSaveBean> STATISTICS_INFO_BEAN =
             new ConcurrentHashMap<>();
     /** cache5
-     * DEVICE_IP 五元组过滤器
+     * DEVICE_TAG (IP地址/MAC地址) 五元组过滤器
      */
     public static ConcurrentHashMap<String, FiveDimensionAnalyzer> FV_DIMENSION_FILTER_PRO = new ConcurrentHashMap<>();
 
@@ -124,7 +124,7 @@ public class Common {
     /** cache1
      * 设备IP和DEVICE_NUMBER之间互相转换
      */
-    public static final BiMap<String,String> DEVICE_IP_TO_NAME = HashBiMap.create();
+    public static final BiMap<String,String> DEVICE_TAG_TO_NAME = HashBiMap.create();
 
     /**
      * 要显示的工艺参数集合【将这个set里面的工艺参数数据传输到前端，其他的不用传】

@@ -68,7 +68,7 @@ public class GplotServiceImpl extends BaseServiceImpl<Gplot,GplotMapper> impleme
             }
             //更新DEVICE_NUMBER和DEVICE_IP之间的对应关系
             //更新DEVICE_NUMBER和StatisticInfoSaveBean【设备upload、download等报文信息】
-            CommonCacheUtil.addOrUpdateDeviceNumberAndIp(deviceNumberAndIp.deviceNumber , deviceNumberAndIp.deviceIp);
+            CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(deviceNumberAndIp.deviceNumber , deviceNumberAndIp.deviceIp);
         }
         log.info("***************\n切换组态图,从数据库中重新加载新该组态图下的所有规则，新规则为：\n 五元组规则：{} \n 功能码规则：{} \n ***************" , Common.FV_DIMENSION_FILTER_PRO,
                 Common.OPERATION_FILTER_PRO);

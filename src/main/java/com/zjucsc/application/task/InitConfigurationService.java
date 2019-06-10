@@ -47,11 +47,11 @@ public class InitConfigurationService implements ApplicationRunner {
         /***************************
          * RELOAD FROM JAR
          ***************************/
-        List<String> vir = args.getOptionValues("reload");
-        System.out.println("*******************\n" + "program args : " + vir + "\n*******************");
+        List<String> virReload = args.getOptionValues("reload");
+        System.out.println("*******************\n" + "program args : " + virReload + "\n");
         boolean reload = false;
-        if (vir!=null && vir.size() > 0){
-            if ("true".equals(vir.get(0))){
+        if (virReload!=null && virReload.size() > 0){
+            if ("true".equals(virReload.get(0))){
                 //重新到jar包中加载功能码含义
                 reload = true;
                 log.info("force reload [funCode Meaning]from jar file");
@@ -61,8 +61,16 @@ public class InitConfigurationService implements ApplicationRunner {
         /***************************
          * IP OR MAC_ADDRESS
          ***************************/
-
-
+        List<String> virFilterStatement = args.getOptionValues("statement");
+        System.out.println("program args : " + virFilterStatement + "\n*******************");
+        if (virFilterStatement!=null && virFilterStatement.size() > 0){
+            Common.filterStatement = Integer.parseInt(virFilterStatement.get(0));
+            if (Common.filterStatement == 0){
+                log.info("以[IP]地址作为准则进行过滤器的设置");
+            }else{
+                log.info("以[MAC]地址作为准则进行过滤器的设置");
+            }
+        }
 
         /***************************
          * INIT PROTOCOL STR TO INT

@@ -61,7 +61,7 @@ public class FvDimensionFilterController {
     @Log
     @ApiOperation(value = "查询已经成功挂载的五元组异常报文规则[确认是否已经将规则下载到服务器]")
     @GetMapping("/get_fv_packet_rule_cached")
-    public BaseResponse loadFvDimensionPacketRuleCached(@RequestParam String deviceNumber , @RequestParam String name) throws DeviceNotValidException, ExecutionException, InterruptedException {
+    public BaseResponse loadFvDimensionPacketRuleCached(@RequestParam String deviceNumber) throws DeviceNotValidException, ExecutionException, InterruptedException {
         CompletableFuture<List<Rule>> future =  iFvDimensionFilterService.getTargetExistIdFilter(deviceNumber , true);
         return BaseResponse.OK(future.get());
     }

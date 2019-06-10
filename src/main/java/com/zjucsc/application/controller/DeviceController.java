@@ -31,7 +31,11 @@ public class DeviceController {
         iDeviceService.removeAllDevicesByGplotId(Common.GPLOT_ID);
         CommonCacheUtil.removeAllCachedDeviceNumber();
         for (Device device : deviceList) {
-            CommonCacheUtil.addOrUpdateDeviceNumberAndIp(device.getDeviceNumber(), device.getDeviceTag());
+            if (Common.filterStatement == 0) {
+                CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(device.getDeviceNumber(), device.getDeviceTag());
+            }else{
+                CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(device.getDeviceNumber(), device.getDeviceMac());
+            }
         }
         iDeviceService.saveBatch(deviceList);
         return BaseResponse.OK();

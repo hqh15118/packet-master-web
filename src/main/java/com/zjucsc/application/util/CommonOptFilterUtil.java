@@ -118,17 +118,17 @@ public class CommonOptFilterUtil {
      * @param protocolId
      * @throws ProtocolIdNotValidException
      */
-    public static void removeTargetDeviceAnalyzerFuncode(String deviceIp , int funcode , int protocolId) throws ProtocolIdNotValidException {
-        ConcurrentHashMap<String,OperationAnalyzer> removedMap = OPERATION_FILTER_PRO.get(deviceIp);
+    public static void removeTargetDeviceAnalyzerFuncode(String deviceTag , int funcode , int protocolId) throws ProtocolIdNotValidException {
+        ConcurrentHashMap<String,OperationAnalyzer> removedMap = OPERATION_FILTER_PRO.get(deviceTag);
         if (removedMap == null){
             log.info("[ANALYZER]**************remove WARNING BY FUNCODE ==> device id: [ {} ] protocol id : [ {} ] , protocol name : [ {} ] , cause can not find the target device id in OPERATION_FILTER MAP : {} " ,
-                    deviceIp , protocolId , convertIdToName(protocolId) , OPERATION_FILTER_PRO);
+                    deviceTag , protocolId , convertIdToName(protocolId) , OPERATION_FILTER_PRO);
         }else{
             OperationAnalyzer analyzer = removedMap.get(convertIdToName(protocolId));
             analyzer.getAnalyzer().getBlackMap().remove(funcode);
             analyzer.getAnalyzer().getWhiteMap().remove(funcode);
             log.info("remove device id : [ {} ] protocol id : [ {} ] , protocol name : [ {} ]  , funcode : [ {} ], and now  OPERATION_FILTER MAP is : {} " ,
-                    deviceIp , protocolId , convertIdToName(protocolId) , funcode , OPERATION_FILTER_PRO.get(deviceIp));
+                    deviceTag , protocolId , convertIdToName(protocolId) , funcode , OPERATION_FILTER_PRO.get(deviceTag));
         }
     }
 

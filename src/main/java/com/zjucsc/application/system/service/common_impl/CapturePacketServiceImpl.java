@@ -256,11 +256,13 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         Common.FLOW.addAndGet(capLength);                          //计算报文流量
 
         StatisticsData.recvPacketNumber.addAndGet(capLength);      //总报文数
+        String dstTag = CommonCacheUtil.getPacketFilterDstStatement(fvDimensionLayer);
         //外界 --> PLC[ip_dst]  设备接收的报文数
-        StatisticsData.increaseNumberByDeviceIn(CommonCacheUtil.getTargetDeviceNumberByIp(fvDimensionLayer.ip_dst[0])
+        StatisticsData.increaseNumberByDeviceIn(CommonCacheUtil.getTargetDeviceNumberByTag(dstTag)
             ,capLength);
+        String srcTag = CommonCacheUtil.getPacketFilterSrcStatement(fvDimensionLayer);
         //外界 <-- PLC[ip_src]  设备发送的报文数
-        StatisticsData.increaseNumberByDeviceOut(CommonCacheUtil.getTargetDeviceNumberByIp(fvDimensionLayer.ip_src[0]),
+        StatisticsData.increaseNumberByDeviceOut(CommonCacheUtil.getTargetDeviceNumberByTag(srcTag),
                 capLength);
     }
 
