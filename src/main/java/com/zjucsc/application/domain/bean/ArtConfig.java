@@ -32,7 +32,7 @@ public class ArtConfig  extends BaseResponse implements Serializable {
 
     private String srcIp;
     private String dstIp;
-    private String funCode;
+    private int funCode;
 
     private boolean showGraph;
 

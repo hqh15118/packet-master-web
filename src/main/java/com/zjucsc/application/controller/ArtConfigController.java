@@ -113,7 +113,7 @@ public class ArtConfigController {
     }
 
     @ApiOperation("添加工艺参数脚本")
-    @PostMapping("uploadScript")
+    @PostMapping("upload_script")
     public BaseResponse uploadScript(MultipartFile scriptFile){
         try {
             CompletableFuture<Exception> completeFuture = iArtConfigService.saveScriptFile(scriptFile.getInputStream(),scriptFile.getOriginalFilename());

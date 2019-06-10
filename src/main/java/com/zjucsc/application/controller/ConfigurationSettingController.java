@@ -91,7 +91,7 @@ public class ConfigurationSettingController {
 
     @Log
     @ApiOperation(value = "删除功能码")
-    @DeleteMapping(value = "/deletecode")
+    @DeleteMapping(value = "/delete_code")
     public BaseResponse deleteConfiguration(@RequestBody @Valid @NotEmpty List<ConfigurationForDelete> configurationForDeletes) throws ProtocolIdNotValidException {
         List<ConfigurationSetting> list = convertFrontToEntity(configurationForDeletes);
         for (ConfigurationSetting configuration : list) {

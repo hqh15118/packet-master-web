@@ -43,7 +43,7 @@ public class FvDimensionFilterController {
 
     @Log
     @ApiOperation("添加/更新[五元组 + 功能码]过滤规则")
-    @PostMapping("new_rule")
+    @PostMapping("/new_rule")
     public BaseResponse addFvDimensionFilterRules(@RequestBody @Valid @NotEmpty List<Rule> list) throws ExecutionException, InterruptedException {
         CompletableFuture<Exception> future =  iFvDimensionFilterService.addFvDimensionFilter(list);
         return BaseResponse.OK(future.get());

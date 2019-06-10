@@ -19,6 +19,13 @@ public class Common {
 
     public static String OS_NAME = System.getProperty("os.name");
 
+    /**
+     * filterStatement按照IP地址进行区分还是MAC地址进行区分
+     * 0 是 IP 地址
+     * 1 是 MAC 地址
+     */
+    public static volatile int filterStatement = 0;
+
     public static int GPLOT_ID = 0;
 
     public static volatile String FV_DIMENSION_STR_IN_REDIS = new Date().toString();

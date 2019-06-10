@@ -12,4 +12,6 @@ public class StatisticInfo implements Serializable {
     private List<Integer> attack;
     private List<Integer> exception;
     private List<String> timeList;
+
+
 }

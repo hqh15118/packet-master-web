@@ -45,7 +45,7 @@ public class InitConfigurationService implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws IllegalAccessException, NoSuchFieldException, ProtocolIdNotValidException {
         /***************************
-         * RELOAD
+         * RELOAD FROM JAR
          ***************************/
         List<String> vir = args.getOptionValues("reload");
         System.out.println("*******************\n" + "program args : " + vir + "\n*******************");
@@ -57,6 +57,12 @@ public class InitConfigurationService implements ApplicationRunner {
                 log.info("force reload [funCode Meaning]from jar file");
             }
         }
+
+        /***************************
+         * IP OR MAC_ADDRESS
+         ***************************/
+
+
 
         /***************************
          * INIT PROTOCOL STR TO INT

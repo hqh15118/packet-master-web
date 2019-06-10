@@ -17,6 +17,10 @@ public class HessianMapperAspect {
 
     @Autowired private ConstantConfig constantConfig;
 
+    /**
+     * hessian_mapper目录下的任意类的任意方法
+     * public * ： public方法的任意返回值
+     */
     @Pointcut("execution(public * com.zjucsc.application.system.service.hessian_mapper.*.*(..))")
     public void mapper(){
 
