@@ -18,7 +18,7 @@ public interface IDeviceService {
     void removeAllDevicesByGplotId(int gplotId);
     void saveBatch(List<Device> devices);
 
-    Gplot selectByGplotId(int gplotId);
+    List<Device> selectByGplotId(int gplotId);
 
     StatisticInfo selectHistoryDeviceRunInfo(String deviceId,String startTime,String endTime,String intervalType);
 

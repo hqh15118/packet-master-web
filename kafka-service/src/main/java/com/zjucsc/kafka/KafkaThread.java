@@ -15,8 +15,9 @@ public class KafkaThread<V> extends Thread implements IKafka<V> {
     private KafkaProducer<String,String> kafkaProducer;
     private String topic;
     private int partition = -1;
-    private volatile boolean running = false;
+    private volatile boolean running = true;
     private String bindService;
+    private boolean hasStart = false;
 
     @SuppressWarnings("unchecked")
     public static <V> KafkaThread<V> createNewKafkaThread(String service,String bindTopic){
@@ -37,8 +38,8 @@ public class KafkaThread<V> extends Thread implements IKafka<V> {
         for (;;){
             try {
                 V v = TASK_QUEUE.poll(2, TimeUnit.SECONDS); //poll msg from queue
-                String msg = convertObjectToString(v);
                 if (v != null){
+                    String msg = convertObjectToString(v);
                     //valid msg
                     ProducerRecord<String,String> kvProducerRecord;
                     if (partition >= 0)
@@ -69,7 +70,8 @@ public class KafkaThread<V> extends Thread implements IKafka<V> {
     @Override
     public void startService() {
         running = true; //设置开始运行标志位
-        start();        //开始运行run()方法
+        if (!hasStart)
+            start();        //开始运行run()方法
     }
 
     @Override
@@ -96,11 +98,11 @@ public class KafkaThread<V> extends Thread implements IKafka<V> {
     @Override
     public String toString() {
         return "KafkaThread{" +
-                "idle_task_num=" + TASK_QUEUE.size() +
-                ", topic='" + topic + '\'' +
-                ", partition=" + partition +
-                ", running=" + running +
-                ", bindService='" + bindService + '\'' +
+                "idle_task_num=" + TASK_QUEUE.size() + "\n" +
+                ", topic='" + topic + '\'' + "\n" +
+                ", partition=" + partition + "\n" +
+                ", running=" + running + "\n" +
+                ", bindService='" + bindService + '\'' + "\n" +
                 '}';
     }
 }

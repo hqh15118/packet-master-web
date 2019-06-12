@@ -59,7 +59,7 @@ public class PacketDecodeUtilTest {
 
     private PcapHandle getPcapHandler() throws PcapNativeException {
         String classPath = PacketDecodeUtilTest.class.getResource("").getPath();
-        String filePath = "/Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap/no_ether_src.pcap";
+        String filePath = "E:\\IdeaProjects\\packet-master-web\\z-other\\others\\pcap\\no_ether_src.pcap";
         return Pcaps.openOffline(filePath);
     }
 
@@ -92,10 +92,24 @@ public class PacketDecodeUtilTest {
             public void gotPacket(Packet packet) {
                 byte[] bytes = packet.getRawData();
                 int collectorId = PacketDecodeUtil.decodeCollectorId(bytes,24);
+                //System.out.println(collectorId);
                 System.out.println(PacketDecodeUtil.decodeCollectorState(bytes,24,collectorId));
             }
         });
         System.out.println(Common.COLLECTOR_STATE_MAP);
+    }
+
+    @Test
+    public void decodeCollectorState2() throws PcapNativeException, InterruptedException, NotOpenException {
+        PcapHandle handle = PcapUtils.openDevice("192.168.1.111",65536,1000);
+        handle.loop(-1, new PacketListener() {
+            @Override
+            public void gotPacket(Packet packet) {
+                byte[] rawData = packet.getRawData();
+                int collectorId = PacketDecodeUtil.decodeCollectorId(rawData,24);
+                System.out.println(PacketDecodeUtil.decodeCollectorState(rawData,24,collectorId));
+            }
+        });
     }
 
     @Test

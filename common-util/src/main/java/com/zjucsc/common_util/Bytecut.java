@@ -1,21 +1,25 @@
 package com.zjucsc.common_util;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 public class Bytecut {
 
-    private static ThreadLocal<ByteBuffer> byteToIntByteBuffer = ThreadLocal.withInitial(() -> {
+    private static ThreadLocal<ByteBuffer> byteToByteBuffer = ThreadLocal.withInitial(() ->
+    {
         return ByteBuffer.allocate(4);
     });
     public Bytecut() {
     }
     public static byte[] Bytecut( byte[] bytes, int offset,int len){
-        ByteBuffer buffer = (ByteBuffer) byteToIntByteBuffer.get();
-        buffer.put(bytes, offset, len);
-        buffer.flip();
-        byte[] result = buffer.array();
-        buffer.clear();
-        return result;
+        if(offset<bytes.length) {
+            if (len != -1) {
+                return Arrays.copyOfRange(bytes, offset, offset + len);
+            } else {
+                return Arrays.copyOfRange(bytes, offset, bytes.length);
+            }
+        }
+        return null;
     }
     public static Float BytesTofloat(byte[] payload, int offset) {// 解析4个字节中的数据，按照IEEE754的标准
         byte[] data = Bytecut.Bytecut(payload, offset, 4);
@@ -48,7 +52,7 @@ public class Bytecut {
             result = (float) 0.0;
             return result;
         }
-        if (s == 0 && e == 255 && f == 0f) {// 正无穷大
+        if (s == 0f && e == 255 && f == 0f) {// 正无穷大
             result = (float) 1111.11;
             return result;
         }

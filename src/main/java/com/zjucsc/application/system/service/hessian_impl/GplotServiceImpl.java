@@ -21,19 +21,17 @@ import java.util.List;
 /**
  * @author hongqianhui
  */
-@Service("gplotservice")
+@Service
 @Slf4j
 public class GplotServiceImpl extends BaseServiceImpl<Gplot,GplotMapper> implements IGplotService {
 
     @Autowired private IDeviceService iDeviceService;
 
-    @Transactional
     @Override
     public void addNewGplot(Gplot gplot) {
         this.baseMapper.insertById(gplot);
     }
 
-    @Transactional
     @Async
     @Override
     public void changeGplot(int gplotId) throws ProtocolIdNotValidException {
@@ -53,7 +51,7 @@ public class GplotServiceImpl extends BaseServiceImpl<Gplot,GplotMapper> impleme
         log.info("***************\n切换组态图，加载新组态图下所有设备，新设备：{} ***************" , deviceNumbers);
         for (DeviceNumberAndIp deviceNumberAndIp : deviceNumbers) {
             sb.delete(0 , sb.length());
-            //load all fv dimension rule from fv_dimension table by device_number + gpolt_id
+            //load all fv dimension rule from fv_dimension table by device_number + gplot_id
             List<Rule> rules = iDeviceService.
                     loadAllFvDimensionFilterByDeviceNumberAndGplotId(deviceNumberAndIp.deviceNumber,gplotId);
             //add all fv filters to cache
@@ -70,7 +68,7 @@ public class GplotServiceImpl extends BaseServiceImpl<Gplot,GplotMapper> impleme
             //更新DEVICE_NUMBER和StatisticInfoSaveBean【设备upload、download等报文信息】
             CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(deviceNumberAndIp.deviceNumber , deviceNumberAndIp.deviceIp);
         }
-        log.info("***************\n切换组态图,从数据库中重新加载新该组态图下的所有规则，新规则为：\n 五元组规则：{} \n 功能码规则：{} \n ***************" , Common.FV_DIMENSION_FILTER_PRO,
+        log.info("***************\n切换组态图,从数据库中重新加载新该组态图下的所有规则，新规则为：\n五元组规则：{} \n功能码规则：{} \n***************" , Common.FV_DIMENSION_FILTER_PRO,
                 Common.OPERATION_FILTER_PRO);
     }
 

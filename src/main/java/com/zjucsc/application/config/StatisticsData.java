@@ -53,6 +53,7 @@ public class StatisticsData {
     public static ConcurrentHashMap<String,AtomicInteger> EXCEPTION_BY_DEVICE = new ConcurrentHashMap<>();
     public static ConcurrentHashMap<String, GraphInfoCollection> GRAPH_BY_DEVICE = new ConcurrentHashMap<>();
     public static ConcurrentHashMap<String, LinkedList<String>> ART_INFO = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String, LinkedList<String>> ART_INFO_SEND = new ConcurrentHashMap<>();//只发送需要显示的个工艺参数
 
     public static void increaseNumberByDeviceIn(String deviceNumber,int delta){
         if (deviceNumber!=null) {
@@ -144,12 +145,7 @@ public class StatisticsData {
     }
 
     public static synchronized void addArtMapData(Map<String,Float> artDataMap){
-        artDataMap.forEach(new BiConsumer<String, Float>() {
-            @Override
-            public void accept(String artArg, Float value) {
-                addArtData(artArg,String.valueOf(value));
-            }
-        });
+        artDataMap.forEach((artArg, value) -> addArtData(artArg,String.valueOf(value)));
     }
 
     /*********************************

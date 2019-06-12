@@ -1,9 +1,6 @@
 package com.zjucsc.application.tshark.handler;
 
-import com.zjucsc.application.config.AttackTypePro;
-import com.zjucsc.application.config.DangerLevel;
-import com.zjucsc.application.config.SocketIoEvent;
-import com.zjucsc.application.config.StatisticsData;
+import com.zjucsc.application.config.*;
 import com.zjucsc.application.domain.bean.ThreadLocalWrapper;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.application.socketio.SocketServiceCenter;
@@ -11,15 +8,21 @@ import com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
 import com.zjucsc.application.tshark.domain.bean.BadPacket;
 import com.zjucsc.application.tshark.domain.packet.UnknownPacket;
+import com.zjucsc.application.util.AppCommonUtil;
 import com.zjucsc.application.util.CommonCacheUtil;
+import com.zjucsc.application.util.PacketDecodeUtil;
+import com.zjucsc.art_decode.ArtDecodeCommon;
 import com.zjucsc.tshark.handler.AbstractAsyncHandler;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 
 import static com.zjucsc.application.config.Common.*;
 
@@ -30,7 +33,6 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
         super(executor);
     }
 
-
     @SuppressWarnings("unchecked")
     @Override
     public Void handle(Object t) {
@@ -39,23 +41,21 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
         protocolAnalyze(layer);
 
         //工艺参数分析
-        Object res = ART_FILTER.analyze(layer.tcp_payload[0] , layer.frame_protocols[0]);
+        byte[] tcpPayload = PacketDecodeUtil.hexStringToByteArray(layer.tcp_payload[0]);
+        Map<String,Float> res;
+        if (layer.frame_protocols[0].startsWith("s7comm")){
+            if (!layer.tcp_flags_ack[0].equals("")){
+                res =  ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,"s7comm",1);
+            }else{
+                res =  ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,"s7comm",0);
+            }
+        }else {
+            res = ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.frame_protocols[0]);
+        }
         //分析结果
         //res可能为null
         if(res!=null){
-            ThreadLocalWrapper threadLocalWrapper = (ThreadLocalWrapper)res;
-            //将解析出来的数据添加到LinkedList中，发送到前端
-            StatisticsData.addArtMapData(threadLocalWrapper.getFloatMap());
-            //攻击信息发送
-            if (threadLocalWrapper.getAttackTypeList()!=null && threadLocalWrapper.getAttackTypeList().size() > 0){
-                //发生了工艺参数攻击
-                SocketServiceCenter.updateAllClient(SocketIoEvent.ATTACK_INFO,
-                        new BadPacket.Builder(AttackTypePro.HAZARD_ART)
-                            .setDangerLevel(DangerLevel.VERY_DANGER)
-                            .set_five_Dimension(layer)
-                            .build());
-                threadLocalWrapper.getAttackTypeList().clear();
-            }
+            StatisticsData.addArtMapData(res);
         }
         return null;
     }

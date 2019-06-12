@@ -41,6 +41,8 @@ public class PacketController {
     @RequestMapping(value = "/start_service" , method = RequestMethod.POST)
     public BaseResponse startCaptureService(@RequestBody CaptureService service) {
         CommonCacheUtil.setScheduleServiceRunningState(true);
+        //开始周期任务
+        Common.SCHEDULE_RUNNING = true;
         return BaseResponse.OK(doStartService(service));
     }
 
@@ -139,6 +141,7 @@ public class PacketController {
     @ApiOperation("停止抓包")
     @GetMapping("stop_service")
     public BaseResponse stopService(@RequestParam String service_name){
+        Common.SCHEDULE_RUNNING = false;
         CommonCacheUtil.setScheduleServiceRunningState(false);
         synchronized (lock1){
             if (!Common.hasStartedHost.contains(service_name)){

@@ -43,6 +43,9 @@ public class FvDimensionLayer {
     public int delay;
     @JSONField(serialize = false)
     public int collectorId;
+    @JSONField(serialize = false,deserialize = false)
+    public byte[] rawData;
+
 
     public FvDimensionLayer setFrameProtocols(String protocol){
         if (protocol!=null) {

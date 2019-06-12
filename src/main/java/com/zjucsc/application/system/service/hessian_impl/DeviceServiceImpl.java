@@ -65,7 +65,7 @@ public class DeviceServiceImpl extends BaseServiceImpl< Device , DeviceMapper> i
     }
 
     @Override
-    public Gplot selectByGplotId(int gplotId) {
+    public List<Device> selectByGplotId(int gplotId) {
         return this.baseMapper.selectByGplotId(gplotId);
     }
 

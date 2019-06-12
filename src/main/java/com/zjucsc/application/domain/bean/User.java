@@ -1,9 +1,11 @@
 package com.zjucsc.application.domain.bean;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 
+@EqualsAndHashCode(callSuper = false)
 @Data
 public class User  extends BaseResponse implements Serializable {
     private String name;

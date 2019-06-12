@@ -38,7 +38,7 @@ public class KafkaProducerCreator {
         }
     }
 
-    static synchronized <K,V> KafkaProducer<K, V> getProducer(String service , Class<K> keyClass , Class<V> valueClass){
+    public static synchronized <K,V> KafkaProducer<K, V> getProducer(String service , Class<K> keyClass , Class<V> valueClass){
         if (properties == null) {
             properties = getKafkaProperties();
         }

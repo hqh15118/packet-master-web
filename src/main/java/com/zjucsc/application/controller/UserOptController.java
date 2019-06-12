@@ -89,7 +89,7 @@ public class UserOptController {
 
     @Log
     @Token(Auth.ADMIN_ID)
-    @GetMapping("all_loginned_user")
+    @GetMapping("all_on_user")
     public BaseResponse getAllLogginedUser(){
         return BaseResponse.OK(userOptService.getAllLogginedUsers());
     }

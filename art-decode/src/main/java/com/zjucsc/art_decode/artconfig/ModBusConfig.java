@@ -1,10 +1,10 @@
 package com.zjucsc.art_decode.artconfig;
 
 
-public class ModBusConfig extends BaseConfig{
+import com.zjucsc.art_decode.base.BaseConfig;
+
+public class ModBusConfig extends BaseConfig {
     /**
-     *
-     *  tech_name 工艺参数名
      *  type 类型 数据类型
      *  length 数据长度
      *  addr_head 偏移
@@ -67,22 +67,4 @@ public class ModBusConfig extends BaseConfig{
         this.range =range ;
     }
 
-    private static ModBusConfig modBusConfig = null;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ModBusConfig)) return false;
-        ModBusConfig that = (ModBusConfig) o;
-        if (that.artName == null || this.artName == null){
-            return false;
-        }else{
-            return that.artName.equals(this.artName);
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        return this.artName.hashCode();
-    }
 }

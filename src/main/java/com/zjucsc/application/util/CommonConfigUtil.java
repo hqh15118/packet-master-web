@@ -1,13 +1,12 @@
 package com.zjucsc.application.util;
 
-import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.bean.FuncodeStatement;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.zjucsc.application.config.Common.CONFIGURATION_MAP;
 import static com.zjucsc.application.util.CommonCacheUtil.convertIdToName;
@@ -18,11 +17,13 @@ public class CommonConfigUtil {
 
     public static boolean SHOW_LOG = false;
 
-    public static HashMap<Integer,String> getTargetProtocolAllFuncodeMeaning(String protocol) throws ProtocolIdNotValidException {
+    public static HashMap<Integer,String> getTargetProtocolAllFuncodeMeaning(String protocol) {
         HashMap<Integer,String> map;
         if ((map = CONFIGURATION_MAP.get(protocol)) == null){
-            throw new ProtocolIdNotValidException("can not find  the target protocol " + protocol + " in CONFIGURATION_MAP \n CONFIGURATION_MAP is : " +
-                    CONFIGURATION_MAP);
+//            throw new ProtocolIdNotValidException("can not find  the target protocol " + protocol + " in CONFIGURATION_MAP \n CONFIGURATION_MAP is : " +
+//                    CONFIGURATION_MAP.keySet());
+            //System.out.println("can not find  the target protocol in in CONFIGURATION_MAP");
+            return null;
         }else{
             return map;
         }
@@ -34,7 +35,8 @@ public class CommonConfigUtil {
 
     public static String getTargetProtocolFuncodeMeanning(String protocol,int funcode) throws ProtocolIdNotValidException {
         String funcodeMeaning = null;
-        if ((funcodeMeaning = getTargetProtocolAllFuncodeMeaning(protocol).get(funcode)) == null){
+        HashMap<Integer,String> map = getTargetProtocolAllFuncodeMeaning(protocol);
+        if (map==null|| (funcodeMeaning = map.get(funcode)) == null){
             funcodeMeaning = "unknown operation";
             if (SHOW_LOG) {
                 log.info("can not find protocol {} funcode {} meaning in CONFIGURATION_MAP \n CONFIGURATION_MAP is {}"
@@ -43,6 +45,7 @@ public class CommonConfigUtil {
         }
         return funcodeMeaning;
     }
+
 
     public static String getTargetProtocolFuncodeMeanning(int protocolId,int funcode) throws ProtocolIdNotValidException {
         String funcodeMeaning = null;
@@ -115,14 +118,5 @@ public class CommonConfigUtil {
                 log.info("******* new protocol [{}] funcode meaning : \n  {} ", protocol, funcodeStatements);
             }
         }
-    }
-
-
-    public static synchronized void updateFvDimensionKeyInRedis(){
-        Common.FV_DIMENSION_STR_IN_REDIS = new Date().toString();
-    }
-
-    public static String getFvDimensionKeyInRedis(){
-        return Common.FV_DIMENSION_STR_IN_REDIS;
     }
 }

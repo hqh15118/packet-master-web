@@ -58,8 +58,8 @@ public class ConfigurationSettingController {
         String protocolName = configurationForFronts.getProtocolName();
         Protocol protocolAndName = new Protocol();
         protocolAndName.setProtocolName(protocolName);
-        iProtocolIdService.insertById(protocolAndName);
-        protocolAndName.setProtocolId((Integer) protocolAndName.data);
+        BaseResponse baseResponse = iProtocolIdService.insertById(protocolAndName);
+        protocolAndName.setProtocolId((Integer) baseResponse.data);
         int newProtocolId = protocolAndName.getProtocolId();  //新增协议对应的协议ID
         addNewProtocolToCache(protocolName , newProtocolId);    //将新增的协议添加到两个缓存中
     }

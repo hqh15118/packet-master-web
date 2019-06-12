@@ -1,16 +1,12 @@
 package com.zjucsc.application.util;
 
 import com.zjucsc.application.config.Common;
-import com.zjucsc.application.domain.bean.ArtConfig;
 import com.zjucsc.application.domain.bean.StatisticInfoSaveBean;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 
 import static com.zjucsc.application.config.Common.CONFIGURATION_MAP;
@@ -197,7 +193,7 @@ public class CommonCacheUtil {
     public static void removeDeviceNumer(String deviceNumber){
         Common.DEVICE_TAG_TO_NAME.remove(deviceNumber);
         Common.STATISTICS_INFO_BEAN.remove(deviceNumber);
-        log.info("remove device number : {} [ip : {} ]" , deviceNumber , Common.DEVICE_TAG_TO_NAME.inverse().get(deviceNumber));
+        log.info("remove device number : {} [TAG : {} ]" , deviceNumber , Common.DEVICE_TAG_TO_NAME.inverse().get(deviceNumber));
     }
 
     public static String getTargetDeviceNumberByTag(String deviceTag) {
@@ -220,16 +216,16 @@ public class CommonCacheUtil {
      *
      **********************************/
     public static void addShowGraphArg(int protocolId,String artArg){
-        Common.SHOW_GRAPH_SET.add(protocolId + "_" + artArg);
+        Common.SHOW_GRAPH_SET.add(artArg);
         log.info("添加图表展示：协议 {} 下，工艺参数 {} ",protocolId,artArg);
     }
 
     public static boolean removeShowGraph(int protocolId,String artArg){
-        if(Common.SHOW_GRAPH_SET.remove(protocolId + "_" + artArg)){
+        if(Common.SHOW_GRAPH_SET.remove(artArg)){
             log.info("取消协议 {} 下，工艺参数 {} 图表展示",protocolId,artArg);
             return true;
         }else{
-            log.info("取消协议 {} 下，工艺参数 {} 图表展示失败，set中不存在名为{}_{}的key值",protocolId,artArg,protocolId,artArg);
+            log.info("取消协议 {} 下，工艺参数 {} 图表展示失败，set中不存在名为{}的key值",protocolId,artArg,artArg);
             return false;
         }
     }
@@ -239,55 +235,7 @@ public class CommonCacheUtil {
      *  CACHED ART DECODE INSTANCE
      *
      **********************************/
-
-    /**
-     * 移除缓存中的 工艺参数 组态配置
-     * @param protocolId 协议ID
-     * @param artConfigId 配置ID
-     * @return 是否正确删除，true表示正确删除
-     */
-    public static boolean removeArtDecodeInstanceByProtocolAndId(int protocolId,int artConfigId){
-        String protocol;
-        try {
-            protocol = convertIdToName(protocolId);
-        } catch (ProtocolIdNotValidException e) {
-            log.error("\n********************\n未发现协议ID {}对应的协议名，确认协议ID正确\n********************",protocolId);
-            return false;
-        }
-        Map<Integer, ArtConfig> map = Common.ART_DECODE_MAP.get(protocol);
-        if (map == null){
-            log.error("\n********************\n ERROR : ART_DECODE_MAP中 未发现协议ID {} 对应的MAP，确认已经将该协议对应的配置MAP添加到缓存中\n********************",protocolId);
-            return false;
-        }else{
-            return map.remove(artConfigId) != null; //如果为空，表示之前不存在
-        }
-    }
-
-    /**
-     * 添加/更新新的工艺参数解析配置
-     * @param artConfigs 工艺参数解析配置集合
-     */
-    public static void addOrUpdateDecodeInstances(List<ArtConfig> artConfigs){
-        for (ArtConfig artConfig : artConfigs) {
-            addOrUpdateDecodeInstance(artConfig);
-        }
-    }
-
-    public static void addOrUpdateDecodeInstance(ArtConfig artConfig){
-        String protocol;
-        try {
-            protocol = convertIdToName(artConfig.getProtocolId());
-        } catch (ProtocolIdNotValidException e) {
-            log.error("\n********************\n未发现协议ID {}对应的协议名，确认协议ID正确\n********************",artConfig.getProtocolId());
-            return;
-        }
-        Map<Integer,ArtConfig> map = Common.ART_DECODE_MAP.get(protocol);
-        if (map == null){
-            map = new ConcurrentHashMap<>();
-        }
-        map.put(artConfig.getArtConfigId(),artConfig);
-    }
-
+    
     /**********************************
      *
      * AttackCommon STATISTICS_INFO_BEAN 发送到数据库的统计信息Map

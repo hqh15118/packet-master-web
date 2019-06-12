@@ -26,4 +26,6 @@ public class ConstantConfig {
 
     private boolean openMapperAop;
 
+    private boolean showErrorOnly;
+
 }

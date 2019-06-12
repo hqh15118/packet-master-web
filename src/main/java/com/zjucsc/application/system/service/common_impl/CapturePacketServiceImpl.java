@@ -15,6 +15,8 @@ import com.zjucsc.application.tshark.domain.packet.ModbusPacket;
 import com.zjucsc.application.tshark.domain.packet.S7CommPacket;
 import com.zjucsc.application.tshark.domain.packet.UnknownPacket;
 import com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler;
+import com.zjucsc.application.tshark.pre_processor.IEC104PreProcessor;
+import com.zjucsc.application.tshark.pre_processor.ModbusPreProcessor;
 import com.zjucsc.application.tshark.pre_processor.S7CommPreProcessor;
 import com.zjucsc.application.tshark.pre_processor.UnknownPreProcessor;
 import com.zjucsc.application.util.CommonCacheUtil;
@@ -96,12 +98,13 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             StatisticsData.addProtocolNum(fvDimensionLayer.frame_protocols[0],1);
             //解析原始数据
             byte[] payload = ByteUtil.hexStringToByteArray(fvDimensionLayer.custom_ext_raw_data[0]);
+            fvDimensionLayer.rawData = payload;
             //设置五元组中的功能码以及功能码对应的含义
             try {
                 setFuncode(fvDimensionLayer);
             } catch (ProtocolIdNotValidException e) {
                 //缓存中找不到该五元组对应的协议
-                log.error("error set Funcode , msg : {} [缓存中找不到该五元组协议：{}对应的功能码表]" , e.getMsg(),fvDimensionLayer.frame_protocols[0]);
+                log.error("error set Funcode , msg : {} [缓存中找不到该五元组协议：{} 对应的功能码表]" , e.getMsg(),fvDimensionLayer.frame_protocols[0]);
             }
             sendFvDimensionPacket(fvDimensionLayer , payload);                    //发送五元组所有报文到前端
             sendPacketStatisticsEvent(fvDimensionLayer);                          //发送统计信息
@@ -151,10 +154,11 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     @Async
     @Override
     public CompletableFuture<Exception> start(ProcessCallback<String,String> callback) {
+        FV_D_SENDER.startService();
         this.callback = callback;
         try {
             callback.start(doStart(fvDimensionLayerAbstractAsyncHandler
-                                   //,new ModbusPreProcessor()
+                                   ,new ModbusPreProcessor()
                                    ,new S7CommPreProcessor()
                                    //,new IEC104PreProcessor()
                                    ,new UnknownPreProcessor()      //必须放在解析协议的最后
@@ -188,6 +192,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             callback.end("end " + basePreProcessor.getClass().getName());
         }
         processorList.clear();
+        FV_D_SENDER.stopService();
         return CompletableFuture.completedFuture(null);
     }
 
@@ -230,14 +235,6 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         sb.append(basePreProcessor.getClass().getName()).append(" start");
     }
 
-    private static ThreadLocal<StringBuilder> stringBuilderThreadLocal =
-            new ThreadLocal<StringBuilder>(){
-                @Override
-                protected StringBuilder initialValue() {
-                    return new StringBuilder(50);
-                }
-            };
-
     private void sendFvDimensionPacket(FvDimensionLayer fvDimensionLayer , byte[] payload){
         fvDimensionLayer.timeStamp = PacketDecodeUtil.decodeTimeStamp(payload,20);
         //payload如果是空的，那么timeStamp就用本地时间来代替
@@ -255,15 +252,15 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
 
         Common.FLOW.addAndGet(capLength);                          //计算报文流量
 
-        StatisticsData.recvPacketNumber.addAndGet(capLength);      //总报文数
+        StatisticsData.recvPacketNumber.addAndGet(1);      //总报文数
         String dstTag = CommonCacheUtil.getPacketFilterDstStatement(fvDimensionLayer);
         //外界 --> PLC[ip_dst]  设备接收的报文数
         StatisticsData.increaseNumberByDeviceIn(CommonCacheUtil.getTargetDeviceNumberByTag(dstTag)
-            ,capLength);
+            ,1);
         String srcTag = CommonCacheUtil.getPacketFilterSrcStatement(fvDimensionLayer);
         //外界 <-- PLC[ip_src]  设备发送的报文数
         StatisticsData.increaseNumberByDeviceOut(CommonCacheUtil.getTargetDeviceNumberByTag(srcTag),
-                capLength);
+                1);
     }
 
     private void analyzeCollectorState(byte[] payload , int collectorId){

@@ -30,7 +30,7 @@ public interface DeviceMapper extends BaseMapper<Device> {
 
     void saveBatch(List<Device> devices);
 
-    Gplot selectByGplotId(int gplotId);
+    List<Device> selectByGplotId(int gplotId);
 
     /**
      * @param deviceId
