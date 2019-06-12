@@ -47,7 +47,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
             if (!layer.tcp_flags_ack[0].equals("")){
                 res =  ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,"s7comm",1);
             }else{
-                res =  ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,"s7comm",0);
+                res =  ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),layer.rawData,"s7comm",0);
             }
         }else {
             res = ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.frame_protocols[0]);

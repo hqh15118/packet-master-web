@@ -34,7 +34,7 @@ public class DeviceController {
             if (Common.filterStatement == 0) {
                 CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(device.getDeviceNumber(), device.getDeviceTag());
             }else{
-                CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(device.getDeviceNumber(), device.getDeviceMac());
+                CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(device.getDeviceNumber(), device.getDeviceTag());
             }
         }
         iDeviceService.saveBatch(deviceList);
