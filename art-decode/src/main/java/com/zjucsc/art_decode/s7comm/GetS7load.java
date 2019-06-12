@@ -1,4 +1,4 @@
-package com.zjucsc.art_decode.artconfig;
+package com.zjucsc.art_decode.s7comm;
 
 
 import com.zjucsc.common_util.ByteUtil;

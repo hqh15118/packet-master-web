@@ -1,14 +1,13 @@
-package com.zjucsc.art_decode.artconfig;
+package com.zjucsc.art_decode.s7comm;
 
-public class S7techpara extends BaseConfig{
+import com.zjucsc.art_decode.base.BaseConfig;
+
+public class S7techpara extends BaseConfig {
     private String type;
     private int database;
     private int byteoffset;
     private int bitoffset;
     private int length;
-
-    public S7techpara()
-    {}
 
     public void setLength(int length) {
         this.length = length;

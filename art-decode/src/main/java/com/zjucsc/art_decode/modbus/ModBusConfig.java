@@ -1,7 +1,9 @@
-package com.zjucsc.art_decode.artconfig;
+package com.zjucsc.art_decode.modbus;
 
 
-public class ModBusConfig extends BaseConfig implements Comparable<ModBusConfig>{
+import com.zjucsc.art_decode.base.BaseConfig;
+
+public class ModBusConfig extends BaseConfig {
     /**
      *  type 类型 数据类型
      *  length 数据长度
@@ -65,9 +67,4 @@ public class ModBusConfig extends BaseConfig implements Comparable<ModBusConfig>
         this.range =range ;
     }
 
-    @Override
-    public int compareTo(ModBusConfig o) {
-        if (o == null)return 1;
-        return this.hashCode() > o.hashCode() ? 1:-1;
-    }
 }

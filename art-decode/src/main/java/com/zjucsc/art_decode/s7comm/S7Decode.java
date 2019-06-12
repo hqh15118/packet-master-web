@@ -1,13 +1,16 @@
-package com.zjucsc.art_decode.artdecoder;
+package com.zjucsc.art_decode.s7comm;
 
-import com.zjucsc.art_decode.artconfig.*;
+import com.zjucsc.art_decode.base.BaseArtDecode;
+import com.zjucsc.art_decode.other.AttackType;
 import com.zjucsc.common_util.ByteUtil;
 import com.zjucsc.common_util.Bytecut;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class S7Decode {
+public class S7Decode extends BaseArtDecode<S7techpara> {
 
     private Map<Integer,List<DBclass>> DBmap = new HashMap<>();
 
@@ -123,7 +126,7 @@ public class S7Decode {
     }
 
 
-    public void decodeDBlist(List<DBclass> DBlist, byte[] data)
+    private void decodeDBlist(List<DBclass> DBlist, byte[] data)
     {
         if(data!=null && DBlist!=null)
         {
@@ -171,30 +174,7 @@ public class S7Decode {
         }
     }
 
-    public  void renewconfig(S7techpara techconfig)
-    {
-        if(techconfig!=null)
-        {
-            s7configSet.remove(techconfig);
-            s7configSet.add(techconfig);
-        }
-    }
-
-    /**
-     *
-     * @param tech_map
-     * @param load
-     * @param tcp 1 ==> tcp
-     * @return
-     */
-    public Map<String,Float> decode_tech( Map<String,Float> tech_map , byte[] load , Object...objects){
-        for (S7techpara s7techpara : s7configSet) {
-            decode_tech(s7techpara,tech_map,load, ((int) objects[0]));
-        }
-        return tech_map;
-    }
-
-    private void decode_tech(S7techpara S7tech , Map<String,Float> tech_map , byte[] load , int tcp)
+    public Map<String,Float> decode_tech(S7techpara S7tech , Map<String,Float> tech_map , byte[] load , int tcp)
     {
         byte[] S7load = getS7load.S7load(load,tcp);
         Map<Integer,Map<Integer,Byte>> s7map = putDBdatamap(S7load);
@@ -227,14 +207,23 @@ public class S7Decode {
                     tech_map.put(S7tech.getTag(), 1f);
                 }
             }
+            return tech_map;
     }
 
-    private Set<S7techpara> s7configSet = new ConcurrentSkipListSet<>();
-
-    public void deleteConfig(S7techpara config){
-        s7configSet.remove(config);
+    @Override
+    public Map<String, Float> decode(S7techpara s7techpara, Map<String, Float> globalMap, byte[] payload, Object... obj) {
+        return decode_tech(s7techpara,globalMap,payload,(int)obj[0]);
     }
 
+    @Override
+    public String protocol() {
+        return "s7comm";
+    }
+
+    @Override
+    public List<AttackType> attackDecode(List<AttackType> globalAttackList, byte[] payload, Object... obj) {
+        return null;
+    }
 }
 
 

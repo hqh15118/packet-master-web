@@ -1,9 +1,9 @@
-package com.zjucsc.art_decode.artconfig;
+package com.zjucsc.art_decode.base;
 
 
 import java.io.Serializable;
 
-public class BaseConfig implements Serializable {
+public class BaseConfig implements Serializable , Comparable<BaseConfig>{
     private String protocol;
     private String tag;
     private int showGraph;
@@ -57,5 +57,10 @@ public class BaseConfig implements Serializable {
 
     public void setDetail(String detail) {
         this.details = detail;
+    }
+
+    @Override
+    public int compareTo(BaseConfig o) {
+        return this.getId() > o.getId() ? 1 : 0;
     }
 }

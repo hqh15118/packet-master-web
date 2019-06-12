@@ -1,13 +1,13 @@
-package com.zjucsc.art_decode.artdecoder;
+package com.zjucsc.art_decode.modbus;
 
-import com.zjucsc.art_decode.artconfig.ModBusConfig;
+import com.zjucsc.art_decode.base.BaseArtDecode;
+import com.zjucsc.art_decode.other.AttackType;
 import com.zjucsc.common_util.ByteUtil;
 import com.zjucsc.common_util.Bytecut;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentSkipListSet;
 
-public class ModbusDecode {
+public class ModbusDecode extends BaseArtDecode<ModBusConfig> {
 
     public  static Map<Integer,byte[]> payload_map =new HashMap<>();
 
@@ -29,21 +29,6 @@ public class ModbusDecode {
 
     private Map<String,Map> map= new HashMap<>();
 
-    private Set<ModBusConfig> modbustechconfig = new ConcurrentSkipListSet<>();
-
-    public  void renewconfig(ModBusConfig techconfig)
-    {
-        if(techconfig!=null)
-        {
-            modbustechconfig.remove(techconfig);
-            modbustechconfig.add(techconfig);
-        }
-    }
-
-    public void deleteConfig(ModBusConfig config){
-        modbustechconfig.remove(config);
-    }
-
     private Map<String,Map> decode( byte[] bytes) {
         renewmap(bytes);
         map.put("离散量输入",Dis_input_map);
@@ -53,8 +38,18 @@ public class ModbusDecode {
         return map;
     }
 
+    @Override
+    public Map<String, Float> decode(ModBusConfig modBusConfig, Map<String, Float> globalMap, byte[] payload, Object... obj) {
+        return decode_tech(modBusConfig,globalMap,payload);
+    }
+
     public String protocol() {
         return "modbus";
+    }
+
+    @Override
+    public List<AttackType> attackDecode(List<AttackType> globalAttackList, byte[] payload, Object... obj) {
+        return null;
     }
 
     private void renewmap(byte[] payload){
@@ -102,18 +97,13 @@ public class ModbusDecode {
         }
     }
 
-    public Map<String ,Float> decode_tech(Map<String , Float> tech_map,byte[] payload){
-        if (modbustechconfig.size() == 0){
-            return tech_map;
-        }
+    private Map<String ,Float> decode_tech(ModBusConfig modbus, Map<String, Float> tech_map, byte[] payload){
         renewmap(payload);
-        for (ModBusConfig modBusConfig : modbustechconfig) {
-            doDecode(tech_map, modBusConfig);
-        }
+        doDecode(tech_map,modbus);
         return tech_map;
     }
 
-    private void doDecode(Map<String , Float> tech_map,ModBusConfig modbus){
+    private void doDecode(Map<String, Float> tech_map, ModBusConfig modbus){
         if(modbus.getLength() ==4) {
             byte[] byte1 = null;
             byte[] byte2 = null;

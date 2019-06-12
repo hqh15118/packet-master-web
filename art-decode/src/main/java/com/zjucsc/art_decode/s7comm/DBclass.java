@@ -1,4 +1,4 @@
-package com.zjucsc.art_decode.artconfig;
+package com.zjucsc.art_decode.s7comm;
 
 public class DBclass {
 
@@ -6,8 +6,6 @@ public class DBclass {
     private int byteoffset;
     private int bitoffset;
     private int length;
-
-
 
     public int getBitoffset() {
         return bitoffset;

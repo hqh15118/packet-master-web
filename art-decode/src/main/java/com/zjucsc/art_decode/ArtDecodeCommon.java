@@ -1,11 +1,11 @@
 package com.zjucsc.art_decode;
 
-import com.zjucsc.art_decode.artconfig.BaseConfig;
-import com.zjucsc.art_decode.artdecoder.ModbusArtDecoder;
-import com.zjucsc.art_decode.artdecoder.ModbusDecode;
-import com.zjucsc.art_decode.artdecoder.S7CommArtDecoder;
-import com.zjucsc.art_decode.artdecoder.S7Decode;
+import com.zjucsc.art_decode.base.BaseConfig;
+import com.zjucsc.art_decode.modbus.ModBusConfig;
+import com.zjucsc.art_decode.modbus.ModbusDecode;
+import com.zjucsc.art_decode.s7comm.S7Decode;
 import com.zjucsc.art_decode.base.BaseArtDecode;
+import com.zjucsc.art_decode.base.IArtEntry;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,15 +17,15 @@ public class ArtDecodeCommon {
      * 初始化
      */
     public static void init(){
-        ART_DECODE_CONCURRENT_HASH_MAP.put("modbus",new ModbusArtDecoder(new ModbusDecode()));
-        ART_DECODE_CONCURRENT_HASH_MAP.put("s7comm",new S7CommArtDecoder(new S7Decode()));
+        ART_DECODE_CONCURRENT_HASH_MAP.put("modbus",new ModbusDecode());
+        ART_DECODE_CONCURRENT_HASH_MAP.put("s7comm",new S7Decode());
     }
 
     public static Map<String,Float> artDecodeEntry(Map<String,Float> artMap,byte[] payload,
                                                    String protocol,Object...objs){
-        BaseArtDecode<?,?> baseArtDecode = ART_DECODE_CONCURRENT_HASH_MAP.get(protocol);
-        if (baseArtDecode != null){
-            return baseArtDecode.decode(artMap,payload,objs);
+        IArtEntry entry = ART_DECODE_CONCURRENT_HASH_MAP.get(protocol);
+        if (entry != null){
+            return entry.doDecode(artMap,payload,objs);
         }
         return artMap;
     }
