@@ -2,8 +2,6 @@ package com.zjucsc.art_decode.base;
 
 import com.zjucsc.art_decode.artconfig.BaseConfig;
 
-import java.util.Map;
-
 /**
  * 泛型化工艺参数
  * @param <T>
@@ -20,6 +18,12 @@ public abstract class BaseArtDecode<A,T extends BaseConfig> implements IArtDecod
      * @param a 工艺参数配置
      */
     public abstract void addArtConfig(T a);
+
+    /**
+     * update
+     * @param a config
+     */
+    public abstract void updateArtConfig(T a);
 
     /**
      * 删除工艺参数配置

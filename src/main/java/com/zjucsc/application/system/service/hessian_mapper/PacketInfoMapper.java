@@ -29,4 +29,6 @@ public interface PacketInfoMapper  {
     PacketForSelect exportPacketHistory(PacketInfoExport packetInfoExport);
 
     int handleAttackPacket(List<String> attackPacketTimeStamps);
+
+    AttackForSelect selectAttackBybadTypeAndLevel(AttackF attackF);
 }

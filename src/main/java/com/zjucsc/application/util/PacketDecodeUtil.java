@@ -143,7 +143,7 @@ public class PacketDecodeUtil {
         if (StringUtils.isBlank(str_fun_code)){
             return -1;
         }
-        System.out.println(str_fun_code);
+        //System.out.println(str_fun_code);
         int fun_code = -1;
         try {
             switch (protocol) {
@@ -182,7 +182,7 @@ public class PacketDecodeUtil {
             }else if (S7CommPacket.JOB.equals(rosctr)) {
                 return S7_JOB;
             }else{
-                log.error("S7协议无法分为ACK_DATA/JOB，返回s7comm");
+                //log.error("S7协议无法分为ACK_DATA/JOB，返回s7comm");
                 return S7;
             }
         }
@@ -203,6 +203,7 @@ public class PacketDecodeUtil {
         }
     }
 
+    private static final int STATE_REF = 0b00000111;
     /**
      * 用于识别<设备采集器>状态
      * @param payload 负载 ， 最后24个字节是自己加上去的需要解析的部分
@@ -219,8 +220,8 @@ public class PacketDecodeUtil {
 
         int start = payload.length - offset;//payload中自定义的字节数组的开始位置
         CollectorState state = null;
-        int A_state = Byte.toUnsignedInt(payload[start + 2]);
-        int B_state = Byte.toUnsignedInt(payload[start + 3]);
+        int A_state = payload[start + 2] & STATE_REF;
+        int B_state = payload[start + 3] & STATE_REF;
         if ((state = Common.COLLECTOR_STATE_MAP.get(collectorId))==null){
             //还没有定义过该设备，初始化该设备状态
             Common.COLLECTOR_STATE_MAP.put(collectorId , new CollectorState(collectorId , -1,-1,

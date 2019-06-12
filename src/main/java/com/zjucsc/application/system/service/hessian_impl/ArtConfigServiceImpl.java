@@ -1,7 +1,6 @@
 package com.zjucsc.application.system.service.hessian_impl;
 
-import com.zjucsc.application.domain.bean.ArtConfig;
-import com.zjucsc.application.domain.bean.ArtConfigPaged;
+import com.zjucsc.application.domain.bean.*;
 import com.zjucsc.application.domain.exceptions.ScriptException;
 import com.zjucsc.application.system.mapper.base.BaseServiceImpl;
 import com.zjucsc.application.system.service.hessian_iservice.IArtConfigService;
@@ -10,27 +9,19 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @Service
-public class ArtConfigServiceImpl extends BaseServiceImpl<ArtConfig,ArtConfigMapper> implements IArtConfigService {
+public class ArtConfigServiceImpl extends BaseServiceImpl<BaseArtConfig,ArtConfigMapper> implements IArtConfigService {
+
     @Override
-    public void deleteByProtocolIdAndMinLength(int protocolId, int minLength) {
-        this.baseMapper.deleteArtConfigByProtocolIdAndMinLength(protocolId, minLength);
+    public BaseResponse getConfigPaged(PagedArtConfig pagedArtConfig) {
+        return this.baseMapper.getConfigPaged(pagedArtConfig);
     }
 
     @Override
-    public List<ArtConfig> getConfigPaged(ArtConfigPaged artConfigPaged) {
-        int page = artConfigPaged.getPage();
-        int limit = artConfigPaged.getLimit();
-        int startIndex = page * 20;
-        return this.baseMapper.getConfigPaged(artConfigPaged.getProtocolId(),
-                artConfigPaged.getMinLength(),startIndex,limit);
-    }
-
-    @Override
-    public List<ArtConfig> selectAllConfig() {
+    public List<BaseArtConfig> selectAllConfig() {
         return this.baseMapper.selectAllConfig();
     }
 
@@ -79,5 +70,36 @@ public class ArtConfigServiceImpl extends BaseServiceImpl<ArtConfig,ArtConfigMap
         File file = new File("script/" + fileName);
         return file.exists();
     }
+
+    @Override
+    public BaseArtConfig delArtConfigByProtocolIdAndId(int protocolId, int id) {
+        return this.baseMapper.delArtConfigByProtocolIdAndId(protocolId, id);
+    }
+
+    @Override
+    public BaseArtConfig getArtConfigByProtocolIdAndId(int protocolId, int id) {
+        return this.baseMapper.getArtConfigByProtocolIdAndId(protocolId, id);
+    }
+
+    @Override
+    public Map<String, List<ArtShowState>> selectAllArtConfigShowState() {
+        return this.baseMapper.selectAllArtConfigShowState();
+    }
+
+    @Override
+    public void changeArtConfigShowState(ArtArgShowState artArgShowState) {
+        this.baseMapper.changeArtConfigShowState(artArgShowState);
+    }
+
+    @Override
+    public BaseResponse updateByJSONStr(String jsonData) {
+        return this.baseMapper.updateByJSONStr(jsonData);
+    }
+
+    @Override
+    public BaseResponse insertByJSONStr(String jsonData) {
+        return this.baseMapper.insertByJSONStr(jsonData);
+    }
+
 
 }

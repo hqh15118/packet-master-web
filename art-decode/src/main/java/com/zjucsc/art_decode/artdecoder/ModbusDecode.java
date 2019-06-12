@@ -57,7 +57,7 @@ public class ModbusDecode {
         return "modbus";
     }
 
-    public void renewmap(byte[] payload ){
+    private void renewmap(byte[] payload){
         int i = (int)payload[7];
         if(i==1 || i==2)
         {
@@ -131,11 +131,11 @@ public class ModbusDecode {
                 byte[] byte_all=new byte[]{byte1[0], byte1[1], byte2[0], byte2[1]};
                 if(modbus.getType().equals( "float" )){
                     float tech_value = Bytecut.BytesTofloat( byte_all,0);
-                    tech_map.put(modbus.getArtName(), tech_value);
+                    tech_map.put(modbus.getTag(), tech_value);
                 }
                 else if(modbus.getType().equals("int")){
                     float tech_value = modbus.getRange()[0] + ByteUtil.bytesToInt(byte_all,0)*(modbus.getRange()[1]-modbus.getRange()[0])/(2^32);
-                    tech_map.put(modbus.getArtName(),tech_value);
+                    tech_map.put(modbus.getTag(),tech_value);
                 }
             }
         }
@@ -152,7 +152,7 @@ public class ModbusDecode {
                     byte1 = Input_reg_map.get(modbus.getAddr_head());
                 }
                 float tech_value = modbus.getRange()[0] + ByteUtil.bytesToShort(byte1,0)*(modbus.getRange()[1]-modbus.getRange()[0])/(2^16);
-                tech_map.put(modbus.getArtName(),tech_value);
+                tech_map.put(modbus.getTag(),tech_value);
             }
         }
         else if(modbus.getType().equals("bool"))
@@ -161,22 +161,22 @@ public class ModbusDecode {
             {
                 if(Dis_input_map.get(modbus.getAddr_head()))
                 {
-                    tech_map.put(modbus.getArtName(),1f);
+                    tech_map.put(modbus.getTag(),1f);
                 }
                 else
                 {
-                    tech_map.put(modbus.getArtName(),0f);
+                    tech_map.put(modbus.getTag(),0f);
                 }
             }
             else if(modbus.getReg_coil()==2)///////////读线圈
             {
                 if(Coil_map.get(modbus.getAddr_head()))
                 {
-                    tech_map.put(modbus.getArtName(),1f);
+                    tech_map.put(modbus.getTag(),1f);
                 }
                 else
                 {
-                    tech_map.put(modbus.getArtName(),0f);
+                    tech_map.put(modbus.getTag(),0f);
                 }
             }
         }

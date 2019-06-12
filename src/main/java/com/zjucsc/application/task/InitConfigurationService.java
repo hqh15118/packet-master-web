@@ -1,21 +1,18 @@
 package com.zjucsc.application.task;
 
-import com.zjucsc.application.config.ProtocolIgnore;
-import com.zjucsc.application.domain.bean.ConfigurationSetting;
-import com.zjucsc.application.system.service.hessian_iservice.IConfigurationSettingService;
-import com.zjucsc.application.system.service.hessian_iservice.IProtocolIdService;
-import com.zjucsc.art_decode.ArtDecodeCommon;
-import com.zjucsc.art_decode.artdecoder.S7CommDecode;
-import com.zjucsc.art_decode.base.IArtDecode;
 import com.zjucsc.IProtocolFuncodeMap;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.ConstantConfig;
 import com.zjucsc.application.config.PACKET_PROTOCOL;
+import com.zjucsc.application.config.ProtocolIgnore;
 import com.zjucsc.application.config.auth.Auth;
-import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
+import com.zjucsc.application.domain.bean.ConfigurationSetting;
 import com.zjucsc.application.domain.bean.Protocol;
-import com.zjucsc.application.tshark.analyzer.ArtAnalyzer;
+import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
+import com.zjucsc.application.system.service.hessian_iservice.IConfigurationSettingService;
+import com.zjucsc.application.system.service.hessian_iservice.IProtocolIdService;
 import com.zjucsc.application.util.CommonCacheUtil;
+import com.zjucsc.art_decode.ArtDecodeCommon;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -25,7 +22,6 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.Field;
 import java.util.*;
 
-import static com.zjucsc.application.config.Common.ART_FILTER;
 import static com.zjucsc.application.util.CommonCacheUtil.convertIdToName;
 import static com.zjucsc.application.util.CommonConfigUtil.addProtocolFuncodeMeaning;
 
@@ -40,7 +36,6 @@ public class InitConfigurationService implements ApplicationRunner {
 
     @Autowired private IConfigurationSettingService iConfigurationSettingService;
     @Autowired private IProtocolIdService iProtocolIdService;
-    @Autowired private ConstantConfig constantConfig;
 
     @Override
     public void run(ApplicationArguments args) throws IllegalAccessException, NoSuchFieldException, ProtocolIdNotValidException {
@@ -138,14 +133,6 @@ public class InitConfigurationService implements ApplicationRunner {
         }
 
         /***************************
-         * INIT ART_ANALYZER
-         ***************************/
-        Map<String,IArtDecode> artServiceMap = new HashMap<>();
-        S7CommDecode s7commDecode = new S7CommDecode();
-        artServiceMap.put(s7commDecode.protocol(),s7commDecode);
-        ART_FILTER = new ArtAnalyzer(artServiceMap);
-
-        /***************************
          * INIT ART DECODER
          ***************************/
         ArtDecodeCommon.init();
@@ -156,7 +143,6 @@ public class InitConfigurationService implements ApplicationRunner {
         log.info("\n******************** \n AUTH_MAP : {} \n********************" , Common.AUTH_MAP);
         log.info("\n******************** \n size : {} ; CONFIGURATION_MAP : {}\n********************" ,  Common.CONFIGURATION_MAP.size() , Common.CONFIGURATION_MAP);
         log.info("\n******************** \n size : {} ; PROTOCOL_STR_TO_INT : {} \n********************" , Common.PROTOCOL_STR_TO_INT.size() ,  Common.PROTOCOL_STR_TO_INT  );
-        log.info("\n******************** \n size : {} ; ART_FILTER MAP: {} \n********************" , ART_FILTER.getAnalyzer().size() , ART_FILTER.getAnalyzer());
 
         System.out.println("spring boot admin address : http://your-address:8989");
         System.out.println("swagger-ui address : http://your-address:your-port/swagger-ui.html#/greeting-controller");

@@ -16,7 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 /**
  * AOP 记录用户操作日志
@@ -30,6 +32,10 @@ public class LogAspect {
 
     private final KafkaThread<LogBean> LOG_BEAN_SEND_KAFKA_THREAD =
             KafkaThread.createNewKafkaThread("normal_log", KafkaConfig.SEND_NORMAL_LOG);
+
+    {
+        LOG_BEAN_SEND_KAFKA_THREAD.start();
+    }
 
     @Autowired
     private ConstantConfig constantConfig;
@@ -61,11 +67,9 @@ public class LogAspect {
         // 执行时长(毫秒)
         long time = System.currentTimeMillis() - beginTime;
         if (constantConfig.isSendAopLog()) {
-            // 保存日志
             LogBean.LogBeanBuilder builder = LogBean.builder()
                     .methodArgs(JSON.toJSONString(point.getArgs()))
                     .result(JSON.toJSONString(result))
-
                     .clazzName(point.getTarget().getClass().getName())
                     .methodName(signature.getMethod().getName())
                     .logType(LogBean.NORMAL_LOG)
@@ -77,29 +81,34 @@ public class LogAspect {
             LOG_BEAN_SEND_KAFKA_THREAD.sendMsg(builder.build());
         }
         if (constantConfig.isOpenAOPLog()){
-            sb.append("****************\n请求类-方法：")
-                    .append(point.getTarget().getClass().getName()).append("-").append(signature.getMethod().getName())
-                    .append("\n")
-                    .append("请求参数:")
-                    .append(JSON.toJSONString(point.getArgs()))
-                    .append("\n")
-                    .append("请求结果:")
-                    .append(JSON.toJSONString(result))
-                    .append("\n")
-                    .append("耗时：")
-                    .append(time)
-                    .append("\n");
-            if (exception != null){
-                sb.append("异常：>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n")
-                    .append(exception.getClass().getName()).append("--")
-                        .append(exception.getMessage())
+            if (constantConfig.isShowErrorOnly()){
+                if (exception==null){
+                    return result;
+                }
+            }
+                sb.append("****************\n请求类-方法：")
+                        .append(point.getTarget().getClass().getName()).append("-").append(signature.getMethod().getName())
+                        .append("\n")
+                        .append("请求参数:")
+                        .append(JSON.toJSONString(point.getArgs()))
+                        .append("\n")
+                        .append("请求结果:")
+                        .append(JSON.toJSONString(result))
+                        .append("\n")
+                        .append("耗时：")
+                        .append(time)
                         .append("\n");
-            }
-            sb.append("****************");
-            log.info("info:\n{}",sb.toString());
-            if (exception!=null){
-                log.error("detail \n{}: " , exception , "↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑");
-            }
+                if (exception != null){
+                    sb.append("异常：>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n")
+                        .append(exception.getClass().getName()).append("--")
+                            .append(exception.getMessage())
+                            .append("\n");
+                }
+                sb.append("****************");
+                log.info("info:\n{}",sb.toString());
+                if (exception!=null){
+                    log.error("detail \n{}: " , exception , "↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑");
+                }
         }
         return result;
     }

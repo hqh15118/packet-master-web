@@ -21,6 +21,11 @@ public class ModbusArtDecoder extends BaseArtDecode<ModbusDecode,ModBusConfig> {
     }
 
     @Override
+    public void updateArtConfig(ModBusConfig a) {
+
+    }
+
+    @Override
     public void deleteArtConfig(BaseConfig baseConfig) {
         ModBusConfig modBusConfig = (ModBusConfig)baseConfig;
         decoder.deleteConfig(modBusConfig);

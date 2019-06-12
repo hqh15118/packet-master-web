@@ -144,12 +144,7 @@ public class StatisticsData {
     }
 
     public static synchronized void addArtMapData(Map<String,Float> artDataMap){
-        artDataMap.forEach(new BiConsumer<String, Float>() {
-            @Override
-            public void accept(String artArg, Float value) {
-                addArtData(artArg,String.valueOf(value));
-            }
-        });
+        artDataMap.forEach((artArg, value) -> addArtData(artArg,String.valueOf(value)));
     }
 
     /*********************************

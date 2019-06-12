@@ -10,29 +10,20 @@ import com.zjucsc.application.domain.bean.StatisticsDataWrapper;
 import com.zjucsc.application.socketio.SocketServiceCenter;
 import com.zjucsc.application.system.service.common_iservice.CapturePacketService;
 import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
-import com.zjucsc.application.system.service.hessian_mapper.DeviceMapper;
-import com.zjucsc.application.util.CommonCacheUtil;
-import com.zjucsc.application.util.CommonConfigUtil;
 import com.zjucsc.application.util.AppCommonUtil;
-import com.zjucsc.kafka.KafkaProducerCreator;
+import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.ListOperations;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
-import static com.zjucsc.application.config.KafkaConfig.SEND_ALL_PACKET_FV_DIMENSION;
 import static com.zjucsc.application.config.StatisticsData.*;
 
 @Slf4j
@@ -62,32 +53,12 @@ public class ScheduledService {
     private final BiConsumer<String,GraphInfo> GRAPH_INFO_CONSUMER =
             StatisticsData::addDeviceGraphInfo;
 
-    private int count = 1;
-
-    @Scheduled(fixedRate = 1000)
-    public void commonScheduledService(){
-        if (CommonCacheUtil.getScheduleServiceRunningState()){
-            count++;
-            //每5秒
-            if (count % 5 == 0){
-                //发送报文统计信息
-                sendPacketStatisticsMsg();
-                //发送图表统计数据
-                sendGraphInfo();
-                //统计流量
-                statisticFlow();
-            }
-            //每1秒
-            //发送所有五元组
-            sendAllFvDimensionPacket();
-        }
-    }
 
     /**
      * 5秒钟发送一次统计信息
      */
-    //@Scheduled(fixedRate = 5000)
-    private void sendPacketStatisticsMsg(){
+    @Scheduled(fixedRate = 5000)
+    public void sendPacketStatisticsMsg(){
         SEND_CONSUMER.setTimeStamp(new Date().toString());
         CommonCacheUtil.resetSaveBean();
 
@@ -118,8 +89,8 @@ public class ScheduledService {
         iDeviceService.saveStatisticInfo(Common.STATISTICS_INFO_BEAN);
     }
 
-    //@Scheduled(fixedRate = 1000)
-    private void sendAllFvDimensionPacket(){
+    @Scheduled(fixedRate = 1000)
+    public void sendAllFvDimensionPacket(){
         for (int i = 0; i < 5; i++) {
             doSend(fvDimensionLayers.poll());
         }
@@ -127,8 +98,8 @@ public class ScheduledService {
     /**
      * 工艺参数信息
      */
-    //@Scheduled(fixedRate = 5000)
-    private void sendGraphInfo(){
+    @Scheduled(fixedRate = 5000)
+    public void sendGraphInfo(){
         SocketServiceCenter.updateAllClient(SocketIoEvent.ART_INFO, StatisticsData.ART_INFO);
         addArtData("timestamp", AppCommonUtil.getDateFormat().format(new Date()));
         //System.out.println(StatisticsData.ART_INFO);
@@ -143,7 +114,8 @@ public class ScheduledService {
     /**
      * 流量信息
      */
-    private void statisticFlow(){
+    @Scheduled(fixedRate = 5000)
+    public void statisticFlow(){
         int flowDiff = Common.FLOW.getAndSet(0);
         if (flowDiff / 5 >= Common.maxFlowInByte){
             SocketServiceCenter.updateAllClient(SocketIoEvent.MAX_FLOW_ATTACK,new FlowError(new Date().toString(),flowDiff));
@@ -174,30 +146,35 @@ public class ScheduledService {
              * 设置需要保存的统计信息
              */
             StatisticInfoSaveBean bean = Common.STATISTICS_INFO_BEAN.get(deviceNumber);
-            bean.setTime(timeStamp);
-            switch (index){
-                case 1://ATTACK_BY_DEVICE
-                    graphInfo.setAttack(res);
-                    bean.setAttack(res);
-                    break;
-                case 2://EXCEPTION_BY_DEVICE
-                    graphInfo.setException(res);
-                    bean.setException(res);
-                    break;
-                case 3://NUMBER_BY_DEVICE_IN
-                    graphInfo.setPacketIn(res);
-                    bean.setDownload(res);
-                    break;
-                case 4://NUMBER_BY_DEVICE_OUT
-                    graphInfo.setPacketOut(res);
-                    bean.setUpload(res);
-                    break;
-                case 5://DELAY_INFO
-                    graphInfo.setDelay(res);
-                    break;
-                default:log.info("*************************索引错误*************************");
-                    break;
+            if (bean == null) {
+                bean = new StatisticInfoSaveBean();
+                Common.STATISTICS_INFO_BEAN.put(deviceNumber,bean);
+                log.info("设备{}未添加StatisticInfoSaveBean，已重新添加，但程序中有错误...",deviceNumber);
             }
+                bean.setTime(timeStamp);
+                switch (index){
+                    case 1://ATTACK_BY_DEVICE
+                        graphInfo.setAttack(res);
+                        bean.setAttack(res);
+                        break;
+                    case 2://EXCEPTION_BY_DEVICE
+                        graphInfo.setException(res);
+                        bean.setException(res);
+                        break;
+                    case 3://NUMBER_BY_DEVICE_IN
+                        graphInfo.setPacketIn(res);
+                        bean.setDownload(res);
+                        break;
+                    case 4://NUMBER_BY_DEVICE_OUT
+                        graphInfo.setPacketOut(res);
+                        bean.setUpload(res);
+                        break;
+                    case 5://DELAY_INFO
+                        graphInfo.setDelay(res);
+                        break;
+                    default:log.info("*************************索引错误*************************");
+                        break;
+                }
         }
         public SenderConsumer setMap(HashMap<String,Integer> map , int index){
             this.map = map;

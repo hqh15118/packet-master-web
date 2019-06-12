@@ -2,11 +2,9 @@ package com.zjucsc.application.config;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.zjucsc.application.domain.bean.ArtConfig;
 import com.zjucsc.application.domain.bean.CollectorState;
 import com.zjucsc.application.domain.bean.StatisticInfoSaveBean;
 import com.zjucsc.application.handler.ThreadExceptionHandler;
-import com.zjucsc.application.tshark.analyzer.ArtAnalyzer;
 import com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
 
@@ -28,8 +26,6 @@ public class Common {
 
     public static int GPLOT_ID = 0;
 
-    public static volatile String FV_DIMENSION_STR_IN_REDIS = new Date().toString();
-
     public static final int SOCKET_IO_PORT = 8081;
 
     public static volatile boolean SCHEDULE_RUNNING = false;
@@ -48,13 +44,15 @@ public class Common {
 
     public static final AtomicInteger FLOW = new AtomicInteger(0);
 
-    /** cache7
+    /**
+     * cache7
      * 所有可配置的协议
      * 协议 --> 功能码 以及 对应的含义 --> 从serviceLoader中加载
      */
     public static final HashMap<String , HashMap<Integer,String>> CONFIGURATION_MAP = new HashMap<>();
 
-    /** cache6
+    /**
+     * cache6
      * String 设备IP
      * String -> 协议
      * OperationAnalyzer -> 报文操作分析器
@@ -64,15 +62,11 @@ public class Common {
 
     public static final ConcurrentHashMap<String, StatisticInfoSaveBean> STATISTICS_INFO_BEAN =
             new ConcurrentHashMap<>();
-    /** cache5
+    /**
+     * cache5
      * DEVICE_IP 五元组过滤器
      */
     public static ConcurrentHashMap<String, FiveDimensionAnalyzer> FV_DIMENSION_FILTER_PRO = new ConcurrentHashMap<>();
-
-    /** cache4
-     * 工艺分析 协议 -- 工艺参数分析器
-     */
-    public static ArtAnalyzer ART_FILTER ;
 
     /**
      * BaseResponse的返回状态 - 修改起来比较方便
@@ -106,7 +100,8 @@ public class Common {
 
     public static final ThreadExceptionHandler COMMON_THREAD_EXCEPTION_HANDLER = new ThreadExceptionHandler();
 
-    /** cache2
+    /**
+     * cache2
      *  init in
      * @see com.zjucsc.application.task.InitConfigurationService
      */
@@ -121,7 +116,8 @@ public class Common {
 
     public static final List<Process> TSHARK_RUNNING_PROCESS = new ArrayList<>();
 
-    /** cache1
+    /**
+     * cache1
      * 设备IP和DEVICE_NUMBER之间互相转换
      */
     public static final BiMap<String,String> DEVICE_IP_TO_NAME = HashBiMap.create();
@@ -130,11 +126,5 @@ public class Common {
      * 要显示的工艺参数集合【将这个set里面的工艺参数数据传输到前端，其他的不用传】
      */
     public static final Set<String> SHOW_GRAPH_SET = Collections.synchronizedSet(new HashSet<>());
-
-    /**
-     * 【协议 --> 【ArtConfigId，ArtConfigInstance】】
-     */
-    public static final ConcurrentHashMap<String,ConcurrentHashMap<Integer, ArtConfig>> ART_DECODE_MAP
-            = new ConcurrentHashMap<>();
 
 }

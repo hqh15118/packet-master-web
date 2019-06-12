@@ -3,7 +3,9 @@ package com.zjucsc.application.controller;
 
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.auth.Log;
+import com.zjucsc.application.domain.bean.AttackF;
 import com.zjucsc.application.domain.bean.CositeDosConfigBean;
+import com.zjucsc.application.domain.bean.DosConfig;
 import com.zjucsc.application.system.service.hessian_mapper.PacketInfoMapper;
 import com.zjucsc.attack.bean.AttackConfig;
 import com.zjucsc.application.domain.bean.BaseResponse;
@@ -34,21 +36,14 @@ public class AttackInfoController {
         return BaseResponse.OK();
     }
 
-    @ApiOperation("配置同源DOS攻击")
-    @PostMapping("codos_config")
-    @Log
-    public BaseResponse cositeDOSConfig(@RequestBody CositeDosConfigBean cositeDosConfigBean){
-        AttackConfig.setCoSiteNum(cositeDosConfigBean.getMaxNum());
-        AttackConfig.setCoSiteTimeGap(cositeDosConfigBean.getTimeInMill());
-        return BaseResponse.OK();
-    }
 
-    @ApiOperation("配置多源DOS攻击")
-    @PostMapping("muldos_config")
-    @Log
-    public BaseResponse mulsiteDOSConfig(@RequestBody CositeDosConfigBean mulsiteDosConfigBean){
-        AttackConfig.setMultiSiteNum(mulsiteDosConfigBean.getMaxNum());
-        AttackConfig.setCoSiteTimeGap(mulsiteDosConfigBean.getTimeInMill());
+    @ApiOperation("DOS攻击配置")
+    @PostMapping("dos_config")
+    public BaseResponse dosConfig(@RequestBody DosConfig dosConfig) {
+        AttackConfig.setCoSiteTimeGap(dosConfig.getCoSiteTime());
+        AttackConfig.setCoSiteNum(dosConfig.getCoSiteNum());
+        AttackConfig.setMultiSiteNum(dosConfig.getMulSiteNum());
+        AttackConfig.setMultiSiteTimeGap(dosConfig.getMulSiteTime());
         return BaseResponse.OK();
     }
 
@@ -64,4 +59,10 @@ public class AttackInfoController {
         return BaseResponse.OK();
     }
 
+    @ApiOperation("查询攻击")
+    @PostMapping("get_attacks")
+    @Log
+    public BaseResponse getAttack(@RequestBody AttackF attackF){
+        return BaseResponse.OK(packetInfoMapper.selectAttackBybadTypeAndLevel(attackF));
+    }
 }

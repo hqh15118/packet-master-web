@@ -4,7 +4,7 @@ import com.zjucsc.art_decode.artconfig.BaseConfig;
 import com.zjucsc.art_decode.artdecoder.ModbusArtDecoder;
 import com.zjucsc.art_decode.artdecoder.ModbusDecode;
 import com.zjucsc.art_decode.artdecoder.S7CommArtDecoder;
-import com.zjucsc.art_decode.artdecoder.S7CommDecode;
+import com.zjucsc.art_decode.artdecoder.S7Decode;
 import com.zjucsc.art_decode.base.BaseArtDecode;
 
 import java.util.Map;
@@ -18,14 +18,14 @@ public class ArtDecodeCommon {
      */
     public static void init(){
         ART_DECODE_CONCURRENT_HASH_MAP.put("modbus",new ModbusArtDecoder(new ModbusDecode()));
-        //ART_DECODE_CONCURRENT_HASH_MAP.put("s7comm",new S7CommArtDecoder(new S7CommDecode()));
+        ART_DECODE_CONCURRENT_HASH_MAP.put("s7comm",new S7CommArtDecoder(new S7Decode()));
     }
 
     public static Map<String,Float> artDecodeEntry(Map<String,Float> artMap,byte[] payload,
-                                                   String protocol){
+                                                   String protocol,Object...objs){
         BaseArtDecode<?,?> baseArtDecode = ART_DECODE_CONCURRENT_HASH_MAP.get(protocol);
         if (baseArtDecode != null){
-            return baseArtDecode.decode(artMap,payload);
+            return baseArtDecode.decode(artMap,payload,objs);
         }
         return artMap;
     }
@@ -36,22 +36,26 @@ public class ArtDecodeCommon {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public static boolean addArtDecodeConfig(BaseConfig config){
-        BaseArtDecode baseArtDecode = ART_DECODE_CONCURRENT_HASH_MAP.get(config.protocol);
+    public static void addArtDecodeConfig(BaseConfig config){
+        BaseArtDecode baseArtDecode = ART_DECODE_CONCURRENT_HASH_MAP.get(config.getProtocol());
         if (baseArtDecode!=null){
             baseArtDecode.addArtConfig(config);
-            return true;
         }
-        return false;
     }
 
     @SuppressWarnings("unchecked")
-    public static boolean deleteArtConfig(BaseConfig config){
-        BaseArtDecode baseArtDecode = ART_DECODE_CONCURRENT_HASH_MAP.get(config.protocol);
+    public static void updateArtDecodeConfig(BaseConfig config){
+        BaseArtDecode baseArtDecode = ART_DECODE_CONCURRENT_HASH_MAP.get(config.getProtocol());
+        if (baseArtDecode!=null){
+            baseArtDecode.updateArtConfig(config);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void deleteArtConfig(BaseConfig config){
+        BaseArtDecode baseArtDecode = ART_DECODE_CONCURRENT_HASH_MAP.get(config.getProtocol());
         if (baseArtDecode!=null){
             baseArtDecode.deleteArtConfig(config);
-            return true;
         }
-        return false;
     }
 }
