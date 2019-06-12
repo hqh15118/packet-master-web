@@ -101,7 +101,7 @@ public class LogAspect {
                 if (exception != null){
                     sb.append("异常：>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n")
                         .append(exception.getClass().getName()).append("--")
-                            .append(exception.getMessage())
+                            .append(exception.getStackTrace()[0].toString())
                             .append("\n");
                 }
                 sb.append("****************");

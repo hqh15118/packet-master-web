@@ -1,5 +1,6 @@
 package com.zjucsc.art_decode.modbus;
 
+import com.zjucsc.art_decode.artconfig.ModBusConfig;
 import com.zjucsc.art_decode.base.BaseArtDecode;
 import com.zjucsc.art_decode.other.AttackType;
 import com.zjucsc.common_util.ByteUtil;
@@ -171,4 +172,5 @@ public class ModbusDecode extends BaseArtDecode<ModBusConfig> {
             }
         }
     }
+
 }

@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
@@ -53,12 +54,27 @@ public class ScheduledService {
     private final BiConsumer<String,GraphInfo> GRAPH_INFO_CONSUMER =
             StatisticsData::addDeviceGraphInfo;
 
+    private int count = 0;
+
+    @Scheduled(fixedRate = 1000)
+    public void commonScheduleService(){
+        if (Common.SCHEDULE_RUNNING){
+            count ++;
+            if (count == 5){
+                sendPacketStatisticsMsg();
+                sendGraphInfo();
+                statisticFlow();
+                count = 0;
+            }
+            sendAllFvDimensionPacket();
+        }
+    }
 
     /**
      * 5秒钟发送一次统计信息
      */
-    @Scheduled(fixedRate = 5000)
-    public void sendPacketStatisticsMsg(){
+    //@Scheduled(fixedRate = 5000)
+    private void sendPacketStatisticsMsg(){
         SEND_CONSUMER.setTimeStamp(new Date().toString());
         CommonCacheUtil.resetSaveBean();
 
@@ -89,8 +105,8 @@ public class ScheduledService {
         iDeviceService.saveStatisticInfo(Common.STATISTICS_INFO_BEAN);
     }
 
-    @Scheduled(fixedRate = 1000)
-    public void sendAllFvDimensionPacket(){
+    //@Scheduled(fixedRate = 1000)
+    private void sendAllFvDimensionPacket(){
         for (int i = 0; i < 5; i++) {
             doSend(fvDimensionLayers.poll());
         }
@@ -98,11 +114,16 @@ public class ScheduledService {
     /**
      * 工艺参数信息
      */
-    @Scheduled(fixedRate = 5000)
-    public void sendGraphInfo(){
-        SocketServiceCenter.updateAllClient(SocketIoEvent.ART_INFO, StatisticsData.ART_INFO);
+
+    //@Scheduled(fixedRate = 5000)
+    private void sendGraphInfo(){
+        StatisticsData.ART_INFO_SEND.clear();
+        for (String artName : Common.SHOW_GRAPH_SET) {
+            StatisticsData.ART_INFO_SEND.put(artName, StatisticsData.ART_INFO.get(artName));
+        }
+        StatisticsData.ART_INFO_SEND.put("timestamp",StatisticsData.ART_INFO.get("timestamp"));
+        SocketServiceCenter.updateAllClient(SocketIoEvent.ART_INFO, StatisticsData.ART_INFO_SEND);
         addArtData("timestamp", AppCommonUtil.getDateFormat().format(new Date()));
-        //System.out.println(StatisticsData.ART_INFO);
     }
 
     private void doSend(FvDimensionLayer layer){
@@ -114,8 +135,8 @@ public class ScheduledService {
     /**
      * 流量信息
      */
-    @Scheduled(fixedRate = 5000)
-    public void statisticFlow(){
+    //@Scheduled(fixedRate = 5000)
+    private void statisticFlow(){
         int flowDiff = Common.FLOW.getAndSet(0);
         if (flowDiff / 5 >= Common.maxFlowInByte){
             SocketServiceCenter.updateAllClient(SocketIoEvent.MAX_FLOW_ATTACK,new FlowError(new Date().toString(),flowDiff));

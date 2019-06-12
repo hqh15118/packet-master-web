@@ -33,11 +33,9 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
         super(executor);
     }
 
-    private Map<String,Float> showArgMap = new HashMap<>();
     @SuppressWarnings("unchecked")
     @Override
     public Void handle(Object t) {
-        showArgMap.clear();
         FvDimensionLayer layer = ((FvDimensionLayer) t);
         //五元组分析，如果正常，则回调进行操作码分析，如果操作码正常，则回调进行工艺参数分析
         protocolAnalyze(layer);
@@ -54,15 +52,10 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
         }else {
             res = ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.frame_protocols[0]);
         }
-
-        Common.SHOW_GRAPH_SET.forEach(showConfig -> {
-            //showConfig需要显示的工艺参数
-            showArgMap.put(showConfig,res.get(showConfig));
-        });
         //分析结果
         //res可能为null
         if(res!=null){
-            StatisticsData.addArtMapData(showArgMap);
+            StatisticsData.addArtMapData(res);
         }
         return null;
     }

@@ -235,14 +235,6 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         sb.append(basePreProcessor.getClass().getName()).append(" start");
     }
 
-    private static ThreadLocal<StringBuilder> stringBuilderThreadLocal =
-            new ThreadLocal<StringBuilder>(){
-                @Override
-                protected StringBuilder initialValue() {
-                    return new StringBuilder(50);
-                }
-            };
-
     private void sendFvDimensionPacket(FvDimensionLayer fvDimensionLayer , byte[] payload){
         fvDimensionLayer.timeStamp = PacketDecodeUtil.decodeTimeStamp(payload,20);
         //payload如果是空的，那么timeStamp就用本地时间来代替

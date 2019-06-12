@@ -1,22 +1,21 @@
 package com.zjucsc.art_decode.s7comm;
 
+import com.zjucsc.art_decode.artconfig.S7Config;
 import com.zjucsc.art_decode.base.BaseArtDecode;
 import com.zjucsc.art_decode.other.AttackType;
 import com.zjucsc.common_util.ByteUtil;
 import com.zjucsc.common_util.Bytecut;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
 
-public class S7Decode extends BaseArtDecode<S7techpara> {
+public class S7Decode extends BaseArtDecode<S7Config> {
 
-    private Map<Integer,List<DBclass>> DBmap = new HashMap<>();
+    public Map<Integer,List<DBclass>> DBmap = new HashMap<>(); ////pduref,DB
 
-    private Map<Integer,byte[]> Datamap = new HashMap<>();
+    public Map<Integer,byte[]> Datamap = new HashMap<>();  //// seq ,data
 
-    private Map<Integer,Integer> PDUrefmap = new HashMap<>();
+    public Map<Integer,Integer> PDUrefmap = new HashMap<>(); ////////seq ,pduref
 
     public Map<Integer,Map<Integer,Byte>> map = new HashMap<>();
 
@@ -24,7 +23,6 @@ public class S7Decode extends BaseArtDecode<S7techpara> {
 
     private Map<Integer,Map<Integer,Byte>> putDBdatamap(byte[] load)
     {
-        //byte[] s7load = getS7load.S7load(load,1);
         if(load != null)
         {
             putDBmap(load);
@@ -93,7 +91,7 @@ public class S7Decode extends BaseArtDecode<S7techpara> {
             else if(ByteUtil.bytesToShort(s7load,6)==12)
             {
                 byte[] parameter = Bytecut.Bytecut(s7load,10,-1);
-                if(parameter!=null && parameter[4]==(byte)0x12 && parameter[5]==(byte)0x82)
+                if(parameter!=null && parameter[4]==(byte)0x12 && parameter[5]==(byte)0x82 && parameter[6]==(byte)0x05)
                 {
                     List<DBclass> DBlist = DBmap.get((int)ByteUtil.bytesToShort(s7load,4));
                     if(DBlist != null)
@@ -107,18 +105,28 @@ public class S7Decode extends BaseArtDecode<S7techpara> {
                         }
                      }
                 }
-                else if(parameter !=null && parameter[4]==(byte)0x12 && parameter[5]==(byte)0x02)
+                else if(parameter !=null && parameter[4]==(byte)0x12 && parameter[5]==(byte)0x02 )
                 {
                     int sequence_num = (int)parameter[7];/////////////与response seq num 对应
                     byte[] data = Bytecut.Bytecut(parameter,12,-1);//////////与response一样
                     if(data!=null && Datamap!=null && PDUrefmap!=null )
                     {
-                        byte[] bytes = Datamap.get(PDUrefmap.get(sequence_num));
-                        if (bytes!=null ) {
-                            if (data[0] == (byte) 0xff && data.length == bytes.length && PDUrefmap.get(sequence_num) != null)
-                                Datamap.put(PDUrefmap.get(sequence_num), data);
+                        byte[] bytes = Datamap.get(PDUrefmap.get(sequence_num));///////////modify
+                        if (bytes!=null && data[0] == (byte) 0xff && data.length == bytes.length && PDUrefmap.get(sequence_num) != null) {
+                            Datamap.put(PDUrefmap.get(sequence_num), data);
                             decodeDBlist(DBmap.get(PDUrefmap.get(sequence_num)), data);
                         }
+                    }
+                }
+                else if(parameter!=null && parameter[4]==(byte)0x12 && parameter[5]==(byte)0x82 && parameter[6]==(byte)0x04)
+                {
+                    int sequence_num = (int)parameter[7];
+                    if(PDUrefmap.get(sequence_num)!=null)
+                    {
+                        int PDU = PDUrefmap.get(sequence_num);
+                        DBmap.remove(PDU);
+                        Datamap.remove(sequence_num);
+                        PDUrefmap.remove(sequence_num);
                     }
                 }
             }
@@ -174,45 +182,46 @@ public class S7Decode extends BaseArtDecode<S7techpara> {
         }
     }
 
-    public Map<String,Float> decode_tech(S7techpara S7tech , Map<String,Float> tech_map , byte[] load , int tcp)
+    public  Map<String,Float> decode_tech(S7Config S7tech , Map<String,Float> tech_map , byte[] load , int tcp)
     {
         byte[] S7load = getS7load.S7load(load,tcp);
-        Map<Integer,Map<Integer,Byte>> s7map = putDBdatamap(S7load);
-        Map <Integer,Byte> datamap= s7map.get(S7tech.getDatabase());
-        if(datamap!=null && S7tech.getLength()==4) {
-            byte[] bytes = new byte[4];
-            for (int s = 0; s < 4; s++) {
-                if(datamap.get(S7tech.getByteoffset() + s)!=null) {
-                    bytes[s] = datamap.get(S7tech.getByteoffset() + s);
+        if(S7load !=null && S7load[0]==(byte)0x32 && S7load[1]==(byte)0x07) {
+            Map<Integer, Map<Integer, Byte>> s7map = putDBdatamap(S7load);
+            Map<Integer, Byte> datamap = s7map.get(S7tech.getDatabase());
+            if (datamap != null && S7tech.getLength() == 4) {
+                byte[] bytes = new byte[4];
+                for (int s = 0; s < 4; s++) {
+                    if (datamap.get(S7tech.getByteoffset() + s) != null) {
+                        bytes[s] = datamap.get(S7tech.getByteoffset() + s);
+                    } else {
+                        break;
+                    }
                 }
-                else {
-                break; }
-            }
-            if (S7tech.getType().equals("float")) {
-                tech_map.put(S7tech.getTag(), Bytecut.BytesTofloat(bytes, 0));
-            } else if (S7tech.getType().equals( "int")) {
-                tech_map.put(S7tech.getTag(), (float) ByteUtil.bytesToInt(bytes, 0));
-            }
-        }
-        else if (S7tech.getType().equals( "short") && S7tech.getLength() == 2) {
+                if (S7tech.getType().equals("float")) {
+                    tech_map.put(S7tech.getTag(), Bytecut.BytesTofloat(bytes, 0));
+                } else if (S7tech.getType().equals("int")) {
+                    tech_map.put(S7tech.getTag(), (float) ByteUtil.bytesToInt(bytes, 0));
+                }
+            } else if (S7tech.getType().equals("short") && S7tech.getLength() == 2) {
                 byte[] bytes = new byte[2];
                 for (int s = 0; s < 2; s++) {
                     bytes[s] = datamap.get(S7tech.getByteoffset() + s);
                 }
                 tech_map.put(S7tech.getTag(), (float) ByteUtil.bytesToShort(bytes, 0));
-            } else if (S7tech.getType().equals( "bool")) {
+            } else if (S7tech.getType().equals("bool")) {
                 if (((int) datamap.get(S7tech.getByteoffset()) & 1 << S7tech.getBitoffset()) == 0) {
                     tech_map.put(S7tech.getTag(), 0f);
                 } else {
                     tech_map.put(S7tech.getTag(), 1f);
                 }
             }
-            return tech_map;
+        }
+        return tech_map;
     }
 
     @Override
-    public Map<String, Float> decode(S7techpara s7techpara, Map<String, Float> globalMap, byte[] payload, Object... obj) {
-        return decode_tech(s7techpara,globalMap,payload,(int)obj[0]);
+    public Map<String, Float> decode(S7Config s7Config, Map<String, Float> globalMap, byte[] payload, Object... obj) {
+        return decode_tech(s7Config,globalMap,payload,(int)obj[0]);
     }
 
     @Override

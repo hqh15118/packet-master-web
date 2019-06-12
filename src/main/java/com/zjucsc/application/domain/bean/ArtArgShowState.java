@@ -6,5 +6,5 @@ import lombok.Data;
 public class ArtArgShowState {
     private int protocolId;
     private String tag;
-    private int showState;
+    private int showGraph;
 }

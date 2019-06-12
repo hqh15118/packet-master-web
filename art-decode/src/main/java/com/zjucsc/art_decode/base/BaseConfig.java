@@ -9,7 +9,7 @@ public class BaseConfig implements Serializable , Comparable<BaseConfig>{
     private int showGraph;
     private int id;
     private int protocolId;
-    private String details;
+    private String detail;
 
     public String getProtocol() {
         return protocol;
@@ -52,11 +52,11 @@ public class BaseConfig implements Serializable , Comparable<BaseConfig>{
     }
 
     public String getDetail() {
-        return details;
+        return detail;
     }
 
     public void setDetail(String detail) {
-        this.details = detail;
+        this.detail = detail;
     }
 
     @Override

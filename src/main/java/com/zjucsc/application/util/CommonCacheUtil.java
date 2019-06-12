@@ -220,7 +220,7 @@ public class CommonCacheUtil {
             log.info("取消协议 {} 下，工艺参数 {} 图表展示",protocolId,artArg);
             return true;
         }else{
-            log.info("取消协议 {} 下，工艺参数 {} 图表展示失败，set中不存在名为{}_{}的key值",protocolId,artArg,protocolId,artArg);
+            log.info("取消协议 {} 下，工艺参数 {} 图表展示失败，set中不存在名为{}的key值",protocolId,artArg,artArg);
             return false;
         }
     }

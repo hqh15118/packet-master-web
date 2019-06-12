@@ -106,6 +106,9 @@ public abstract class BasePreProcessor implements PreProcessor {
         commandBuilder.append(" -Y ").append("\"");
         for (String s : protocolFilterField()) {
             commandBuilder.append(s).append(" ");
+
+
+
         }
         commandBuilder.append("\"");   // 最后的部分 + s7comm/...用于过滤
         commandBuilder.append(" -M 10000");    //设置n条之后重置回话

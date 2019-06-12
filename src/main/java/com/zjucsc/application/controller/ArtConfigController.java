@@ -11,9 +11,10 @@ import com.zjucsc.application.util.AppCommonUtil;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.art_decode.ArtDecodeCommon;
 import com.zjucsc.art_decode.base.BaseConfig;
-import com.zjucsc.art_decode.modbus.ModBusConfig;
-import com.zjucsc.art_decode.s7comm.S7techpara;
+import com.zjucsc.art_decode.artconfig.ModBusConfig;
+import com.zjucsc.art_decode.artconfig.S7Config;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -51,13 +53,13 @@ public class ArtConfigController {
              iArtConfigService.updateByJSONStr(jsonData);
         }else{
             //添加新的工艺参数配置到数据库
-            //iArtConfigService.insertByJSONStr(jsonData);
+            iArtConfigService.insertByJSONStr(jsonData);
             //初始化工艺参数配置
             //将该工艺参数添加到MAP中
             AppCommonUtil.initArtMap(baseConfig.getTag());
         }
 
-        if (baseConfig.getShowGraph() == 0){
+        if (baseConfig.getShowGraph() == 1){
             CommonCacheUtil.addShowGraphArg(baseConfig.getProtocolId(),baseConfig.getTag());
         }else{
             CommonCacheUtil.removeShowGraph(baseConfig.getProtocolId(),baseConfig.getTag());
@@ -69,9 +71,9 @@ public class ArtConfigController {
             ArtDecodeCommon.addArtDecodeConfig(modBusConfig);
             return BaseResponse.OK(true);
         }else if (baseConfig.getProtocolId() == PACKET_PROTOCOL.S7_ID){
-            S7techpara s7techpara = JSON.parseObject(jsonData, S7techpara.class);
-            s7techpara.setProtocol("s7comm");
-            ArtDecodeCommon.addArtDecodeConfig(s7techpara);
+            S7Config s7Config = JSON.parseObject(jsonData, S7Config.class);
+            s7Config.setProtocol("s7comm");
+            ArtDecodeCommon.addArtDecodeConfig(s7Config);
             return BaseResponse.OK(true);
         }
         return BaseResponse.OK(false);
@@ -80,7 +82,7 @@ public class ArtConfigController {
     @ApiOperation("根据ID删除工艺参数配置")
     @Log
     @DeleteMapping("delete_art_config")
-    public BaseResponse deleteArtConfig(@RequestParam  int artConfigId , @RequestParam  int protocolId){
+    public BaseResponse deleteArtConfig(@RequestParam  int artConfigId , @RequestParam  int protocolId) throws ProtocolIdNotValidException {
         BaseArtConfig baseArtConfig;
         //获取协议ID和工艺参数ID对应的那个工艺参数数据
         //{
@@ -90,6 +92,11 @@ public class ArtConfigController {
         baseArtConfig = iArtConfigService.getArtConfigByProtocolIdAndId(protocolId, artConfigId);
 
         BaseConfig baseConfig = ((BaseConfig) baseArtConfig.getConfigStructure());
+        if (baseConfig.getProtocolId() == 2){
+            baseConfig.setProtocol("s7comm");
+        }else{
+            baseConfig.setProtocol(CommonCacheUtil.convertIdToName(baseConfig.getProtocolId()));
+        }
         //移除要显示的map
         AppCommonUtil.removeArtMap(baseConfig.getTag());
         //移除解析库中的配置
@@ -106,11 +113,29 @@ public class ArtConfigController {
         return BaseResponse.OK(iArtConfigService.selectAllConfig());
     }
 
+
     @ApiOperation("分页获取工艺参数配置")
     @PostMapping("get_paged_art_config")
     @Log
     public BaseResponse getPagedArtConfig(@RequestBody PagedArtConfig pagedArtConfig){
-        return BaseResponse.OK(iArtConfigService.getConfigPaged(pagedArtConfig).data);
+        List configList = (List) (iArtConfigService.getConfigPaged(pagedArtConfig).data);
+        if (pagedArtConfig.getProtocolId() == PACKET_PROTOCOL.MODBUS_ID){
+            addNewTag(configList,ModBusConfig.class);
+        }
+        if (pagedArtConfig.getProtocolId() == PACKET_PROTOCOL.S7_ID){
+            addNewTag(configList, S7Config.class);
+        }
+        return BaseResponse.OK(configList);
+    }
+
+    private void addNewTag(List configList,Class<? extends BaseConfig> targetClass){
+        for (Object o : configList) {
+            BaseConfig baseConfig = targetClass.cast(o);
+            AppCommonUtil.initArtMap(baseConfig.getTag());
+            if (baseConfig.getShowGraph() == 1){
+                CommonCacheUtil.addShowGraphArg(baseConfig.getProtocolId(),baseConfig.getTag());
+            }
+        }
     }
 
     @ApiOperation("修改工艺参数显示状态，【取消显示】时返回取消状态，true表示显示列表中存在，false表示显示列表中不存在")
@@ -118,7 +143,7 @@ public class ArtConfigController {
     @Log
     public BaseResponse changeArtShowState(@RequestBody ArtArgShowState artArgShowState){
         iArtConfigService.changeArtConfigShowState(artArgShowState);
-        if (artArgShowState.getShowState() == 1){
+        if (artArgShowState.getShowGraph() == 1){
             //如果要显示
             CommonCacheUtil.addShowGraphArg(artArgShowState.getProtocolId(),artArgShowState.getTag());
             return BaseResponse.OK(true);
@@ -156,4 +181,5 @@ public class ArtConfigController {
     public BaseResponse getAllArtConfigShowState(){
         return BaseResponse.OK(iArtConfigService.selectAllArtConfigShowState());
     }
+
 }

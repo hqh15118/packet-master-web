@@ -1,6 +1,6 @@
 package com.zjucsc.application.domain.exceptions;
 
-public class DataAccessException extends Exception{
+public class DataAccessException extends RuntimeException{
     private int code;
     private String msg;
 

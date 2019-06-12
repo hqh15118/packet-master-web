@@ -1,7 +1,6 @@
 package com.zjucsc.art_decode;
 
 import com.zjucsc.art_decode.base.BaseConfig;
-import com.zjucsc.art_decode.modbus.ModBusConfig;
 import com.zjucsc.art_decode.modbus.ModbusDecode;
 import com.zjucsc.art_decode.s7comm.S7Decode;
 import com.zjucsc.art_decode.base.BaseArtDecode;

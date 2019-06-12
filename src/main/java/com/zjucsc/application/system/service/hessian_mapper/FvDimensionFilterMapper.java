@@ -14,5 +14,5 @@ public interface FvDimensionFilterMapper extends BaseMapper<Rule> {
 
     void deleteAllFilterByDeviceNumberAndGplotId(String deviceNumber,  int gplotId);
 
-    void saveOrUpdateBatch(List<FvDimensionFilter> ruleList);
+    void saveOrUpdateBatch(List<FvDimensionFilter> ruleList , int gplotId);
 }

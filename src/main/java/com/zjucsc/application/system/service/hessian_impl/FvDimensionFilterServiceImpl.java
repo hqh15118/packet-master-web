@@ -54,7 +54,7 @@ public class FvDimensionFilterServiceImpl extends BaseServiceImpl<Rule,FvDimensi
         for (Rule rule : rules) {
             list.add(rule.getFvDimensionFilter());
         }
-        this.baseMapper.saveOrUpdateBatch(list);//保存五元组
+        this.baseMapper.saveOrUpdateBatch(list,Common.GPLOT_ID);//保存五元组
 
         //保存功能码
         OptFilterForFront optFilterForFront = new OptFilterForFront();

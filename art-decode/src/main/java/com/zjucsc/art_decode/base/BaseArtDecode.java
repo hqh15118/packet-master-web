@@ -47,4 +47,5 @@ public abstract class BaseArtDecode<T extends BaseConfig> implements IArtDecode<
         }
         return map;
     }
+
 }

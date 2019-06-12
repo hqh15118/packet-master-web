@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("cache")
+@RequestMapping("/cache/")
 public class CacheController {
 
     @ApiOperation("获取组态图ID")
