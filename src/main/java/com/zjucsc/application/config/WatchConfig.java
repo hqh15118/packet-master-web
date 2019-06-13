@@ -1,5 +1,6 @@
 package com.zjucsc.application.config;
 
+import com.zjucsc.application.socketio.SocketServiceCenter;
 import com.zjucsc.kafka.KafkaCommon;
 import com.zjucsc.tshark.TsharkCommon;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -25,6 +26,7 @@ public class WatchConfig {
         map.put("SHOW_GRAPH_SET",Common.SHOW_GRAPH_SET);
         map.put("KAFKA_SERVICE", KafkaCommon.getKafkaServiceState());
         map.put("TSHARK_ERROR_STREAM_THREAD_NUMBER", TsharkCommon.getErrorProcessThreadNumber());
+        map.put("SOCKET-IO-CLIENTS", SocketServiceCenter.getAllClients());
         return map;
     }
 }
