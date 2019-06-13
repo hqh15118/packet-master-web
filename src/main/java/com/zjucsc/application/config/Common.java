@@ -15,8 +15,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Common {
 
-    public static String OS_NAME = System.getProperty("os.name");
-
     /**
      * filterStatement按照IP地址进行区分还是MAC地址进行区分
      * 0 是 IP 地址

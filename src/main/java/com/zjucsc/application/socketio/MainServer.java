@@ -22,25 +22,22 @@ public class MainServer {
             }else{
                 hasStartedService = true;
                 //FIXME 只是简陋地这样写了一下
-                Thread thread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Configuration config = new Configuration();
-                        config.setHostname(ip);
-                        config.setPort(port);
-                        server = new SocketIOServer(config);
-                        server.addConnectListener(connectListener);
-                        server.addDisconnectListener(disconnectListener);
-                        server.start();
-                        try {
-                            Thread.sleep(Integer.MAX_VALUE);
-                        } catch (InterruptedException ignored) {
-                        }
-                        server.stop();
-                        server = null;
+                Thread thread = new Thread(() -> {
+                    Configuration config = new Configuration();
+                    config.setHostname(ip);
+                    config.setPort(port);
+                    server = new SocketIOServer(config);
+                    server.addConnectListener(connectListener);
+                    server.addDisconnectListener(disconnectListener);
+                    server.start();
+                    try {
+                        Thread.sleep(Integer.MAX_VALUE);
+                    } catch (InterruptedException ignored) {
                     }
+                    server.stop();
+                    server = null;
                 });
-                thread.setName("-websocket-server-");
+                thread.setName("-web-socket-server-");
                 thread.start();
             }
         }

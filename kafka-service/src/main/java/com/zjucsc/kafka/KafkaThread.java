@@ -70,8 +70,10 @@ public class KafkaThread<V> extends Thread implements IKafka<V> {
     @Override
     public void startService() {
         running = true; //设置开始运行标志位
-        if (!hasStart)
+        if (!hasStart) {
             start();        //开始运行run()方法
+            hasStart = true;
+        }
     }
 
     @Override

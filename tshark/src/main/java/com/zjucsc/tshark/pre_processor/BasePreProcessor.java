@@ -279,7 +279,7 @@ public abstract class BasePreProcessor implements PreProcessor {
 
     @Override
     public String filter() {
-        return "tcp";
+        return TsharkCommon.filter;
     }
 
     public void setCommandBuildFinishCallback(CommandBuildFinishCallback commandBuildFinishCallback){

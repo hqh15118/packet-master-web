@@ -34,8 +34,4 @@ public abstract class SinglePreProcessor<P> extends BasePreProcessor{
 
     public abstract String singleProtocolFilterField();
 
-    @Override
-    public String filter() {
-        return "not tcp";
-    }
 }

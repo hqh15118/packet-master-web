@@ -13,6 +13,7 @@ import com.zjucsc.application.system.service.hessian_iservice.IConfigurationSett
 import com.zjucsc.application.system.service.hessian_iservice.IProtocolIdService;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.art_decode.ArtDecodeCommon;
+import com.zjucsc.tshark.TsharkCommon;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -43,7 +44,7 @@ public class InitConfigurationService implements ApplicationRunner {
          * RELOAD FROM JAR
          ***************************/
         List<String> virReload = args.getOptionValues("reload");
-        System.out.println("*******************\n" + "program args : " + virReload + "\n");
+        System.out.println("*******************\n" + "program args : " + virReload);
         boolean reload = false;
         if (virReload!=null && virReload.size() > 0){
             if ("true".equals(virReload.get(0))){
@@ -65,6 +66,15 @@ public class InitConfigurationService implements ApplicationRunner {
             }else{
                 log.info("以[MAC]地址作为准则进行过滤器的设置");
             }
+        }
+
+        /***************************
+         * INIT FILTER
+         ***************************/
+        List<String> virFilter = args.getOptionValues("filter");
+        System.out.println("program args : " + virFilter + "\n*******************");
+        if (virFilter!=null && virFilter.size() > 0){
+            TsharkCommon.filter = virFilter.get(0);
         }
 
         /***************************

@@ -20,7 +20,7 @@ public class WatchConfig {
         map.put("PROTOCOL_STR_TO_INT", Common.PROTOCOL_STR_TO_INT);
         map.put("OPERATION_FILTER_PRO" , Common.OPERATION_FILTER_PRO);
         map.put("FV_DIMENSION_FILTER_PRO" , Common.FV_DIMENSION_FILTER_PRO);
-        map.put("DEVICE_IP_TO_NAME" , Common.DEVICE_TAG_TO_NAME);
+        map.put("DEVICE_TAG_TO_NAME" , Common.DEVICE_TAG_TO_NAME);
         map.put("GPLOT_ID" , Common.GPLOT_ID);
         map.put("SHOW_GRAPH_SET",Common.SHOW_GRAPH_SET);
         map.put("KAFKA_SERVICE", KafkaCommon.getKafkaServiceState());

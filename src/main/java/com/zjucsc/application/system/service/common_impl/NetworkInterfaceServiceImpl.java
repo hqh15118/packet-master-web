@@ -23,12 +23,12 @@ public class NetworkInterfaceServiceImpl implements INetworkInterfaceService {
     @Autowired
     public PacketAnalyzeService packetAnalyzeService;
 
-    @Cacheable("network_interfaces")
+    //@Cacheable("network_interfaces")
     @Override
     public List<NetworkInterface> getAllNetworkInterface() throws SocketException {
         return doGetAllNetworkInterface();
     }
-    @CachePut("network_interfaces")
+    //@CachePut("network_interfaces")
     @Override
     public List<NetworkInterface> getAllNetworkInterfaceFlush() throws SocketException {
         return doGetAllNetworkInterface();

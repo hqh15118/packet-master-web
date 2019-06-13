@@ -88,27 +88,22 @@ public class PacketController {
     private AtomicInteger socketIoClientNumber = new AtomicInteger(0);
 
     @Log
-    @ApiOperation("开启websocket服务")
+    @ApiOperation("开启web-socket服务")
     @RequestMapping(value = "/connect_socketio" , method = RequestMethod.GET)
     public BaseResponse startRecvRealTimePacket(){
-        boolean b = MainServer.openWebSocketService(constantConfig.getGlobal_address(), Common.SOCKET_IO_PORT, new com.corundumstudio.socketio.listener.ConnectListener() {
-            @Override
-            public void onConnect(SocketIOClient socketIOClient) {
-                if (socketIoClientNumber.get() >= 1){
-                    socketIOClient.disconnect();
-                    log.info("reject socket io connect : {} " , socketIOClient.getRemoteAddress().toString());
-                }else{
-                    log.info(socketIOClient.getRemoteAddress().toString() + "connected...");
-                    SocketServiceCenter.addConnectedClient(socketIOClient);
-                }
+        boolean b = MainServer.openWebSocketService(constantConfig.getGlobal_address(), Common.SOCKET_IO_PORT, socketIOClient -> {
+            if (socketIoClientNumber.get() >= 1){
+                socketIOClient.disconnect();
+                log.info("reject socket io connect : {} " , socketIOClient.getRemoteAddress().toString());
+            }else{
+                //socketIoClientNumber.addAndGet(1);
+                log.info(socketIOClient.getRemoteAddress().toString() + "connected...");
+                SocketServiceCenter.addConnectedClient(socketIOClient);
             }
-        }, new com.corundumstudio.socketio.listener.DisconnectListener() {
-            @Override
-            public void onDisconnect(SocketIOClient socketIOClient) {
-                socketIoClientNumber.decrementAndGet();
-                log.info(socketIOClient.getRemoteAddress().toString() + "disconnect...");
-                SocketServiceCenter.removeConnectedClient(socketIOClient);
-            }
+        }, socketIOClient -> {
+            socketIoClientNumber.decrementAndGet();
+            log.info(socketIOClient.getRemoteAddress().toString() + "disconnect...");
+            SocketServiceCenter.removeConnectedClient(socketIOClient);
         });
         if (b){
             return BaseResponse.OK();
@@ -126,6 +121,7 @@ public class PacketController {
 
     @ApiOperation("获取抓包主机所有网卡接口信息")
     @GetMapping("get_all_interface")
+    @Log
     public BaseResponse getAllNetworkInterfaces() throws SocketException {
         return BaseResponse.OK(networkInterfaceService.getAllNetworkInterface());
     }

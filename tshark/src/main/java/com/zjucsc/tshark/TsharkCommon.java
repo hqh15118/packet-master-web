@@ -15,13 +15,10 @@ public class TsharkCommon {
 
     public static String OS_NAME = System.getProperty("os.name");
 
+    public static String filter = "tcp";
+
     public static Thread.UncaughtExceptionHandler uncaughtExceptionHandler
-            = new Thread.UncaughtExceptionHandler() {
-        @Override
-        public void uncaughtException(Thread t, Throwable e) {
-            System.out.println("thread " + t.getName() + " caught an exception " + e);
-        }
-    };
+            = (t, e) -> System.out.println("thread " + t.getName() + " caught an exception " + e);
 
     public static final Set<String> CAPTURE_PROTOCOL = new HashSet<>();
 

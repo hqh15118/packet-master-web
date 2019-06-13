@@ -1,0 +1,166 @@
+2019-06-13 08:33:00.951 packet-master-web [main] INFO  c.zjucsc.PacketMasterWebApplication - Starting PacketMasterWebApplication on SC-201705181836 with PID 4912 (E:\IdeaProjects\packet-master-web\out\artifacts\packet_master_web_jar\packet-master-web.jar started by Administrator in E:\IdeaProjects\packet-master-web\out\artifacts\packet_master_web_jar)
+2019-06-13 08:33:00.951 packet-master-web [main] INFO  c.zjucsc.PacketMasterWebApplication - No active profile set, falling back to default profiles: default
+2019-06-13 08:33:03.107 packet-master-web [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode!
+2019-06-13 08:33:03.107 packet-master-web [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data repositories in DEFAULT mode.
+2019-06-13 08:33:03.216 packet-master-web [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 78ms. Found 0 repository interfaces.
+2019-06-13 08:33:03.935 packet-master-web [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.springframework.kafka.annotation.KafkaBootstrapConfiguration' of type [org.springframework.kafka.annotation.KafkaBootstrapConfiguration$$EnhancerBySpringCGLIB$$1fef7bb3] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-06-13 08:33:04.404 packet-master-web [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$4c3d6a30] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-06-13 08:33:05.482 packet-master-web [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port(s): 8080 (http)
+2019-06-13 08:33:05.513 packet-master-web [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-192.168.0.121-8080"]
+2019-06-13 08:33:05.529 packet-master-web [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2019-06-13 08:33:05.545 packet-master-web [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.17]
+2019-06-13 08:33:05.685 packet-master-web [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2019-06-13 08:33:05.685 packet-master-web [main] INFO  o.s.web.context.ContextLoader - Root WebApplicationContext: initialization completed in 4625 ms
+2019-06-13 08:33:07.060 packet-master-web [main] INFO  o.s.b.a.e.w.ServletEndpointRegistrar - Registered '/actuator/jolokia' to jolokia-actuator-endpoint
+2019-06-13 08:33:07.201 packet-master-web [main] INFO  o.a.k.c.producer.ProducerConfig - ProducerConfig values: 
+	acks = 0
+	batch.size = 16384
+	bootstrap.servers = [10.15.191.100:9092]
+	buffer.memory = 33554432
+	client.id = 
+	compression.type = none
+	connections.max.idle.ms = 540000
+	enable.idempotence = false
+	interceptor.classes = []
+	key.serializer = class org.apache.kafka.common.serialization.StringSerializer
+	linger.ms = 1000
+	max.block.ms = 5000
+	max.in.flight.requests.per.connection = 5
+	max.request.size = 1048576
+	metadata.max.age.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partitioner.class = class org.apache.kafka.clients.producer.internals.DefaultPartitioner
+	receive.buffer.bytes = 32768
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 5000
+	retries = 0
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.mechanism = GSSAPI
+	security.protocol = PLAINTEXT
+	send.buffer.bytes = 131072
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.1, TLSv1]
+	ssl.endpoint.identification.algorithm = https
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLS
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	transaction.timeout.ms = 60000
+	transactional.id = null
+	value.serializer = class org.apache.kafka.common.serialization.StringSerializer
+
+2019-06-13 08:33:07.310 packet-master-web [main] INFO  o.a.kafka.common.utils.AppInfoParser - Kafka version : 2.0.1
+2019-06-13 08:33:07.310 packet-master-web [main] INFO  o.a.kafka.common.utils.AppInfoParser - Kafka commitId : fa14705e51bd2ce5
+2019-06-13 08:33:07.654 packet-master-web [main] INFO  o.a.k.c.producer.ProducerConfig - ProducerConfig values: 
+	acks = 0
+	batch.size = 16384
+	bootstrap.servers = [10.15.191.100:9092]
+	buffer.memory = 33554432
+	client.id = 
+	compression.type = none
+	connections.max.idle.ms = 540000
+	enable.idempotence = false
+	interceptor.classes = []
+	key.serializer = class org.apache.kafka.common.serialization.StringSerializer
+	linger.ms = 1000
+	max.block.ms = 5000
+	max.in.flight.requests.per.connection = 5
+	max.request.size = 1048576
+	metadata.max.age.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partitioner.class = class org.apache.kafka.clients.producer.internals.DefaultPartitioner
+	receive.buffer.bytes = 32768
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 5000
+	retries = 0
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.mechanism = GSSAPI
+	security.protocol = PLAINTEXT
+	send.buffer.bytes = 131072
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.1, TLSv1]
+	ssl.endpoint.identification.algorithm = https
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLS
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	transaction.timeout.ms = 60000
+	transactional.id = null
+	value.serializer = class org.apache.kafka.common.serialization.StringSerializer
+
+2019-06-13 08:33:07.670 packet-master-web [main] INFO  o.a.kafka.common.utils.AppInfoParser - Kafka version : 2.0.1
+2019-06-13 08:33:07.670 packet-master-web [main] INFO  o.a.kafka.common.utils.AppInfoParser - Kafka commitId : fa14705e51bd2ce5
+2019-06-13 08:33:08.685 packet-master-web [main] INFO  o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
+2019-06-13 08:33:08.920 packet-master-web [main] INFO  o.s.s.c.ThreadPoolTaskScheduler - Initializing ExecutorService
+2019-06-13 08:33:09.607 packet-master-web [main] INFO  o.s.s.c.ThreadPoolTaskScheduler - Initializing ExecutorService 'taskScheduler'
+2019-06-13 08:33:10.451 packet-master-web [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 17 endpoint(s) beneath base path '/actuator'
+2019-06-13 08:33:10.560 packet-master-web [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-192.168.0.121-8080"]
+2019-06-13 08:33:10.592 packet-master-web [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port(s): 8080 (http) with context path ''
+2019-06-13 08:33:10.592 packet-master-web [main] INFO  c.zjucsc.PacketMasterWebApplication - Started PacketMasterWebApplication in 10.438 seconds (JVM running for 11.189)
+2019-06-13 08:33:11.045 packet-master-web [main] INFO  c.z.a.task.InitConfigurationService - 
+******************** 
+ AUTH_MAP : {2147483647=admin, 0=visitor, 100=operator} 
+********************
+2019-06-13 08:33:11.045 packet-master-web [main] INFO  c.z.a.task.InitConfigurationService - 
+******************** 
+ size : 4 ; CONFIGURATION_MAP : {modbus={1=读线圈, 2=读输入离散量, 3=读多个寄存器, 4=读输入寄存器, 5=写单个线圈, 6=写单个寄存器, 43=读设备识别码, 15=写多个线圈, 16=写多个寄存器, 20=读文件记录, 21=写文件记录, 22=屏蔽写寄存器, 23=读/写多个寄存器}, iec104={1=单点信息, 3=双点信息, 5=步位置信息, 7=32位比特串, 9=测量值，归一化值, 11=测量值，标度化值, 13=测量值，短浮点数, 15=累计量, 20=带状态检出的成组单点信息, 21=不带品质描述的归一化测量值, 30=带时标CP56Time2a的单点信息, 31=带时标CP56Time2a的双点信息, 32=带时标CP56Time2a的步位置信息, 33=带时标CP56Time2a的带时标CP56Time2a的32位比特串, 34=测量值，带时标CP56Time2a的归一化值, 35=测量值，带时标CP56Time2a的标度化值, 36=测量值，带时标CP56Time2a的短浮点数, 37=带时标CP56Time2a的累计量, 38=带时标CP56Time2a的继电保护装置事件, 39=带时标CP56Time2a的被控站成组启动事件, 40=带时标CP56Time2a的继电保护装置成组输出电路信息, 41=包含带时标的安全统计的累计量, 45=单命令, 46=双命令, 47=步调节命令, 48=设点命令，归一化值, 49=设点命令，标度化值, 50=设点命令，短浮点数, 51=32位比特串, 58=带时标CP56Time2a的单命令, 59=带时标CP56Time2a的双命令, 60=带时标CP56Time2a的步调节命令, 61=设点命令，带时标CP56Time2a的归一化值, 62=设点命令，带时标CP56Time2a的标度化值, 63=设点命令，带时标CP56Time2a的短浮点数, 64=带时标CP56Time2a的32比特串, 70=初始化结束, 81=身份认证质询, 82=身份认证响应, 83=主动模式身份认证请求会话密钥状态请求, 84=会话密钥状态请求, 85=会话密钥状态, 86=会话密钥变化, 87=身份认证错误, 90=用户状态变化, 91=更新密钥变化请求, 92=更新密钥变化响应, 93=更新对称密钥变化, 94=更新非对称密钥变化, 95=更新密钥变化配置, 100=总查询命令, 101=电能脉冲（计数器）查询命令, 102=读命令, 103=时钟同步命令, 105=复位进程命令, 107=带时标CP56Time2a的测试命令, 110=测量值参数，归一化值, 111=测量值参数，标度化值, 112=测量值参数，短浮点数, 113=参数激活, 120=文件已准备好, 121=节已准备好, 122=召唤目录；选择文件；召唤文件；召唤节, 123=最后的节，最后的段, 124=确认文件，确认节, 125=段, 126=目录, 127=日志查询-请求存档文件}, s7comm_job={0=CPU服务, 240=建立通信, 4=读取值, 5=写入值, 40=程序调用服务, 41=关闭PLC, 26=请求下载, 27=下载块, 28=下载结束, 29=开始上传, 30=上传, 31=上传结束}, opcaua={769=设置监控模式请求, 772=设置监控模式响应, 775=设置触发请求, 778=设置触发响应, 397=服务故障, 781=删除监控项请求, 527=浏览请求, 784=删除监控项响应, 530=浏览响应, 787=创建订阅请求, 533=浏览下一个请求, 790=创建订阅响应, 536=浏览下一个响应, 664=历史更新请求, 793=修改订阅请求, 410=测试堆栈请求, 667=历史更新响应, 796=修改订阅响应, 413=测试堆栈响应, 799=设置发布模式请求, 416=测试栈前请求, 673=写请求, 802=设置发布模式响应, 419=测试栈前响应, 676=写响应, 422=查询服务器请求, 425=查询服务器响应, 554=将浏览路径转换为节点ID的请求, 428=获取断点请求, 557=将浏览路径转换为节点ID的响应, 431=获取断点响应, 12208=查询在网服务器请求, 560=注册节点请求, 12209=查询在网服务器响应, 12211=注册要请求的服务器, 563=注册节点响应, 12212=注册要响应的服务器, 437=注册服务器请求, 566=注销节点请求, 440=注册服务器响应, 569=注销节点响应, 826=发布请求, 700=历史更新请求, 829=发布响应, 446=开放安全信道请求, 703=历史更新响应, 832=重新发布请求, 449=开放安全信道响应, 835=重新发布响应, 452=关闭安全信道请求, 455=关闭安全信道响应, 712=调用请求, 841=转移订阅请求, 715=调用响应, 844=转移订阅响应, 461=创建会话请求, 847=删除订阅请求, 464=创建会话响应, 850=删除订阅响应, 467=激活会话请求, 470=激活会话响应, 473=关闭会话请求, 476=关闭会话响应, 479=取消请求, 482=取消响应, 615=查询首项请求, 488=添加节点请求, 618=查询首项响应, 491=添加节点响应, 621=查询下一项请求, 494=添加引用请求, 751=创建监视项请求, 624=查询下一项响应, 497=添加引用响应, 754=创建监视项响应, 500=删除节点请求, 503=删除节点响应, 631=读取请求, 506=删除引用请求, 634=读取响应, 763=修改监视项请求, 509=删除引用响应, 766=修改监视项响应}}
+********************
+2019-06-13 08:33:11.060 packet-master-web [main] INFO  c.z.a.task.InitConfigurationService - 
+******************** 
+ size : 21 ; PROTOCOL_STR_TO_INT : {1=modbus, 3=s7comm_job, 4=s7comm_ack_data, 5=tcp, 6=ipv4, 7=udp, 8=arp, 9=ipv6, 10=dns, 11=ethernet, 12=opcaua, 13=iec104, 14=dnp3.0, 15=nbns, 16=goose, 17=stp, 18=clnp, 19=esis, 20=icmpv6, 21=igmp, 22=lldp} 
+********************
+2019-06-13 08:33:22.626 packet-master-web [http-nio-192.168.0.121-8080-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2019-06-13 08:33:22.656 packet-master-web [http-nio-192.168.0.121-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2019-06-13 08:33:22.701 packet-master-web [http-nio-192.168.0.121-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 43 ms
+2019-06-13 08:33:28.830 packet-master-web [Thread-6] INFO  o.s.s.c.ThreadPoolTaskScheduler - Shutting down ExecutorService 'taskScheduler'
+2019-06-13 08:33:28.846 packet-master-web [Thread-6] INFO  o.s.s.c.ThreadPoolTaskScheduler - Shutting down ExecutorService
