@@ -96,13 +96,13 @@ public class PacketController {
                 socketIOClient.disconnect();
                 log.info("reject socket io connect : {} " , socketIOClient.getRemoteAddress().toString());
             }else{
-                //socketIoClientNumber.addAndGet(1);
-                log.info(socketIOClient.getRemoteAddress().toString() + "connected...");
+                socketIoClientNumber.addAndGet(1);
+                log.info("[{}] connected...",socketIOClient.getRemoteAddress().toString());
                 SocketServiceCenter.addConnectedClient(socketIOClient);
             }
         }, socketIOClient -> {
             socketIoClientNumber.decrementAndGet();
-            log.info(socketIOClient.getRemoteAddress().toString() + "disconnect...");
+            log.info("[{}] disconnect...",socketIOClient.getRemoteAddress().toString());
             SocketServiceCenter.removeConnectedClient(socketIOClient);
         });
         if (b){

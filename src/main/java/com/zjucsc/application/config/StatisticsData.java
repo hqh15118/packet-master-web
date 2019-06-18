@@ -52,7 +52,7 @@ public class StatisticsData {
     public static ConcurrentHashMap<String,AtomicInteger> ATTACK_BY_DEVICE = new ConcurrentHashMap<>();
     public static ConcurrentHashMap<String,AtomicInteger> EXCEPTION_BY_DEVICE = new ConcurrentHashMap<>();
     public static ConcurrentHashMap<String, GraphInfoCollection> GRAPH_BY_DEVICE = new ConcurrentHashMap<>();
-    public static ConcurrentHashMap<String, LinkedList<String>> ART_INFO = new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<String, LinkedList<String>> ART_INFO = new ConcurrentHashMap<>();
     public static ConcurrentHashMap<String, LinkedList<String>> ART_INFO_SEND = new ConcurrentHashMap<>();//只发送需要显示的个工艺参数
 
     public static void increaseNumberByDeviceIn(String deviceNumber,int delta){
@@ -130,16 +130,20 @@ public class StatisticsData {
         ART_INFO.remove(artArg);
     }
 
+    public static final byte[] LINKED_LIST_LOCK = new byte[1];
+
     public static void addArtData(String artArg , String value){
         LinkedList<String> var = ART_INFO.get(artArg);
         if (var == null){
             log.error("工艺参数 {} 未初始化添加到ART_INFO中，请修正" , artArg);
         }else{
-            if (var.size() >= 6){
-                var.removeFirst();
-                var.addLast(value);
-            }else{
-                var.addLast(value);
+            synchronized (LINKED_LIST_LOCK){
+                if (var.size() >= 6){
+                    var.removeFirst();
+                    var.addLast(value);
+                }else{
+                    var.addLast(value);
+                }
             }
         }
     }

@@ -3,13 +3,17 @@ package com.zjucsc.application.util;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.bean.StatisticInfoSaveBean;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
+import com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer;
+import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 
 import static com.zjucsc.application.config.Common.CONFIGURATION_MAP;
+import static com.zjucsc.application.config.Common.OPERATION_FILTER_PRO;
 import static com.zjucsc.application.config.Common.PROTOCOL_STR_TO_INT;
 
 @Slf4j
@@ -196,9 +200,18 @@ public class CommonCacheUtil {
         log.info("remove device number : {} [TAG : {} ]" , deviceNumber , Common.DEVICE_TAG_TO_NAME.inverse().get(deviceNumber));
     }
 
-    public static String getTargetDeviceNumberByTag(String deviceTag) {
+    public static String getTargetDeviceNumberByTag(String tag){
+        return Common.DEVICE_TAG_TO_NAME.get(tag);
+    }
+
+    public static String getTargetDeviceNumberByTag(FvDimensionLayer layer) {
         //System.out.println("get " + deviceIp + "xxxxxx" + AttackCommon.DEVICE_IP_TO_NAME.get(deviceIp));
-        return Common.DEVICE_TAG_TO_NAME.get(deviceTag);
+        String tag = Common.DEVICE_TAG_TO_NAME.get(layer.ip_dst[0]);
+        if (tag!=null){
+            return tag;
+        }
+        tag = Common.DEVICE_TAG_TO_NAME.get(layer.eth_dst[0]);
+        return tag;
     }
 
     public static String getTargetDeviceTagByNumber(String deviceNumber){
@@ -243,15 +256,12 @@ public class CommonCacheUtil {
      *********************************/
 
     private static BiConsumer<String,StatisticInfoSaveBean> biConsumer =
-            new BiConsumer<String, StatisticInfoSaveBean>() {
-                @Override
-                public void accept(String s, StatisticInfoSaveBean saveBean) {
-                    saveBean.setAttack(0);
-                    saveBean.setDeviceNumber(s);
-                    saveBean.setDownload(0);
-                    saveBean.setException(0);
-                    saveBean.setUpload(0);
-                }
+            (s, saveBean) -> {
+                saveBean.setAttack(0);
+                saveBean.setDeviceNumber(s);
+                saveBean.setDownload(0);
+                saveBean.setException(0);
+                saveBean.setUpload(0);
             };
 
     /**
@@ -276,14 +286,27 @@ public class CommonCacheUtil {
 
     /**********************************
      *
-     * 获取报文TAG ==> 是按照设备的IP地址还是MAC地址来存储过滤器
+     * 获取五元组过滤器
      *
      *********************************/
-    public static String getPacketFilterSrcStatement(FvDimensionLayer layer){
-        return Common.filterStatement == 0 ? layer.ip_src[0] : layer.eth_src[0];
+    public static FiveDimensionAnalyzer getFvDimensionFilter(FvDimensionLayer layer){
+        FiveDimensionAnalyzer fiveDimensionAnalyzer = Common.FV_DIMENSION_FILTER_PRO.get(layer.ip_dst[0]);
+        if (fiveDimensionAnalyzer!=null){
+            return fiveDimensionAnalyzer;
+        }
+        return Common.FV_DIMENSION_FILTER_PRO.get(layer.eth_dst[0]);
     }
 
-    public static String getPacketFilterDstStatement(FvDimensionLayer layer){
-        return Common.filterStatement == 0 ? layer.ip_dst[0] : layer.eth_dst[0];
+    /**********************************
+     *
+     * 获取功能码过滤器
+     *
+     *********************************/
+    public static ConcurrentHashMap<String, OperationAnalyzer> getOptAnalyzer(FvDimensionLayer layer){
+        ConcurrentHashMap<String, OperationAnalyzer> map = OPERATION_FILTER_PRO.get(layer.ip_dst[0]);
+        if (map != null){
+            return map;
+        }
+        return OPERATION_FILTER_PRO.get(layer.eth_dst[0]);
     }
 }

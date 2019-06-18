@@ -1,6 +1,7 @@
 package com.zjucsc.application.controller;
 
 
+import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.auth.Log;
 import com.zjucsc.application.domain.bean.Gplot;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
@@ -32,8 +33,7 @@ public class GplotController {
         gplot.setInfo(gplotForFront.info);
         gplot.setName(gplotForFront.name);
         gplot.setUpdateTime(new Date().toString());
-        iGplotService.addNewGplot(gplot);
-        return BaseResponse.OK(gplot.getId());
+        return BaseResponse.OK(iGplotService.addNewGplot(gplot).data);
     }
 
     @Log
@@ -74,6 +74,7 @@ public class GplotController {
     @DeleteMapping("delete_gplot")
     public BaseResponse deleteGplotInfo(@RequestParam int gplotId){
         iGplotService.deleteById(gplotId);
+        Common.GPLOT_ID = 0;
         return BaseResponse.OK();
     }
 

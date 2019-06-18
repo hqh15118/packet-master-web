@@ -60,7 +60,7 @@ public class ScheduledService {
     public void commonScheduleService(){
         if (Common.SCHEDULE_RUNNING){
             count ++;
-            if (count == 5){
+            if (count >= 5){
                 sendPacketStatisticsMsg();
                 sendGraphInfo();
                 statisticFlow();
@@ -76,6 +76,7 @@ public class ScheduledService {
     //@Scheduled(fixedRate = 5000)
     private void sendPacketStatisticsMsg(){
         SEND_CONSUMER.setTimeStamp(new Date().toString());
+        //将之前的统计信息置0
         CommonCacheUtil.resetSaveBean();
 
         final HashMap<String,Integer> DELAY_INFO = packetAnalyzeService.getCollectorNumToDelayList();
@@ -118,11 +119,13 @@ public class ScheduledService {
     //@Scheduled(fixedRate = 5000)
     private void sendGraphInfo(){
         StatisticsData.ART_INFO_SEND.clear();
-        for (String artName : Common.SHOW_GRAPH_SET) {
-            StatisticsData.ART_INFO_SEND.put(artName, StatisticsData.ART_INFO.get(artName));
+        synchronized (StatisticsData.LINKED_LIST_LOCK){
+            for (String artName : Common.SHOW_GRAPH_SET) {
+                StatisticsData.ART_INFO_SEND.put(artName, StatisticsData.ART_INFO.get(artName));
+            }
+            StatisticsData.ART_INFO_SEND.put("timestamp",StatisticsData.ART_INFO.get("timestamp"));
+            SocketServiceCenter.updateAllClient(SocketIoEvent.ART_INFO, StatisticsData.ART_INFO_SEND);
         }
-        StatisticsData.ART_INFO_SEND.put("timestamp",StatisticsData.ART_INFO.get("timestamp"));
-        SocketServiceCenter.updateAllClient(SocketIoEvent.ART_INFO, StatisticsData.ART_INFO_SEND);
         addArtData("timestamp", AppCommonUtil.getDateFormat().format(new Date()));
     }
 

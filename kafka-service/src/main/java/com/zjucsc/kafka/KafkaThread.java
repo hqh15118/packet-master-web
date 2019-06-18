@@ -37,17 +37,15 @@ public class KafkaThread<V> extends Thread implements IKafka<V> {
     public void run() {
         for (;;){
             try {
-                V v = TASK_QUEUE.poll(2, TimeUnit.SECONDS); //poll msg from queue
-                if (v != null){
-                    String msg = convertObjectToString(v);
-                    //valid msg
-                    ProducerRecord<String,String> kvProducerRecord;
-                    if (partition >= 0)
-                        kvProducerRecord = new ProducerRecord<>(topic, partition, null, msg);
-                    else
-                        kvProducerRecord = new ProducerRecord<>(topic,msg);
-                    kafkaProducer.send(kvProducerRecord);
-                }
+                V v = TASK_QUEUE.take(); //poll msg from queue
+                String msg = convertObjectToString(v);
+                //valid msg
+                ProducerRecord<String,String> kvProducerRecord;
+                if (partition >= 0)
+                    kvProducerRecord = new ProducerRecord<>(topic, partition, null, msg);
+                else
+                    kvProducerRecord = new ProducerRecord<>(topic,msg);
+                kafkaProducer.send(kvProducerRecord);
                 if (!running){
                     break;
                 }
@@ -78,6 +76,7 @@ public class KafkaThread<V> extends Thread implements IKafka<V> {
 
     @Override
     public void stopService() {
+        interrupt();
         running = false;
     }
 

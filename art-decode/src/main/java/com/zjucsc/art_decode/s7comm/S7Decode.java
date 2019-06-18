@@ -11,11 +11,11 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 public class S7Decode extends BaseArtDecode<S7Config> {
 
-    public Map<Integer,List<DBclass>> DBmap = new HashMap<>(); ////pduref,DB
+    private Map<Integer,List<DBclass>> DBmap = new HashMap<>(); ////pduref,DB
 
-    public Map<Integer,byte[]> Datamap = new HashMap<>();  //// seq ,data
+    private Map<Integer,byte[]> Datamap = new HashMap<>();  //// seq ,data
 
-    public Map<Integer,Integer> PDUrefmap = new HashMap<>(); ////////seq ,pduref
+    private Map<Integer,Integer> PDUrefmap = new HashMap<>(); ////////seq ,pduref
 
     public Map<Integer,Map<Integer,Byte>> map = new HashMap<>();
 
@@ -112,7 +112,7 @@ public class S7Decode extends BaseArtDecode<S7Config> {
                     if(data!=null && Datamap!=null && PDUrefmap!=null )
                     {
                         byte[] bytes = Datamap.get(PDUrefmap.get(sequence_num));///////////modify
-                        if (bytes!=null && data[0] == (byte) 0xff && data.length == bytes.length && PDUrefmap.get(sequence_num) != null) {
+                        if (bytes!=null && data[0] == (byte) 0xff &&  PDUrefmap.get(sequence_num) != null) {
                             Datamap.put(PDUrefmap.get(sequence_num), data);
                             decodeDBlist(DBmap.get(PDUrefmap.get(sequence_num)), data);
                         }
@@ -161,18 +161,24 @@ public class S7Decode extends BaseArtDecode<S7Config> {
                         int subitem_cnt = DBlist.size() / item_cnt;
                         byte[] subitemdata = Bytecut.Bytecut(iteamdata, 4, -1);
                         if (subitemdata != null){
-                            for (int k = 0; k < subitem_cnt; k++) {
-                                DBclass s = DBlist.get(subitem_cnt * j + k);
-                                for (int i = 0; i < s.getLength(); i++) {
-                                    if (map.get(s.getDbnum()) != null) {
-                                        (map.get(s.getDbnum())).put(i + s.getByteoffset(), subitemdata[1 + i]);
-                                    } else {
-                                        Map<Integer, Byte> Bmap = new HashMap<>();
-                                        Bmap.put(i + s.getByteoffset(), subitemdata[1 + i]);
-                                        map.put(s.getDbnum(), Bmap);
+                            for (int k = 0; k < subitem_cnt && subitemdata!=null; k++) {
+                                if (subitemdata[0] == (byte) 0xff) {
+                                    DBclass s = DBlist.get(subitem_cnt * j + k);
+                                    for (int i = 0; i < s.getLength(); i++) {
+                                        if (map.get(s.getDbnum()) != null) {
+                                            (map.get(s.getDbnum())).put(i + s.getByteoffset(), subitemdata[1 + i]);
+                                        } else {
+                                            Map<Integer, Byte> Bmap = new HashMap<>();
+                                            Bmap.put(i + s.getByteoffset(), subitemdata[1 + i]);
+                                            map.put(s.getDbnum(), Bmap);
+                                        }
                                     }
+                                    subitemdata = Bytecut.Bytecut(subitemdata, 1 + s.getLength(), -1);
                                 }
-                                subitemdata = Bytecut.Bytecut(subitemdata, 1 + s.getLength(), -1);
+                                else if(subitemdata[0]==(byte)0xfe)
+                                {
+                                    subitemdata =Bytecut.Bytecut(subitemdata,1,-1);
+                                }
                             }
                     }
                         iteamdata = subitemdata;

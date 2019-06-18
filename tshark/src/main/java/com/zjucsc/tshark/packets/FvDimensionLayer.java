@@ -14,16 +14,16 @@ import java.util.Arrays;
  */
 
 public class FvDimensionLayer {
-    public String[] frame_protocols = {""};
-    public String[] eth_dst = {""};
-    public String[] frame_cap_len = {""};
-    public String[] eth_src = {""};
-    public String[] ip_src = {""};
-    public String[] ip_dst = {""};
+    public String[] frame_protocols = {"--"};
+    public String[] eth_dst = {"--"};
+    public String[] frame_cap_len = {"--"};
+    public String[] eth_src = {"--"};
+    public String[] ip_src = {"--"};
+    public String[] ip_dst = {"--"};
     @JSONField(name = "tcp_srcport")
-    public String[] src_port = {""};
+    public String[] src_port = {"--"};
     @JSONField(name = "tcp_dstport")
-    public String[] dst_port = {""};
+    public String[] dst_port = {"--"};
     //public String[] eth_trailer = {""};
     //public String[] eth_fcs = {""};
     public String timeStamp = "";

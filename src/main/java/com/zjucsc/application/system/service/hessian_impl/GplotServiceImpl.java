@@ -28,15 +28,14 @@ public class GplotServiceImpl extends BaseServiceImpl<Gplot,GplotMapper> impleme
     @Autowired private IDeviceService iDeviceService;
 
     @Override
-    public void addNewGplot(Gplot gplot) {
+    public BaseResponse addNewGplot(Gplot gplot) {
         this.baseMapper.insertById(gplot);
+        return BaseResponse.OK();
     }
 
     @Async
     @Override
-    public void changeGplot(int gplotId) throws ProtocolIdNotValidException {
-        //更新缓存中的组态图ID
-        Common.GPLOT_ID = gplotId;
+    public BaseResponse changeGplot(int gplotId) throws ProtocolIdNotValidException {
 
         StringBuilder sb = new StringBuilder();
         //移除旧组态图上的所有规则
@@ -68,8 +67,11 @@ public class GplotServiceImpl extends BaseServiceImpl<Gplot,GplotMapper> impleme
             //更新DEVICE_NUMBER和StatisticInfoSaveBean【设备upload、download等报文信息】
             CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(deviceNumberAndIp.deviceNumber , deviceNumberAndIp.deviceIp);
         }
+        //更新缓存中的组态图ID
+        Common.GPLOT_ID = gplotId;
         log.info("***************\n切换组态图,从数据库中重新加载新该组态图下的所有规则，新规则为：\n五元组规则：{} \n功能码规则：{} \n***************" , Common.FV_DIMENSION_FILTER_PRO,
                 Common.OPERATION_FILTER_PRO);
+        return BaseResponse.OK();
     }
 
     @Override

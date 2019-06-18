@@ -6,13 +6,20 @@ import com.zjucsc.application.config.ConstantConfig;
 import com.zjucsc.application.config.PACKET_PROTOCOL;
 import com.zjucsc.application.config.ProtocolIgnore;
 import com.zjucsc.application.config.auth.Auth;
+import com.zjucsc.application.domain.bean.BaseResponse;
 import com.zjucsc.application.domain.bean.ConfigurationSetting;
+import com.zjucsc.application.domain.bean.PagedArtConfig;
 import com.zjucsc.application.domain.bean.Protocol;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
+import com.zjucsc.application.system.service.hessian_iservice.IArtConfigService;
 import com.zjucsc.application.system.service.hessian_iservice.IConfigurationSettingService;
 import com.zjucsc.application.system.service.hessian_iservice.IProtocolIdService;
+import com.zjucsc.application.util.AppCommonUtil;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.art_decode.ArtDecodeCommon;
+import com.zjucsc.art_decode.artconfig.IEC104Config;
+import com.zjucsc.art_decode.artconfig.PnioConfig;
+import com.zjucsc.art_decode.base.BaseConfig;
 import com.zjucsc.tshark.TsharkCommon;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +42,7 @@ public class InitConfigurationService implements ApplicationRunner {
 
     private final String str_name = "java.lang.String";
 
+    @Autowired private IArtConfigService iArtConfigService;
     @Autowired private IConfigurationSettingService iConfigurationSettingService;
     @Autowired private IProtocolIdService iProtocolIdService;
 
@@ -82,8 +90,8 @@ public class InitConfigurationService implements ApplicationRunner {
          ***************************/
         //如果数据库中没有条目，就从代码中加载之前配置好的，如果数据库中有条目，
         //就判断是否需要重新加载使用数据库中的条目初始化 PROTOCOL_STR_TO_INT ， 用户协议ID和协议字符串之间的转换
+        List<Protocol> protocols = new ArrayList<>();
         if (iProtocolIdService.selectAll().size() == 0 ){
-            List<Protocol> protocols = new ArrayList<>();
             Class<PACKET_PROTOCOL> packet_protocolClass = PACKET_PROTOCOL.class;
             Field[] allField = packet_protocolClass.getDeclaredFields();
             for (Field field : allField) {
@@ -97,8 +105,8 @@ public class InitConfigurationService implements ApplicationRunner {
             }
             iProtocolIdService.saveOrUpdateBatch(protocols);
         }else{
-            List<Protocol> list = iProtocolIdService.selectAll();
-            for (Protocol protocol : list) {
+            protocols = iProtocolIdService.selectAll();
+            for (Protocol protocol : protocols) {
                 Common.PROTOCOL_STR_TO_INT.put(protocol.getProtocolId() , protocol.getProtocolName());
             }
         }
@@ -154,6 +162,58 @@ public class InitConfigurationService implements ApplicationRunner {
          * INIT ART DECODER
          ***************************/
         ArtDecodeCommon.init();
+        /***************************
+         * 初始化工艺参数配置
+         **************************/
+        PagedArtConfig pagedArtConfig = new PagedArtConfig();
+        pagedArtConfig.setPage(1);
+        pagedArtConfig.setLimit(999);
+        pagedArtConfig.setTag("");
+        List<Integer> protocolIds = Arrays.asList(PACKET_PROTOCOL.MODBUS_ID,PACKET_PROTOCOL.S7_ID);
+        for (Integer protocolId : protocolIds) {
+            pagedArtConfig.setProtocolId(protocolId);
+            BaseResponse baseResponse = iArtConfigService.getConfigPaged(pagedArtConfig);
+            if (baseResponse.data!=null){
+                List datas = (List) baseResponse.data;
+                for (Object data : datas) {
+                    BaseConfig baseConfig = ((BaseConfig) data);
+                    if (baseConfig.getProtocolId() == PACKET_PROTOCOL.S7_ID){
+                        baseConfig.setProtocol("s7comm");
+                    }else {
+                        baseConfig.setProtocol(CommonCacheUtil.convertIdToName(baseConfig.getProtocolId()));
+                    }
+                    ArtDecodeCommon.addArtDecodeConfig(baseConfig);
+                }
+            }
+        }
+
+        /***************************
+         * pn_io
+         **************************/
+        PnioConfig pnioConfig = new PnioConfig();
+        pnioConfig.setRange(new float[]{0f,120f});
+        pnioConfig.setByteoffset(3);
+        pnioConfig.setBitoffset(0);
+        pnioConfig.setType("short");
+        pnioConfig.setLength(2);
+        pnioConfig.setProtocol(PACKET_PROTOCOL.PN_IO);
+        pnioConfig.setMacaddress(new byte[]{0x28,0x63,0x36,(byte)0xef,0x31,(byte)0xcc});
+        pnioConfig.setTag("test");
+        AppCommonUtil.initArtMap(pnioConfig.getTag());
+        CommonCacheUtil.addShowGraphArg(pnioConfig.getProtocolId(),pnioConfig.getTag());
+        ArtDecodeCommon.addArtDecodeConfig(pnioConfig);
+        /***************************
+         * IEC104
+         **************************/
+        IEC104Config iec104Config = new IEC104Config();
+        iec104Config.setMVIOAAddress(16385);
+        //iec104Config.setSetIOAAddress(24592);
+        iec104Config.setTag("UA");
+        iec104Config.setProtocol(PACKET_PROTOCOL.IEC104);
+        iec104Config.setProtocolId(PACKET_PROTOCOL.IEC104_ID);
+        AppCommonUtil.initArtMap(iec104Config.getTag());
+        CommonCacheUtil.addShowGraphArg(iec104Config.getProtocolId(),iec104Config.getTag());
+        ArtDecodeCommon.addArtDecodeConfig(iec104Config);
 
         /**************************
          *  PRINT INIT RESULT
@@ -161,7 +221,7 @@ public class InitConfigurationService implements ApplicationRunner {
         log.info("\n******************** \n AUTH_MAP : {} \n********************" , Common.AUTH_MAP);
         log.info("\n******************** \n size : {} ; CONFIGURATION_MAP : {}\n********************" ,  Common.CONFIGURATION_MAP.size() , Common.CONFIGURATION_MAP);
         log.info("\n******************** \n size : {} ; PROTOCOL_STR_TO_INT : {} \n********************" , Common.PROTOCOL_STR_TO_INT.size() ,  Common.PROTOCOL_STR_TO_INT  );
-
+        log.info("\n******************** \n size : {} ; ALL_ART_CONFIG : {} \n********************",ArtDecodeCommon.getAllArtConfigs().size(),ArtDecodeCommon.getAllArtConfigs());
         System.out.println("spring boot admin address : http://your-address:8989");
         System.out.println("swagger-ui address : http://your-address:your-port/swagger-ui.html#/greeting-controller");
     }

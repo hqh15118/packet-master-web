@@ -14,30 +14,47 @@ public interface PACKET_PROTOCOL {
     String S7 = "s7comm";
     String S7_JOB = "s7comm_job";
     String S7_Ack_data = "s7comm_ack_data";
+    String S7_User_data = "s7_comm_user_data";
+    @ProtocolIgnore
     String TCP = "tcp";
+    @ProtocolIgnore
     String IPV4 = "ipv4";
+    @ProtocolIgnore
     String UDP = "udp";
     @ProtocolIgnore
     String OTHER = "unknown packet";
+    @ProtocolIgnore
     String ARP = "arp";
+    @ProtocolIgnore
     String IPV6 = "ipv6";
     @ProtocolIgnore
     String FV_DIMENSION = "five_dimension";
+    @ProtocolIgnore
     String DNS = "dns";
+    @ProtocolIgnore
     String ETHERNET = "ethernet";
     String OPCA_UA = "opcaua";
     String IEC104 = "iec104";
     String DNP3_0 = "dnp3.0";
+    @ProtocolIgnore
     String NBNS = "nbns";
+    @ProtocolIgnore
     String GOOSE = "goose";
+    @ProtocolIgnore
     String STP = "stp";
+    @ProtocolIgnore
     String CLNP = "clnp";
+    @ProtocolIgnore
     String ESIS = "esis";
+    @ProtocolIgnore
     String ICMPV6 = "icmpv6";
+    @ProtocolIgnore
     String IGMP = "igmp";
+    @ProtocolIgnore
     String LLDP = "lldp";
     @ProtocolIgnore
     String UNKNOWN = "unknown";
+    String PN_IO = "pn_io";
 
     int MODBUS_ID = 1;
     int S7_ID = 2;
@@ -64,4 +81,5 @@ public interface PACKET_PROTOCOL {
     int IGMP_ID = 21;
     int LLDP_ID = 22;
     int UNKNOWN_ID = -100;
+    int PN_IO_ID = 23;
 }

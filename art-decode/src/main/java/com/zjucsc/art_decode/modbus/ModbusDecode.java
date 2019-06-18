@@ -1,10 +1,12 @@
 package com.zjucsc.art_decode.modbus;
 
+
 import com.zjucsc.art_decode.artconfig.ModBusConfig;
 import com.zjucsc.art_decode.base.BaseArtDecode;
 import com.zjucsc.art_decode.other.AttackType;
 import com.zjucsc.common_util.ByteUtil;
 import com.zjucsc.common_util.Bytecut;
+
 
 import java.util.*;
 
@@ -57,7 +59,7 @@ public class ModbusDecode extends BaseArtDecode<ModBusConfig> {
         int i = (int)payload[7];
         if(i==1 || i==2)
         {
-            if((payload[0]==payload_map.get(i)[0]) && (payload[1]==payload_map.get(i)[1]))
+            if(payload_map.get(i)!=null && (payload[0]==payload_map.get(i)[0]) && (payload[1]==payload_map.get(i)[1]))
             {
                 int addr_head = (int) ByteUtil.bytesToShort(payload_map.get(i),8);
                 int addr_len = (int)ByteUtil.bytesToShort(payload_map.get(i),10);
@@ -76,22 +78,22 @@ public class ModbusDecode extends BaseArtDecode<ModBusConfig> {
                 payload_map.put(i, payload);
             }
         }
-        else if(i==3 || i==4)
+        else if(i==3 || i==4 || i==23)
         {
-            if((payload[0]==payload_map.get(i)[0]) && (payload[1]==payload_map.get(i)[1]))
+            if(payload_map.get(i)!=null && (payload[0]==payload_map.get(i)[0]) && (payload[1]==payload_map.get(i)[1]))
             {
                 int addr_head =(int)ByteUtil.bytesToShort(payload_map.get(i),8);
                 int addr_len = (int)ByteUtil.bytesToShort(payload_map.get(i),10);
                 for(int j=0;j<addr_len;j++)
                 {
                     byte[] Reg_valve = Bytecut.Bytecut(payload, 9+2*j,2);
-                    if(i==3)
+                    if(i==3 || i==23)
                     {Holding_reg_map.put((addr_head + j ) , Reg_valve);}
                     else
                     {Input_reg_map.put((addr_head + j ) , Reg_valve);}
                 }
             }
-            else if(payload.length==12)
+            else
             {
                 payload_map.put(i, payload);
             }
@@ -125,7 +127,7 @@ public class ModbusDecode extends BaseArtDecode<ModBusConfig> {
                     tech_map.put(modbus.getTag(), tech_value);
                 }
                 else if(modbus.getType().equals("int")){
-                    float tech_value = modbus.getRange()[0] + ByteUtil.bytesToInt(byte_all,0)*(modbus.getRange()[1]-modbus.getRange()[0])/(2^32);
+                    float tech_value =ByteUtil.bytesToInt(byte_all,0)*modbus.getRange()[1]/(2^31-1);
                     tech_map.put(modbus.getTag(),tech_value);
                 }
             }
@@ -142,7 +144,7 @@ public class ModbusDecode extends BaseArtDecode<ModBusConfig> {
                 {
                     byte1 = Input_reg_map.get(modbus.getAddr_head());
                 }
-                float tech_value = modbus.getRange()[0] + ByteUtil.bytesToShort(byte1,0)*(modbus.getRange()[1]-modbus.getRange()[0])/(2^16);
+                float tech_value = ByteUtil.bytesToShort(byte1,0)*modbus.getRange()[1]/32767;
                 tech_map.put(modbus.getTag(),tech_value);
             }
         }
@@ -168,6 +170,49 @@ public class ModbusDecode extends BaseArtDecode<ModBusConfig> {
                 else
                 {
                     tech_map.put(modbus.getTag(),0f);
+                }
+            }
+            else if(modbus.getReg_coil()==3)
+            {
+                if(Holding_reg_map.get(modbus.getAddr_head())!=null) {
+                    if (modbus.getBitoffset() < 8) {
+                        if (((int) Holding_reg_map.get(modbus.getAddr_head())[1] & 1 << modbus.getBitoffset()) == 0) {
+                            tech_map.put(modbus.getTag(), 0f);
+                        } else {
+                            tech_map.put(modbus.getTag(), 1f);
+                        }
+                    } else if (modbus.getBitoffset() >= 8 && modbus.getBitoffset() < 16) {
+                        if (((int) Holding_reg_map.get(modbus.getAddr_head())[0] & 1 << (modbus.getBitoffset() - 8)) == 0) {
+                            tech_map.put(modbus.getTag(), 0f);
+                        } else {
+                            tech_map.put(modbus.getTag(), 1f);
+                        }
+                    }
+                }
+            }
+            else if(modbus.getReg_coil()==4)
+            {
+                if(modbus.getBitoffset()<8)
+                {
+                    if(((int)Input_reg_map.get(modbus.getAddr_head())[0] & 1<<modbus.getBitoffset()) == 0)
+                    {
+                        tech_map.put(modbus.getTag(),0f);
+                    }
+                    else
+                    {
+                        tech_map.put(modbus.getTag(),1f);
+                    }
+                }
+                else if(modbus.getBitoffset()>=8 && modbus.getBitoffset()<16)
+                {
+                    if(((int)Input_reg_map.get(modbus.getAddr_head())[1] & 1<<(modbus.getBitoffset()-8)) == 0)
+                    {
+                        tech_map.put(modbus.getTag(),0f);
+                    }
+                    else
+                    {
+                        tech_map.put(modbus.getTag(),1f);
+                    }
                 }
             }
         }

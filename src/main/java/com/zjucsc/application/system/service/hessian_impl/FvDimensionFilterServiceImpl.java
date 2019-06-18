@@ -41,7 +41,7 @@ public class FvDimensionFilterServiceImpl extends BaseServiceImpl<Rule,FvDimensi
         if (Common.FV_DIMENSION_FILTER_PRO.get(deviceNumber) == null){
             //未添加过该设备，缓存中没有该分析器，需要新加一个
             FiveDimensionPacketFilter filter =
-                    new FiveDimensionPacketFilter(deviceNumber + ":"  + " : " + FV_DIMENSION);
+                    new FiveDimensionPacketFilter(deviceNumber + " : " + FV_DIMENSION);
             filter.setFilterList(rules);
             FiveDimensionAnalyzer analyzer = new FiveDimensionAnalyzer(filter);
             Common.FV_DIMENSION_FILTER_PRO.put(deviceNumber,analyzer);

@@ -10,6 +10,12 @@ public class BaseConfig implements Serializable , Comparable<BaseConfig>{
     private int id;
     private int protocolId;
     private String detail;
+    /** aryType 0 开关量 1 是模拟量
+     */
+    private int argType;
+    /**阈值 最大值和最小值
+     */
+    private float[] threshold;
 
     public String getProtocol() {
         return protocol;

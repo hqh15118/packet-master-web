@@ -8,12 +8,14 @@ public class ModBusConfig extends BaseConfig {
      *  type 类型 数据类型
      *  length 数据长度
      *  addr_head 偏移
+     *  bitoffset 位偏移,一个寄存器两个字节，所以范围是0-15
      *  reg_coil 寄存器类型 1 2 3 4
      *  range float数组 量程最大值最小值
      */
     private String type;
     private int length;
     private int addr_head;
+    private int bitoffset;
     private int reg_coil;
     private float[] range;
 
@@ -67,4 +69,11 @@ public class ModBusConfig extends BaseConfig {
         this.range =range ;
     }
 
+    public int getBitoffset() {
+        return bitoffset;
+    }
+
+    public void setBitoffset(int bitoffset) {
+        this.bitoffset = bitoffset;
+    }
 }

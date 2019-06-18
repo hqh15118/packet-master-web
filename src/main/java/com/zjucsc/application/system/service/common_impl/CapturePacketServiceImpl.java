@@ -4,34 +4,30 @@ import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.SocketIoEvent;
 import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.domain.bean.CollectorState;
-import com.zjucsc.application.domain.exceptions.DeviceNotValidException;
+import com.zjucsc.application.domain.bean.FuncodeStatement;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.application.socketio.SocketServiceCenter;
 import com.zjucsc.application.system.service.PacketAnalyzeService;
 import com.zjucsc.application.system.service.common_iservice.CapturePacketService;
 import com.zjucsc.application.tshark.capture.NewFvDimensionCallback;
 import com.zjucsc.application.tshark.capture.ProcessCallback;
+import com.zjucsc.application.tshark.domain.packet.IEC104Packet;
 import com.zjucsc.application.tshark.domain.packet.ModbusPacket;
 import com.zjucsc.application.tshark.domain.packet.S7CommPacket;
-import com.zjucsc.application.tshark.domain.packet.UnknownPacket;
+import com.zjucsc.application.tshark.domain.packet.UndefinedPacket;
 import com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler;
-import com.zjucsc.application.tshark.pre_processor.IEC104PreProcessor;
-import com.zjucsc.application.tshark.pre_processor.ModbusPreProcessor;
-import com.zjucsc.application.tshark.pre_processor.S7CommPreProcessor;
-import com.zjucsc.application.tshark.pre_processor.UnknownPreProcessor;
+import com.zjucsc.application.tshark.pre_processor.*;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.CommonConfigUtil;
 import com.zjucsc.application.util.PacketDecodeUtil;
 import com.zjucsc.attack.common.AttackCommon;
 import com.zjucsc.common_util.ByteUtil;
-import com.zjucsc.kafka.KafkaProducerCreator;
 import com.zjucsc.kafka.KafkaThread;
 import com.zjucsc.tshark.handler.AbstractAsyncHandler;
 import com.zjucsc.tshark.handler.DefaultPipeLine;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import com.zjucsc.tshark.pre_processor.BasePreProcessor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.producer.KafkaProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -44,6 +40,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static com.zjucsc.application.config.Common.COMMON_THREAD_EXCEPTION_HANDLER;
+import static com.zjucsc.application.config.PACKET_PROTOCOL.IEC104;
 import static com.zjucsc.application.config.PACKET_PROTOCOL.MODBUS;
 import static com.zjucsc.application.config.PACKET_PROTOCOL.S7;
 
@@ -119,7 +116,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     };
 
     public void setFuncode(FvDimensionLayer layer) throws ProtocolIdNotValidException {
-        if (!(layer instanceof UnknownPacket.LayersBean)) {
+        if (!(layer instanceof UndefinedPacket.LayersBean)) {
             int funCode = decodeFuncode(layer);
             if (funCode >= 0){
                 layer.funCodeMeaning = CommonConfigUtil.
@@ -140,15 +137,26 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     private int decodeFuncode(FvDimensionLayer t) {
         String funCodeStr;
         if (t instanceof S7CommPacket.LayersBean){
-            funCodeStr =  ((S7CommPacket.LayersBean) t).s7comm_param_func[0];
-            return PacketDecodeUtil.decodeFuncode(S7, funCodeStr);
+            if (((S7CommPacket.LayersBean) t).s7comm_param_func!=null) {
+                funCodeStr = ((S7CommPacket.LayersBean) t).s7comm_param_func[0];
+                return PacketDecodeUtil.decodeFuncode(S7, funCodeStr);
+            }
         }else if (t instanceof ModbusPacket.LayersBean){
-            funCodeStr = ((ModbusPacket.LayersBean) t).modbus_func_code[0];
-            return PacketDecodeUtil.decodeFuncode(MODBUS,funCodeStr);
-        }else{
+            if (((ModbusPacket.LayersBean) t).modbus_func_code!=null) {
+                funCodeStr = ((ModbusPacket.LayersBean) t).modbus_func_code[0];
+                return PacketDecodeUtil.decodeFuncode(MODBUS, funCodeStr);
+            }
+        }else if (t instanceof IEC104Packet.LayersBean){
+            if (((IEC104Packet.LayersBean) t).iec104_funcode!=null) {
+                funCodeStr = ((IEC104Packet.LayersBean) t).iec104_funcode[0];
+                return PacketDecodeUtil.decodeFuncode(IEC104, funCodeStr);
+            }
+        }
+        else{
             //log.error("can not decode funCode of protocol : {} cause it is not defined" , t.frame_protocols[0]);
             return -1;
         }
+        return -1;
     }
 
     @Async
@@ -160,8 +168,9 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             callback.start(doStart(fvDimensionLayerAbstractAsyncHandler
                                    ,new ModbusPreProcessor()
                                    ,new S7CommPreProcessor()
-                                   //,new IEC104PreProcessor()
-                                   ,new UnknownPreProcessor()      //必须放在解析协议的最后
+                                   ,new IEC104PreProcessor()
+                                   ,new PnioPreProcessor()
+                                   ,new UndefinedPreProcessor()      //必须放在解析协议的最后
                                    ));
         } catch (InterruptedException e) {
             return CompletableFuture.completedFuture(e);
@@ -253,13 +262,11 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         Common.FLOW.addAndGet(capLength);                          //计算报文流量
 
         StatisticsData.recvPacketNumber.addAndGet(1);      //总报文数
-        String dstTag = CommonCacheUtil.getPacketFilterDstStatement(fvDimensionLayer);
         //外界 --> PLC[ip_dst]  设备接收的报文数
-        StatisticsData.increaseNumberByDeviceIn(CommonCacheUtil.getTargetDeviceNumberByTag(dstTag)
+        StatisticsData.increaseNumberByDeviceIn(CommonCacheUtil.getTargetDeviceNumberByTag(fvDimensionLayer)
             ,1);
-        String srcTag = CommonCacheUtil.getPacketFilterSrcStatement(fvDimensionLayer);
         //外界 <-- PLC[ip_src]  设备发送的报文数
-        StatisticsData.increaseNumberByDeviceOut(CommonCacheUtil.getTargetDeviceNumberByTag(srcTag),
+        StatisticsData.increaseNumberByDeviceOut(CommonCacheUtil.getTargetDeviceNumberByTag(fvDimensionLayer),
                 1);
     }
 

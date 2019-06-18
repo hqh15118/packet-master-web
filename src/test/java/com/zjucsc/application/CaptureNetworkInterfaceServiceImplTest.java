@@ -27,8 +27,8 @@ import java.util.concurrent.ThreadPoolExecutor;
  * #create_time 2019-05-13 - 20:34
  */
 
-//@RunWith(SpringRunner.class)
-//@SpringBootTest
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class CaptureNetworkInterfaceServiceImplTest {
 
     private String macAddressForWin = "28:D2:44:5F:69:E1";
@@ -73,14 +73,12 @@ public class CaptureNetworkInterfaceServiceImplTest {
     @SuppressWarnings("unchecked")
     public void allPacketSendTest() throws InterruptedException {
         String ipForWin = "192.168.0.121";
-        String ipForMac = "192.168.1.102";
-        //packetController.startRecvRealTimePacket();
         CaptureService captureService = new CaptureService();
         captureService.setMacAddress(macAddressForWin);
         captureService.setService_ip(ipForWin);
         captureService.setService_name("en0");
         packetController.startCaptureService(captureService);
-        Thread.sleep(100000);
+        Thread.sleep(1000000);
     }
 
     /**

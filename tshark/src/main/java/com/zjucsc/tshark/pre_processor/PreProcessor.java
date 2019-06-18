@@ -33,4 +33,6 @@ public interface PreProcessor {
     String filter();
 
     void decodeJSONString(String packetJSON);
+
+    String extConfig();
 }

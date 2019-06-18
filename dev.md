@@ -44,7 +44,7 @@ public class Test{
             }else{
                 if (line.length() > 90) {
                     i++;
-                    //UnknownPacket layer = JSON.parseObject(line,UnknownPacket.class);
+                    UndefinedPacket
                     //byte[] bytes = ByteUtil.hexStringToByteArray(layer.layers.custom_ext_raw_data[0],0);
                     //System.out.println(PacketDecodeUtil.decodeTimeStamp(bytes,20));
                     //log.info("number : {} , info : {} " , i);

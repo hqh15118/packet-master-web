@@ -51,7 +51,7 @@ public class Common {
 
     /**
      * cache6
-     * String 设备IP
+     * String 设备TAG
      * String -> 协议
      * OperationAnalyzer -> 报文操作分析器
      */
@@ -62,7 +62,7 @@ public class Common {
             new ConcurrentHashMap<>();
     /**
      * cache5
-     * DEVICE_IP 五元组过滤器
+     * DEVICE_TAG 五元组过滤器
      */
     public static ConcurrentHashMap<String, FiveDimensionAnalyzer> FV_DIMENSION_FILTER_PRO = new ConcurrentHashMap<>();
 

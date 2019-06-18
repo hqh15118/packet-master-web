@@ -100,15 +100,17 @@ public abstract class BasePreProcessor implements PreProcessor {
                 commandBuilder.append(" -c ").append(limit);
             }
             // -f "xxx not mac"
-            commandBuilder.append(" -f ").append("\"").append(filter())
-                    .append(" and not ether src ").append(chosenDeviceMac).append("\"");
+            if (filter().length() > 0){
+                commandBuilder.append(" -f ").append("\"").append(filter())
+                        .append(" and not ether src ").append(chosenDeviceMac).append("\"");
+            }
+        }
+        if (extConfig()!=null && extConfig().length() > 0) {
+            commandBuilder.append(" ").append(extConfig());
         }
         commandBuilder.append(" -Y ").append("\"");
         for (String s : protocolFilterField()) {
             commandBuilder.append(s).append(" ");
-
-
-
         }
         commandBuilder.append("\"");   // 最后的部分 + s7comm/...用于过滤
         commandBuilder.append(" -M 10000");    //设置n条之后重置回话
@@ -288,5 +290,10 @@ public abstract class BasePreProcessor implements PreProcessor {
 
     public interface CommandBuildFinishCallback{
         void commandBuildFinish();
+    }
+
+    @Override
+    public String extConfig() {
+        return null;
     }
 }

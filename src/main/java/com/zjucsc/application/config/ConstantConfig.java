@@ -28,4 +28,6 @@ public class ConstantConfig {
 
     private boolean showErrorOnly;
 
+
+
 }

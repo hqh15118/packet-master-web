@@ -1,15 +1,11 @@
 package com.zjucsc;
 
 import com.alibaba.fastjson.JSON;
-import com.zjucsc.application.tshark.domain.packet.UnknownPacket;
-import com.zjucsc.application.util.PacketDecodeUtil;
-import com.zjucsc.common_util.ByteUtil;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
 import java.io.*;
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -139,7 +135,7 @@ public class Other {
             }else{
                 if (line.length() > 90) {
                     i++;
-                    //UnknownPacket layer = JSON.parseObject(line,UnknownPacket.class);
+                    //UndefinedPacket layer = JSON.parseObject(line,UndefinedPacket.class);
                     //byte[] bytes = ByteUtil.hexStringToByteArray(layer.layers.custom_ext_raw_data[0],0);
                     //System.out.println(PacketDecodeUtil.decodeTimeStamp(bytes,20));
                     //log.info("number : {} , info : {} " , i);

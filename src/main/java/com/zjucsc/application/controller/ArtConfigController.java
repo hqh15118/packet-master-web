@@ -37,7 +37,7 @@ public class ArtConfigController {
 
     @ApiOperation("添加工艺参数配置，artConfig > 0表示更新；不填表示添加新的配置，顺序返回记录的ID列表")
     @PostMapping("new_config")
-    public BaseResponse addOrUpdateArtConfig(HttpServletRequest request) throws ProtocolIdNotValidException, IOException {
+    public BaseResponse addOrUpdateArtConfig(HttpServletRequest request) throws IOException {
         StringBuilder sb = new StringBuilder();
         BufferedReader bfr = request.getReader();
         String str;
@@ -53,13 +53,13 @@ public class ArtConfigController {
              iArtConfigService.updateByJSONStr(jsonData);
         }else{
             //添加新的工艺参数配置到数据库
-            iArtConfigService.insertByJSONStr(jsonData);
+            //iArtConfigService.insertByJSONStr(jsonData);
             //初始化工艺参数配置
             //将该工艺参数添加到MAP中
             AppCommonUtil.initArtMap(baseConfig.getTag());
         }
 
-        if (baseConfig.getShowGraph() == 1){
+        if (baseConfig.getShowGraph() == 0){
             CommonCacheUtil.addShowGraphArg(baseConfig.getProtocolId(),baseConfig.getTag());
         }else{
             CommonCacheUtil.removeShowGraph(baseConfig.getProtocolId(),baseConfig.getTag());
@@ -75,6 +75,10 @@ public class ArtConfigController {
             s7Config.setProtocol("s7comm");
             ArtDecodeCommon.addArtDecodeConfig(s7Config);
             return BaseResponse.OK(true);
+        }else if (baseConfig.getProtocolId() == PACKET_PROTOCOL.IEC104_ID){
+
+        }else if (baseConfig.getProtocolId() == PACKET_PROTOCOL.DNP3_0_ID){
+
         }
         return BaseResponse.OK(false);
     }
