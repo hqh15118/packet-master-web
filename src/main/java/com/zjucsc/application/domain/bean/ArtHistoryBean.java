@@ -7,7 +7,7 @@ import java.util.List;
 @Data
 public class ArtHistoryBean {
     List<String> nameList;
-    private String startTime;
-    private String endTime;
-    private String timeType;
+    private String start;
+    private String end;
+    private int timeInterval;
 }

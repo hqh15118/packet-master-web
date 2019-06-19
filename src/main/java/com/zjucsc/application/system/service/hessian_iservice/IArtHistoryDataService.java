@@ -12,7 +12,7 @@ public interface IArtHistoryDataService {
      * @param artValue 工艺参数值
      * @param payload 解析此条数据的tcp payload
      */
-    void saveArtData(String artName, float artValue, byte[] payload);
+    void saveArtData(String artName, String artValue, byte[] payload);
 
     /**
      * 查询历史工艺数据
@@ -22,5 +22,5 @@ public interface IArtHistoryDataService {
      * @param timeType 查询的时间类型，年、月、日、时
      * @return
      */
-    CompletableFuture<ArtHistoryForFront> getArtData(String startTime, String endTime, List<String> artNames, String timeType) throws Exception;
+    CompletableFuture<ArtHistoryForFront> getArtData(String startTime, String endTime, List<String> artNames, int timeType) throws Exception;
 }

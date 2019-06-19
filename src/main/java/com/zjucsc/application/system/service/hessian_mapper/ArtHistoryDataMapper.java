@@ -13,7 +13,7 @@ public interface ArtHistoryDataMapper extends BaseMapper<ArtHistoryData> {
      * @param artValue 工艺参数值
      * @param payload 解析此条数据的tcp payload
      */
-    void saveArtData(String artName,float artValue,byte[] payload);
+    void saveArtData(String artName,String artValue,byte[] payload,int gplotId);
 
     /**
      * 查询历史工艺数据
@@ -23,5 +23,5 @@ public interface ArtHistoryDataMapper extends BaseMapper<ArtHistoryData> {
      * @param timeType 查询的时间类型，年、月、日、时
      * @return
      */
-    List<String> getArtData(String startTime, String endTime, String artName, String timeType);
+    List<String> getArtData(String startTime, String endTime, String artName, int timeType,int gplotId);
 }

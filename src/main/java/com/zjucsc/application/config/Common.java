@@ -35,6 +35,8 @@ public class Common {
 
     public static volatile long maxFlowInByte = Long.MAX_VALUE;
 
+    public static final List<String> TSHARK_PRE_PROCESSOR_PROTOCOLS = new ArrayList<>();
+
     /**
      * 是否已经打开某个抓包机器上的抓包服务
      */

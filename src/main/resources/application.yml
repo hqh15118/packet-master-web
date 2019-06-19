@@ -15,7 +15,7 @@ myconfig:
 
 hessian-config:
   hessian-url: 10.15.191.100:36955/hessian
-  art_history_data: http://${hessian-config.hessian-url}/ArtHistoryData.hessian
+  art_history_data: http://${hessian-config.hessian-url}/ArtHistoryDataMapper.hessian
   art_config: http://${hessian-config.hessian-url}/ArtConfigMapper.hessian
   configuration_setting: http://${hessian-config.hessian-url}/ConfigurationSettingMapper.hessian
   device: http://${hessian-config.hessian-url}/DeviceMapper.hessian

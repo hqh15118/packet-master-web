@@ -9,6 +9,7 @@ import com.zjucsc.application.domain.bean.StatisticInfoSaveBean;
 import com.zjucsc.application.domain.bean.StatisticsDataWrapper;
 import com.zjucsc.application.socketio.SocketServiceCenter;
 import com.zjucsc.application.system.service.common_iservice.CapturePacketService;
+import com.zjucsc.application.system.service.hessian_iservice.IArtHistoryDataService;
 import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
 import com.zjucsc.application.util.AppCommonUtil;
 import com.zjucsc.application.util.CommonCacheUtil;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -34,6 +36,8 @@ public class ScheduledService {
     @Autowired public PacketAnalyzeService packetAnalyzeService;
 
     @Autowired private IDeviceService iDeviceService;
+
+    @Autowired private IArtHistoryDataService iArtHistoryDataService;
 
     private LinkedBlockingQueue<FvDimensionLayer> fvDimensionLayers = new LinkedBlockingQueue<>(5);
 
@@ -64,12 +68,12 @@ public class ScheduledService {
                 sendPacketStatisticsMsg();
                 sendGraphInfo();
                 statisticFlow();
+                saveArtDataToDb();
                 count = 0;
             }
             sendAllFvDimensionPacket();
         }
     }
-
     /**
      * 5秒钟发送一次统计信息
      */
@@ -106,6 +110,13 @@ public class ScheduledService {
         iDeviceService.saveStatisticInfo(Common.STATISTICS_INFO_BEAN);
     }
 
+    /**
+     * 存储工艺参数信息
+     */
+    private void saveArtDataToDb() {
+
+    }
+
     //@Scheduled(fixedRate = 1000)
     private void sendAllFvDimensionPacket(){
         for (int i = 0; i < 5; i++) {
@@ -115,14 +126,19 @@ public class ScheduledService {
     /**
      * 工艺参数信息
      */
-
     //@Scheduled(fixedRate = 5000)
     private void sendGraphInfo(){
         StatisticsData.ART_INFO_SEND.clear();
         synchronized (StatisticsData.LINKED_LIST_LOCK){
-            for (String artName : Common.SHOW_GRAPH_SET) {
-                StatisticsData.ART_INFO_SEND.put(artName, StatisticsData.ART_INFO.get(artName));
-            }
+//            for (String artName : Common.SHOW_GRAPH_SET) {
+//                StatisticsData.ART_INFO_SEND.put(artName, StatisticsData.ART_INFO.get(artName));
+//            }
+            StatisticsData.ART_INFO.forEach((artName, artValueList) -> {
+                if (Common.SHOW_GRAPH_SET.contains(artName)){
+                    StatisticsData.ART_INFO_SEND.put(artName, artValueList);
+                    iArtHistoryDataService.saveArtData(artName,artValueList.getLast(),null);
+                }
+            });
             StatisticsData.ART_INFO_SEND.put("timestamp",StatisticsData.ART_INFO.get("timestamp"));
             SocketServiceCenter.updateAllClient(SocketIoEvent.ART_INFO, StatisticsData.ART_INFO_SEND);
         }

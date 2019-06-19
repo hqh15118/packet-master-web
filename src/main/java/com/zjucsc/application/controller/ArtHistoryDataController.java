@@ -23,8 +23,8 @@ public class ArtHistoryDataController {
     @ApiOperation("查询一段时间内的历史数据")
     @PostMapping("history")
     public BaseResponse getArtHistoryData(@RequestBody ArtHistoryBean artHistoryBean) throws Exception {
-        return BaseResponse.OK(iArtHistoryDataService.getArtData(artHistoryBean.getStartTime(),
-                artHistoryBean.getEndTime(),artHistoryBean.getNameList() , artHistoryBean.getTimeType()));
+        return BaseResponse.OK(iArtHistoryDataService.getArtData(artHistoryBean.getStart(),
+                artHistoryBean.getEnd(),artHistoryBean.getNameList() , artHistoryBean.getTimeInterval()));
     }
 
 }

@@ -1,5 +1,6 @@
 package com.zjucsc.application.system.service.hessian_impl;
 
+import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.bean.ArtHistoryData;
 import com.zjucsc.application.domain.bean.ArtHistoryForFront;
 import com.zjucsc.application.system.service.hessian_iservice.IArtConfigService;
@@ -21,28 +22,28 @@ public class ArtHistoryDataServiceImpl extends BaseServiceImpl<ArtHistoryData,Ar
     @Autowired private IArtConfigService iArtConfigService;
 
     @Override
-    public void saveArtData(String artName, float artValue, byte[] payload) {
-        this.baseMapper.saveArtData(artName, artValue, payload);
+    public void saveArtData(String artName, String artValue, byte[] payload) {
+        this.baseMapper.saveArtData(artName, artValue, payload,Common.GPLOT_ID);
     }
 
-    private HashMap<String,Integer> T2TMap = new HashMap<String,Integer>(){
+    private HashMap<Integer,Integer> T2TMap = new HashMap<Integer,Integer>(){
         {
-            put("year",Calendar.MONTH);
-            put("month",Calendar.DAY_OF_MONTH);
-            put("day",Calendar.HOUR_OF_DAY);
-            put("hour",Calendar.MINUTE);
-            put("minute",Calendar.SECOND);
+            put(5,Calendar.MONTH);
+            put(4,Calendar.DAY_OF_MONTH);
+            put(3,Calendar.HOUR_OF_DAY);
+            put(2,Calendar.MINUTE);
+            put(1,Calendar.SECOND);
         }
     };
 
-    private final static HashMap<String,List<String>> TIME_LIST =
-            new HashMap<String,List<String>>(){
+    private final static HashMap<Integer,List<String>> TIME_LIST =
+            new HashMap<Integer,List<String>>(){
                 {
-                    put("year",Arrays.asList("1","2","3","4","5","6","7","8","9","10","11","12"));
-                    put("month",Arrays.asList("1","2","3","4","5","6","7","8","9","10","11","12",
+                    put(5,Arrays.asList("1","2","3","4","5","6","7","8","9","10","11","12"));
+                    put(4,Arrays.asList("1","2","3","4","5","6","7","8","9","10","11","12",
                             "13","14","15","16","17","18","19","20","21","22","23","24","25","26"
                     ,"27","28","29","30","31"));
-                    put("day",Arrays.asList("1","2","3","4","5","6","7","8","9","10","11","12",
+                    put(3,Arrays.asList("1","2","3","4","5","6","7","8","9","10","11","12",
                             "13","14","15","16","17","18","19","20","21","22","23","24"));
                 }
             };
@@ -52,13 +53,13 @@ public class ArtHistoryDataServiceImpl extends BaseServiceImpl<ArtHistoryData,Ar
         for (int i = 1; i < 60; i++) {
             timeList.add(String.valueOf(i));
         }
-        TIME_LIST.put("hour",timeList);
-        TIME_LIST.put("minute",timeList);
+        TIME_LIST.put(2,timeList);
+        TIME_LIST.put(1,timeList);
     }
 
     @Async
     @Override
-    public CompletableFuture<ArtHistoryForFront> getArtData(String startTime, String endTime, List<String> artNames, String timeType) throws Exception {
+    public CompletableFuture<ArtHistoryForFront> getArtData(String startTime, String endTime, List<String> artNames, int timeType) throws Exception {
         ArtHistoryForFront artHistoryForFront = new ArtHistoryForFront();
         artHistoryForFront.setNameList(TIME_LIST.get(timeType));
         Map<String, Map<String,List<String>>> map = new HashMap<>();
@@ -80,7 +81,7 @@ public class ArtHistoryDataServiceImpl extends BaseServiceImpl<ArtHistoryData,Ar
             //该时间节点下的所有工艺参数
             for (String artName : artNames) {
                 Map<String,List<String>> var = map.putIfAbsent(start,new HashMap<>());//[2019-05-25,{var:list<value>}]
-                List<String> artHistoryData = this.baseMapper.getArtData(start,end,artName,timeType);
+                List<String> artHistoryData = this.baseMapper.getArtData(start,end,artName,timeType, Common.GPLOT_ID);
                 assert var!=null && artHistoryData!=null;
                 var.put(artName,artHistoryData);
             }

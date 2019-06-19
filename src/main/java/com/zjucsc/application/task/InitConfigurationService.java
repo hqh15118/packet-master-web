@@ -52,7 +52,7 @@ public class InitConfigurationService implements ApplicationRunner {
          * RELOAD FROM JAR
          ***************************/
         List<String> virReload = args.getOptionValues("reload");
-        System.out.println("*******************\n" + "program args : " + virReload);
+        System.out.println("*******************\n" + "program args [reload]: " + virReload);
         boolean reload = false;
         if (virReload!=null && virReload.size() > 0){
             if ("true".equals(virReload.get(0))){
@@ -66,7 +66,7 @@ public class InitConfigurationService implements ApplicationRunner {
          * IP OR MAC_ADDRESS
          ***************************/
         List<String> virFilterStatement = args.getOptionValues("statement");
-        System.out.println("program args : " + virFilterStatement + "\n*******************");
+        System.out.println("program args : [filterStatement]" + virFilterStatement + "\n*******************");
         if (virFilterStatement!=null && virFilterStatement.size() > 0){
             Common.filterStatement = Integer.parseInt(virFilterStatement.get(0));
             if (Common.filterStatement == 0){
@@ -74,6 +74,14 @@ public class InitConfigurationService implements ApplicationRunner {
             }else{
                 log.info("以[MAC]地址作为准则进行过滤器的设置");
             }
+        }
+        /***************************
+         * TSHARK PRE_PROCESSOR
+         ***************************/
+        List<String> virPreProcessor = args.getOptionValues("processor");
+        System.out.println("program args [pre_processor]: " + virPreProcessor + "\n*******************");
+        if (virFilterStatement!=null && virFilterStatement.size() > 0){
+            Common.TSHARK_PRE_PROCESSOR_PROTOCOLS.addAll(virPreProcessor);
         }
 
         /***************************

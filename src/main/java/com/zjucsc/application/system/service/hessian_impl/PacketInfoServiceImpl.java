@@ -48,4 +48,9 @@ public class PacketInfoServiceImpl  implements IPacketInfoService {
         return packetInfoMapper.exportPacketHistory(packetInfoExport);
     }
 
+    @Override
+    public List<SavedPacket> selectPacketHistoryList(PacketHistoryList packetHistoryList) {
+        return packetInfoMapper.selectPacketHistoryList(packetHistoryList);
+    }
+
 }

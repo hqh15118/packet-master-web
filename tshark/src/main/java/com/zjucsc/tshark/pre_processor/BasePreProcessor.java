@@ -50,13 +50,10 @@ public abstract class BasePreProcessor implements PreProcessor {
     });
 
     static{
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                System.out.println("hook start working ... ");
-                CommonTsharkUtil.shotDownAllRunningTsharkProcess();
-                System.out.println("hook finish working ... ");
-            }
+        Thread thread = new Thread(() -> {
+            System.out.println("hook start working ... ");
+            CommonTsharkUtil.shotDownAllRunningTsharkProcess();
+            System.out.println("hook finish working ... ");
         });
         Runtime.getRuntime().addShutdownHook(thread);
     }
@@ -133,7 +130,10 @@ public abstract class BasePreProcessor implements PreProcessor {
             //process = Runtime.getRuntime().exec(new String[]{"bash","-c",command});
             process = Runtime.getRuntime().exec(command);
             CommonTsharkUtil.addTsharkProcess(process);
-            doWithErrorStream(process.getErrorStream() , command);
+            if (type != 0) {
+                //本地离线不需要设置error stream
+                doWithErrorStream(process.getErrorStream(), command);
+            }
             //log.info("start running --------------------> now ");//TODO LOG HERE
             processRunning = true;
             try (BufferedReader bfReader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
@@ -207,9 +207,9 @@ public abstract class BasePreProcessor implements PreProcessor {
     public void pcapFilePath(int limit) {
         System.out.println("*** operation name is : " + TsharkCommon.OS_NAME);
         if (limit < 0)
-            filePath =  " -r  " + pcapFilePathForWin;
+            filePath =  " -r  " + pcapPath();
         else
-            filePath = " -c " + limit + " -r " +  pcapFilePathForWin;
+            filePath = " -c " + limit + " -r " +  pcapPath();
     }
 
     @Override
@@ -271,8 +271,12 @@ public abstract class BasePreProcessor implements PreProcessor {
 
     private String tsharkMacPath = " tshark ";
     private String tsharkWinPath = " tshark";
-    private String pcapFilePathForMac = " /Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap/104_dnp_packets.pcapng ";
-    private String pcapFilePathForWin = " C:\\Users\\Administrator\\IdeaProjects\\packet-master-web\\src\\main\\resources\\pcap\\104_dnp_packets.pcapng";
+//    private String pcapFilePathForMac = " /Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap/104_dnp_packets.pcapng ";
+//    private String pcapFilePathForWin = " C:\\Users\\Administrator\\IdeaProjects\\packet-master-web\\src\\main\\resources\\pcap\\104_dnp_packets.pcapng";
+
+    public String pcapPath(){
+        return "";
+    }
 
     public static void setCaptureDeviceNameAndMacAddress(String macAddress,String captureDeviceName){
         BasePreProcessor.captureDeviceName = captureDeviceName;

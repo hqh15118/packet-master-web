@@ -46,4 +46,9 @@ public class PacketInfoController {
     public BaseResponse exportPacketHistory(@RequestBody PacketInfoExport packetInfoExport){
         return BaseResponse.OK(iPacketInfoService.exportPacketHistory(packetInfoExport));
     }
+
+    @PostMapping("packet_list2")
+    public BaseResponse selectPacketHistory2(@RequestBody PacketHistoryList packetHistoryList){
+        return BaseResponse.OK(iPacketInfoService.selectPacketHistoryList(packetHistoryList));
+    }
 }
