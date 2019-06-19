@@ -42,7 +42,7 @@ public class OptFilterServiceImpl extends BaseServiceImpl<OptFilter,OptFilterMap
     @Async
     @Override
     public CompletableFuture<Exception> addOperationFilter(OptFilterForFront optFilterForFront) throws DeviceNotValidException {
-        String deviceIp = CommonCacheUtil.getTargetDeviceNumberByTag(optFilterForFront.getDeviceNumber());
+        String deviceIp = CommonCacheUtil.getTargetDeviceTagByNumber(optFilterForFront.getDeviceNumber());
         if (deviceIp == null){
             throw new DeviceNotValidException("未发现设备号为["+optFilterForFront.getDeviceNumber() +"]的设备");
         }

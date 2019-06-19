@@ -24,15 +24,9 @@ public class LoginAuthFilter implements Filter {
         response.setHeader("Access-Control-Allow-Origin", origin);
         response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
         response.setHeader("Access-Control-Max-Age", "3600");
-        //response.setHeader("Access-Control-Allow-Headers", "x-requested-with,Authorization");
         response.setHeader("Access-Control-Allow-Headers", "Content-Type,XFILENAME,XFILECATEGORY,XFILESIZE");
         response.setHeader("Access-Control-Allow-Credentials", "true");
-//        String method = request.getMethod();
-//        if(method.equalsIgnoreCase("OPTIONS")){
-//            servletResponse.getOutputStream().write("Success".getBytes("utf-8"));
-//        }else{
         filterChain.doFilter(servletRequest, servletResponse);
-//        }
     }
 
     @Override

@@ -9,11 +9,6 @@ import org.springframework.context.annotation.Configuration;
 public class TsharkConfig {
 
     public TsharkConfig(){
-        TsharkCommon.setErrorCallback(new TsharkCommon.ErrorCallback() {
-            @Override
-            public void errorCallback(String errorMsg) {
-                log.error("tshark进程发生错误，错误信息：{}",errorMsg);
-            }
-        });
+        TsharkCommon.setErrorCallback(errorMsg -> log.error("tshark可能存在异常，请检查：{}",errorMsg));
     }
 }

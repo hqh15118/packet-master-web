@@ -91,7 +91,7 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public BaseResponse handleUnKnowException(Exception e){
-        printException(e);
+        log.error("controller exception \n",e);
         return BaseResponse.ERROR(500,e.getMessage());
     }
 
