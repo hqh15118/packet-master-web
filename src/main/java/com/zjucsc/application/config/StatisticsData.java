@@ -133,12 +133,12 @@ public class StatisticsData {
     public static final byte[] LINKED_LIST_LOCK = new byte[1];
 
     public static void addArtData(String artArg , String value){
-        LinkedList<String> var = ART_INFO.get(artArg);
+        synchronized (LINKED_LIST_LOCK){
+            LinkedList<String> var = ART_INFO.get(artArg);
         if (var == null){
             //需要先调用AppCommonUtil.initArtMap
             log.error("工艺参数 {} 未初始化添加到ART_INFO中，请修正" , artArg);
         }else{
-            synchronized (LINKED_LIST_LOCK){
                 if (var.size() >= 6){
                     var.removeFirst();
                     var.addLast(value);

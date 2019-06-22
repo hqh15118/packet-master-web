@@ -141,8 +141,8 @@ public class ScheduledService {
             });
             StatisticsData.ART_INFO_SEND.put("timestamp",StatisticsData.ART_INFO.get("timestamp"));
             SocketServiceCenter.updateAllClient(SocketIoEvent.ART_INFO, StatisticsData.ART_INFO_SEND);
+            addArtData("timestamp", AppCommonUtil.getDateFormat().format(new Date()));
         }
-        addArtData("timestamp", AppCommonUtil.getDateFormat().format(new Date()));
     }
 
     private void doSend(FvDimensionLayer layer){
@@ -216,12 +216,12 @@ public class ScheduledService {
                         break;
                 }
         }
-        public SenderConsumer setMap(HashMap<String,Integer> map , int index){
+        SenderConsumer setMap(HashMap<String, Integer> map, int index){
             this.map = map;
             this.index = index;
             return this;
         }
-        public void setListMap(HashMap<String,GraphInfo> graphMap){
+        void setListMap(HashMap<String, GraphInfo> graphMap){
             this.graphMap = graphMap;
         }
 
