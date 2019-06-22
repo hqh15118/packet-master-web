@@ -80,7 +80,7 @@ public class InitConfigurationService implements ApplicationRunner {
          ***************************/
         List<String> virPreProcessor = args.getOptionValues("processor");
         System.out.println("program args [pre_processor]: " + virPreProcessor + "\n*******************");
-        if (virFilterStatement!=null && virFilterStatement.size() > 0){
+        if (virPreProcessor!=null && virPreProcessor.size() > 0){
             Common.TSHARK_PRE_PROCESSOR_PROTOCOLS.addAll(virPreProcessor);
         }
 
