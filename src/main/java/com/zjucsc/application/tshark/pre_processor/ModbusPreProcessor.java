@@ -1,6 +1,6 @@
 package com.zjucsc.application.tshark.pre_processor;
 
-import com.zjucsc.application.tshark.domain.packet.ModbusPacket;
+import com.zjucsc.tshark.packets.ModbusPacket;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import com.zjucsc.tshark.pre_processor.SinglePreProcessor;
 

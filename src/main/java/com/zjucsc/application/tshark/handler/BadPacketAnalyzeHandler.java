@@ -5,7 +5,7 @@ import com.zjucsc.application.socketio.SocketServiceCenter;
 import com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
 import com.zjucsc.application.tshark.domain.bean.BadPacket;
-import com.zjucsc.application.tshark.domain.packet.UndefinedPacket;
+import com.zjucsc.tshark.packets.UndefinedPacket;
 import com.zjucsc.application.util.AppCommonUtil;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.PacketDecodeUtil;

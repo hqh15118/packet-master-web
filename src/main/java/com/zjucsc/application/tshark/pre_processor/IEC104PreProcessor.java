@@ -1,7 +1,7 @@
 package com.zjucsc.application.tshark.pre_processor;
 
 import com.zjucsc.application.config.PACKET_PROTOCOL;
-import com.zjucsc.application.tshark.domain.packet.IEC104Packet;
+import com.zjucsc.tshark.packets.IEC104Packet;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import com.zjucsc.tshark.pre_processor.SinglePreProcessor;
 

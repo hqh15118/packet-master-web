@@ -1,6 +1,4 @@
-package com.zjucsc.application.tshark.domain.packet;
-
-import com.zjucsc.tshark.packets.FvDimensionLayer;
+package com.zjucsc.tshark.packets;
 
 public class PnioPacket {
 

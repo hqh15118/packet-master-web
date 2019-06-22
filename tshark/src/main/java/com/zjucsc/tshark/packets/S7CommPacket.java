@@ -1,10 +1,7 @@
-package com.zjucsc.application.tshark.domain.packet;
+package com.zjucsc.tshark.packets;
 
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.zjucsc.tshark.packets.FvDimensionLayer;
-
-import java.util.Arrays;
 
 /**
  * #project packet-master-web

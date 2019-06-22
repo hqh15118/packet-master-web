@@ -1,8 +1,4 @@
-package com.zjucsc.application.tshark.domain.packet;
-
-import com.zjucsc.tshark.packets.FvDimensionLayer;
-
-import java.util.Arrays;
+package com.zjucsc.tshark.packets;
 
 /**
  * #project packet-master-web

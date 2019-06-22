@@ -1,11 +1,8 @@
-package com.zjucsc.application.tshark.domain.packet;
+package com.zjucsc.tshark.packets;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.zjucsc.tshark.packets.FvDimensionLayer;
-import lombok.Data;
 
 
-@Data
 public class OpcUaPacket {
     /**
      * timestamp : 1560149163130

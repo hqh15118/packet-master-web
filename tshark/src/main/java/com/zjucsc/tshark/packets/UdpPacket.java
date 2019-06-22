@@ -1,4 +1,4 @@
-package com.zjucsc.application.tshark.domain.packet;
+package com.zjucsc.tshark.packets;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
@@ -9,13 +9,14 @@ import com.zjucsc.tshark.packets.FvDimensionLayer;
  * @author hongqianhui
  * #create_time 2019-05-14 - 21:16
  */
-public class IEC104Packet {
+public class UdpPacket {
 
     @JSONField(name = "layers")
     public LayersBean layers;
 
     public static class LayersBean extends FvDimensionLayer {
-        @JSONField(name = "104asdu_typeid")
-        public String[] iec104_funcode;
+        public String data;
+        public String udp_srcport;
+        public String udp_dstport;
     }
 }
