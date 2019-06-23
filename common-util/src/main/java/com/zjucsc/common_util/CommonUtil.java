@@ -1,9 +1,7 @@
 package com.zjucsc.common_util;
 
-import java.text.SimpleDateFormat;
-
 public class CommonUtil {
-    private static final ThreadLocal<StringBuilder> GLOBAL_THREAD_LOCAL_STRINGBUILDER =
+    private static final ThreadLocal<StringBuilder> GLOBAL_THREAD_LOCAL_STRING_BUILDER =
             new ThreadLocal<StringBuilder>(){
                 @Override
                 protected StringBuilder initialValue() {
@@ -12,7 +10,7 @@ public class CommonUtil {
             };
 
     public static StringBuilder getGlobalStringBuilder(){
-        StringBuilder sb = GLOBAL_THREAD_LOCAL_STRINGBUILDER.get();
+        StringBuilder sb = GLOBAL_THREAD_LOCAL_STRING_BUILDER.get();
         return sb.delete(0,sb.length());
     }
 }

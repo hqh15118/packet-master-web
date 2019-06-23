@@ -3,19 +3,11 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <packaging>jar</packaging>
 
     <groupId>com.zjucsc</groupId>
-    <artifactId>lua-engine</artifactId>
+    <artifactId>capture-main</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <description>LUA脚本模块</description>
 
-    <dependencies>
-        <!-- https://mvnrepository.com/artifact/org.luaj/luaj-jse -->
-        <dependency>
-            <groupId>org.luaj</groupId>
-            <artifactId>luaj-jse</artifactId>
-            <version>3.0.1</version>
-        </dependency>
-    </dependencies>
-
+    <description>抓包+解析主服务</description>
 </project>

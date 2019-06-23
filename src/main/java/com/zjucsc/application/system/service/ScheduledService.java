@@ -68,7 +68,6 @@ public class ScheduledService {
                 sendPacketStatisticsMsg();
                 sendGraphInfo();
                 statisticFlow();
-                saveArtDataToDb();
                 count = 0;
             }
             sendAllFvDimensionPacket();
@@ -110,12 +109,6 @@ public class ScheduledService {
         iDeviceService.saveStatisticInfo(Common.STATISTICS_INFO_BEAN);
     }
 
-    /**
-     * 存储工艺参数信息
-     */
-    private void saveArtDataToDb() {
-
-    }
 
     //@Scheduled(fixedRate = 1000)
     private void sendAllFvDimensionPacket(){
@@ -136,6 +129,8 @@ public class ScheduledService {
             StatisticsData.ART_INFO.forEach((artName, artValueList) -> {
                 if (Common.SHOW_GRAPH_SET.contains(artName)){
                     StatisticsData.ART_INFO_SEND.put(artName, artValueList);
+                }
+                if (artValueList.size() > 0){
                     iArtHistoryDataService.saveArtData(artName,artValueList.getLast(),null);
                 }
             });

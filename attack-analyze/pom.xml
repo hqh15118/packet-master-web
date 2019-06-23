@@ -8,9 +8,8 @@
     <artifactId>attack-analyze</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
-    <properties>
-        <mybatis-plus.version>3.1.0</mybatis-plus.version>
-    </properties>
+
+    <description>攻击解析模块</description>
 
     <dependencies>
 

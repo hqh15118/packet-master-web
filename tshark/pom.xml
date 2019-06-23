@@ -8,6 +8,8 @@
     <artifactId>tshark</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
+    <description>Tshark主模块</description>
+
     <dependencies>
         <!-- https://mvnrepository.com/artifact/com.alibaba/fastjson -->
         <dependency>

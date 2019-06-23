@@ -2,6 +2,7 @@ package com.zjucsc.application.config;
 
 import com.corundumstudio.socketio.SocketIOClient;
 import com.zjucsc.application.socketio.SocketServiceCenter;
+import com.zjucsc.application.util.AppCommonUtil;
 import com.zjucsc.art_decode.ArtDecodeCommon;
 import com.zjucsc.kafka.KafkaCommon;
 import com.zjucsc.tshark.TsharkCommon;
@@ -39,6 +40,7 @@ public class WatchConfig {
         }
         map.put("SOCKET-IO-CLIENT", clientStrings);
         map.put("ALL_ART_CONFIG", ArtDecodeCommon.getAllArtConfigs());
+        map.put("ART_DATA",AppCommonUtil.getGlobalArtMap());
         return map;
     }
 

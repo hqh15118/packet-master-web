@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -42,5 +43,8 @@ public class ServiceConfig {
         return new SimpleAsyncTaskExecutor();
     }
 
-
+//    @Bean("common_schedule_service")
+//    public Executor commonScheduleService(){
+//        return Executors.newScheduledThreadPool(1);
+//    }
 }

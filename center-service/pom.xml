@@ -5,17 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.zjucsc</groupId>
-    <artifactId>lua-engine</artifactId>
+    <artifactId>center-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <description>LUA脚本模块</description>
 
-    <dependencies>
-        <!-- https://mvnrepository.com/artifact/org.luaj/luaj-jse -->
-        <dependency>
-            <groupId>org.luaj</groupId>
-            <artifactId>luaj-jse</artifactId>
-            <version>3.0.1</version>
-        </dependency>
-    </dependencies>
-
+    <description>中心服务，请求统一入口+转发</description>
 </project>

@@ -8,5 +8,6 @@
     <artifactId>common-util</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
+    <description>通用工具类模块</description>
 
 </project>
