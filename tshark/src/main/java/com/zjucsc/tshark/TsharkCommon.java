@@ -17,6 +17,8 @@ public class TsharkCommon {
 
     public static String filter = "tcp";
 
+    public static String sessionReset = "10000";
+
     public static Thread.UncaughtExceptionHandler uncaughtExceptionHandler
             = (t, e) -> System.out.println("thread " + t.getName() + " caught an exception " + e);
 

@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ArtDecodeCommon {
     private static final ConcurrentHashMap<String, BaseArtDecode> ART_DECODE_CONCURRENT_HASH_MAP
-            = new ConcurrentHashMap<>(5);
+            = new ConcurrentHashMap<>(10);
     /**
      * 初始化
      */

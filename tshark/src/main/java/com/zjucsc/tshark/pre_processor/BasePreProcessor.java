@@ -100,6 +100,9 @@ public abstract class BasePreProcessor implements PreProcessor {
             if (filter().length() > 0){
                 commandBuilder.append(" -f ").append("\"").append(filter())
                         .append(" and not ether src ").append(chosenDeviceMac).append("\"");
+            }else{
+                commandBuilder.append(" -f ").append("\"").append(" not ether src ")
+                .append(chosenDeviceMac).append("\"");
             }
         }
         if (extConfig()!=null && extConfig().length() > 0) {
@@ -110,7 +113,7 @@ public abstract class BasePreProcessor implements PreProcessor {
             commandBuilder.append(s).append(" ");
         }
         commandBuilder.append("\"");   // 最后的部分 + s7comm/...用于过滤
-        commandBuilder.append(" -M 10000");    //设置n条之后重置回话
+        commandBuilder.append(" -M ").append(TsharkCommon.sessionReset);    //设置n条之后重置回话
         String command = commandBuilder.toString();
         if (commandBuildFinishCallback!=null){
             commandBuildFinishCallback.commandBuildFinish();

@@ -5,6 +5,10 @@ import com.zjucsc.application.socketio.SocketServiceCenter;
 import com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
 import com.zjucsc.application.tshark.domain.bean.BadPacket;
+import com.zjucsc.attack.bean.AttackBean;
+import com.zjucsc.attack.common.AttackCallback;
+import com.zjucsc.attack.common.AttackCommon;
+import com.zjucsc.msg_socket.SocketCenter;
 import com.zjucsc.tshark.packets.UndefinedPacket;
 import com.zjucsc.application.util.AppCommonUtil;
 import com.zjucsc.application.util.CommonCacheUtil;
@@ -57,7 +61,15 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
         //分析结果
         //res可能为null
         if(res!=null){
+            //数据发送
             StatisticsData.addArtMapData(res);
+            AttackCommon.appendArtAnalyze(res, description -> {
+                SocketServiceCenter.updateAllClient(SocketIoEvent.ATTACK_INFO,
+                        AttackBean.builder().attackInfo(description)
+                        .attackType(AttackTypePro.HAZARD_ART)
+                        .fvDimensionLayer(layer)
+                        .build());
+            });
         }
         return null;
     }

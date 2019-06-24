@@ -13,7 +13,7 @@ public class AttackBean {
 
     private AttackBean(){}
     //
-    private AttackType attackType;
+    private String attackType;
     //异常的五元组
     private FvDimensionLayer layer;
     //攻击说明
@@ -37,11 +37,11 @@ public class AttackBean {
         this.attackInfo = attackInfo;
     }
 
-    public AttackType getAttackType() {
+    public String getAttackType() {
         return attackType;
     }
 
-    public void setAttackType(AttackType attackBean) {
+    public void setAttackType(String attackBean) {
         this.attackType = attackBean;
     }
 
@@ -65,7 +65,7 @@ public class AttackBean {
             attackBean = new AttackBean();
         }
 
-        public Builder attackType(AttackType attackType){
+        public Builder attackType(String attackType){
             attackBean.setAttackType(attackType);
             return this;
         }

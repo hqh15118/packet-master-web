@@ -449,8 +449,4 @@ public class OpcuaDecode extends BaseArtDecode<OpcuaConfig> {
         return "opcua";
     }
 
-    @Override
-    public List<AttackType> attackDecode(List<AttackType> list, byte[] bytes, Object... objects) {
-        return null;
-    }
 }

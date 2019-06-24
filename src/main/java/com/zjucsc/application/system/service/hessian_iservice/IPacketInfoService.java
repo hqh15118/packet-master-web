@@ -21,4 +21,6 @@ public interface IPacketInfoService {
     PacketForSelect exportPacketHistory(PacketInfoExport packetInfoExport);
 
     List<SavedPacket> selectPacketHistoryList(PacketHistoryList packetHistoryList);
+
+    PacketHistoryWrapper selectPacketHistoryList(int type);
 }

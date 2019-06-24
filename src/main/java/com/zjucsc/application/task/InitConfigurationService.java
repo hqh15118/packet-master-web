@@ -89,6 +89,14 @@ public class InitConfigurationService implements ApplicationRunner {
         if (virFilter!=null && virFilter.size() > 0){
             TsharkCommon.filter = virFilter.get(0);
         }
+        /***************************
+         * INIT -M <Tshark Session Reset>
+         ***************************/
+        List<String> virSessionReset = args.getOptionValues("session");
+        System.out.println("program args : " + virSessionReset + "\n*******************");
+        if (virSessionReset!=null && virSessionReset.size() > 0){
+            TsharkCommon.sessionReset = virSessionReset.get(0);
+        }
 
         /***************************
          * INIT PROTOCOL STR TO INT

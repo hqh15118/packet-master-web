@@ -50,11 +50,6 @@ public class ModbusDecode extends BaseArtDecode<ModBusConfig> {
         return "modbus";
     }
 
-    @Override
-    public List<AttackType> attackDecode(List<AttackType> globalAttackList, byte[] payload, Object... obj) {
-        return null;
-    }
-
     private void renewmap(byte[] payload){
         int i = (int)payload[7];
         if(i==1 || i==2)

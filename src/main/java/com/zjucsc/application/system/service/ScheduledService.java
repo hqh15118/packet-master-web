@@ -68,7 +68,11 @@ public class ScheduledService {
                 statisticFlow();
                 count = 0;
             }
-            sendAllFvDimensionPacket();
+            try {
+                sendAllFvDimensionPacket2();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
     /**
@@ -122,6 +126,19 @@ public class ScheduledService {
             doSendBatch(layers);
             //doSend(fvDimensionLayers.poll());
         }
+    }
+
+    private void sendAllFvDimensionPacket2() throws InterruptedException {
+        layers.clear();
+        for (int i = 0; i < 5; i++) {
+            FvDimensionLayer layer = fvDimensionLayers.poll(200, TimeUnit.MILLISECONDS);
+            if (layer!=null){
+                layers.add(layer);
+            }else{
+                break;
+            }
+        }
+        doSendBatch(layers);
     }
 
     private void doSendBatch(List<FvDimensionLayer> layers) {

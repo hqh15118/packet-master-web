@@ -1,13 +1,15 @@
 package com.zjucsc.art_decode.s7comm;
 
+
 import com.zjucsc.art_decode.artconfig.S7Config;
 import com.zjucsc.art_decode.base.BaseArtDecode;
-import com.zjucsc.art_decode.other.AttackType;
 import com.zjucsc.common_util.ByteUtil;
 import com.zjucsc.common_util.Bytecut;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class S7Decode extends BaseArtDecode<S7Config> {
 
@@ -188,7 +190,7 @@ public class S7Decode extends BaseArtDecode<S7Config> {
         }
     }
 
-    public  Map<String,Float> decode_tech(S7Config S7tech , Map<String,Float> tech_map , byte[] load , int tcp)
+    private Map<String,Float> decode_tech(S7Config S7tech, Map<String, Float> tech_map, byte[] load, int tcp)
     {
         byte[] S7load = getS7load.S7load(load,tcp);
         if(S7load !=null && S7load[0]==(byte)0x32 && S7load[1]==(byte)0x07) {
@@ -235,10 +237,7 @@ public class S7Decode extends BaseArtDecode<S7Config> {
         return "s7comm";
     }
 
-    @Override
-    public List<AttackType> attackDecode(List<AttackType> globalAttackList, byte[] payload, Object... obj) {
-        return null;
-    }
+
 }
 
 

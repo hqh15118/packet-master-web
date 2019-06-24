@@ -51,4 +51,9 @@ public class PacketInfoController {
     public BaseResponse selectPacketHistory2(@RequestBody PacketHistoryList packetHistoryList){
         return BaseResponse.OK(iPacketInfoService.selectPacketHistoryList(packetHistoryList));
     }
+
+    @PostMapping("packet_list3")
+    public BaseResponse selectPacketHistory(@RequestBody PacketHistoryF packetHistoryF){
+        return BaseResponse.OK(iPacketInfoService.selectPacketHistoryList(packetHistoryF.getTimeType()));
+    }
 }

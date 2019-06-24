@@ -33,4 +33,8 @@ public interface PacketInfoMapper  {
     AttackForSelect selectAttackBybadTypeAndLevel(AttackF attackF);
 
     List<SavedPacket> selectPacketHistoryList(PacketHistoryList packetHistoryList);
+
+    List<Integer> selectPacketHistoryIn7Days();
+
+    List<Integer> selectPacketHistoryIn24Hours();
 }

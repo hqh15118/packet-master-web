@@ -81,8 +81,4 @@ public class IEC104Decode extends BaseArtDecode<IEC104Config> {
         return "iec104";
     }
 
-    @Override
-    public List<AttackType> attackDecode(List<AttackType> globalAttackList, byte[] payload, Object... obj) {
-        return null;
-    }
 }

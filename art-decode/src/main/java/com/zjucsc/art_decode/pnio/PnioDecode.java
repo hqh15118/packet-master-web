@@ -40,11 +40,6 @@ public class PnioDecode extends BaseArtDecode<PnioConfig> {
         return "pni0";
     }
 
-    @Override
-    public List<AttackType> attackDecode(List<AttackType> list, byte[] bytes, Object... objects) {
-        return null;
-    }
-
     private static final int paddinglength = 24;//////////modify
 
     private void decodetech(PnioConfig pnioConfig, Map<String, Float> map, byte[] rawload)
