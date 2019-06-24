@@ -16,5 +16,7 @@ public class IEC104Packet {
     public static class LayersBean extends FvDimensionLayer {
         @JSONField(name = "104asdu_typeid")
         public String[] iec104_funcode;
+        @JSONField(name = "104apci_type")
+        public String[] iec104_type;
     }
 }

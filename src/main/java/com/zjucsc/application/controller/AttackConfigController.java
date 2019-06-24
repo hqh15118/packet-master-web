@@ -3,12 +3,9 @@ package com.zjucsc.application.controller;
 
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.auth.Log;
-import com.zjucsc.application.domain.bean.AttackF;
-import com.zjucsc.application.domain.bean.CositeDosConfigBean;
-import com.zjucsc.application.domain.bean.DosConfig;
+import com.zjucsc.application.domain.bean.*;
 import com.zjucsc.application.system.service.hessian_mapper.PacketInfoMapper;
 import com.zjucsc.attack.bean.AttackConfig;
-import com.zjucsc.application.domain.bean.BaseResponse;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +17,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/attack")
-public class AttackInfoController {
+public class AttackConfigController {
 
     @Autowired private PacketInfoMapper packetInfoMapper;
     /**
@@ -64,5 +61,11 @@ public class AttackInfoController {
     @Log
     public BaseResponse getAttack(@RequestBody AttackF attackF){
         return BaseResponse.OK(packetInfoMapper.selectAttackBybadTypeAndLevel(attackF));
+    }
+
+    @ApiOperation("工艺参数攻击监测配置")
+    @PostMapping("art_attack_config")
+    public BaseResponse configArtAttack(@RequestBody ArtAttackConfig artAttackConfig){
+        return BaseResponse.OK();
     }
 }

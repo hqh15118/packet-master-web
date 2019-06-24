@@ -146,7 +146,8 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                 return PacketDecodeUtil.decodeFuncode(MODBUS, funCodeStr);
             }
         }else if (t instanceof IEC104Packet.LayersBean){
-            if (((IEC104Packet.LayersBean) t).iec104_funcode!=null) {
+            IEC104Packet.LayersBean iec104_packet = ((IEC104Packet.LayersBean) t);
+            if (iec104_packet.iec104_funcode!=null) {
                 funCodeStr = ((IEC104Packet.LayersBean) t).iec104_funcode[0];
                 return PacketDecodeUtil.decodeFuncode(IEC104, funCodeStr);
             }

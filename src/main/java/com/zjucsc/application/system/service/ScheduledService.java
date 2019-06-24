@@ -19,11 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
@@ -109,13 +107,27 @@ public class ScheduledService {
         iDeviceService.saveStatisticInfo(Common.STATISTICS_INFO_BEAN);
     }
 
+    private List<FvDimensionLayer> layers = new ArrayList<>();
 
     //@Scheduled(fixedRate = 1000)
-    private void sendAllFvDimensionPacket(){
-        for (int i = 0; i < 5; i++) {
-            doSend(fvDimensionLayers.poll());
+    private void sendAllFvDimensionPacket() throws InterruptedException {
+        layers.clear();
+        for (int i = 0; i < 2000; i++) {
+            FvDimensionLayer layer = fvDimensionLayers.poll(200, TimeUnit.MILLISECONDS);
+            if (layer!=null){
+                layers.add(layer);
+            }else{
+                break;
+            }
+            doSendBatch(layers);
+            //doSend(fvDimensionLayers.poll());
         }
     }
+
+    private void doSendBatch(List<FvDimensionLayer> layers) {
+        SocketServiceCenter.updateAllClient(SocketIoEvent.ALL_PACKET,layers);
+    }
+
     /**
      * 工艺参数信息
      */

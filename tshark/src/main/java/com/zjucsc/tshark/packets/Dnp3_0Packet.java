@@ -14,9 +14,7 @@ public class Dnp3_0Packet {
     public LayersBean layers;
 
     public static class LayersBean extends FvDimensionLayer {
-        public String[] dnp3_ctl_dir;
-        public String[] dnp3_ctl_prm;
-        public String[] dnp3_ctl_dfc;
-        public String[] dnp3_ctl_secfunc;
+        @JSONField(name = "dnp3_ctl_prifunc")
+        public String[] dnp3_ctl_prifunc;
     }
 }

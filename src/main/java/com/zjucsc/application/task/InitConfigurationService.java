@@ -1,10 +1,7 @@
 package com.zjucsc.application.task;
 
 import com.zjucsc.IProtocolFuncodeMap;
-import com.zjucsc.application.config.Common;
-import com.zjucsc.application.config.ConstantConfig;
-import com.zjucsc.application.config.PACKET_PROTOCOL;
-import com.zjucsc.application.config.ProtocolIgnore;
+import com.zjucsc.application.config.*;
 import com.zjucsc.application.config.auth.Auth;
 import com.zjucsc.application.domain.bean.BaseResponse;
 import com.zjucsc.application.domain.bean.ConfigurationSetting;
@@ -222,6 +219,13 @@ public class InitConfigurationService implements ApplicationRunner {
         AppCommonUtil.initArtMap(iec104Config.getTag());
         CommonCacheUtil.addShowGraphArg(iec104Config.getProtocolId(),iec104Config.getTag());
         ArtDecodeCommon.addArtDecodeConfig(iec104Config);
+
+        /***************************
+         * INIT PROTOCOL COMMON
+         * 1. IEC104
+         * 2.
+         **************************/
+        ProtocolCommon.init();
 
         /**************************
          *  PRINT INIT RESULT

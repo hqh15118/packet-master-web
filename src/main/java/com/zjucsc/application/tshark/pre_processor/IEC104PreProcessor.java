@@ -36,6 +36,7 @@ public class IEC104PreProcessor extends SinglePreProcessor<IEC104Packet> {
         return new ArrayList<String>(){
             {
                 add("104asdu.typeid");
+                add("104apci.type");
             }
         };
     }
