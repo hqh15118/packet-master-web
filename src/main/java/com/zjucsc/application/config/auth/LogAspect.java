@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.zjucsc.application.config.ConstantConfig;
 import com.zjucsc.application.config.KafkaConfig;
 import com.zjucsc.application.domain.bean.LogBean;
-import com.zjucsc.base.util.HttpContextUtil;
 import com.zjucsc.kafka.KafkaThread;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -15,10 +14,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
-import java.util.stream.Collectors;
 
 /**
  * AOP 记录用户操作日志

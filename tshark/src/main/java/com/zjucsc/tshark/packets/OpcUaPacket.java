@@ -2,6 +2,8 @@ package com.zjucsc.tshark.packets;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
+import java.util.Arrays;
+
 
 public class OpcUaPacket {
     /**
@@ -60,6 +62,10 @@ public class OpcUaPacket {
         public String[] opcua_int16;
         @JSONField(name = "opcua_Int32")
         public String[] opcua_int32;
+        @JSONField(name = "opcua_Int64")
+        public String[] opcua_int64;
+        @JSONField(name = "opcua_uInt16")
+        public String[] opcua_uint16;
         @JSONField(name = "opcua_UInt32")
         public String[] opcua_uint32;
         @JSONField(name = "opcua_Int64")
@@ -68,5 +74,44 @@ public class OpcUaPacket {
         public String[] opcua_float;
         @JSONField(name = "opcua_Double")
         public String[] opcua_double;
+        @JSONField(name = "opcua_datavalue_mask")
+        public String[] opcua_datavalue_mask;
+        @JSONField(name = "opcua_StatusCode")
+        public String[] opcua_StatusCode;
+
+        @Override
+        public String toString() {
+            return "LayersBean{" +
+                    "opcua_transport_type=" + Arrays.toString(opcua_transport_type) +
+                    ", opcua_servicenodeid_numeric=" + Arrays.toString(opcua_servicenodeid_numeric) +
+                    ", opcua_request_handle=" + Arrays.toString(opcua_request_handle) +
+                    ", opcua_nodeid_string=" + Arrays.toString(opcua_nodeid_string) +
+                    ", opcua_monitoreditemid=" + Arrays.toString(opcua_monitoreditemid) +
+                    ", opcua_monitoreditemids=" + Arrays.toString(opcua_monitoreditemids) +
+                    ", opcua_clienthandle=" + Arrays.toString(opcua_clienthandle) +
+                    ", opcua_variant_has_value=" + Arrays.toString(opcua_variant_has_value) +
+                    ", opcua_boolean=" + Arrays.toString(opcua_boolean) +
+                    ", opcua_sbyte=" + Arrays.toString(opcua_sbyte) +
+                    ", opcua_byte=" + Arrays.toString(opcua_byte) +
+                    ", opcua_int16=" + Arrays.toString(opcua_int16) +
+                    ", opcua_int32=" + Arrays.toString(opcua_int32) +
+                    ", opcua_int64=" + Arrays.toString(opcua_int64) +
+                    ", opcua_uint16=" + Arrays.toString(opcua_uint16) +
+                    ", opcua_uint32=" + Arrays.toString(opcua_uint32) +
+                    ", opcua_uint64=" + Arrays.toString(opcua_uint64) +
+                    ", opcua_float=" + Arrays.toString(opcua_float) +
+                    ", opcua_double=" + Arrays.toString(opcua_double) +
+                    ", opcua_datavalue_mask=" + Arrays.toString(opcua_datavalue_mask) +
+                    ", opcua_StatusCode=" + Arrays.toString(opcua_StatusCode) +
+                    ", frame_protocols=" + Arrays.toString(frame_protocols) +
+                    ", eth_dst=" + Arrays.toString(eth_dst) +
+                    ", frame_cap_len=" + Arrays.toString(frame_cap_len) +
+                    ", eth_src=" + Arrays.toString(eth_src) +
+                    ", ip_src=" + Arrays.toString(ip_src) +
+                    ", ip_dst=" + Arrays.toString(ip_dst) +
+                    ", src_port=" + Arrays.toString(src_port) +
+                    ", dst_port=" + Arrays.toString(dst_port) +
+                    '}';
+        }
     }
 }

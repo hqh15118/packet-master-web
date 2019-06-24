@@ -52,6 +52,8 @@ public class OpcuaPreProcessor extends SinglePreProcessor<OpcUaPacket> {
                 add("opcua.UInt64");
                 add("opcua.Float");
                 add("opcua.Double");
+                add("opcua.datavalue.mask");
+                add("opcua.StatusCode");
             }
         };
     }

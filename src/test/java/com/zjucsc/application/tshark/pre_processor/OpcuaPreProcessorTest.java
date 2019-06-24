@@ -5,6 +5,7 @@ import com.zjucsc.tshark.TsharkCommon;
 import com.zjucsc.tshark.handler.AbstractAsyncHandler;
 import com.zjucsc.tshark.handler.DefaultPipeLine;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
+import com.zjucsc.tshark.packets.OpcUaPacket;
 import com.zjucsc.tshark.pre_processor.BasePreProcessor;
 import org.junit.Test;
 
@@ -36,7 +37,7 @@ public class OpcuaPreProcessorTest {
                     FvDimensionLayer fvDimensionLayer = ((FvDimensionLayer) o);
                     byte[] rawData = PacketDecodeUtil.hexStringToByteArray2(fvDimensionLayer.custom_ext_raw_data[0]);
                     byte[] tcppayload = PacketDecodeUtil.hexStringToByteArray(fvDimensionLayer.tcp_payload[0]);
-                    System.out.println(fvDimensionLayer);
+                    System.out.println((OpcUaPacket.LayersBean)fvDimensionLayer);
                     return fvDimensionLayer;
                 }
             };
