@@ -1,19 +1,18 @@
 package com.zjucsc.application.controller;
 
-import com.corundumstudio.socketio.SocketIOClient;
 import com.zjucsc.application.config.ConstantConfig;
 import com.zjucsc.application.config.auth.Log;
 import com.zjucsc.application.domain.bean.ServiceStatus;
-import com.zjucsc.application.socketio.SocketServiceCenter;
+import com.zjucsc.socket_io.SocketServiceCenter;
 import com.zjucsc.application.system.service.common_iservice.CapturePacketService;
 import com.zjucsc.application.system.service.common_impl.NetworkInterfaceServiceImpl;
 import com.zjucsc.application.tshark.capture.ProcessCallback;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.domain.bean.BaseResponse;
 import com.zjucsc.application.config.Common;
-import com.zjucsc.application.socketio.MainServer;
 import com.zjucsc.application.domain.bean.CaptureService;
 import com.zjucsc.application.domain.exceptions.OpenCaptureServiceException;
+import com.zjucsc.socket_io.MainServer;
 import com.zjucsc.tshark.pre_processor.BasePreProcessor;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -116,7 +115,7 @@ public class PacketController {
     @ApiOperation("关闭websocket服务")
     @GetMapping(value = "/close_socketio")
     public BaseResponse closeWebSocket(){
-        return MainServer.close();
+        return MainServer.close() ? BaseResponse.OK():BaseResponse.ERROR(500,"服务未打开");
     }
 
     @ApiOperation("获取抓包主机所有网卡接口信息")

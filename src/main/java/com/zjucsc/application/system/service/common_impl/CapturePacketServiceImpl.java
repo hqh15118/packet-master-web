@@ -1,11 +1,11 @@
 package com.zjucsc.application.system.service.common_impl;
 
 import com.zjucsc.application.config.Common;
-import com.zjucsc.application.config.SocketIoEvent;
+import com.zjucsc.socket_io.SocketIoEvent;
 import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.domain.bean.CollectorState;
 import com.zjucsc.application.domain.exceptions.ProtocolIdNotValidException;
-import com.zjucsc.application.socketio.SocketServiceCenter;
+import com.zjucsc.socket_io.SocketServiceCenter;
 import com.zjucsc.application.system.service.PacketAnalyzeService;
 import com.zjucsc.application.system.service.common_iservice.CapturePacketService;
 import com.zjucsc.application.tshark.capture.NewFvDimensionCallback;

@@ -11,4 +11,5 @@ public class ArtAttackConfig {
     private List<String> rule;
     private String detail;
     private boolean enable;
+
 }

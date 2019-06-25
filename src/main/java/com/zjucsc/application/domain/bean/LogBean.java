@@ -1,5 +1,6 @@
 package com.zjucsc.application.domain.bean;
 
+
 import lombok.Builder;
 import lombok.Data;
 

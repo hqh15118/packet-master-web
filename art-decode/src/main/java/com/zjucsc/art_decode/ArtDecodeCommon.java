@@ -3,6 +3,7 @@ package com.zjucsc.art_decode;
 import com.zjucsc.art_decode.base.BaseConfig;
 import com.zjucsc.art_decode.iec104.IEC104Decode;
 import com.zjucsc.art_decode.modbus.ModbusDecode;
+import com.zjucsc.art_decode.opcua.OpcuaDecode;
 import com.zjucsc.art_decode.pnio.PnioDecode;
 import com.zjucsc.art_decode.s7comm.S7Decode;
 import com.zjucsc.art_decode.base.BaseArtDecode;
@@ -24,6 +25,7 @@ public class ArtDecodeCommon {
         ART_DECODE_CONCURRENT_HASH_MAP.put("s7comm",new S7Decode());
         ART_DECODE_CONCURRENT_HASH_MAP.put("pn_io",new PnioDecode());
         ART_DECODE_CONCURRENT_HASH_MAP.put("iec104",new IEC104Decode());
+        ART_DECODE_CONCURRENT_HASH_MAP.put("opcua",new OpcuaDecode());
     }
 
     public static Map<String,Float> artDecodeEntry(Map<String,Float> artMap,byte[] payload,

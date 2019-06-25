@@ -79,6 +79,9 @@ public class DOSAttackAnalyzeListTest {
         return fvDimensionLayers;
     }
 
+    @Test
+    public void realTimeDosAnalyzeTest(){
 
+    }
 
 }

@@ -8,6 +8,8 @@ import redis.clients.jedis.Jedis;
 import java.time.temporal.TemporalUnit;
 import java.util.PriorityQueue;
 
+import static com.zjucsc.attack.common.AttackCommon.doAnalyzeFvDimension;
+
 /**
  * #project packet-master-web
  *
@@ -18,14 +20,12 @@ public class AnalyzeTask implements Runnable {
 
     private FvDimensionLayer layer;
 
-    public AnalyzeTask(FvDimensionLayer layer) {
+    AnalyzeTask(FvDimensionLayer layer) {
         this.layer = layer;
     }
 
     @Override
     public void run() {
-        String srcIp = layer.ip_src[0];
-        //D_DOS1
-
+        doAnalyzeFvDimension(layer);
     }
 }

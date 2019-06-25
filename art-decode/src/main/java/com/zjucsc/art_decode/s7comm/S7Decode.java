@@ -210,14 +210,14 @@ public class S7Decode extends BaseArtDecode<S7Config> {
                 } else if (S7tech.getType().equals("int")) {
                     tech_map.put(S7tech.getTag(), (float) ByteUtil.bytesToInt(bytes, 0));
                 }
-            } else if (S7tech.getType().equals("short") && S7tech.getLength() == 2) {
+            } else if (datamap!=null && S7tech.getType().equals("short") && S7tech.getLength() == 2) {
                 byte[] bytes = new byte[2];
                 for (int s = 0; s < 2; s++) {
                     bytes[s] = datamap.get(S7tech.getByteoffset() + s);
                 }
                 tech_map.put(S7tech.getTag(), (float) ByteUtil.bytesToShort(bytes, 0));
             } else if (S7tech.getType().equals("bool")) {
-                if (((int) datamap.get(S7tech.getByteoffset()) & 1 << S7tech.getBitoffset()) == 0) {
+                if (datamap!=null && (((int) datamap.get(S7tech.getByteoffset())) & (1 << S7tech.getBitoffset())) == 0) {
                     tech_map.put(S7tech.getTag(), 0f);
                 } else {
                     tech_map.put(S7tech.getTag(), 1f);

@@ -12,7 +12,7 @@ import java.util.*;
 
 public class ModbusDecode extends BaseArtDecode<ModBusConfig> {
 
-    public  static Map<Integer,byte[]> payload_map =new HashMap<>();
+    private static Map<Integer,byte[]> payload_map =new HashMap<>();
 
     static
     {

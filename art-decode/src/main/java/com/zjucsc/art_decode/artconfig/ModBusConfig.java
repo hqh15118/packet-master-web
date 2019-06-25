@@ -19,54 +19,28 @@ public class ModBusConfig extends BaseConfig {
     private int reg_coil;
     private float[] range;
 
-    public String getType()
-    {
+    public String getType() {
         return type;
     }
 
-    public int getLength()
-    {
-        return length;
-    }
-
-    public int getAddr_head()
-    {
-        return addr_head;
-    }
-
-    public int getReg_coil()
-    {
-        return reg_coil;
-    }
-
-    public float[] getRange()
-    {
-        return range;
-    }
-
-    public void setType( String type)
-    {
+    public void setType(String type) {
         this.type = type;
     }
 
-    public void setLength(int length )
-    {
+    public int getLength() {
+        return length;
+    }
+
+    public void setLength(int length) {
         this.length = length;
     }
 
-    public void setAddr_head(int addr_head )
-    {
-        this.addr_head =addr_head ;
+    public int getAddr_head() {
+        return addr_head;
     }
 
-    public void setReg_coil(int reg_coil )
-    {
-        this.reg_coil =reg_coil ;
-    }
-
-    public void setRange(float[] range)
-    {
-        this.range =range ;
+    public void setAddr_head(int addr_head) {
+        this.addr_head = addr_head;
     }
 
     public int getBitoffset() {
@@ -75,5 +49,21 @@ public class ModBusConfig extends BaseConfig {
 
     public void setBitoffset(int bitoffset) {
         this.bitoffset = bitoffset;
+    }
+
+    public int getReg_coil() {
+        return reg_coil;
+    }
+
+    public void setReg_coil(int reg_coil) {
+        this.reg_coil = reg_coil;
+    }
+
+    public float[] getRange() {
+        return range;
+    }
+
+    public void setRange(float[] range) {
+        this.range = range;
     }
 }

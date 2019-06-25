@@ -2,7 +2,6 @@ package com.zjucsc.application.domain.bean;
 
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 
 
 @Data

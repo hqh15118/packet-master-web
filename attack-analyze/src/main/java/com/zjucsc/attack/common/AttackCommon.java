@@ -1,10 +1,16 @@
 package com.zjucsc.attack.common;
 
+import com.zjucsc.attack.analyze.analyzer.CositeDOSAttackAnalyzer;
+import com.zjucsc.attack.analyze.analyzer.MultisiteDOSAttackAnalyzer;
+import com.zjucsc.attack.analyze.analyzer_util.CositeDOSAttackAnalyzeList;
+import com.zjucsc.attack.analyze.analyzer_util.MultisiteDOSAttackAnalyzeList;
 import com.zjucsc.attack.bean.ArtAttackAnalyzeConfig;
 import com.zjucsc.attack.bean.AttackBean;
 import com.zjucsc.attack.bean.RedisConfigNotFoundException;
+import com.zjucsc.attack.util.BaseAttackAnalyzer;
 import com.zjucsc.attack.util.IObservable;
 import com.zjucsc.attack.util.Observer;
+import com.zjucsc.tshark.Entry;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import redis.clients.jedis.Jedis;
@@ -29,7 +35,12 @@ public class AttackCommon {
     private static Observer observer = new Observer();
     private final static Set<ArtAttackAnalyzeConfig> ART_ATTACK_ANALYZE_CONFIGS
             = new ConcurrentSkipListSet<>();
-
+    private final static List<Entry> ATTACK_ENTRY = new ArrayList<Entry>(){
+        {
+            add(new CositeDOSAttackAnalyzeList());
+            add(new MultisiteDOSAttackAnalyzeList());
+        }
+    };
     private static ExecutorService ATTACK_MAIN_SERVICE = Executors.newFixedThreadPool(
             5,
             r -> {
@@ -94,6 +105,12 @@ public class AttackCommon {
      */
     public static void appendFvDimension(final FvDimensionLayer layer){
         ATTACK_MAIN_SERVICE.execute(new AnalyzeTask(layer));
+    }
+
+    static void doAnalyzeFvDimension(FvDimensionLayer layer){
+        for (Entry entry : ATTACK_ENTRY) {
+            entry.append(layer);
+        }
     }
 
     public static void addArtAttackAnalyzeConfig(ArtAttackAnalyzeConfig artAttackAnalyzeConfig){
