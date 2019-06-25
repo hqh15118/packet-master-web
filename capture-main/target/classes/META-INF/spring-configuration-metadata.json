@@ -1,0 +1,130 @@
+{
+  "groups": [
+    {
+      "name": "hessian-config",
+      "type": "com.zjucsc.application.system.service.hession_config.HessianConfig",
+      "sourceType": "com.zjucsc.application.system.service.hession_config.HessianConfig"
+    },
+    {
+      "name": "management.endpoint.sysconfig",
+      "type": "com.zjucsc.application.config.WatchConfig",
+      "sourceType": "com.zjucsc.application.config.WatchConfig"
+    },
+    {
+      "name": "myconfig",
+      "type": "com.zjucsc.application.config.ConstantConfig",
+      "sourceType": "com.zjucsc.application.config.ConstantConfig"
+    }
+  ],
+  "properties": [
+    {
+      "name": "hessian-config.art-config",
+      "type": "java.lang.String",
+      "sourceType": "com.zjucsc.application.system.service.hession_config.HessianConfig"
+    },
+    {
+      "name": "hessian-config.art-filter",
+      "type": "java.lang.String",
+      "sourceType": "com.zjucsc.application.system.service.hession_config.HessianConfig"
+    },
+    {
+      "name": "hessian-config.art-history-data",
+      "type": "java.lang.String",
+      "sourceType": "com.zjucsc.application.system.service.hession_config.HessianConfig"
+    },
+    {
+      "name": "hessian-config.attack-info",
+      "type": "java.lang.String",
+      "sourceType": "com.zjucsc.application.system.service.hession_config.HessianConfig"
+    },
+    {
+      "name": "hessian-config.configuration-setting",
+      "type": "java.lang.String",
+      "sourceType": "com.zjucsc.application.system.service.hession_config.HessianConfig"
+    },
+    {
+      "name": "hessian-config.device",
+      "type": "java.lang.String",
+      "sourceType": "com.zjucsc.application.system.service.hession_config.HessianConfig"
+    },
+    {
+      "name": "hessian-config.fv-dimension-filter",
+      "type": "java.lang.String",
+      "sourceType": "com.zjucsc.application.system.service.hession_config.HessianConfig"
+    },
+    {
+      "name": "hessian-config.gplot",
+      "type": "java.lang.String",
+      "sourceType": "com.zjucsc.application.system.service.hession_config.HessianConfig"
+    },
+    {
+      "name": "hessian-config.opt-filter",
+      "type": "java.lang.String",
+      "sourceType": "com.zjucsc.application.system.service.hession_config.HessianConfig"
+    },
+    {
+      "name": "hessian-config.packet-history",
+      "type": "java.lang.String",
+      "sourceType": "com.zjucsc.application.system.service.hession_config.HessianConfig"
+    },
+    {
+      "name": "hessian-config.protocol-id",
+      "type": "java.lang.String",
+      "sourceType": "com.zjucsc.application.system.service.hession_config.HessianConfig"
+    },
+    {
+      "name": "hessian-config.user-opt",
+      "type": "java.lang.String",
+      "sourceType": "com.zjucsc.application.system.service.hession_config.HessianConfig"
+    },
+    {
+      "name": "management.endpoint.sysconfig.cache.time-to-live",
+      "type": "java.time.Duration",
+      "description": "Maximum time that a response can be cached.",
+      "sourceType": "com.zjucsc.application.config.WatchConfig",
+      "defaultValue": "0ms"
+    },
+    {
+      "name": "management.endpoint.sysconfig.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable the sysconfig endpoint.",
+      "sourceType": "com.zjucsc.application.config.WatchConfig",
+      "defaultValue": true
+    },
+    {
+      "name": "myconfig.global-address",
+      "type": "java.lang.String",
+      "sourceType": "com.zjucsc.application.config.ConstantConfig"
+    },
+    {
+      "name": "myconfig.open-a-o-p-log",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.zjucsc.application.config.ConstantConfig",
+      "defaultValue": false
+    },
+    {
+      "name": "myconfig.open-mapper-aop",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.zjucsc.application.config.ConstantConfig",
+      "defaultValue": false
+    },
+    {
+      "name": "myconfig.send-aop-log",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.zjucsc.application.config.ConstantConfig",
+      "defaultValue": false
+    },
+    {
+      "name": "myconfig.show-error-only",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.zjucsc.application.config.ConstantConfig",
+      "defaultValue": false
+    },
+    {
+      "name": "myconfig.system-properties-name",
+      "type": "java.lang.String",
+      "sourceType": "com.zjucsc.application.config.ConstantConfig"
+    }
+  ],
+  "hints": []
+}

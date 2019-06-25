@@ -15,7 +15,7 @@ public class AttackConfig {
                             CODE_TAMPER = 54,       //代码篡改
                             CONFIG_TAMPER = 4;      //配置篡改
 
-    public static boolean debug = false;
+    public static boolean debug = true;
 
     /***************************************************
      *
@@ -28,7 +28,7 @@ public class AttackConfig {
      * 连续收到【2】个以上（可动态设置）来自一个IP地址（站点）的TCP连接
      * 建立请求报文，即同址TCP-DOS攻击。
      ****************************************************/
-    private static volatile int CO_SITE_TIME_GAP = 60 * 1000;   //60s
+    private static volatile int CO_SITE_TIME_GAP = 1 * 1000;   //60s
     private static volatile int CO_SITE_NUM = 2;
 
     /****************************************************
@@ -36,7 +36,7 @@ public class AttackConfig {
      * 连续收到2个（可动态设置）以上来自不同IP地址（站点）发出的TCP
      * 连接建立请求报文，即多址TCP-DOS攻击。
      ****************************************************/
-    private static volatile int MULTI_SITE_TIME_GAP = 1000;     //1s
+    private static volatile int MULTI_SITE_TIME_GAP = 3 * 1000;     //1s
     private static volatile int MULTI_SITE_NUM = 2;
 
     /****************************************************

@@ -5,10 +5,13 @@ import java.util.List;
 public class ArtAttackAnalyzeConfig implements Comparable<ArtAttackAnalyzeConfig>{
     private List<String> expression;
     private String description;
+    private boolean enable;
 
-    public ArtAttackAnalyzeConfig(List<String> expression, String description) {
+    public ArtAttackAnalyzeConfig(List<String> expression, String description,
+                                  boolean enable) {
         this.expression = expression;
         this.description = description;
+        this.enable = enable;
     }
 
     public List<String> getExpression() {
@@ -25,6 +28,14 @@ public class ArtAttackAnalyzeConfig implements Comparable<ArtAttackAnalyzeConfig
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean isEnable() {
+        return enable;
+    }
+
+    public void setEnable(boolean enable) {
+        this.enable = enable;
     }
 
     @Override

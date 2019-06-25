@@ -1,6 +1,7 @@
 package com.zjucsc.kafka;
 
-import com.zjucsc.common_util.CommonUtil;
+
+import com.zjucsc.common.common_util.CommonUtil;
 
 import java.util.HashSet;
 

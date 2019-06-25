@@ -1,5 +1,7 @@
 package com.zjucsc.tshark;
 
+import com.zjucsc.tshark.bean.CollectorState;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,10 +10,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
 
 public class TsharkCommon {
+
+    public final static ConcurrentHashMap<Integer, CollectorState> COLLECTOR_STATE_MAP = new ConcurrentHashMap<>();
 
     public static String OS_NAME = System.getProperty("os.name");
 

@@ -65,23 +65,19 @@ public class CositeDOSAttackAnalyzeList extends TcpAttackAnalyzeList {
                 fvDimensionLayers.removeLast();
             }
             //debug log
-            if (AttackConfig.debug){
-                for (FvDimensionLayer fvDimensionLayer : fvDimensionLayers) {
-                    System.out.println(fvDimensionLayer.timeStampInLong);
-                }
-            }
+//            if (AttackConfig.debug){
+//                for (FvDimensionLayer fvDimensionLayer : fvDimensionLayers) {
+//                    System.out.println(fvDimensionLayer.timeStampInLong);
+//                }
+//            }
             if ((fvDimensionLayers.size() - i) >= AttackConfig.getCoSiteNum()){
                 //debug log
                 if (AttackConfig.debug){
-                    System.out.println("true");
+                    System.out.println("-------------");
+                    System.out.println("co site attack");
                     System.out.println("-------------");
                 }
                 return true;
-            }
-            //debug log
-            if (AttackConfig.debug){
-                System.out.println("false");
-                System.out.println("-------------");
             }
         }
         return false;

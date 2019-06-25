@@ -37,6 +37,11 @@ public class MultisiteDOSAttackAnalyzeList extends TcpAttackAnalyzeList {
                 hashSet.add(new MultisiteFvDimensionAttackWrapper(fvDimensionLayer));
             }
             if ((hashSet.size() - i) >= AttackConfig.getMultiSiteNum()){
+                if (AttackConfig.debug) {
+                    System.out.println("-------------");
+                    System.out.println("multi attack");
+                    System.out.println("-------------");
+                }
                 return true;
             }
         }

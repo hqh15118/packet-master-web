@@ -124,8 +124,10 @@ public class AttackCommon {
 
     public static void appendArtAnalyze( Map<String,Float> techmap , AttackCallback attackCallback){
         for (ArtAttackAnalyzeConfig artAttackAnalyzeConfig : ART_ATTACK_ANALYZE_CONFIGS) {
-            doAppendArtAnalyze(artAttackAnalyzeConfig.getExpression(),techmap,artAttackAnalyzeConfig.getDescription(),
-                    attackCallback);
+            if (artAttackAnalyzeConfig.isEnable()) {
+                doAppendArtAnalyze(artAttackAnalyzeConfig.getExpression(), techmap, artAttackAnalyzeConfig.getDescription(),
+                        attackCallback);
+            }
         }
     }
 

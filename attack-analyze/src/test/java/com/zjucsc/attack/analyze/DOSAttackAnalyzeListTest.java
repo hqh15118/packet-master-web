@@ -3,7 +3,10 @@ package com.zjucsc.attack.analyze;
 import com.zjucsc.attack.analyze.analyzer_util.CositeDOSAttackAnalyzeList;
 import com.zjucsc.attack.analyze.analyzer_util.MultisiteDOSAttackAnalyzeList;
 import com.zjucsc.attack.bean.AttackConfig;
+import com.zjucsc.tshark.TsharkCommon;
+import com.zjucsc.tshark.handler.DefaultPipeLine;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
+import com.zjucsc.tshark.pre_processor.BasePreProcessor;
 import org.junit.Test;
 
 import java.util.LinkedList;
@@ -77,11 +80,6 @@ public class DOSAttackAnalyzeListTest {
             fvDimensionLayers.add(layer);
         }
         return fvDimensionLayers;
-    }
-
-    @Test
-    public void realTimeDosAnalyzeTest(){
-
     }
 
 }

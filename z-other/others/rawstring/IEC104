@@ -1,8 +1,0 @@
-JSON :
-
-
-
-
-
-
-{"timestamp" : "1557972999602", "layers" : {"frame_protocols": ["eth:ethertype:ip:tcp:104apci"],"eth_dst": ["00:1d:51:fc:75:52"],"eth_src": ["14:18:77:57:15:55"],"frame_cap_len": ["84"],"ip_dst": ["10.30.11.120"],"ip_src": ["10.30.11.1"],"tcp_srcport": ["52180"],"tcp_dstport": ["2404"],"eth_trailer": ["00:03:0d:0d:fc:6b:05:21:3a:ed:0b:40:fc:6b:05:21:3a:ed:0b:b0"],"eth_fcs": ["0x0000005d"],"104asdu_start": ["0x00000068"],"104apci_apdulen": ["4"],"104apci_type": ["0x00000003"],"104apci_utype": ["0x00000020"]}}

@@ -3,9 +3,8 @@ package com.zjucsc.art_decode.modbus;
 
 import com.zjucsc.art_decode.artconfig.ModBusConfig;
 import com.zjucsc.art_decode.base.BaseArtDecode;
-import com.zjucsc.art_decode.other.AttackType;
-import com.zjucsc.common_util.ByteUtil;
-import com.zjucsc.common_util.Bytecut;
+import com.zjucsc.common.common_util.ByteUtil;
+import com.zjucsc.common.common_util.Bytecut;
 
 
 import java.util.*;
