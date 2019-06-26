@@ -19,7 +19,6 @@ import static com.zjucsc.common.common_config.PACKET_PROTOCOL.*;
  * @author hongqianhui
  * #create_time 2019-04-29 - 21:19
  */
-@Slf4j
 public class PacketDecodeUtil {
 
     /*

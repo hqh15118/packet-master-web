@@ -4,10 +4,7 @@ package com.zjucsc.application.controller;
 import com.zjucsc.application.domain.bean.*;
 import com.zjucsc.application.system.service.hessian_iservice.IPacketInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/log/")
@@ -54,5 +51,10 @@ public class PacketInfoController {
     @PostMapping("packet_list3")
     public BaseResponse selectPacketHistory(@RequestBody PacketHistoryF packetHistoryF){
         return BaseResponse.OK(iPacketInfoService.selectPacketHistoryList(packetHistoryF.getTimeType()));
+    }
+
+    @GetMapping("packet_raw_data")
+    public BaseResponse selectPacketByTimeStamp(@RequestParam String timeStamp){
+        return BaseResponse.OK(iPacketInfoService.selectPacketRawDataByTimeStamp(timeStamp));
     }
 }

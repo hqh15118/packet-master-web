@@ -24,6 +24,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.function.Consumer;
 
 /**
  * #project packet-master-web
@@ -31,6 +32,7 @@ import java.util.concurrent.ThreadFactory;
  * @author hongqianhui
  * #create_time 2019-05-30 - 20:00
  */
+
 public class AttackCommon {
     private static Observer observer = new Observer();
     private final static Set<ArtAttackAnalyzeConfig> ART_ATTACK_ANALYZE_CONFIGS
@@ -120,6 +122,15 @@ public class AttackCommon {
 
     public static void removeArtAttackAnalyzeConfig(ArtAttackAnalyzeConfig artAttackAnalyzeConfig){
         ART_ATTACK_ANALYZE_CONFIGS.remove(artAttackAnalyzeConfig);
+    }
+
+    public static void changeArtAttackAnalyzeConfigState(int id,boolean enable){
+        ART_ATTACK_ANALYZE_CONFIGS.forEach(artAttackAnalyzeConfig -> {
+            if (artAttackAnalyzeConfig.getId() == id){
+                artAttackAnalyzeConfig.setEnable(enable);
+                System.out.println(String.format("成功修改工艺参数ID:[%s]状态state:[%s]",String.valueOf(id),String.valueOf(enable)));
+            }
+        });
     }
 
     public static void appendArtAnalyze( Map<String,Float> techmap , AttackCallback attackCallback){

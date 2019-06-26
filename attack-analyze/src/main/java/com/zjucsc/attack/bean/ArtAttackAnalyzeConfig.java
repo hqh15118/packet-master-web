@@ -7,11 +7,18 @@ public class ArtAttackAnalyzeConfig implements Comparable<ArtAttackAnalyzeConfig
     private String description;
     private boolean enable;
 
+    private int id;
+
     public ArtAttackAnalyzeConfig(List<String> expression, String description,
-                                  boolean enable) {
+                                  boolean enable,int id) {
         this.expression = expression;
         this.description = description;
         this.enable = enable;
+        this.id = id;
+    }
+
+    public ArtAttackAnalyzeConfig(int id){
+        this.id = id;
     }
 
     public List<String> getExpression() {
@@ -38,8 +45,21 @@ public class ArtAttackAnalyzeConfig implements Comparable<ArtAttackAnalyzeConfig
         this.enable = enable;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     @Override
     public int compareTo(ArtAttackAnalyzeConfig o) {
-        return o.getDescription().hashCode() > this.getDescription().hashCode() ? 1:-1;
+        if (o.id == this.id) {
+            return 0;
+        }
+        else {
+            return o.id > this.id ? 1 : -1;
+        }
     }
 }
