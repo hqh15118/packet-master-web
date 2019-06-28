@@ -264,16 +264,16 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
 
         StatisticsData.recvPacketNumber.addAndGet(1);      //总报文数
         //外界 --> PLC[ip_dst]  设备接收的报文数
-        StatisticsData.increaseNumberByDeviceIn(CommonCacheUtil.getTargetDeviceNumberByTag(fvDimensionLayer)
+        StatisticsData.increaseNumberByDeviceIn(CommonCacheUtil.getTargetDeviceNumberByTag(fvDimensionLayer.ip_dst[0],fvDimensionLayer.eth_dst[0])
             ,1);
         //外界 <-- PLC[ip_src]  设备发送的报文数
-        StatisticsData.increaseNumberByDeviceOut(CommonCacheUtil.getTargetDeviceNumberByTag(fvDimensionLayer),
+        StatisticsData.increaseNumberByDeviceOut(CommonCacheUtil.getTargetDeviceNumberByTag(fvDimensionLayer.ip_dst[0],fvDimensionLayer.eth_dst[0]),
                 1);
         //外界 --> PLC[ip_dst]  设备接收的报文流量
-        StatisticsData.increaseFlowByDeviceIn(CommonCacheUtil.getTargetDeviceNumberByTag(fvDimensionLayer)
+        StatisticsData.increaseFlowByDeviceIn(CommonCacheUtil.getTargetDeviceNumberByTag(fvDimensionLayer.ip_dst[0],fvDimensionLayer.eth_dst[0])
         ,capLength);
         //外界 --> PLC[ip_dst]  设备发送的报文流量
-        StatisticsData.increaseFlowByDeviceOut(CommonCacheUtil.getTargetDeviceNumberByTag(fvDimensionLayer)
+        StatisticsData.increaseFlowByDeviceOut(CommonCacheUtil.getTargetDeviceNumberByTag(fvDimensionLayer.ip_dst[0],fvDimensionLayer.eth_dst[0])
                 ,capLength);
     }
 

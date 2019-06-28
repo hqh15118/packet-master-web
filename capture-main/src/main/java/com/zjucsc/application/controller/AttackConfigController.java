@@ -6,6 +6,7 @@ import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.config.auth.Log;
 import com.zjucsc.application.domain.bean.*;
 import com.zjucsc.application.domain.non_hessian.DeviceMaxFlow;
+import com.zjucsc.application.domain.non_hessian.RightPacketInfo;
 import com.zjucsc.application.system.service.hessian_mapper.PacketInfoMapper;
 import com.zjucsc.attack.bean.ArtAttackAnalyzeConfig;
 import com.zjucsc.attack.bean.AttackConfig;
@@ -111,6 +112,12 @@ public class AttackConfigController {
     public BaseResponse getPagedArtAttackConfig(@RequestBody PagedArtAttackConfig pagedArtAttackConfig){
         return BaseResponse.OK(packetInfoMapper.selectArtAttackConfigPaged(pagedArtAttackConfig.getLimit(),
                 pagedArtAttackConfig.getPage()));
+    }
+
+    @ApiOperation("设置正常报文五元组")
+    @PostMapping("set_right_packet")
+    public BaseResponse setRightPacket(@RequestBody RightPacketInfo rightPacketInfo){
+        return null;
     }
 
 }

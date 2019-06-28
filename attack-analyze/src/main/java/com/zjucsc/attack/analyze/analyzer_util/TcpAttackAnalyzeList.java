@@ -5,7 +5,7 @@ import com.zjucsc.tshark.packets.FvDimensionLayer;
 
 public class TcpAttackAnalyzeList extends FvDimensionList {
     @Override
-    public boolean append(FvDimensionLayer layer) {
+    public String append(FvDimensionLayer layer) {
         /*
          * 保证是TCP请求，且是连接请求
          */
@@ -14,6 +14,6 @@ public class TcpAttackAnalyzeList extends FvDimensionList {
             layer.tcp_flags_syn[0].equals("1")) {
             return super.append(layer);
         }
-        return false;
+        return null;
     }
 }

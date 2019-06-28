@@ -248,7 +248,6 @@ public class OpcuaDecode extends BaseArtDecode<OpcuaConfig> {
 
     @Override
     public Map<String, Float> decode(OpcuaConfig opcuaConfig, Map<String, Float> result_map, byte[] payload, Object... objects) {
-        /** TODO:客户端可能会对同样一个变量进行多次监视，这种情况下Map不能正确记录，需要想想办法（要么就干脆改成name，handle成对出现，这样就能保证唯一性了） **/
         OpcUaPacket.LayersBean opcUaPacket = ((OpcUaPacket.LayersBean) objects[0]);
         opcuaMap.Output_Map = result_map;
 
@@ -428,83 +427,91 @@ public class OpcuaDecode extends BaseArtDecode<OpcuaConfig> {
             int i = 0;
             int flag_err = 0;
             int has_value; //对应opcUaPacket.opcua_variant_has_value
+            int mask; //opcUaPacket.opcua_datavalue_mask
+            int has_data; //opcUaPacket.opcua_datavalue_mask的最后1bit
             float value = 0;
 
             /** 遍历所有的clienthandle，注意clienthandle不一定与value一一对应 **/
             for(String clienthandle: opcUaPacket.opcua_clienthandle){
-                /** TODO：需要检查encoding mask **/
-                /** 获取当前clienthandle下的变量值 **/
-                has_value = Integer.valueOf((opcUaPacket.opcua_variant_has_value[i]).substring(2),16);
-                switch (has_value){
-                    /** Boolean **/
-                    case 1:
-                        value = Float.parseFloat(opcUaValue.getValue(OpcUaValueType.opcua_boolean));
-                        break;
-                    /** Sbyte **/
-                    case 2:
-                        value = Float.parseFloat(opcUaValue.getValue(OpcUaValueType.opcua_sbyte));
-                        break;
-                    /** byte **/
-                    case 3:
-                        value = Float.parseFloat(opcUaValue.getValue(OpcUaValueType.opcua_byte));
-                        break;
-                    /** int16 **/
-                    case 4:
-                        value = Float.parseFloat(opcUaValue.getValue(OpcUaValueType.opcua_int16));
-                        break;
-                    /** uint16 **/
-                    case 5:
-                        value = Float.parseFloat(opcUaValue.getValue(OpcUaValueType.opcua_uint16));
-                        break;
-                    /** int32 **/
-                    case 6:
-                        value = Float.parseFloat(opcUaValue.getValue(OpcUaValueType.opcua_int32));
-                        break;
-                    /** uint32 **/
-                    case 7:
-                        value = Float.parseFloat(opcUaValue.getValue(OpcUaValueType.opcua_uint32));
-                        break;
-                    /** int64 **/
-                    case 8:
-                        value = Float.parseFloat(opcUaValue.getValue(OpcUaValueType.opcua_int64));
-                        break;
-                    /** uint64 **/
-                    case 9:
-                        value = Float.parseFloat(opcUaValue.getValue(OpcUaValueType.opcua_uint64));
-                        break;
-                    /** float **/
-                    case 10:
-                        value = Float.parseFloat(opcUaValue.getValue(OpcUaValueType.opcua_float));
-                        break;
-                    /** double **/
-                    case 11:
-                        value = Float.parseFloat(opcUaValue.getValue(OpcUaValueType.opcua_double));
-                        break;
-                    /** 不在列表中的类型，不进行解析 **/
-                    default:
-                        flag_err = 1;
-                        break;
-                }
-                if(flag_err == 0) {
-                    /** 填充clienthandle_value_map **/
-                    opcuaMap.Handle_Value_Map.put(clienthandle, value);
-
-                    /** 根据结果更新OutputMap **/
-                    if(opcuaMap.Handle_Name_Map.containsKey(clienthandle)){
-                        String name = opcuaMap.Handle_Name_Map.get(clienthandle);
-                        String Name_and_Handle = name + "@" + clienthandle;
-                        opcuaMap.Output_Map.put(Name_and_Handle, value);
+                /** 检查encoding mask，只有末位bit为1时才继续提取数据 **/
+                mask = Integer.valueOf((opcUaPacket.opcua_datavalue_mask[i]).substring(2), 16);
+                has_data = mask & 0x01;
+                if(has_data == 1) {
+                    /** 获取当前clienthandle下的变量值 **/
+                    has_value = Integer.valueOf((opcUaPacket.opcua_variant_has_value[i]).substring(2), 16);
+                    switch (has_value) {
+                        /** Boolean **/
+                        case 1:
+                            value = Float.parseFloat(opcUaValue.getValue(OpcUaValueType.opcua_boolean));
+                            break;
+                        /** Sbyte **/
+                        case 2:
+                            value = Float.parseFloat(opcUaValue.getValue(OpcUaValueType.opcua_sbyte));
+                            break;
+                        /** byte **/
+                        case 3:
+                            value = Float.parseFloat(opcUaValue.getValue(OpcUaValueType.opcua_byte));
+                            break;
+                        /** int16 **/
+                        case 4:
+                            value = Float.parseFloat(opcUaValue.getValue(OpcUaValueType.opcua_int16));
+                            break;
+                        /** uint16 **/
+                        case 5:
+                            value = Float.parseFloat(opcUaValue.getValue(OpcUaValueType.opcua_uint16));
+                            break;
+                        /** int32 **/
+                        case 6:
+                            value = Float.parseFloat(opcUaValue.getValue(OpcUaValueType.opcua_int32));
+                            break;
+                        /** uint32 **/
+                        case 7:
+                            value = Float.parseFloat(opcUaValue.getValue(OpcUaValueType.opcua_uint32));
+                            break;
+                        /** int64 **/
+                        case 8:
+                            value = Float.parseFloat(opcUaValue.getValue(OpcUaValueType.opcua_int64));
+                            break;
+                        /** uint64 **/
+                        case 9:
+                            value = Float.parseFloat(opcUaValue.getValue(OpcUaValueType.opcua_uint64));
+                            break;
+                        /** float **/
+                        case 10:
+                            value = Float.parseFloat(opcUaValue.getValue(OpcUaValueType.opcua_float));
+                            break;
+                        /** double **/
+                        case 11:
+                            value = Float.parseFloat(opcUaValue.getValue(OpcUaValueType.opcua_double));
+                            break;
+                        /** 不在列表中的类型，不进行解析 **/
+                        default:
+                            flag_err = 1;
+                            break;
                     }
-                    else{
-                        //TODO:对于这种只有handle和value对应的变量，如何处理？
-                        System.out.println("警告：监控变量没有对应的变量名");
-                        opcuaMap.Output_Map.put("clienthandle=" + clienthandle, value);
+                    if (flag_err == 0) {
+                        /** 填充clienthandle_value_map **/
+                        opcuaMap.Handle_Value_Map.put(clienthandle, value);
+
+                        /** 根据结果更新OutputMap **/
+                        if (opcuaMap.Handle_Name_Map.containsKey(clienthandle)) {
+                            String name = opcuaMap.Handle_Name_Map.get(clienthandle);
+                            String Name_and_Handle = name + "@" + clienthandle;
+                            opcuaMap.Output_Map.put(Name_and_Handle, value);
+                        }
+                        else {
+                            //TODO:对于这种只有handle和value对应的变量，如何处理比较合适？
+                            System.out.println("警告：监控变量没有对应的变量名");
+                            opcuaMap.Output_Map.put("clienthandle=" + clienthandle, value);
+                        }
+                    }
+                    else {
+                        flag_err = 0;
                     }
                 }
-                else {
-                    flag_err = 0;
+                else{
+                    /** TODO：如果跑到这里，说明该clienthandle下没有数据，这种情况一般是由于OPC Client读取数据出错（例如由于网络断开等），这里是否追加后续处理有待考虑 **/
                 }
-
                 i += 1;
             }
         }
@@ -514,4 +521,5 @@ public class OpcuaDecode extends BaseArtDecode<OpcuaConfig> {
     public String protocol() {
         return "opcua";
     }
+
 }

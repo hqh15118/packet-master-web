@@ -38,6 +38,11 @@
       "sourceType": "com.zjucsc.application.system.service.hession_config.HessianConfig"
     },
     {
+      "name": "hessian-config.attack-config",
+      "type": "java.lang.String",
+      "sourceType": "com.zjucsc.application.system.service.hession_config.HessianConfig"
+    },
+    {
       "name": "hessian-config.attack-info",
       "type": "java.lang.String",
       "sourceType": "com.zjucsc.application.system.service.hession_config.HessianConfig"

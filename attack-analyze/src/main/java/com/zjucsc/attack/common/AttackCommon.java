@@ -1,14 +1,10 @@
 package com.zjucsc.attack.common;
 
-import com.zjucsc.attack.analyze.analyzer.CositeDOSAttackAnalyzer;
-import com.zjucsc.attack.analyze.analyzer.MultisiteDOSAttackAnalyzer;
 import com.zjucsc.attack.analyze.analyzer_util.CositeDOSAttackAnalyzeList;
 import com.zjucsc.attack.analyze.analyzer_util.MultisiteDOSAttackAnalyzeList;
 import com.zjucsc.attack.bean.ArtAttackAnalyzeConfig;
 import com.zjucsc.attack.bean.AttackBean;
 import com.zjucsc.attack.bean.RedisConfigNotFoundException;
-import com.zjucsc.attack.util.BaseAttackAnalyzer;
-import com.zjucsc.attack.util.IObservable;
 import com.zjucsc.attack.util.Observer;
 import com.zjucsc.tshark.Entry;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
@@ -23,8 +19,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.function.Consumer;
 
 /**
  * #project packet-master-web
@@ -34,7 +28,9 @@ import java.util.function.Consumer;
  */
 
 public class AttackCommon {
-    private static Observer observer = new Observer();
+
+    private static AttackCallback attackCallback;
+
     private final static Set<ArtAttackAnalyzeConfig> ART_ATTACK_ANALYZE_CONFIGS
             = new ConcurrentSkipListSet<>();
     private final static List<Entry> ATTACK_ENTRY = new ArrayList<Entry>(){
@@ -47,11 +43,15 @@ public class AttackCommon {
             5,
             r -> {
                 Thread thread = new Thread(r);
-                thread.setName("attack-service-");
+                thread.setName("-attack-service-");
                 thread.setUncaughtExceptionHandler((t, e) -> System.err.println("error in attack-service-thread " + e));
                 return thread;
             }
     );
+
+    public static void registerAttackCallback(AttackCallback attackCallback){
+        AttackCommon.attackCallback = attackCallback;
+    }
 
     //懒加载单例模式
     private static final class JEDIS_HOLDER{
@@ -89,14 +89,6 @@ public class AttackCommon {
         }
     }
 
-    public static  void registerObservable(Collection<IObservable<AttackBean>> observables){
-        observer.register(observables);
-    }
-
-    public static void updateAll(AttackBean attackBean){
-        observer.updateAll(attackBean);
-    }
-
     static Jedis getJedisClient(){
         return JEDIS_HOLDER.jedisPool.getResource();
     }
@@ -111,7 +103,11 @@ public class AttackCommon {
 
     static void doAnalyzeFvDimension(FvDimensionLayer layer){
         for (Entry entry : ATTACK_ENTRY) {
-            entry.append(layer);
+            String description = entry.append(layer);
+            if (description!=null){
+                attackCallback.artCallback(AttackBean.builder().attackType(AttackTypePro.DOS).attackInfo(description)
+                .data(layer).build());
+            }
         }
     }
 
@@ -134,7 +130,11 @@ public class AttackCommon {
         }
     }
 
-    public static void appendArtAnalyze( Map<String,Float> techmap , AttackCallback attackCallback){
+    /**
+     * 工艺参数攻击检测
+     * @param techmap
+     */
+    public static void appendArtAnalyze( Map<String,Float> techmap){
         for (ArtAttackAnalyzeConfig artAttackAnalyzeConfig : ART_ATTACK_ANALYZE_CONFIGS) {
             if (artAttackAnalyzeConfig.isEnable()) {
                 doAppendArtAnalyze(artAttackAnalyzeConfig.getExpression(), techmap, artAttackAnalyzeConfig.getDescription(),

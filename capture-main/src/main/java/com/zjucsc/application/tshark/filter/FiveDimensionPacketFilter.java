@@ -1,6 +1,6 @@
 package com.zjucsc.application.tshark.filter;
 
-import com.zjucsc.application.config.AttackTypePro;
+import com.zjucsc.attack.common.AttackTypePro;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.DangerLevel;
 import com.zjucsc.application.domain.bean.FvDimensionFilter;

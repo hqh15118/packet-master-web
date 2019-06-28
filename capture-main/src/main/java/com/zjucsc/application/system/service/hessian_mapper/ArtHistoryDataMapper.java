@@ -19,8 +19,7 @@ public interface ArtHistoryDataMapper extends BaseMapper<ArtHistoryData> {
      * @param startTime 开始时间
      * @param endTime 结束时间
      * @param artName 工艺参数名
-     * @param timeType 查询的时间类型，年、月、日、时
      * @return
      */
-    List<String> getArtData(String startTime, String endTime, String artName, int timeType, int gplotId);
+    List<String> getArtData(String startTime, String endTime, String artName, int gplotId);
 }

@@ -38,6 +38,7 @@
             <artifactId>spring-boot-starter</artifactId>
             <version>2.1.4.RELEASE</version>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -98,6 +99,7 @@
             <artifactId>java-jwt</artifactId>
             <version>3.4.1</version>
         </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -223,24 +225,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
-
-        <!--<dependency>-->
-        <!--<groupId>com.zjucsc</groupId>-->
-        <!--<artifactId>art_decode</artifactId>-->
-        <!--<version>0.0.1-SNAPSHOT</version>-->
-        <!--<scope>system</scope>-->
-        <!--<systemPath>${project.basedir}/src/main/resources/libs/art_decode.jar</systemPath>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-        <!--<groupId>com.zjucsc</groupId>-->
-        <!--<artifactId>protocolmap</artifactId>-->
-        <!--<version>1.0-SNAPSHOT</version>-->
-        <!--<scope>system</scope>-->
-        <!--<systemPath>${project.basedir}/src/main/resources/libs/protocolmap.jar</systemPath>-->
-        <!--</dependency>-->
-
+        
         <dependency>
             <groupId>com.zjucsc</groupId>
             <artifactId>tshark</artifactId>

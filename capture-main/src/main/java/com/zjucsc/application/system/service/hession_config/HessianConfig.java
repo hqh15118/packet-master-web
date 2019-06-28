@@ -27,6 +27,7 @@ public class HessianConfig {
     private String art_filter;
     private String attack_info;
     private String packet_history;
+    private String attack_config;
 
 
     @Bean
@@ -82,5 +83,10 @@ public class HessianConfig {
     @Bean
     public PacketInfoMapper packetInfoHessianBean() throws MalformedURLException {
         return (PacketInfoMapper) new HessianProxyFactory().create(PacketInfoMapper.class, packet_history);
+    }
+
+    @Bean
+    public AttackConfigMapper attackConfigMapperBean() throws MalformedURLException {
+        return (AttackConfigMapper) new HessianProxyFactory().create(AttackConfigMapper.class, attack_config);
     }
 }

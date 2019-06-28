@@ -1,7 +1,5 @@
 package com.zjucsc.attack.bean;
 
-import com.zjucsc.tshark.packets.FvDimensionLayer;
-
 /**
  * #project packet-master-web
  *
@@ -12,22 +10,14 @@ import com.zjucsc.tshark.packets.FvDimensionLayer;
 public class AttackBean {
 
     private AttackBean(){}
-    //
+    //攻击类型
     private String attackType;
-    //异常的五元组
-    private FvDimensionLayer layer;
     //攻击说明
     private String attackInfo;
     //
     private Object data;
 
-    public FvDimensionLayer getLayer() {
-        return layer;
-    }
-
-    public void setLayer(FvDimensionLayer layer) {
-        this.layer = layer;
-    }
+    private String timeStamp;
 
     public String getAttackInfo() {
         return attackInfo;
@@ -53,6 +43,14 @@ public class AttackBean {
         this.data = data;
     }
 
+    public String getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(String timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
     public static Builder builder(){
         return new Builder();
     }
@@ -75,13 +73,13 @@ public class AttackBean {
             return this;
         }
 
-        public Builder fvDimensionLayer(FvDimensionLayer layer){
-            attackBean.setLayer(layer);
+        public Builder attackInfo(String attackInfo){
+            attackBean.setAttackInfo(attackInfo);
             return this;
         }
 
-        public Builder attackInfo(String attackInfo){
-            attackBean.setAttackInfo(attackInfo);
+        public Builder timeStamp(String timeStamp){
+            attackBean.timeStamp = timeStamp;
             return this;
         }
 
