@@ -179,7 +179,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                 int collectorDelay = PacketDecodeUtil.decodeCollectorDelay(payload,4);
                 //设置ID和延时用于发送
                 //System.out.println("delay : " + collectorDelay);
-                packetAnalyzeService.setCollectorDelay(collectorId,collectorDelay);
+                //packetAnalyzeService.setCollectorDelay(collectorId,collectorDelay);
                 return collectorDelay;
             }
             return -1;
