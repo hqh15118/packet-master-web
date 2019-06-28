@@ -22,11 +22,11 @@ public class CositeDOSAttackAnalyzeList extends TcpAttackAnalyzeList {
      * 2.统计
      */
     @Override
-    protected boolean analyze(int index,LinkedList<FvDimensionLayer> fvDimensionLayers,
+    protected String analyze(int index,LinkedList<FvDimensionLayer> fvDimensionLayers,
                            FvDimensionLayer layer) {
         //如果总数量小于配置数量，那么一定返回false
         if (fvDimensionLayers.size() < AttackConfig.getCoSiteNum()){
-            return false;
+            return null;
         }
         //        if (index == 0){//插入的位置是最大的
         //            //[最新时间[当前五元组对应的时间戳]，第二新时间，...]
@@ -57,7 +57,7 @@ public class CositeDOSAttackAnalyzeList extends TcpAttackAnalyzeList {
 //        return (newTime - oldTime) < AttackConfig.getCoSiteTimeGap();
 //    }
 
-    private boolean doAnalyze(LinkedList<FvDimensionLayer> fvDimensionLayers,int index){
+    private String doAnalyze(LinkedList<FvDimensionLayer> fvDimensionLayers,int index){
         long timeStamp;
         for (int i = index; i >= 0 ; i--) {
             timeStamp = fvDimensionLayers.get(i).timeStampInLong;
@@ -77,10 +77,10 @@ public class CositeDOSAttackAnalyzeList extends TcpAttackAnalyzeList {
                     System.out.println("co site attack");
                     System.out.println("-------------");
                 }
-                return true;
+                return "同源DOS攻击";
             }
         }
-        return false;
+        return null;
     }
 
 }

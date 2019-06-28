@@ -25,7 +25,7 @@ public class MultisiteDOSAttackAnalyzeList extends TcpAttackAnalyzeList {
      * 3.统计
      */
     @Override
-    protected boolean analyze(int index, LinkedList<FvDimensionLayer> fvDimensionLayers, FvDimensionLayer layer) {
+    protected String analyze(int index, LinkedList<FvDimensionLayer> fvDimensionLayers, FvDimensionLayer layer) {
         hashSet.clear();
         long timeStamp;
         for (int i = index; i >= 0 ; i--) {
@@ -42,10 +42,10 @@ public class MultisiteDOSAttackAnalyzeList extends TcpAttackAnalyzeList {
                     System.out.println("multi attack");
                     System.out.println("-------------");
                 }
-                return true;
+                return "多址DOS攻击";
             }
         }
-        return false;
+        return null;
     }
 
     public int getSetSize(){

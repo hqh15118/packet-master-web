@@ -27,11 +27,11 @@ public class FvDimensionList implements Entry {
      * @return 针对新增的五元组是否检测到攻击
      */
     @Override
-    public synchronized boolean append(FvDimensionLayer layer){
+    public synchronized String append(FvDimensionLayer layer){
         index = 0;
         if (fvDimensionLayers.size() == 0){
             fvDimensionLayers.addLast(layer);
-            return false;
+            return null;
         }
         if (fvDimensionLayers.getLast().timeStampInLong < layer.timeStampInLong){
             fvDimensionLayers.addFirst(layer);
@@ -82,8 +82,8 @@ public class FvDimensionList implements Entry {
      * @param fvDimensionLayers 新增加的五元组
      * @return 是否检测到攻击，true表示检测到，false表示没有检测到
      */
-    protected boolean analyze(int index,LinkedList<FvDimensionLayer> fvDimensionLayers,FvDimensionLayer layer){
-        return false;
+    protected String analyze(int index,LinkedList<FvDimensionLayer> fvDimensionLayers,FvDimensionLayer layer){
+        return null;
     }
 
     public int getSize(){

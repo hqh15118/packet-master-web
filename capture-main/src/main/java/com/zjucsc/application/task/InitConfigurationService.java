@@ -1,10 +1,7 @@
 package com.zjucsc.application.task;
 
 import com.zjucsc.IProtocolFuncodeMap;
-import com.zjucsc.application.config.Common;
-import com.zjucsc.application.config.PACKET_PROTOCOL;
-import com.zjucsc.application.config.ProtocolCommon;
-import com.zjucsc.application.config.ProtocolIgnore;
+import com.zjucsc.application.config.*;
 import com.zjucsc.application.config.auth.Auth;
 import com.zjucsc.application.domain.bean.BaseResponse;
 import com.zjucsc.application.domain.bean.ConfigurationSetting;
@@ -44,6 +41,7 @@ public class InitConfigurationService implements ApplicationRunner {
     @Autowired private IArtConfigService iArtConfigService;
     @Autowired private IConfigurationSettingService iConfigurationSettingService;
     @Autowired private IProtocolIdService iProtocolIdService;
+    @Autowired private TsharkConfig tsharkConfig;
 
     @Override
     public void run(ApplicationArguments args) throws IllegalAccessException, NoSuchFieldException, ProtocolIdNotValidException {
@@ -83,19 +81,29 @@ public class InitConfigurationService implements ApplicationRunner {
             Common.TSHARK_PRE_PROCESSOR_PROTOCOLS.addAll(virPreProcessor);
         }
 
+        /****************************
+         * 演示/真实场景
+         ***************************/
+        List<String> virType = args.getOptionValues("type");
+        System.out.println("program args [type]: " + virType + "\n*******************");
+        if (virType!=null && virType.size() > 0){
+            Common.systemRunType = Integer.valueOf(virType.get(0));
+        }
+
         /***************************
          * INIT FILTER
          ***************************/
         List<String> virFilter = args.getOptionValues("filter");
-        System.out.println("program args : " + virFilter + "\n*******************");
+        System.out.println("program args : [filter]" + virFilter + "\n*******************");
         if (virFilter!=null && virFilter.size() > 0){
+            //通用filter，特殊的filter如S7Common-Filter/Modbus-Filter会覆盖这个通用的Filter
             TsharkCommon.filter = virFilter.get(0);
         }
         /***************************
          * INIT -M <Tshark Session Reset>
          ***************************/
         List<String> virSessionReset = args.getOptionValues("session");
-        System.out.println("program args : " + virSessionReset + "\n*******************");
+        System.out.println("program args : [session reset ]" + virSessionReset + "\n*******************");
         if (virSessionReset!=null && virSessionReset.size() > 0){
             TsharkCommon.sessionReset = virSessionReset.get(0);
         }
@@ -204,6 +212,7 @@ public class InitConfigurationService implements ApplicationRunner {
         }
 
         /***************************
+<<<<<<< HEAD
          * pn_io
          **************************/
 //        PnioConfig pnioConfig = new PnioConfig();
@@ -267,11 +276,21 @@ public class InitConfigurationService implements ApplicationRunner {
         //AttackCommon.addArtAttackAnalyzeConfig(new ArtAttackAnalyzeConfig(list,"test - -- - - "));
 
         /***************************
+=======
+>>>>>>> 65e3cc7b906a3e5bad979c77c974dd267cf3c989
          * INIT PROTOCOL COMMON
          * 1. IEC104
          * 2.
          **************************/
         ProtocolCommon.init();
+
+        /****************************
+         *
+         * INIT TSHARK COMMON CONFIG
+         *
+         ***************************/
+        TsharkCommon.s7comm_filter = tsharkConfig.getS7comm_filter();
+        TsharkCommon.modbus_filter = tsharkConfig.getModbus_filter();
 
         /**************************
          *  PRINT INIT RESULT

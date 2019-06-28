@@ -14,6 +14,11 @@
       "name": "myconfig",
       "type": "com.zjucsc.application.config.ConstantConfig",
       "sourceType": "com.zjucsc.application.config.ConstantConfig"
+    },
+    {
+      "name": "tshark-config",
+      "type": "com.zjucsc.application.config.TsharkConfig",
+      "sourceType": "com.zjucsc.application.config.TsharkConfig"
     }
   ],
   "properties": [
@@ -29,6 +34,11 @@
     },
     {
       "name": "hessian-config.art-history-data",
+      "type": "java.lang.String",
+      "sourceType": "com.zjucsc.application.system.service.hession_config.HessianConfig"
+    },
+    {
+      "name": "hessian-config.attack-config",
       "type": "java.lang.String",
       "sourceType": "com.zjucsc.application.system.service.hession_config.HessianConfig"
     },
@@ -124,6 +134,16 @@
       "name": "myconfig.system-properties-name",
       "type": "java.lang.String",
       "sourceType": "com.zjucsc.application.config.ConstantConfig"
+    },
+    {
+      "name": "tshark-config.modbus-filter",
+      "type": "java.lang.String",
+      "sourceType": "com.zjucsc.application.config.TsharkConfig"
+    },
+    {
+      "name": "tshark-config.s7comm-filter",
+      "type": "java.lang.String",
+      "sourceType": "com.zjucsc.application.config.TsharkConfig"
     }
   ],
   "hints": []

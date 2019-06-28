@@ -6,6 +6,7 @@ import com.zjucsc.art_decode.ArtDecodeCommon;
 import com.zjucsc.kafka.KafkaCommon;
 import com.zjucsc.socket_io.SocketServiceCenter;
 import com.zjucsc.tshark.TsharkCommon;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +20,8 @@ import java.util.Map;
 @Endpoint(id = "sysconfig")
 @Configuration
 public class WatchConfig {
+
+    @Autowired private TsharkConfig tsharkConfig;
 
     @ReadOperation
     public Map<String,Object> getSysConfigCache(){
@@ -39,6 +42,8 @@ public class WatchConfig {
         map.put("SOCKET-IO-CLIENT", clientStrings);
         map.put("ALL_ART_CONFIG", ArtDecodeCommon.getAllArtConfigs());
         map.put("ART_DATA",AppCommonUtil.getGlobalArtMap());
+        map.put("TSHARK-FILTER-S7COMM",tsharkConfig.getS7comm_filter());
+        map.put("TSHARK-FILTER-MODBUS",tsharkConfig.getModbus_filter());
         return map;
     }
 

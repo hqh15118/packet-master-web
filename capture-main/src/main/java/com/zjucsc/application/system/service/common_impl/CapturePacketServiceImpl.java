@@ -1,5 +1,6 @@
 package com.zjucsc.application.system.service.common_impl;
 
+import com.sun.xml.internal.bind.v2.model.core.ID;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.system.service.PacketAnalyzeService;
@@ -12,6 +13,7 @@ import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.CommonConfigUtil;
 import com.zjucsc.attack.common.AttackCommon;
 import com.zjucsc.common.common_util.ByteUtil;
+import com.zjucsc.common.common_util.DBUtil;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.kafka.KafkaThread;
 import com.zjucsc.socket_io.SocketIoEvent;
@@ -21,14 +23,27 @@ import com.zjucsc.tshark.handler.AbstractAsyncHandler;
 import com.zjucsc.tshark.handler.DefaultPipeLine;
 import com.zjucsc.tshark.packets.*;
 import com.zjucsc.tshark.pre_processor.BasePreProcessor;
+<<<<<<< HEAD
 import com.zjucsc.tshark.util.PacketDecodeUtil;
+=======
+import javafx.scene.control.RadioMenuItem;
+import jdk.nashorn.internal.scripts.JD;
+import lombok.Data;
+>>>>>>> 65e3cc7b906a3e5bad979c77c974dd267cf3c989
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketException;
+import java.sql.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
@@ -80,6 +95,8 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         @Override
         public FvDimensionLayer handle(Object t) {
             FvDimensionLayer fvDimensionLayer = ((FvDimensionLayer) t);
+            //设置协议栈
+            fvDimensionLayer.frame_protocols[0] = PacketDecodeUtil.discernPacket(fvDimensionLayer.frame_protocols[0]);
             //统计所有的IP地址
             if (fvDimensionLayer.ip_dst[0].length() > 0){
                 StatisticsData.statisticAllIpAddress(fvDimensionLayer.ip_dst[0]);
@@ -222,16 +239,13 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         pipeLine.addLast(fvDimensionHandler);
         pipeLine.addLast(badPacketAnalyzeHandler);
         basePreProcessor.setPipeLine(pipeLine);
-        Thread processThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                basePreProcessor.setCommandBuildFinishCallback(()->{
-                    if (downLatch!=null) {
-                        downLatch.countDown();
-                    }
-                });
-                basePreProcessor.execCommand(1 , -1);
-            }
+        Thread processThread = new Thread(() -> {
+            basePreProcessor.setCommandBuildFinishCallback(()->{
+                if (downLatch!=null) {
+                    downLatch.countDown();
+                }
+            });
+            basePreProcessor.execCommand(1 , -1);
         });
         processThread.setName(processName + "-thread");
         processThread.start();
@@ -240,10 +254,6 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
 
     private void sendFvDimensionPacket(FvDimensionLayer fvDimensionLayer , byte[] payload){
         fvDimensionLayer.timeStamp = PacketDecodeUtil.decodeTimeStamp(payload,20,fvDimensionLayer);
-        //payload如果是空的，那么timeStamp就用本地时间来代替
-        if (payload.length == 0){
-            Common.NON_TIMESTAMP_PACKET_COUNT ++;
-        }
         //SocketServiceCenter.updateAllClient(SocketIoEvent.ALL_PACKET,fvDimensionLayer);
         if (newFvDimensionCallback!=null){
             newFvDimensionCallback.newCome(fvDimensionLayer);
@@ -253,15 +263,21 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     private void sendPacketStatisticsEvent(FvDimensionLayer fvDimensionLayer) {
         int capLength = Integer.parseInt(fvDimensionLayer.frame_cap_len[0]);
 
-        Common.FLOW.addAndGet(capLength);                          //计算报文流量
+        StatisticsData.FLOW.addAndGet(capLength);                          //计算报文流量
 
         StatisticsData.recvPacketNumber.addAndGet(1);      //总报文数
         //外界 --> PLC[ip_dst]  设备接收的报文数
-        StatisticsData.increaseNumberByDeviceIn(CommonCacheUtil.getTargetDeviceNumberByTag(fvDimensionLayer)
+        StatisticsData.increaseNumberByDeviceIn(CommonCacheUtil.getTargetDeviceNumberByTag(fvDimensionLayer.ip_dst[0],fvDimensionLayer.eth_dst[0])
             ,1);
         //外界 <-- PLC[ip_src]  设备发送的报文数
-        StatisticsData.increaseNumberByDeviceOut(CommonCacheUtil.getTargetDeviceNumberByTag(fvDimensionLayer),
+        StatisticsData.increaseNumberByDeviceOut(CommonCacheUtil.getTargetDeviceNumberByTag(fvDimensionLayer.ip_dst[0],fvDimensionLayer.eth_dst[0]),
                 1);
+        //外界 --> PLC[ip_dst]  设备接收的报文流量
+        StatisticsData.increaseFlowByDeviceIn(CommonCacheUtil.getTargetDeviceNumberByTag(fvDimensionLayer.ip_dst[0],fvDimensionLayer.eth_dst[0])
+        ,capLength);
+        //外界 --> PLC[ip_dst]  设备发送的报文流量
+        StatisticsData.increaseFlowByDeviceOut(CommonCacheUtil.getTargetDeviceNumberByTag(fvDimensionLayer.ip_dst[0],fvDimensionLayer.eth_dst[0])
+                ,capLength);
     }
 
     private void analyzeCollectorState(byte[] payload , int collectorId){
@@ -275,5 +291,127 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
 
     public void setNewFvDimensionCallback(NewFvDimensionCallback newFvDimensionCallback){
         this.newFvDimensionCallback = newFvDimensionCallback;
+    }
+
+    private SimulateThread simulateThread = new SimulateThread();
+
+    @Async
+    @Override
+    public CompletableFuture<Exception> startSimulate() {
+        FV_D_SENDER.startService();
+        if (!simulateThread.hasStart){
+            DefaultPipeLine pipeLine = new DefaultPipeLine("simulate");
+            pipeLine.addLast(fvDimensionLayerAbstractAsyncHandler);
+            simulateThread.pipeLine = pipeLine;
+            simulateThread.start();
+        }else{
+            simulateThread.notifyNow();
+        }
+        return CompletableFuture.completedFuture(null);
+    }
+
+    @Async
+    @Override
+    public CompletableFuture<Exception> stopSimulate() {
+        FV_D_SENDER.stopService();
+        simulateThread.idleNow();
+        return CompletableFuture.completedFuture(null);
+    }
+
+    private static class SimulateThread extends Thread{
+        private DefaultPipeLine pipeLine;
+        private boolean hasStart = false;
+        private volatile boolean idle = false;
+        private static final byte[] IDLE_LOCK = new byte[1];
+        private int hasSendFvDimensionNumber = 0;
+        private PreparedStatement preparedStatement;
+        private Connection connection;
+        private List<FvDimensionLayer> fvDimensionLayers = new LinkedList<>();
+        private volatile boolean running = true;
+
+        {
+            try {
+                String PASSWORD = "920614";
+                String USER_NAME = "root";
+                String JDBC_URL = "jdbc:mysql://10.15.191.100:3306/csc_db?serverTimezone=UTC";
+                connection = DBUtil.getConnection(JDBC_URL, USER_NAME, PASSWORD);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            assert connection!=null;
+        }
+
+        private List<FvDimensionLayer> getPreparedStatement(int num) throws SQLException {
+            fvDimensionLayers.clear();
+            if (preparedStatement == null) {
+                int date = 20190625;
+                String baseCurrentTableName = "packet_info_";
+                String tableName = baseCurrentTableName + date;
+                preparedStatement = connection.prepareStatement(String.format("SELECT * FROM %s WHERE id > %s and id < %s",
+                        tableName, "?", "?"));
+                hasSendFvDimensionNumber += num;
+            }
+            preparedStatement.setInt(1,hasSendFvDimensionNumber);
+            preparedStatement.setInt(2,hasSendFvDimensionNumber + num);
+            hasSendFvDimensionNumber+=num;
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()){
+                FvDimensionLayer fvDimensionLayer = new FvDimensionLayer();
+                fvDimensionLayer.timeStamp = resultSet.getString("time_stamp");
+                fvDimensionLayer.frame_protocols[0] = resultSet.getString("protocol_name");
+                fvDimensionLayer.eth_src[0] = resultSet.getString("src_mac");
+                fvDimensionLayer.eth_dst[0] = resultSet.getString("dst_mac");
+                fvDimensionLayer.ip_src[0] = resultSet.getString("src_ip");
+                fvDimensionLayer.ip_dst[0] = resultSet.getString("dst_ip");
+                fvDimensionLayer.src_port[0] = resultSet.getString("src_port");
+                fvDimensionLayer.dst_port[0] = resultSet.getString("dst_port");
+                fvDimensionLayer.funCode = resultSet.getString("fun_code");
+                fvDimensionLayer.frame_cap_len[0] = resultSet.getString("length");
+                fvDimensionLayer.funCodeMeaning = resultSet.getString("fun_code_meaning");
+                fvDimensionLayer.tcp_payload[0] = resultSet.getString("tcp_payload");
+                fvDimensionLayer.custom_ext_raw_data[0] = resultSet.getString("raw_data");
+                fvDimensionLayers.add(fvDimensionLayer);
+            }
+            return fvDimensionLayers;
+        }
+
+        @Override
+        public void run() {
+            hasStart = true;
+            Random random = new Random();
+            for (;running;){
+                if (idle){
+                    synchronized (IDLE_LOCK){
+                        try {
+                            IDLE_LOCK.wait();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        idle = false;
+                    }
+                }
+                //200 - 500
+                int num = (int)(300 * random.nextDouble()) + 200;
+                try {
+                    List<FvDimensionLayer> layers = getPreparedStatement(num);
+                    for (FvDimensionLayer layer : layers) {
+                        pipeLine.pushDataAtHead(layer);
+                    }
+                    Thread.sleep(1000);
+                } catch (SQLException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        private void idleNow(){
+            idle = true;
+        }
+
+        private void notifyNow(){
+            synchronized (IDLE_LOCK){
+                IDLE_LOCK.notifyAll();
+            }
+        }
     }
 }

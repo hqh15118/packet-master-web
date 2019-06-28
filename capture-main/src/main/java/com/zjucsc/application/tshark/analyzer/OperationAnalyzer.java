@@ -26,7 +26,7 @@ public class OperationAnalyzer extends AbstractAnalyzer<OperationPacketFilter<In
         if (!getAnalyzer().getWhiteMap().containsKey(fun_code)){
             try {
                 return new BadPacket.Builder(layer.frame_protocols[0])
-                        .setComment("为允许操作")
+                        .setComment("不允许操作")
                         .set_five_Dimension(layer)
                         .setDangerLevel(DangerLevel.VERY_DANGER)
                         .setFun_code(fun_code)

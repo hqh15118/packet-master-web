@@ -22,6 +22,10 @@ public class TsharkCommon {
 
     public static String filter = "tcp";
 
+    public static String modbus_filter = null;
+
+    public static String s7comm_filter = null;
+
     public static String sessionReset = "10000";
 
     public static Thread.UncaughtExceptionHandler uncaughtExceptionHandler

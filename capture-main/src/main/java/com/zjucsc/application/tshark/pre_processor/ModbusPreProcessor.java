@@ -7,8 +7,13 @@ import com.zjucsc.tshark.pre_processor.SinglePreProcessor;
 import java.util.ArrayList;
 import java.util.List;
 
+<<<<<<< HEAD
 import static com.zjucsc.tshark.util.PacketDecodeUtil.discernPacket;
 
+=======
+import static com.zjucsc.application.util.PacketDecodeUtil.discernPacket;
+import static com.zjucsc.tshark.TsharkCommon.modbus_filter;
+>>>>>>> 65e3cc7b906a3e5bad979c77c974dd267cf3c989
 
 /**
  * #project packet-master-web
@@ -44,7 +49,11 @@ public class ModbusPreProcessor extends SinglePreProcessor<ModbusPacket> {
      */
     @Override
     public FvDimensionLayer decode(ModbusPacket packetInstance) {
-        return packetInstance.layers.setFrameProtocols(
-                discernPacket(packetInstance.layers.frame_protocols[0]));
+        return packetInstance.layers;
+    }
+
+    @Override
+    public String filter() {
+        return modbus_filter == null ? super.filter() : modbus_filter;
     }
 }

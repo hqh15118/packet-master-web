@@ -11,7 +11,7 @@ import java.util.List;
 public class OpcuaPreProcessor extends SinglePreProcessor<OpcUaPacket> {
     @Override
     public FvDimensionLayer decode(OpcUaPacket packetInstance) {
-        return packetInstance.layers.setFrameProtocols(PACKET_PROTOCOL.OPCA_UA);
+        return packetInstance.layers;
     }
 
     @Override

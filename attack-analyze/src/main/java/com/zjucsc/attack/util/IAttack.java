@@ -15,6 +15,6 @@ public interface IAttack {
      * @param layer
      * @return
      */
-    boolean analyze(FvDimensionLayer layer);
+    String analyze(FvDimensionLayer layer);
 
 }

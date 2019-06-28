@@ -4,5 +4,5 @@ import com.zjucsc.tshark.packets.FvDimensionLayer;
 
 public interface Entry {
 
-    boolean append(FvDimensionLayer layer);
+    String append(FvDimensionLayer layer);
 }

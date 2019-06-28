@@ -16,7 +16,6 @@ public interface IArtHistoryDataService {
 
     /**
      * 查询历史工艺数据
-     * @param artName 工艺参数名
      * @param startTime 开始时间
      * @param endTime 结束时间
      * @param timeType 查询的时间类型，年、月、日、时
