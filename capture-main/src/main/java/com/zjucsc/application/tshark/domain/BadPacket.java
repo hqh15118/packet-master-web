@@ -19,8 +19,6 @@ public class BadPacket {
     private DangerLevel dangerLevel;
     private String deviceNumber;
 
-
-
     public String getComment() {
         return comment;
     }

@@ -9,6 +9,7 @@ import com.zjucsc.attack.bean.ArtAttackAnalyzeConfig;
 import com.zjucsc.attack.bean.AttackConfig;
 import com.zjucsc.attack.common.AttackCommon;
 import io.swagger.annotations.ApiOperation;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -66,7 +67,7 @@ public class AttackConfigController {
         return BaseResponse.OK(packetInfoMapper.selectAttackBybadTypeAndLevel(attackF));
     }
 
-    @ApiOperation("工艺参数攻击监测配置")
+    @ApiOperation("添加工艺参数攻击监测配置")
     @PostMapping("art_attack_config")
     public BaseResponse configArtAttack(@RequestBody ArtAttackConfig artAttackConfig){
         List<ArtAttack2Config> configs = artAttackConfig.getRule();
@@ -74,8 +75,33 @@ public class AttackConfigController {
         for (ArtAttack2Config config : configs) {
             list.add(config.getValue());
         }
+        int id = ((Integer) packetInfoMapper.saveOrUpdateArtAttackConfig(artAttackConfig).data);
         AttackCommon.addArtAttackAnalyzeConfig(new ArtAttackAnalyzeConfig(list,
-                artAttackConfig.getDetail(),artAttackConfig.isEnable()));
+                artAttackConfig.getDetail(),artAttackConfig.isEnable(),id));
         return BaseResponse.OK();
     }
+
+    @ApiOperation("修改攻击配置状态")
+    @PostMapping("change_attack_config_state")
+    public BaseResponse changeAttackConfigState(@RequestBody AttackConfigState attackConfigState){
+        packetInfoMapper.updateArtAttackConfigState(attackConfigState.getId(),attackConfigState.isEnable());
+        AttackCommon.changeArtAttackAnalyzeConfigState(attackConfigState.getId(),attackConfigState.isEnable());
+        return BaseResponse.OK();
+    }
+
+    @ApiOperation("删除工艺参数攻击配置")
+    @DeleteMapping("delete_art_attack_config")
+    public BaseResponse deleteArtAttackConfig(@RequestParam int id){
+        packetInfoMapper.deleteArtAttackConfig(id);
+        AttackCommon.removeArtAttackAnalyzeConfig(new ArtAttackAnalyzeConfig(id));
+        return BaseResponse.OK();
+    }
+
+    @ApiOperation("获取工艺参数攻击配置")
+    @PostMapping("paged_art_attack_config")
+    public BaseResponse getPagedArtAttackConfig(@RequestBody PagedArtAttackConfig pagedArtAttackConfig){
+        return BaseResponse.OK(packetInfoMapper.selectArtAttackConfigPaged(pagedArtAttackConfig.getLimit(),
+                pagedArtAttackConfig.getPage()));
+    }
+
 }

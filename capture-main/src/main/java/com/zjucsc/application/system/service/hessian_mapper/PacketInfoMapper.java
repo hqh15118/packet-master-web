@@ -37,4 +37,22 @@ public interface PacketInfoMapper  {
     List<Integer> selectPacketHistoryIn7Days();
 
     List<Integer> selectPacketHistoryIn24Hours();
+
+    /**
+     * 存入配置，返回主键ID到data里面
+     * @param artAttackConfig
+     * @return
+     */
+    BaseResponse saveOrUpdateArtAttackConfig(ArtAttackConfig artAttackConfig);
+
+    /**
+     * 修改工艺参数工艺配置使能状态
+     * @param id
+     * @param enable
+     */
+    void updateArtAttackConfigState(int id,boolean enable);
+
+    void deleteArtAttackConfig(int id);
+
+    List<PagedArtAttackConfig> selectArtAttackConfigPaged(int limit,int page);
 }

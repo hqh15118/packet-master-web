@@ -23,4 +23,6 @@ public interface IPacketInfoService {
     List<SavedPacket> selectPacketHistoryList(PacketHistoryList packetHistoryList);
 
     PacketHistoryWrapper selectPacketHistoryList(int type);
+
+    String selectPacketRawDataByTimeStamp(String timeStamp);
 }
