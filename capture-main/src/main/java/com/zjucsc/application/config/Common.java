@@ -2,9 +2,8 @@ package com.zjucsc.application.config;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.zjucsc.application.domain.bean.CollectorState;
 import com.zjucsc.application.domain.bean.StatisticInfoSaveBean;
-import com.zjucsc.application.handler.ThreadExceptionHandler;
+import com.zjucsc.common.handler.ThreadExceptionHandler;
 import com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
 
@@ -92,11 +91,6 @@ public class Common {
 
     //攻击的统计信息【攻击种类 - 攻击次数】
     public final static ConcurrentHashMap<String,Integer> ATTACK_TYPE_STATICS = new ConcurrentHashMap<>();
-
-    /**
-     * cache3
-     */
-    public final static ConcurrentHashMap<Integer, CollectorState> COLLECTOR_STATE_MAP = new ConcurrentHashMap<>();
 
     public static final ThreadExceptionHandler COMMON_THREAD_EXCEPTION_HANDLER = new ThreadExceptionHandler();
 

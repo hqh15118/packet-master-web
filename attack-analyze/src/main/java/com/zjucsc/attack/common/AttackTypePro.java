@@ -1,4 +1,4 @@
-package com.zjucsc.application.config;
+package com.zjucsc.attack.common;
 
 public interface AttackTypePro {
     String HAZARD_ART = "工艺参数异常";

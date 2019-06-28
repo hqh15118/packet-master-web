@@ -16,6 +16,7 @@ import com.zjucsc.application.system.service.hessian_iservice.IProtocolIdService
 import com.zjucsc.application.util.AppCommonUtil;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.art_decode.ArtDecodeCommon;
+import com.zjucsc.art_decode.artconfig.S7Config;
 import com.zjucsc.art_decode.base.BaseConfig;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.tshark.TsharkCommon;
@@ -233,19 +234,6 @@ public class InitConfigurationService implements ApplicationRunner {
         /***************************
          * s7comm test
          **************************/
-        /*
-        S7Config s7Config = new S7Config();
-        s7Config.setBitoffset(0);
-        s7Config.setByteoffset(6);
-        s7Config.setDatabase(1);
-        s7Config.setLength(4);
-        s7Config.setTag("水位1");
-        s7Config.setType("float");
-        s7Config.setShowGraph(1);
-        s7Config.setProtocol(PACKET_PROTOCOL.S7);
-        AppCommonUtil.initArtMap(s7Config.getTag());
-        CommonCacheUtil.addShowGraphArg(s7Config.getProtocolId(),s7Config.getTag());
-        ArtDecodeCommon.addArtDecodeConfig(s7Config);
 
         S7Config s7Config1 = new S7Config();
         s7Config1.setBitoffset(1);
@@ -258,7 +246,8 @@ public class InitConfigurationService implements ApplicationRunner {
         AppCommonUtil.initArtMap(s7Config1.getTag());
         CommonCacheUtil.addShowGraphArg(s7Config1.getProtocolId(),s7Config1.getTag());
         ArtDecodeCommon.addArtDecodeConfig(s7Config1);
-        */
+
+
         /*
         List<String> list = new ArrayList<String>()
         {

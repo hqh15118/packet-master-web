@@ -1,4 +1,4 @@
-package com.zjucsc.application.handler;
+package com.zjucsc.common.handler;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,6 +13,6 @@ public class ThreadExceptionHandler implements Thread.UncaughtExceptionHandler{
 
     @Override
     public void uncaughtException(Thread t, Throwable e) {
-        log.error("thread {} catch a unhandle exception : \n" , t, e);
+        System.err.println(String.format("thread [%s] catch a unhandle exception : [%s]\n",t.getName(),e.getStackTrace()[0].toString()));
     }
 }
