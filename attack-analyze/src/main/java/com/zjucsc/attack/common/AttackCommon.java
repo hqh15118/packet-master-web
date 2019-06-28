@@ -106,7 +106,14 @@ public class AttackCommon {
             String description = entry.append(layer);
             if (description!=null){
                 attackCallback.artCallback(AttackBean.builder().attackType(AttackTypePro.DOS).attackInfo(description)
-                .data(layer).build());
+                        .srcIp(layer.ip_src[0])
+                        .dstIp(layer.ip_dst[0])
+                        .srcMac(layer.eth_src[0])
+                        .dstMac(layer.eth_dst[0])
+                        .srcPort(layer.src_port[0])
+                        .dstPort(layer.dst_port[0])
+                        .funCode(layer.funCode)
+                        .build());
             }
         }
     }

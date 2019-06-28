@@ -23,4 +23,6 @@ public class SocketIoEvent {
     public static final String NEW_IP = "new_ip";
     //一定时间内最大流量报警
     public static final String MAX_FLOW_ATTACK = "max_flow";
+    //攻击统计
+    public static final String ATTACK_STATISTICS = "attack_statistics";
 }

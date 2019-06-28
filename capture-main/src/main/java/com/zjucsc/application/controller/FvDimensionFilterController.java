@@ -4,6 +4,7 @@ import com.zjucsc.application.config.auth.Log;
 import com.zjucsc.application.domain.bean.BaseResponse;
 import com.zjucsc.application.domain.bean.Rule;
 import com.zjucsc.application.system.service.hessian_iservice.IFvDimensionFilterService;
+import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.common.exceptions.DeviceNotValidException;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,5 +67,15 @@ public class FvDimensionFilterController {
     public BaseResponse loadFvDimensionPacketRuleCached(@RequestParam String deviceNumber) throws DeviceNotValidException, ExecutionException, InterruptedException {
         CompletableFuture<List<Rule>> future =  iFvDimensionFilterService.getTargetExistIdFilter(deviceNumber , true);
         return BaseResponse.OK(future.get());
+    }
+
+    @Log
+    @ApiOperation("添加协议白名单")
+    @PostMapping("right_protocol")
+    public BaseResponse addRightProtocolToCache(@RequestBody List<String> rightProtocols){
+        for (String rightProtocol : rightProtocols) {
+            CommonCacheUtil.addWhiteProtocolToCache(rightProtocol);
+        }
+        return null;
     }
 }

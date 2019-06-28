@@ -14,10 +14,17 @@ public class AttackBean {
     private String attackType;
     //攻击说明
     private String attackInfo;
-    //
-    private Object data;
 
     private String timeStamp;
+
+    private String srcMac;
+    private String dstMac;
+    private String srcIp;
+    private String dstIp;
+    private String srcPort;
+    private String dstPort;
+    private String protocolName;
+    private String funCode;
 
     public String getAttackInfo() {
         return attackInfo;
@@ -33,14 +40,6 @@ public class AttackBean {
 
     public void setAttackType(String attackBean) {
         this.attackType = attackBean;
-    }
-
-    public Object getData() {
-        return data;
-    }
-
-    public void setData(Object data) {
-        this.data = data;
     }
 
     public String getTimeStamp() {
@@ -68,13 +67,43 @@ public class AttackBean {
             return this;
         }
 
-        public Builder data(Object data){
-            attackBean.setData(data);
+        public Builder srcMac(String srcMac){
+            attackBean.srcMac = srcMac;
+            return this;
+        }
+
+        public Builder dstMac(String dstMac){
+            attackBean.dstMac = dstMac;
+            return this;
+        }
+
+        public Builder srcIp(String srcIp){
+            attackBean.srcIp = srcIp;
+            return this;
+        }
+
+        public Builder dstIp(String dstIp){
+            attackBean.dstIp = dstIp;
+            return this;
+        }
+
+        public Builder srcPort(String srcPort){
+            attackBean.srcPort = srcPort;
+            return this;
+        }
+
+        public Builder dstPort (String dstPort){
+            attackBean.dstPort = dstPort;
             return this;
         }
 
         public Builder attackInfo(String attackInfo){
             attackBean.setAttackInfo(attackInfo);
+            return this;
+        }
+
+        public Builder funCode(String funCode){
+            attackBean.funCode = funCode;
             return this;
         }
 

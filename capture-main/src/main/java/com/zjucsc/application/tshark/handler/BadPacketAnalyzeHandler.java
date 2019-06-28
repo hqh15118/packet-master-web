@@ -30,13 +30,6 @@ import java.util.concurrent.Executors;
 @Slf4j
 public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
 
-    static {
-        AttackCommon.registerAttackCallback(attackBean -> {
-            attackBean.setTimeStamp(new Date().toString());//检测到攻击的时间
-            SocketServiceCenter.updateAllClient(SocketIoEvent.ATTACK_INFO, attackBean);
-        });
-    }
-
     public BadPacketAnalyzeHandler(ExecutorService executor) {
         super(executor);
     }

@@ -17,10 +17,6 @@ public class PacketInfoServiceImpl  implements IPacketInfoService {
 
     @Autowired private PacketInfoMapper packetInfoMapper;
 
-    @Override
-    public void saveAttackInfo(SavedAttackPacket savedAttackPacket) {
-        packetInfoMapper.saveAttackInfo(savedAttackPacket);
-    }
 
     @Override
     public AttackForSelect selectAttackHistory(AttackHistoryBean attackHistoryBean) {

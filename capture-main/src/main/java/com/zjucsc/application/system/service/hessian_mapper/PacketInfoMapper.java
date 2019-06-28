@@ -1,6 +1,7 @@
 package com.zjucsc.application.system.service.hessian_mapper;
 
 import com.zjucsc.application.domain.bean.*;
+import com.zjucsc.application.domain.bean.RightPacketInfo;
 
 import java.util.List;
 
@@ -57,4 +58,6 @@ public interface PacketInfoMapper  {
     List<ArtAttackConfigDB> selectArtAttackConfigPaged(int limit,int page);
 
     String selectPacketRawDataByTimeStamp(String timeStamp);
+
+    void addNormalPacket(RightPacketInfo rightPacketInfo , int gplotId);
 }

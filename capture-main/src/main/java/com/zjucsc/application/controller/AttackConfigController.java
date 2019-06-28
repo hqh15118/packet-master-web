@@ -6,13 +6,13 @@ import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.config.auth.Log;
 import com.zjucsc.application.domain.bean.*;
 import com.zjucsc.application.domain.non_hessian.DeviceMaxFlow;
-import com.zjucsc.application.domain.non_hessian.RightPacketInfo;
+import com.zjucsc.application.domain.bean.RightPacketInfo;
 import com.zjucsc.application.system.service.hessian_mapper.PacketInfoMapper;
+import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.attack.bean.ArtAttackAnalyzeConfig;
 import com.zjucsc.attack.bean.AttackConfig;
 import com.zjucsc.attack.common.AttackCommon;
 import io.swagger.annotations.ApiOperation;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -117,7 +117,9 @@ public class AttackConfigController {
     @ApiOperation("设置正常报文五元组")
     @PostMapping("set_right_packet")
     public BaseResponse setRightPacket(@RequestBody RightPacketInfo rightPacketInfo){
-        return null;
+        packetInfoMapper.addNormalPacket(rightPacketInfo,Common.GPLOT_ID);
+        CommonCacheUtil.addNormalRightPacketInfo(rightPacketInfo);
+        return BaseResponse.OK();
     }
 
 }

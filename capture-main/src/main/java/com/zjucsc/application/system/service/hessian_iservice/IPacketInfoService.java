@@ -6,8 +6,6 @@ import java.util.List;
 
 public interface IPacketInfoService {
 
-    void saveAttackInfo(SavedAttackPacket savedAttackPacket);
-
     AttackForSelect selectAttackHistory(AttackHistoryBean attackHistoryBean);
 
     AttackForSelect exportAttackHistory(AttackInfoExport attackInfoExport);

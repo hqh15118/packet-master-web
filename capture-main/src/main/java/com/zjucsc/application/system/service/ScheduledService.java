@@ -68,6 +68,7 @@ public class ScheduledService {
                 sendPacketStatisticsMsg();
                 sendGraphInfo();
                 statisticFlow();
+                CommonCacheUtil.updateAttackLog();
                 count = 0;
             }
             try {

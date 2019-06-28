@@ -1,5 +1,6 @@
 package com.zjucsc.application.system.service.common_impl;
 
+import com.zjucsc.application.config.KafkaConfig;
 import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.system.service.PacketAnalyzeService;
 import com.zjucsc.application.system.service.common_iservice.CapturePacketService;
@@ -10,6 +11,7 @@ import com.zjucsc.application.tshark.pre_processor.*;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.CommonConfigUtil;
 import com.zjucsc.application.util.PacketDecodeUtil;
+import com.zjucsc.attack.bean.AttackBean;
 import com.zjucsc.attack.common.AttackCommon;
 import com.zjucsc.common.common_util.ByteUtil;
 import com.zjucsc.common.common_util.DBUtil;
@@ -31,10 +33,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
@@ -47,10 +47,35 @@ import static com.zjucsc.application.config.PACKET_PROTOCOL.*;
 @Service
 public class CapturePacketServiceImpl implements CapturePacketService<String,String> {
 
-    @Autowired private PacketAnalyzeService packetAnalyzeService;
+    private final PacketAnalyzeService packetAnalyzeService;
 
     //五元kafka发送线程
-    private final KafkaThread<FvDimensionLayer> FV_D_SENDER = KafkaThread.createNewKafkaThread("fv_dimension","fv_dimension");
+    private final KafkaThread<FvDimensionLayer> FV_D_SENDER = KafkaThread.createNewKafkaThread("fv_dimension",KafkaConfig.SEND_ALL_PACKET_FV_DIMENSION);
+    private final KafkaThread<AttackBean> ATTACK_SENDER = KafkaThread.createNewKafkaThread("packet_attack", KafkaConfig.SEND_PACKET_ATTACK);
+    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+    public CapturePacketServiceImpl(PacketAnalyzeService packetAnalyzeService) {
+        this.packetAnalyzeService = packetAnalyzeService;
+        AttackCommon.registerAttackCallback(attackBean -> {
+            //设置攻击时间戳
+            attackBean.setTimeStamp(simpleDateFormat.format(new Date()));//检测到攻击的时间
+            //通知攻击到达
+            SocketServiceCenter.updateAllClient(SocketIoEvent.ATTACK_INFO, attackBean);
+            //发送攻击信息保存
+            ATTACK_SENDER.sendMsg(attackBean);
+            //统计攻击类型
+            CommonCacheUtil.addNewAttackLog(attackBean.getAttackType());
+        });
+    }
+
+    private void startAllKafkaThread(){
+        FV_D_SENDER.startService();
+        ATTACK_SENDER.startService();
+    }
+    private void stopAllKafkaThread(){
+        FV_D_SENDER.stopService();
+        ATTACK_SENDER.stopService();
+    }
 
     private NewFvDimensionCallback newFvDimensionCallback;
 
@@ -165,7 +190,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     @Async
     @Override
     public CompletableFuture<Exception> start(ProcessCallback<String,String> callback) {
-        FV_D_SENDER.startService();
+        startAllKafkaThread();
         this.callback = callback;
         try {
             callback.start(doStart(fvDimensionLayerAbstractAsyncHandler
@@ -204,7 +229,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             callback.end("end " + basePreProcessor.getClass().getName());
         }
         processorList.clear();
-        FV_D_SENDER.stopService();
+        stopAllKafkaThread();
         return CompletableFuture.completedFuture(null);
     }
 
@@ -290,7 +315,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     @Async
     @Override
     public CompletableFuture<Exception> startSimulate() {
-        FV_D_SENDER.startService();
+        startAllKafkaThread();
         if (!simulateThread.hasStart){
             DefaultPipeLine pipeLine = new DefaultPipeLine("simulate");
             pipeLine.addLast(fvDimensionLayerAbstractAsyncHandler);
@@ -305,7 +330,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     @Async
     @Override
     public CompletableFuture<Exception> stopSimulate() {
-        FV_D_SENDER.stopService();
+        stopAllKafkaThread();
         simulateThread.idleNow();
         return CompletableFuture.completedFuture(null);
     }
