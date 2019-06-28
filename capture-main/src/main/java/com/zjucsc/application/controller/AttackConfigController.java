@@ -2,8 +2,10 @@ package com.zjucsc.application.controller;
 
 
 import com.zjucsc.application.config.Common;
+import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.config.auth.Log;
 import com.zjucsc.application.domain.bean.*;
+import com.zjucsc.application.domain.non_hessian.DeviceMaxFlow;
 import com.zjucsc.application.system.service.hessian_mapper.PacketInfoMapper;
 import com.zjucsc.attack.bean.ArtAttackAnalyzeConfig;
 import com.zjucsc.attack.bean.AttackConfig;
@@ -29,7 +31,7 @@ public class AttackConfigController {
      * @param flowInByte
      * @return
      */
-    @ApiOperation("配置一定时间内的最大流量，超过报警")
+    @ApiOperation("配置一定时间内的总的最大流量，超过报警")
     @GetMapping("max_flow")
     @Log
     public BaseResponse configMaxFlow(@RequestParam int flowInByte){
@@ -37,6 +39,13 @@ public class AttackConfigController {
         return BaseResponse.OK();
     }
 
+    @ApiOperation("配置一定时间内的设备的最大流量，超过报警")
+    @PostMapping("device_max_flow")
+    @Log
+    public BaseResponse configMaxFlowOfDevice(@RequestBody DeviceMaxFlow deviceMaxFlow){
+        StatisticsData.addDeviceMaxFlowConfig(deviceMaxFlow);
+        return BaseResponse.OK();
+    }
 
     @ApiOperation("DOS攻击配置")
     @PostMapping("dos_config")

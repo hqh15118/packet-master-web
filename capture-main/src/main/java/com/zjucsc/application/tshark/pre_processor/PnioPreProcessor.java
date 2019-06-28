@@ -11,7 +11,7 @@ import java.util.List;
 public class PnioPreProcessor extends SinglePreProcessor<PnioPacket> {
     @Override
     public FvDimensionLayer decode(PnioPacket packetInstance) {
-        return packetInstance.getLayers().setFrameProtocols(PACKET_PROTOCOL.PN_IO);
+        return packetInstance.getLayers();
     }
 
     @Override

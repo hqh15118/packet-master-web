@@ -28,21 +28,20 @@ public class Common {
 
     public static volatile boolean SCHEDULE_RUNNING = false;
 
-    /**
-     * 无trailer + fcs，无法解析时间戳的报文数量
-     */
-    public static long NON_TIMESTAMP_PACKET_COUNT = 0;
-
     public static volatile long maxFlowInByte = Long.MAX_VALUE;
 
+    //1 真实场景下， 0 仿真模拟
+    public static int systemRunType = 1;
+
+    /**
+     * 要开启的tshark进程
+     */
     public static final List<String> TSHARK_PRE_PROCESSOR_PROTOCOLS = new ArrayList<>();
 
     /**
      * 是否已经打开某个抓包机器上的抓包服务
      */
     public static List<String> hasStartedHost = new ArrayList<>();
-
-    public static final AtomicInteger FLOW = new AtomicInteger(0);
 
     /**
      * cache7
@@ -93,11 +92,6 @@ public class Common {
     //攻击的统计信息【攻击种类 - 攻击次数】
     public final static ConcurrentHashMap<String,Integer> ATTACK_TYPE_STATICS = new ConcurrentHashMap<>();
 
-    /**
-     * cache3
-     */
-    public final static ConcurrentHashMap<Integer, CollectorState> COLLECTOR_STATE_MAP = new ConcurrentHashMap<>();
-
     public static final ThreadExceptionHandler COMMON_THREAD_EXCEPTION_HANDLER = new ThreadExceptionHandler();
 
     /**
@@ -113,8 +107,6 @@ public class Common {
      * 给tshark用的，表示设置的要捕获的协议集合
      */
     public static final Set<String> CAPTURE_PROTOCOL = new HashSet<>();
-
-    public static final List<Process> TSHARK_RUNNING_PROCESS = new ArrayList<>();
 
     /**
      * cache1

@@ -27,7 +27,7 @@ import static com.zjucsc.application.config.PACKET_PROTOCOL.OTHER;
 @Data
 public class FiveDimensionPacketFilter {
 
-    private static HashMap<String,String> EMPTY_MAP = new HashMap<>();
+    private static HashMap<String,String> EMPTY_MAP = new HashMap<>(0);
 
     private static final String DST_IP_WHITE = "dst_ip_white";
     private static final String SRC_IP_WHITE = "src_ip_white";
@@ -86,7 +86,7 @@ public class FiveDimensionPacketFilter {
         //key : 类型，【目的IP】【白】名单 value：过滤用的map
         HashMap<String,HashMap<String, String>> allMap = new HashMap<>();
         for (Rule rule : filterList) {
-            String str = null;
+//            String str = null;
 //            //白名单
 //            if (rule.getFvDimensionFilter() == 0){
 //                setFilterMap(allMap, fiveDimensionFilter, DST_IP_WHITE, SRC_IP_WHITE, DST_PORT_WHITE, SRC_PORT_WHITE, DST_MAC_ADDRESS_WHITE, SRC_MAC_ADDRESS_WHITE, PROTOCOL_WHITE);

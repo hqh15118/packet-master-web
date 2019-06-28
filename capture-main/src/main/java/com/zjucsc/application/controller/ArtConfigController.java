@@ -55,13 +55,13 @@ public class ArtConfigController {
              iArtConfigService.updateByJSONStr(jsonData);
         }else{
             //添加新的工艺参数配置到数据库
-            //iArtConfigService.insertByJSONStr(jsonData);
+            iArtConfigService.insertByJSONStr(jsonData);
             //初始化工艺参数配置
             //将该工艺参数添加到MAP中
             AppCommonUtil.initArtMap(baseConfig.getTag());
         }
 
-        if (baseConfig.getShowGraph() == 0){
+        if (baseConfig.getShowGraph() == 1){
             CommonCacheUtil.addShowGraphArg(baseConfig.getProtocolId(),baseConfig.getTag());
         }else{
             CommonCacheUtil.removeShowGraph(baseConfig.getProtocolId(),baseConfig.getTag());

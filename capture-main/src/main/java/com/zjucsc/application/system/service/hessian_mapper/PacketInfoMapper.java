@@ -54,5 +54,7 @@ public interface PacketInfoMapper  {
 
     void deleteArtAttackConfig(int id);
 
-    List<PagedArtAttackConfig> selectArtAttackConfigPaged(int limit,int page);
+    List<ArtAttackConfigDB> selectArtAttackConfigPaged(int limit,int page);
+
+    String selectPacketRawDataByTimeStamp(String timeStamp);
 }

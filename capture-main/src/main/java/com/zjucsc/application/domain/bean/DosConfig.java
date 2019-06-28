@@ -8,5 +8,4 @@ public class DosConfig {
     private int coSiteNum;
     private int mulSiteTime;
     private int mulSiteNum;
-
 }

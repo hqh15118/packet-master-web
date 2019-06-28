@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.zjucsc.application.util.PacketDecodeUtil.discernPacket;
+import static com.zjucsc.tshark.TsharkCommon.modbus_filter;
 
 /**
  * #project packet-master-web
@@ -43,7 +44,11 @@ public class ModbusPreProcessor extends SinglePreProcessor<ModbusPacket> {
      */
     @Override
     public FvDimensionLayer decode(ModbusPacket packetInstance) {
-        return packetInstance.layers.setFrameProtocols(
-                discernPacket(packetInstance.layers.frame_protocols[0]));
+        return packetInstance.layers;
+    }
+
+    @Override
+    public String filter() {
+        return modbus_filter == null ? super.filter() : modbus_filter;
     }
 }

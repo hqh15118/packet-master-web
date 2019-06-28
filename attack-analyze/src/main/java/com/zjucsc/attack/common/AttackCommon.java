@@ -125,12 +125,13 @@ public class AttackCommon {
     }
 
     public static void changeArtAttackAnalyzeConfigState(int id,boolean enable){
-        ART_ATTACK_ANALYZE_CONFIGS.forEach(artAttackAnalyzeConfig -> {
+        for (ArtAttackAnalyzeConfig artAttackAnalyzeConfig : ART_ATTACK_ANALYZE_CONFIGS) {
             if (artAttackAnalyzeConfig.getId() == id){
                 artAttackAnalyzeConfig.setEnable(enable);
                 System.out.println(String.format("成功修改工艺参数ID:[%s]状态state:[%s]",String.valueOf(id),String.valueOf(enable)));
+                break;
             }
-        });
+        }
     }
 
     public static void appendArtAnalyze( Map<String,Float> techmap , AttackCallback attackCallback){

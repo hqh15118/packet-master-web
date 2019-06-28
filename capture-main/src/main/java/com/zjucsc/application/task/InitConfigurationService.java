@@ -1,10 +1,7 @@
 package com.zjucsc.application.task;
 
 import com.zjucsc.IProtocolFuncodeMap;
-import com.zjucsc.application.config.Common;
-import com.zjucsc.application.config.PACKET_PROTOCOL;
-import com.zjucsc.application.config.ProtocolCommon;
-import com.zjucsc.application.config.ProtocolIgnore;
+import com.zjucsc.application.config.*;
 import com.zjucsc.application.config.auth.Auth;
 import com.zjucsc.application.domain.bean.BaseResponse;
 import com.zjucsc.application.domain.bean.ConfigurationSetting;
@@ -43,6 +40,7 @@ public class InitConfigurationService implements ApplicationRunner {
     @Autowired private IArtConfigService iArtConfigService;
     @Autowired private IConfigurationSettingService iConfigurationSettingService;
     @Autowired private IProtocolIdService iProtocolIdService;
+    @Autowired private TsharkConfig tsharkConfig;
 
     @Override
     public void run(ApplicationArguments args) throws IllegalAccessException, NoSuchFieldException, ProtocolIdNotValidException {
@@ -82,19 +80,29 @@ public class InitConfigurationService implements ApplicationRunner {
             Common.TSHARK_PRE_PROCESSOR_PROTOCOLS.addAll(virPreProcessor);
         }
 
+        /****************************
+         * 演示/真实场景
+         ***************************/
+        List<String> virType = args.getOptionValues("type");
+        System.out.println("program args [type]: " + virType + "\n*******************");
+        if (virType!=null && virType.size() > 0){
+            Common.systemRunType = Integer.valueOf(virType.get(0));
+        }
+
         /***************************
          * INIT FILTER
          ***************************/
         List<String> virFilter = args.getOptionValues("filter");
-        System.out.println("program args : " + virFilter + "\n*******************");
+        System.out.println("program args : [filter]" + virFilter + "\n*******************");
         if (virFilter!=null && virFilter.size() > 0){
+            //通用filter，特殊的filter如S7Common-Filter/Modbus-Filter会覆盖这个通用的Filter
             TsharkCommon.filter = virFilter.get(0);
         }
         /***************************
          * INIT -M <Tshark Session Reset>
          ***************************/
         List<String> virSessionReset = args.getOptionValues("session");
-        System.out.println("program args : " + virSessionReset + "\n*******************");
+        System.out.println("program args : [session reset ]" + virSessionReset + "\n*******************");
         if (virSessionReset!=null && virSessionReset.size() > 0){
             TsharkCommon.sessionReset = virSessionReset.get(0);
         }
@@ -203,86 +211,19 @@ public class InitConfigurationService implements ApplicationRunner {
         }
 
         /***************************
-         * pn_io
-         **************************/
-//        PnioConfig pnioConfig = new PnioConfig();
-//        pnioConfig.setRange(new float[]{0f,120f});
-//        pnioConfig.setByteoffset(3);
-//        pnioConfig.setBitoffset(0);
-//        pnioConfig.setType("short");
-//        pnioConfig.setLength(2);
-//        pnioConfig.setProtocol(PACKET_PROTOCOL.PN_IO);
-//        pnioConfig.setMacaddress(new byte[]{0x28,0x63,0x36,(byte)0xef,0x31,(byte)0xcc});
-//        pnioConfig.setTag("test");
-//        AppCommonUtil.initArtMap(pnioConfig.getTag());
-//        CommonCacheUtil.addShowGraphArg(pnioConfig.getProtocolId(),pnioConfig.getTag());
-//        ArtDecodeCommon.addArtDecodeConfig(pnioConfig);
-        /***************************
-         * IEC104
-         **************************/
-//        IEC104Config iec104Config = new IEC104Config();
-//        iec104Config.setMVIOAAddress(16385);
-//        //iec104Config.setSetIOAAddress(24592);
-//        iec104Config.setTag("UA");
-//        iec104Config.setProtocol(PACKET_PROTOCOL.IEC104);
-//        iec104Config.setProtocolId(PACKET_PROTOCOL.IEC104_ID);
-//        AppCommonUtil.initArtMap(iec104Config.getTag());
-//        CommonCacheUtil.addShowGraphArg(iec104Config.getProtocolId(),iec104Config.getTag());
-//        ArtDecodeCommon.addArtDecodeConfig(iec104Config);
-
-        /***************************
-         * s7comm test
-         **************************/
-        /*
-        S7Config s7Config = new S7Config();
-        s7Config.setBitoffset(0);
-        s7Config.setByteoffset(6);
-        s7Config.setDatabase(1);
-        s7Config.setLength(4);
-        s7Config.setTag("水位1");
-        s7Config.setType("float");
-        s7Config.setShowGraph(1);
-        s7Config.setProtocol(PACKET_PROTOCOL.S7);
-        AppCommonUtil.initArtMap(s7Config.getTag());
-        CommonCacheUtil.addShowGraphArg(s7Config.getProtocolId(),s7Config.getTag());
-        ArtDecodeCommon.addArtDecodeConfig(s7Config);
-
-        S7Config s7Config1 = new S7Config();
-        s7Config1.setBitoffset(1);
-        s7Config1.setByteoffset(0);
-        s7Config1.setDatabase(2);
-        s7Config1.setLength(0);
-        s7Config1.setType("bool");
-        s7Config1.setTag("开关1");
-        s7Config1.setProtocol(PACKET_PROTOCOL.S7);
-        AppCommonUtil.initArtMap(s7Config1.getTag());
-        CommonCacheUtil.addShowGraphArg(s7Config1.getProtocolId(),s7Config1.getTag());
-        ArtDecodeCommon.addArtDecodeConfig(s7Config1);
-        */
-        /*
-        List<String> list = new ArrayList<String>()
-        {
-            {
-                add("水位1");
-                add("<");
-                add("100");
-                add("&&");
-                add("开关1");
-                add("=");
-                add("1");
-            }
-        };
-        */
-
-        //init art detection
-        //AttackCommon.addArtAttackAnalyzeConfig(new ArtAttackAnalyzeConfig(list,"test - -- - - "));
-
-        /***************************
          * INIT PROTOCOL COMMON
          * 1. IEC104
          * 2.
          **************************/
         ProtocolCommon.init();
+
+        /****************************
+         *
+         * INIT TSHARK COMMON CONFIG
+         *
+         ***************************/
+        TsharkCommon.s7comm_filter = tsharkConfig.getS7comm_filter();
+        TsharkCommon.modbus_filter = tsharkConfig.getModbus_filter();
 
         /**************************
          *  PRINT INIT RESULT

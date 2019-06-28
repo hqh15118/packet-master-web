@@ -46,6 +46,7 @@ public interface ArtConfigMapper extends BaseMapper<BaseArtConfig> {
     void changeArtConfigShowState(ArtArgShowState artArgShowState);
 
     BaseResponse updateByJSONStr(String jsonData);
+
     BaseResponse insertByJSONStr(String jsonData);
 
     List<ConfigValue> selectArtNameByProtocolName(String protocol);

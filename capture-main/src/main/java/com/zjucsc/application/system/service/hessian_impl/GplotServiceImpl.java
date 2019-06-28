@@ -32,10 +32,8 @@ public class GplotServiceImpl extends BaseServiceImpl<Gplot,GplotMapper> impleme
         return BaseResponse.OK();
     }
 
-    @Async
     @Override
     public BaseResponse changeGplot(int gplotId) throws ProtocolIdNotValidException {
-
         StringBuilder sb = new StringBuilder();
         //移除旧组态图上的所有规则
         CommonOptFilterUtil.removeAllOptFilter();
@@ -55,7 +53,7 @@ public class GplotServiceImpl extends BaseServiceImpl<Gplot,GplotMapper> impleme
             //add all fv filters to cache
             CommonFvFilterUtil.addOrUpdateFvFilter(deviceNumberAndIp.deviceIp, rules,
                     sb.append("device_name-").append(deviceNumberAndIp.deviceNumber).
-                    append(" g_plot_id-").append(gplotId).toString());
+                    append(" gplot_id-").append(gplotId).toString());
             //load all opt dimension rule from opt filter table by device_number + gplot_id
             List<OptFilterForFront> optFilters = iDeviceService.loadAllOptFilterByDeviceNumberAndGplotId(deviceNumberAndIp.deviceNumber,gplotId);
             //add all opt filters to cache

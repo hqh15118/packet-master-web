@@ -11,7 +11,7 @@ import java.util.List;
 public class TcpPreProcessor extends SinglePreProcessor<TcpPacket> {
     @Override
     public FvDimensionLayer decode(TcpPacket packetInstance) {
-        return packetInstance.layers.setFrameProtocols(PACKET_PROTOCOL.TCP);
+        return packetInstance.layers;
     }
 
     @Override

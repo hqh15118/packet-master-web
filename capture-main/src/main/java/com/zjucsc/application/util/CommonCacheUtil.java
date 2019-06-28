@@ -292,6 +292,10 @@ public class CommonCacheUtil {
         if (fiveDimensionAnalyzer!=null){
             return fiveDimensionAnalyzer;
         }
+        if (!layer.ip_dst[0].equals("--")){
+            //报文有IP地址
+            return null;
+        }
         return Common.FV_DIMENSION_FILTER_PRO.get(layer.eth_dst[0]);
     }
 

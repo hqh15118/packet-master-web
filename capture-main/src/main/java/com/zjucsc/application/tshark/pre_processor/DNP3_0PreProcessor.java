@@ -7,8 +7,6 @@ import com.zjucsc.tshark.pre_processor.SinglePreProcessor;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.zjucsc.application.util.PacketDecodeUtil.discernPacket;
-
 /**
  * #project packet-master-web
  *
@@ -18,8 +16,7 @@ import static com.zjucsc.application.util.PacketDecodeUtil.discernPacket;
 public class DNP3_0PreProcessor extends SinglePreProcessor<Dnp3_0Packet> {
     @Override
     public FvDimensionLayer decode(Dnp3_0Packet packetInstance) {
-        return packetInstance.layers.setFrameProtocols(
-                discernPacket(packetInstance.layers.frame_protocols[0]));
+        return packetInstance.layers;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.zjucsc.application.tshark.pre_processor;
 
+import com.zjucsc.tshark.TsharkCommon;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import com.zjucsc.tshark.packets.S7CommPacket;
 import com.zjucsc.tshark.pre_processor.SinglePreProcessor;
@@ -41,8 +42,11 @@ public class S7CommPreProcessor extends SinglePreProcessor<S7CommPacket> {
 
     @Override
     public FvDimensionLayer decode(S7CommPacket packetInstance) {
-        return packetInstance.layersX.setFrameProtocols(
-                discernPacket(packetInstance.layersX.frame_protocols[0],
-                        packetInstance.layersX.s7comm_header_rosctr[0]));
+        return packetInstance.layersX;
+    }
+
+    @Override
+    public String filter() {
+        return TsharkCommon.s7comm_filter == null ? super.filter() : TsharkCommon.s7comm_filter;
     }
 }
