@@ -11,6 +11,7 @@ import com.zjucsc.application.util.AppCommonUtil;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.PacketDecodeUtil;
 import com.zjucsc.art_decode.ArtDecodeCommon;
+import com.zjucsc.attack.bean.AttackBean;
 import com.zjucsc.attack.common.AttackCommon;
 import com.zjucsc.attack.common.AttackTypePro;
 import com.zjucsc.socket_io.SocketIoEvent;
@@ -76,12 +77,14 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
         FiveDimensionAnalyzer fiveDimensionAnalyzer;
         //根据报文tag，定位到具体的报文过滤器进行分析
         if ((fiveDimensionAnalyzer = CommonCacheUtil.getFvDimensionFilter(layer)) != null) {
-            BadPacket badPacket = ((BadPacket) fiveDimensionAnalyzer.analyze(layer));
-            if (badPacket != null) {
+            AttackBean attackBean = ((AttackBean) fiveDimensionAnalyzer.analyze(layer));
+            if (attackBean != null) {
                 String deviceNumber = CommonCacheUtil.getTargetDeviceNumberByTag(layer.ip_dst[0],layer.eth_dst[0]);
-                badPacket.setDeviceNumber(deviceNumber);
+                attackBean.setDeviceNumber(deviceNumber);
                 //恶意报文统计
-                statisticsBadPacket(badPacket, deviceNumber);
+                statisticsBadPacket(deviceNumber);
+                //回调对恶意报文进行发送和统计
+                AttackCommon.appendFvDimensionError(attackBean);
             } else {
                 //五元组正常，再进行操作的匹配
                 //功能码分析
@@ -95,12 +98,13 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
         } else {
             //忽略广播包
             if (!layer.eth_dst[0].equals("ff:ff:ff:ff:ff:ff")&&!layer.ip_dst[0].equals("255:255:255:255")) {
-                BadPacket badPacket = new BadPacket.Builder(AttackTypePro.UN_KNOW_DEVICE)
-                        .set_five_Dimension(layer)
-                        .setDangerLevel(DangerLevel.DANGER)
-                        .setComment("未知报文来源")
+                AttackBean attackBean = new AttackBean.Builder()
+                        .attackInfo("未定义该报文对应的设备")
+                        .attackType(AttackTypePro.UN_KNOW_DEVICE)
+                        .fvDimension(layer)
                         .build();
-                SocketServiceCenter.updateAllClient(SocketIoEvent.BAD_PACKET, badPacket);
+                //回调对恶意报文进行发送和统计
+                AttackCommon.appendFvDimensionError(attackBean);
             }
         }
     }
@@ -109,7 +113,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
         //根据目的IP/MAC地址获取对应的功能码分析器
         ConcurrentHashMap<String, OperationAnalyzer> map = CommonCacheUtil.getOptAnalyzer(layer);
         if (map != null){
-            OperationAnalyzer operationAnalyzer = null;
+            OperationAnalyzer operationAnalyzer;
             /**
              * 只有定义了分析器的报文[即配置了过滤规则的]才需要功能码解析，其他的报文直接略过
              * layer.frame_protocols[0] 这个协议已经被统一过了
@@ -119,18 +123,12 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
              * @see Common 的 【PROTOCOL_STR_TO_INT】
              */
             if ((operationAnalyzer = map.get(layer.frame_protocols[0]))!=null){
-                BadPacket badPacket;
-                badPacket = (BadPacket) operationAnalyzer.analyze(funCode,layer);
-                if (badPacket!=null){
+                AttackBean attackBean;
+                attackBean = (AttackBean) operationAnalyzer.analyze(funCode,layer);
+                if (attackBean!=null){
                     String deviceNumber = CommonCacheUtil.getTargetDeviceNumberByTag(layer.ip_dst[0],layer.eth_dst[0]);
-                    badPacket.setDeviceNumber(deviceNumber);
-                    statisticsBadPacket(badPacket , deviceNumber);
-                }else{
-//                    Object res = ART_FILTER.analyze(layer.tcp_payload[0] , layer.frame_protocols[0]);
-//                    System.out.println(res);
-//                    if (res!=null){
-//                        SocketServiceCenter.updateAllClient(SocketIoEvent.GRAPH_INFO,res);
-//                    }
+                    attackBean.setDeviceNumber(deviceNumber);
+                    statisticsBadPacket(deviceNumber);
                 }
             }else{
                 log.debug("can not find protocol {} 's operation analyzer" , layer.frame_protocols[0]);
@@ -138,35 +136,9 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
         }
     }
 
-    private static Executor sendBadPacketThreadPool = Executors.newSingleThreadExecutor(
-            r -> {
-                Thread thread = new Thread(r);
-                thread.setName("-BadPacketAnalyzeHandler-");
-                return thread;
-            }
-    );
-
-    private void sendBadPacket(BadPacket badPacket) {
-        sendBadPacketThreadPool.execute(new Runnable() {
-            @Override
-            public void run() {
-                //System.out.println("send bad packet : " + badPacket);
-                //System.out.println("**********************");
-                //TODO KAFKA 发送到数据库
-                SocketServiceCenter.updateAllClient(SocketIoEvent.BAD_PACKET,badPacket);
-            }
-        });
-    }
-
-    private void statisticsBadPacket(BadPacket badPacket, String deviceNumber){
-        sendBadPacket(badPacket);       //发送恶意报文
-        if (badPacket.getDangerLevel() == DangerLevel.VERY_DANGER){     //统计恶意报文
-            StatisticsData.attackNumber.incrementAndGet();
-            StatisticsData.increaseAttackByDevice(deviceNumber);
-        }else {                                                         //统计异常报文
-            StatisticsData.exceptionNumber.incrementAndGet();           //总数+1
-            StatisticsData.increaseExceptionByDevice(deviceNumber);     //按设备+1
-        }
+    private void statisticsBadPacket(String deviceNumber){
+        StatisticsData.attackNumber.incrementAndGet();
+        StatisticsData.increaseAttackByDevice(deviceNumber);
     }
 
 }

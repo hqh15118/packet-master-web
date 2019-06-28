@@ -2,6 +2,7 @@ package com.zjucsc.application.controller;
 
 import com.zjucsc.application.config.auth.Log;
 import com.zjucsc.application.domain.bean.BaseResponse;
+import com.zjucsc.application.domain.bean.DeviceProtocol;
 import com.zjucsc.application.domain.bean.Rule;
 import com.zjucsc.application.system.service.hessian_iservice.IFvDimensionFilterService;
 import com.zjucsc.application.util.CommonCacheUtil;
@@ -72,10 +73,8 @@ public class FvDimensionFilterController {
     @Log
     @ApiOperation("添加协议白名单")
     @PostMapping("right_protocol")
-    public BaseResponse addRightProtocolToCache(@RequestBody List<String> rightProtocols){
-        for (String rightProtocol : rightProtocols) {
-            CommonCacheUtil.addWhiteProtocolToCache(rightProtocol);
-        }
-        return null;
+    public BaseResponse addRightProtocolToCache(@RequestBody DeviceProtocol rightProtocols){
+        CommonCacheUtil.addWhiteProtocolToCache(rightProtocols.getDeviceNumber(),rightProtocols.getProtocolName());
+        return BaseResponse.OK();
     }
 }

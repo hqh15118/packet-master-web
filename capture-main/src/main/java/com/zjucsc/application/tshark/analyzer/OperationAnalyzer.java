@@ -4,6 +4,8 @@ import com.zjucsc.application.config.DangerLevel;
 import com.zjucsc.application.tshark.domain.BadPacket;
 import com.zjucsc.application.tshark.filter.OperationPacketFilter;
 import com.zjucsc.application.util.CommonConfigUtil;
+import com.zjucsc.attack.bean.AttackBean;
+import com.zjucsc.attack.common.AttackTypePro;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.tshark.analyzer.AbstractAnalyzer;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
@@ -24,21 +26,14 @@ public class OperationAnalyzer extends AbstractAnalyzer<OperationPacketFilter<In
         int fun_code = ((int) objs[0]);
         FvDimensionLayer layer = ((FvDimensionLayer) objs[1]);
         if (!getAnalyzer().getWhiteMap().containsKey(fun_code)){
-            try {
-                if(fun_code!=-1) {
-                    return new BadPacket.Builder(layer.frame_protocols[0])
-                            .setComment(attackrec(layer.frame_protocols[0], fun_code))//具体报警信息
-                            .set_five_Dimension(layer)
-                            .setDangerLevel(DangerLevel.VERY_DANGER)
-                            .setFun_code(fun_code)
-                            .setOperation(getOperation(layer.frame_protocols[0], fun_code))
-                            .build();
-                }
-                return null;
-
-            } catch (ProtocolIdNotValidException e) {
-                log.error("protocol <==> ID not valid " , e);
+            if(fun_code!=-1) {
+                return new AttackBean.Builder()
+                        .attackInfo(attackrec(layer.frame_protocols[0], fun_code))
+                        .attackType(AttackTypePro.OPERATION)
+                        .fvDimension(layer)
+                        .build();
             }
+            return null;
         }
         return null;
     }

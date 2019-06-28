@@ -83,4 +83,5 @@ public interface PACKET_PROTOCOL {
     int LLDP_ID = 22;
     int UNKNOWN_ID = -100;
     int PN_IO_ID = 23;
+    int S7_User_data_ID = 24;
 }

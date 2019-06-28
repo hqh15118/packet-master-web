@@ -348,6 +348,15 @@ public class CommonCacheUtil {
         }
     }
 
+    public static boolean isNormalWhiteProtocol(String deviceNumber,String protocolName){
+        Map<String,String> whiteProtocolMap = RIGHT_PROTOCOL_LIST.get(deviceNumber);
+        if (whiteProtocolMap!=null){
+            return whiteProtocolMap.containsKey(protocolName);
+        }else{
+            return false;
+        }
+    }
+
     /************************************
      *
      * 通用正常报文 [协议：报文List]

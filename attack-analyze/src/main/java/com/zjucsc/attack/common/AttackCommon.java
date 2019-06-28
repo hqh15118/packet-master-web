@@ -95,6 +95,8 @@ public class AttackCommon {
 
     /**
      * 添加五元组进行分析
+     * DOS 2019/6/28
+     *
      * @param layer 五元组
      */
     public static void appendFvDimension(final FvDimensionLayer layer){
@@ -106,13 +108,7 @@ public class AttackCommon {
             String description = entry.append(layer);
             if (description!=null){
                 attackCallback.artCallback(AttackBean.builder().attackType(AttackTypePro.DOS).attackInfo(description)
-                        .srcIp(layer.ip_src[0])
-                        .dstIp(layer.ip_dst[0])
-                        .srcMac(layer.eth_src[0])
-                        .dstMac(layer.eth_dst[0])
-                        .srcPort(layer.src_port[0])
-                        .dstPort(layer.dst_port[0])
-                        .funCode(layer.funCode)
+                        .fvDimension(layer)
                         .build());
             }
         }
@@ -154,5 +150,13 @@ public class AttackCommon {
                                         AttackCallback attackCallback){
         ATTACK_MAIN_SERVICE.execute(new ArtAttackAnalyzeTask(expression, techmap, description)
         .setCallback(attackCallback));
+    }
+
+    /**
+     * 五元组异常
+     * @param attackBean
+     */
+    public static void appendFvDimensionError(AttackBean attackBean){
+        attackCallback.artCallback(attackBean);
     }
 }

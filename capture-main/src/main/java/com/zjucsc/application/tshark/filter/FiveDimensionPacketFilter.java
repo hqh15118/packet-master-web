@@ -1,5 +1,7 @@
 package com.zjucsc.application.tshark.filter;
 
+import com.zjucsc.application.util.CommonCacheUtil;
+import com.zjucsc.attack.bean.AttackBean;
 import com.zjucsc.attack.common.AttackTypePro;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.DangerLevel;
@@ -202,25 +204,28 @@ public class FiveDimensionPacketFilter {
         allMap.get(type).put(str , str);
     }
 
-    public BadPacket OK(FvDimensionLayer layer, Map<String,Object> white_protocol){
-        if(white_protocol.containsKey(layer.frame_protocols[0]))//判断是否在白名单协议之内
-        {
-            return null;
+    public AttackBean OK(FvDimensionLayer layer){
+        String deviceNumber = CommonCacheUtil.getTargetDeviceNumberByTag(layer.ip_dst[0],layer.eth_dst[0]);
+        if (deviceNumber!=null) {
+            if (CommonCacheUtil.isNormalWhiteProtocol(deviceNumber,layer.frame_protocols[0]))//判断是否在白名单协议之内
+            {
+                return null;
+            }
         }
         if (!layer.ip_dst[0].equals("--") && !dstIpWhiteMap.containsKey(layer.ip_dst[0])){
-            return getBadPacket(layer,"目的设备未知",DangerLevel.DANGER);//目的IP不在白名单
+            return getBadPacket(layer,"目的设备未知");//目的IP不在白名单
         }
         if (!dstMacAddressWhite.containsKey(layer.eth_dst[0])){
-            return getBadPacket(layer,"目的设备未知",DangerLevel.DANGER);//目的mac不在白名单
+            return getBadPacket(layer,"目的设备未知");//目的mac不在白名单
         }
         if (!layer.ip_src[0].equals("--") && !srcIpWhiteMap.containsKey(layer.ip_src[0])){
-            return getBadPacket(layer,"非法站点入侵",DangerLevel.DANGER);//源ip不在白名单
+            return getBadPacket(layer,"非法站点入侵");//源ip不在白名单
         }
         if (!srcMacAddressWhite.containsKey(layer.eth_src[0])){
-            return getBadPacket(layer,"非法站点入侵",DangerLevel.DANGER);//源mac不在白名单
+            return getBadPacket(layer,"非法站点入侵");//源mac不在白名单
         }
         if (!protocolWhiteMap.containsKey(layer.frame_protocols[0])){
-            return getBadPacket(layer,"设备发送非法报文",DangerLevel.DANGER);//协议不在白名单
+            return getBadPacket(layer,"设备发送非法报文");//协议不在白名单
         }
 //        if (!srcPortWhiteMap.containsKey(layer.src_port[0])){
 //            return getBadPacket(layer,"源端口不在白名单中",DangerLevel.DANGER);
@@ -231,53 +236,46 @@ public class FiveDimensionPacketFilter {
         return null;
     }
 
-    public BadPacket ERROR(FvDimensionLayer layer){
+    public AttackBean ERROR(FvDimensionLayer layer){
         if (protocolBlackMap.containsKey(layer.frame_protocols[0])){
-            return getBadPacket(layer, "黑名单协议",DangerLevel.VERY_DANGER);
+            return getBadPacket(layer, "黑名单协议");
         }
         if (srcPortBlackMap.containsKey(layer.src_port[0])){
-            return getBadPacket(layer, "黑名单源端口",DangerLevel.VERY_DANGER);
+            return getBadPacket(layer, "黑名单源端口");
         }
         if (dstPortBlackMap.containsKey(layer.dst_port[0])){
-            return getBadPacket(layer, "黑名单目的端口",DangerLevel.VERY_DANGER);
+            return getBadPacket(layer, "黑名单目的端口");
         }
         if (srcIpBlackMap.containsKey(layer.ip_src[0])){
-            return getBadPacket(layer, "黑名单源IP",DangerLevel.VERY_DANGER);
+            return getBadPacket(layer, "黑名单源IP");
         }
         if (dstIpBlackMap.containsKey(layer.ip_dst[0])){
-            return getBadPacket(layer, "黑名单目的IP",DangerLevel.VERY_DANGER);
+            return getBadPacket(layer, "黑名单目的IP");
         }
         if (dstMacAddressBlack.containsKey(layer.eth_dst[0])){
-            return getBadPacket(layer, "黑名单目的MAC",DangerLevel.VERY_DANGER);
+            return getBadPacket(layer, "黑名单目的MAC");
         }
         if (srcMacAddressBlack.containsKey(layer.eth_src[0])){
-            return getBadPacket(layer, "黑名单源MAC",DangerLevel.VERY_DANGER);
+            return getBadPacket(layer, "黑名单源MAC");
         }
         return null;
     }
 
-    private BadPacket getBadPacket(FvDimensionLayer layer, String comment,DangerLevel dangerLevel) {
-        BadPacket badPacketBuilder = new BadPacket();
-        badPacketBuilder.setLayer(layer);
-        badPacketBuilder.setDangerLevel(dangerLevel);
-        badPacketBuilder.setBadType(AttackTypePro.FV_DIMENSION);
-        badPacketBuilder.setComment(comment);
-        return badPacketBuilder;
+    private AttackBean getBadPacket(FvDimensionLayer layer, String comment) {
+        return new AttackBean.Builder()
+                .fvDimension(layer)
+                .attackType(AttackTypePro.FV_DIMENSION)
+                .attackInfo(comment).build();
     }
 
     @Override
     public String toString() {
         return "FiveDimensionPacketFilter{" +
                 "srcIpWhiteMap=" + srcIpWhiteMap +
-                ", srcIpBlackMap=" + srcIpBlackMap +
                 ", srcPortWhiteMap=" + srcPortWhiteMap +
-                ", srcPortBlackMap=" + srcPortBlackMap +
                 ", protocolWhiteMap=" + protocolWhiteMap +
-                ", protocolBlackMap=" + protocolBlackMap +
                 ", dstIpWhiteMap=" + dstIpWhiteMap +
-                ", dstIpBlackMap=" + dstIpBlackMap +
                 ", dstPortWhiteMap=" + dstPortWhiteMap +
-                ", dstPortBlackMap=" + dstPortBlackMap +
                 ", filterName='" + filterName + '\'' +
                 '}';
     }

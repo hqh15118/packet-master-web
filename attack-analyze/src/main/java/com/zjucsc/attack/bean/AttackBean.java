@@ -1,5 +1,7 @@
 package com.zjucsc.attack.bean;
 
+import com.zjucsc.tshark.packets.FvDimensionLayer;
+
 /**
  * #project packet-master-web
  *
@@ -25,6 +27,7 @@ public class AttackBean {
     private String dstPort;
     private String protocolName;
     private String funCode;
+    private String deviceNumber;
 
     public String getAttackInfo() {
         return attackInfo;
@@ -54,6 +57,14 @@ public class AttackBean {
         return new Builder();
     }
 
+    public String getDeviceNumber() {
+        return deviceNumber;
+    }
+
+    public void setDeviceNumber(String deviceNumber) {
+        this.deviceNumber = deviceNumber;
+    }
+
     public static class Builder{
 
         private AttackBean attackBean;
@@ -67,48 +78,24 @@ public class AttackBean {
             return this;
         }
 
-        public Builder srcMac(String srcMac){
-            attackBean.srcMac = srcMac;
-            return this;
-        }
-
-        public Builder dstMac(String dstMac){
-            attackBean.dstMac = dstMac;
-            return this;
-        }
-
-        public Builder srcIp(String srcIp){
-            attackBean.srcIp = srcIp;
-            return this;
-        }
-
-        public Builder dstIp(String dstIp){
-            attackBean.dstIp = dstIp;
-            return this;
-        }
-
-        public Builder srcPort(String srcPort){
-            attackBean.srcPort = srcPort;
-            return this;
-        }
-
-        public Builder dstPort (String dstPort){
-            attackBean.dstPort = dstPort;
-            return this;
-        }
-
         public Builder attackInfo(String attackInfo){
             attackBean.setAttackInfo(attackInfo);
             return this;
         }
 
-        public Builder funCode(String funCode){
-            attackBean.funCode = funCode;
+        public Builder timeStamp(String timeStamp){
+            attackBean.timeStamp = timeStamp;
             return this;
         }
 
-        public Builder timeStamp(String timeStamp){
-            attackBean.timeStamp = timeStamp;
+        public Builder fvDimension(FvDimensionLayer layer){
+            attackBean.funCode = layer.funCode;
+            attackBean.srcIp = layer.ip_src[0];
+            attackBean.dstIp = layer.ip_dst[0];
+            attackBean.srcPort = layer.src_port[0];
+            attackBean.dstPort = layer.dst_port[0];
+            attackBean.srcMac = layer.eth_src[0];
+            attackBean.dstMac = layer.eth_dst[0];
             return this;
         }
 

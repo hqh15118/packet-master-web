@@ -56,6 +56,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
 
     public CapturePacketServiceImpl(PacketAnalyzeService packetAnalyzeService) {
         this.packetAnalyzeService = packetAnalyzeService;
+        //所有攻击报文的入口
         AttackCommon.registerAttackCallback(attackBean -> {
             //设置攻击时间戳
             attackBean.setTimeStamp(simpleDateFormat.format(new Date()));//检测到攻击的时间
