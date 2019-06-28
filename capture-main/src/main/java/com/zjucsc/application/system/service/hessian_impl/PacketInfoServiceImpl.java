@@ -83,4 +83,9 @@ public class PacketInfoServiceImpl  implements IPacketInfoService {
         return new PacketHistoryWrapper(time,data);
     }
 
+    @Override
+    public String selectPacketRawDataByTimeStamp(String timeStamp) {
+        return null;
+    }
+
 }

@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
  * @author hongqianhui
  * #create_time 2019-05-04 - 22:00
  */
-@Slf4j
 public class ThreadExceptionHandler implements Thread.UncaughtExceptionHandler{
 
     @Override
