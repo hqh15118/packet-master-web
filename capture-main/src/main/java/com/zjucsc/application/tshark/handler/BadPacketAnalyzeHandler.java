@@ -1,6 +1,9 @@
 package com.zjucsc.application.tshark.handler;
 
-import com.zjucsc.application.config.*;
+import com.zjucsc.application.config.Common;
+import com.zjucsc.application.config.DangerLevel;
+import com.zjucsc.application.config.PACKET_PROTOCOL;
+import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
 import com.zjucsc.application.tshark.domain.BadPacket;
@@ -8,8 +11,8 @@ import com.zjucsc.application.util.AppCommonUtil;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.PacketDecodeUtil;
 import com.zjucsc.art_decode.ArtDecodeCommon;
-import com.zjucsc.attack.bean.AttackBean;
 import com.zjucsc.attack.common.AttackCommon;
+import com.zjucsc.attack.common.AttackTypePro;
 import com.zjucsc.socket_io.SocketIoEvent;
 import com.zjucsc.socket_io.SocketServiceCenter;
 import com.zjucsc.tshark.handler.AbstractAsyncHandler;
@@ -17,6 +20,7 @@ import com.zjucsc.tshark.packets.FvDimensionLayer;
 import com.zjucsc.tshark.packets.UndefinedPacket;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
@@ -25,6 +29,13 @@ import java.util.concurrent.Executors;
 
 @Slf4j
 public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
+
+    static {
+        AttackCommon.registerAttackCallback(attackBean -> {
+            attackBean.setTimeStamp(new Date().toString());//检测到攻击的时间
+            SocketServiceCenter.updateAllClient(SocketIoEvent.ATTACK_INFO, attackBean);
+        });
+    }
 
     public BadPacketAnalyzeHandler(ExecutorService executor) {
         super(executor);
@@ -62,13 +73,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
         if(res!=null){
             //数据发送
             StatisticsData.addArtMapData(res);
-            AttackCommon.appendArtAnalyze(res, description -> {
-                SocketServiceCenter.updateAllClient(SocketIoEvent.ATTACK_INFO,
-                        AttackBean.builder().attackInfo(description)
-                        .attackType(AttackTypePro.HAZARD_ART)
-                        .fvDimensionLayer(layer)
-                        .build());
-            });
+            AttackCommon.appendArtAnalyze(res);
         }
         return null;
     }
@@ -80,7 +85,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
         if ((fiveDimensionAnalyzer = CommonCacheUtil.getFvDimensionFilter(layer)) != null) {
             BadPacket badPacket = ((BadPacket) fiveDimensionAnalyzer.analyze(layer));
             if (badPacket != null) {
-                String deviceNumber = CommonCacheUtil.getTargetDeviceNumberByTag(layer);
+                String deviceNumber = CommonCacheUtil.getTargetDeviceNumberByTag(layer.ip_dst[0],layer.eth_dst[0]);
                 badPacket.setDeviceNumber(deviceNumber);
                 //恶意报文统计
                 statisticsBadPacket(badPacket, deviceNumber);
@@ -124,7 +129,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
                 BadPacket badPacket;
                 badPacket = (BadPacket) operationAnalyzer.analyze(funCode,layer);
                 if (badPacket!=null){
-                    String deviceNumber = CommonCacheUtil.getTargetDeviceNumberByTag(layer);
+                    String deviceNumber = CommonCacheUtil.getTargetDeviceNumberByTag(layer.ip_dst[0],layer.eth_dst[0]);
                     badPacket.setDeviceNumber(deviceNumber);
                     statisticsBadPacket(badPacket , deviceNumber);
                 }else{

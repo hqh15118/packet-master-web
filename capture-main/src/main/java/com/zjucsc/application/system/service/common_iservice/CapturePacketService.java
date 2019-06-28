@@ -9,4 +9,16 @@ public interface CapturePacketService<S,E> {
     CompletableFuture<Exception> start(ProcessCallback<S, E> callback);
     CompletableFuture<Exception> stop();
     void setNewFvDimensionCallback(NewFvDimensionCallback newFvDimensionCallback);
+
+    /**
+     * 开始仿真
+     * @return 异常
+     */
+    CompletableFuture<Exception> startSimulate();
+
+    /**
+     * 结束仿真
+     * @return 异常
+     */
+    CompletableFuture<Exception> stopSimulate();
 }

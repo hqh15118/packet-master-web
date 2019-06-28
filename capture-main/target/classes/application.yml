@@ -2,16 +2,20 @@ myconfig:
   #global_address : 192.168.1.106
   #global_address : 192.168.0.114
   #global_address : 10.180.81.207
-  global_address : 192.168.0.161
+  global_address : localhost
   admin_server_port : 8989
   packet_master_web_port : 8080
   kafka-server-url : 10.15.191.100:9092
   openAOPLog : true
   sendAopLog : false
-  showErrorOnly : false
+  showErrorOnly : true
   redis_ip : 10.15.191.100
   redis_port : 6379
   openMapperAop : true
+
+tshark-config:
+  modbus_filter : tcp
+  s7comm_filter : not tcp
 
 hessian-config:
   hessian-url: 10.15.191.100:36955/hessian
@@ -27,7 +31,7 @@ hessian-config:
   art_filter : http://${hessian-config.hessian-url}/ArtifactFilterMapper.hessian
   attack_info : http://${hessian-config.hessian-url}/AttackInfoMapper.hessian
   packet_history: http://${hessian-config.hessian-url}/PacketInfoMapper.hessian
-
+  attack_config : http://${hessian-config.hessian-url}/AttackConfigMapper.hessian
 
 server:
   port: ${myconfig.packet_master_web_port}

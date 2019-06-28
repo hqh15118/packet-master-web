@@ -19,12 +19,12 @@ public class CommonOptFilterUtil {
     /**
      *
      * @param deviceIp 设备的IP
-     * @param optFilters 过滤器集合
+     * @param optFilterForFront 过滤器集合
      * @param filterName 过滤器名字，随便写一个就好
      * @throws ProtocolIdNotValidException
      */
     public static void addOrUpdateAnalyzer(String deviceIp , OptFilterForFront optFilterForFront , String filterName) throws ProtocolIdNotValidException {
-        ConcurrentHashMap<String, OperationAnalyzer> analyzerMap = null;
+        ConcurrentHashMap<String, OperationAnalyzer> analyzerMap;
         int type = 0;
         if ((analyzerMap = Common.OPERATION_FILTER_PRO.get(deviceIp)) == null){
             //新建设备

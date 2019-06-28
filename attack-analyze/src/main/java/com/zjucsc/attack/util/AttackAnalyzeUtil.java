@@ -45,11 +45,4 @@ public class AttackAnalyzeUtil {
         }
     }
 
-    public static void analyzePacketStatus(FvDimensionLayer layer){
-        for (IAttack iAttack : ATTACK_LIST) {
-            if (iAttack.analyze(layer)){
-                //AttackCommon.updateAll();
-            }
-        }
-    }
 }

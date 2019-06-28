@@ -1,8 +1,7 @@
 package com.zjucsc.application.util;
 
-import com.zjucsc.application.config.Common;
-import com.zjucsc.application.domain.bean.CollectorState;
 import com.zjucsc.common.common_util.ByteUtil;
+import com.zjucsc.tshark.bean.CollectorState;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import com.zjucsc.tshark.packets.S7CommPacket;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.zjucsc.application.config.PACKET_PROTOCOL.*;
 
@@ -21,6 +21,12 @@ import static com.zjucsc.application.config.PACKET_PROTOCOL.*;
  */
 @Slf4j
 public class PacketDecodeUtil {
+
+
+    /**
+     * cache3
+     */
+    private final static ConcurrentHashMap<Integer, CollectorState> COLLECTOR_STATE_MAP = new ConcurrentHashMap<>();
 
     /*
      *  string : 03:00:00:1f:02:f0:80:32:01:00:00:cc:c1:00:0e:00:00:04:01:12:0a:10:02:00:11:00:01:84:00:00:20
@@ -93,7 +99,6 @@ public class PacketDecodeUtil {
     private static int offset3 = Byte.toUnsignedInt((byte)0b11111000);
     private static int offset4 = Byte.toUnsignedInt((byte)0b11111110);
     private static int offset5 = Byte.toUnsignedInt((byte)0b11110000);
-
 
     /**
      *
@@ -177,13 +182,13 @@ public class PacketDecodeUtil {
             return MODBUS;
         }else if(protocolStack.endsWith("s7comm"))
         {
-            String rosctr = ((String) otherInfo[0]);
+            S7CommPacket.LayersBean layersX = ((S7CommPacket.LayersBean) otherInfo[0]);
+            String rosctr = layersX.s7comm_header_rosctr[0];
             if (S7CommPacket.ACK_DATA.equals(rosctr)){
                 return S7_Ack_data;
             }else if (S7CommPacket.JOB.equals(rosctr)) {
                 return S7_JOB;
             }else{
-                //log.error("S7协议无法分为ACK_DATA/JOB，返回s7comm");
                 return S7;
             }
         }
@@ -200,8 +205,21 @@ public class PacketDecodeUtil {
             return UDP;
         }
         else{
+            return getUnDefinedPacketProtocol(protocolStack);
+        }
+    }
+
+    public static String getUnDefinedPacketProtocol(String protocolStack){
+        StringBuilder sb = stringBuilderThreadLocal.get();
+        sb.delete(0,sb.length());
+        int index = protocolStack.lastIndexOf(":");
+        if (index < 0){
             return protocolStack;
         }
+        for (int i = index + 1 ; i < protocolStack.length() ; i ++){
+            sb.append(protocolStack.charAt(i));
+        }
+        return sb.toString();
     }
 
     private static final int STATE_REF = 0b00000111;
@@ -220,12 +238,12 @@ public class PacketDecodeUtil {
         }
 
         int start = payload.length - offset;//payload中自定义的字节数组的开始位置
-        CollectorState state = null;
+        CollectorState state;
         int A_state = payload[start + 2] & STATE_REF;
         int B_state = payload[start + 3] & STATE_REF;
-        if ((state = Common.COLLECTOR_STATE_MAP.get(collectorId))==null){
+        if ((state = COLLECTOR_STATE_MAP.get(collectorId))==null){
             //还没有定义过该设备，初始化该设备状态
-            Common.COLLECTOR_STATE_MAP.put(collectorId , new CollectorState(collectorId , -1,-1,
+            COLLECTOR_STATE_MAP.put(collectorId , new CollectorState(collectorId , -1,-1,
                     A_state,B_state));
             return null;
         }
@@ -236,7 +254,7 @@ public class PacketDecodeUtil {
                     state.getA_currentState(),
                     state.getB_currentState(),
                     A_state,B_state);
-            Common.COLLECTOR_STATE_MAP.put(collectorId , newState);
+            COLLECTOR_STATE_MAP.put(collectorId , newState);
             return newState;
         }
         return null;

@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static com.zjucsc.application.util.PacketDecodeUtil.discernPacket;
 
 /**
  * #project packet-master-web
@@ -26,8 +25,7 @@ public class UndefinedPreProcessor extends SinglePreProcessor<UndefinedPacket> {
     @Override
     public FvDimensionLayer decode(UndefinedPacket packetInstance) {
         //protocol_stack
-        return packetInstance.layers.setFrameProtocols(
-                discernPacket(packetInstance.layers.frame_protocols[0]));
+        return packetInstance.layers;
     }
 
     @Override

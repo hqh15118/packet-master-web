@@ -2,9 +2,7 @@ package com.zjucsc.art_decode.iec104;
 
 import com.zjucsc.art_decode.artconfig.IEC104Config;
 import com.zjucsc.art_decode.base.BaseArtDecode;
-import com.zjucsc.art_decode.other.AttackType;
 
-import java.util.List;
 import java.util.Map;
 
 public class IEC104Decode extends BaseArtDecode<IEC104Config> {

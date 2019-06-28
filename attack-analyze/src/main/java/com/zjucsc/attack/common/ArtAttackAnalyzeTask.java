@@ -1,5 +1,7 @@
 package com.zjucsc.attack.common;
 
+import com.zjucsc.attack.bean.AttackBean;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +29,10 @@ public class ArtAttackAnalyzeTask implements Runnable{
     public void run() {
         String res = attackDecode(expression,techmap,description);
         if (res!=null){
-            attackCallback.callback(res);
+            attackCallback.artCallback(
+                    AttackBean.builder()
+                    .attackType(AttackTypePro.HAZARD_ART)
+                    .attackInfo(res).build());
         }
     }
 

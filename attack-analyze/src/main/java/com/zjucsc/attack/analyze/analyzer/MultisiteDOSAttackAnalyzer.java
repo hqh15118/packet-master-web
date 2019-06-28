@@ -18,7 +18,7 @@ public class MultisiteDOSAttackAnalyzer extends BaseAttackAnalyzer<MultisiteDOSA
     }
 
     @Override
-    public boolean analyze(FvDimensionLayer layer) {
+    public String analyze(FvDimensionLayer layer) {
         return getAnalyzer().append(layer);
     }
 }

@@ -1,13 +1,10 @@
 package com.zjucsc.application.tshark.analyzer;
 
-import com.zjucsc.application.tshark.domain.BadPacket;
 import com.zjucsc.application.tshark.filter.FiveDimensionPacketFilter;
 import com.zjucsc.tshark.analyzer.AbstractAnalyzer;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**

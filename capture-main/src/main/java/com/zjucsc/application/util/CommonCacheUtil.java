@@ -202,13 +202,13 @@ public class CommonCacheUtil {
         return Common.DEVICE_TAG_TO_NAME.get(tag);
     }
 
-    public static String getTargetDeviceNumberByTag(FvDimensionLayer layer) {
+    public static String getTargetDeviceNumberByTag(String ip_dst ,  String eth_dst) {
         //System.out.println("get " + deviceIp + "xxxxxx" + AttackCommon.DEVICE_IP_TO_NAME.get(deviceIp));
-        String tag = Common.DEVICE_TAG_TO_NAME.get(layer.ip_dst[0]);
+        String tag = Common.DEVICE_TAG_TO_NAME.get(ip_dst);
         if (tag!=null){
             return tag;
         }
-        tag = Common.DEVICE_TAG_TO_NAME.get(layer.eth_dst[0]);
+        tag = Common.DEVICE_TAG_TO_NAME.get(eth_dst);
         return tag;
     }
 
@@ -291,6 +291,10 @@ public class CommonCacheUtil {
         FiveDimensionAnalyzer fiveDimensionAnalyzer = Common.FV_DIMENSION_FILTER_PRO.get(layer.ip_dst[0]);
         if (fiveDimensionAnalyzer!=null){
             return fiveDimensionAnalyzer;
+        }
+        if (!layer.ip_dst[0].equals("--")){
+            //报文有IP地址
+            return null;
         }
         return Common.FV_DIMENSION_FILTER_PRO.get(layer.eth_dst[0]);
     }

@@ -35,6 +35,7 @@ public class OperationAnalyzer extends AbstractAnalyzer<OperationPacketFilter<In
                             .build();
                 }
                 return null;
+
             } catch (ProtocolIdNotValidException e) {
                 log.error("protocol <==> ID not valid " , e);
             }

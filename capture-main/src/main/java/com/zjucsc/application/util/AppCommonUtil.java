@@ -1,13 +1,8 @@
 package com.zjucsc.application.util;
 
 import com.zjucsc.application.config.StatisticsData;
-import com.zjucsc.application.domain.bean.ThreadLocalWrapper;
-import com.zjucsc.art_decode.other.AttackType;
 
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,41 +17,6 @@ public class AppCommonUtil {
     public static SimpleDateFormat getDateFormat(){
         return SIMPLE_DATE_FORMAT_THREAD_LOCAL.get();
     }
-
-    private static final ThreadLocal<ThreadLocalWrapper> GLOBAL_THREAD_LOCAL_MAP
-            = new ThreadLocal<ThreadLocalWrapper>(){
-        @Override
-        protected ThreadLocalWrapper initialValue() {
-            Map<String,Float> map = new HashMap<>();
-
-            /*
-            StatisticsData.initArtArgs("第一个船闸状态量");
-            StatisticsData.initArtArgs("第二个船闸状态量");
-            StatisticsData.initArtArgs("第三个船闸状态量");
-            StatisticsData.initArtArgs("第四个船闸状态量");
-            StatisticsData.initArtArgs("第五个船闸状态量");
-            StatisticsData.initArtArgs("第六个船闸状态量");
-
-            StatisticsData.initArtArgs("水位0");
-            StatisticsData.initArtArgs("水位1");
-            StatisticsData.initArtArgs("水位2");
-            StatisticsData.initArtArgs("水位3");
-            StatisticsData.initArtArgs("水位4");
-            StatisticsData.initArtArgs("水位5");
-            StatisticsData.initArtArgs("水位6");
-
-            StatisticsData.initArtArgs("压差0_1");
-            StatisticsData.initArtArgs("压差1_2");
-            StatisticsData.initArtArgs("压差2_3");
-            StatisticsData.initArtArgs("压差3_4");
-            StatisticsData.initArtArgs("压差4_5");
-            StatisticsData.initArtArgs("压差5_6");
-            */
-
-            List<AttackType> attackTypes = new LinkedList<>();
-            return new ThreadLocalWrapper(map,attackTypes);
-        }
-    };
 
     private static ConcurrentHashMap<String,Float> map = new ConcurrentHashMap<>();
 
@@ -85,10 +45,6 @@ public class AppCommonUtil {
     public static void removeArtMap(String artArg){
         StatisticsData.removeArtArgs(artArg);
         map.remove(artArg);
-    }
-
-    public static List<AttackType> getGlobalAttackList(){
-        return GLOBAL_THREAD_LOCAL_MAP.get().getAttackTypeList();
     }
 
 }

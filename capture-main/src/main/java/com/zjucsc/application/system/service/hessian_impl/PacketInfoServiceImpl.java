@@ -63,9 +63,9 @@ public class PacketInfoServiceImpl  implements IPacketInfoService {
         LinkedList<String> time = new LinkedList<>();
         List<Integer> data;
         Calendar tempStart = Calendar.getInstance();
-        tempStart.setTime(new Date());
+        //tempStart.setTime(new Date());
         if (type == 1){
-            simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
+            simpleDateFormat = new SimpleDateFormat("HH:00");
             //1：24小时
             data = packetInfoMapper.selectPacketHistoryIn24Hours();
             for (int i = 0; i < 24; i++) {
@@ -73,7 +73,7 @@ public class PacketInfoServiceImpl  implements IPacketInfoService {
                 time.addFirst(simpleDateFormat.format(tempStart.getTime()));
             }
         }else{
-            simpleDateFormat = new SimpleDateFormat("mm-dd");
+            simpleDateFormat = new SimpleDateFormat("MM-dd");
             data = packetInfoMapper.selectPacketHistoryIn7Days();
             for (int i = 0; i < 7; i++) {
                 tempStart.add(Calendar.DAY_OF_MONTH,-1);
@@ -85,7 +85,6 @@ public class PacketInfoServiceImpl  implements IPacketInfoService {
 
     @Override
     public String selectPacketRawDataByTimeStamp(String timeStamp) {
-        return null;
-    }
+        return packetInfoMapper.selectPacketRawDataByTimeStamp(timeStamp); }
 
 }

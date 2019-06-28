@@ -64,8 +64,9 @@ public class ArtHistoryDataServiceImpl extends BaseServiceImpl<ArtHistoryData,Ar
         artHistoryForFront.setNameList(TIME_LIST.get(timeType));
         Map<String, Map<String,List<String>>> map = new HashMap<>();
         artHistoryForFront.setDataOrz(map);
-        artHistoryForFront.setNameList(iArtConfigService.selectAllShowArt());
-
+        List<String> nameList = iArtConfigService.selectAllShowArt();
+        artHistoryForFront.setNameList(nameList);
+        List<String> checkArtNameList = artNames == null ? nameList : artNames;
         int nextTimeType = T2TMap.get(timeType);
         if (nextTimeType < 0){
             throw new Exception("时间类型不可用 ： " + timeType);
@@ -79,12 +80,13 @@ public class ArtHistoryDataServiceImpl extends BaseServiceImpl<ArtHistoryData,Ar
             start = dates.get(i).toString();
             end = dates.get(i + 1).toString();
             //该时间节点下的所有工艺参数
-            for (String artName : artNames) {
+            for (String artName : checkArtNameList) {
                 Map<String,List<String>> var = map.putIfAbsent(start,new HashMap<>());//[2019-05-25,{var:list<value>}]
-                List<String> artHistoryData = this.baseMapper.getArtData(start,end,artName,timeType, Common.GPLOT_ID);
+                List<String> artHistoryData = this.baseMapper.getArtData(start,end,artName, Common.GPLOT_ID);
                 assert var!=null && artHistoryData!=null;
                 var.put(artName,artHistoryData);
             }
+
         }
         return CompletableFuture.completedFuture(artHistoryForFront);
     }

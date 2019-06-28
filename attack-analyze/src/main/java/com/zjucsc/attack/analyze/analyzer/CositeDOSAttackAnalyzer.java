@@ -20,7 +20,7 @@ public class CositeDOSAttackAnalyzer extends BaseAttackAnalyzer<Map<String, Cosi
     }
 
     @Override
-    public boolean analyze(FvDimensionLayer layer) {
+    public String analyze(FvDimensionLayer layer) {
         String dstIp = layer.ip_dst[0];
         if (dstIp.length() > 0){
             CositeDOSAttackAnalyzeList analyzeList = getAnalyzer().get(dstIp);
@@ -30,6 +30,6 @@ public class CositeDOSAttackAnalyzer extends BaseAttackAnalyzer<Map<String, Cosi
             }
             return analyzeList.append(layer);
         }
-        return false;
+        return null;
     }
 }

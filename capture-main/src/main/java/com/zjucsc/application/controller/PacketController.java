@@ -14,6 +14,7 @@ import com.zjucsc.common.exceptions.OpenCaptureServiceException;
 import com.zjucsc.socket_io.MainServer;
 import com.zjucsc.socket_io.SocketServiceCenter;
 import com.zjucsc.tshark.pre_processor.BasePreProcessor;
+import io.netty.util.concurrent.CompleteFuture;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,36 +52,47 @@ public class PacketController {
      */
     @SuppressWarnings("unchecked")
     private Exception doStartService(CaptureService service) {
-        synchronized (lock1){
-            if (Common.hasStartedHost.contains(service.getService_name())){
-                throw new OpenCaptureServiceException(service.getService_name() + " service has started");
-            }else{
-                Common.hasStartedHost.add(service.getService_name());
+        if (Common.systemRunType == 1) {
+            synchronized (lock1){
+                if (Common.hasStartedHost.contains(service.getService_name())){
+                    throw new OpenCaptureServiceException(service.getService_name() + " service has started");
+                }else{
+                    Common.hasStartedHost.add(service.getService_name());
+                }
             }
-        }
-        service.macAddress = service.macAddress.replace("-" , ":");
-        BasePreProcessor.setCaptureDeviceNameAndMacAddress(service.macAddress , service.service_name);
+            service.macAddress = service.macAddress.replace("-" , ":");
+            BasePreProcessor.setCaptureDeviceNameAndMacAddress(service.macAddress , service.service_name);
+            //real packet analyze
+            CompletableFuture<Exception> completableFuture = capturePacketService.start(new ProcessCallback<String, String>() {
+                @Override
+                public void error(Exception e) {
 
-        CompletableFuture<Exception> completableFuture = capturePacketService.start(new ProcessCallback<String, String>() {
-            @Override
-            public void error(Exception e) {
+                }
 
+                @Override
+                public void start(String start) {
+                    log.info("{} has started capture service..", start);
+                }
+
+                @Override
+                public void end(String end) {
+                    log.info("{} has ended capture service..", end);
+                }
+            });
+
+            try {
+                return completableFuture.get();
+            } catch (InterruptedException | ExecutionException e) {
+                return e;
             }
-            @Override
-            public void start(String start) {
-                log.info("{} has started capture service.." , start);
+        }else{
+            CompletableFuture<Exception> completeFuture = capturePacketService.startSimulate();
+            //simulate packet analyze
+            try {
+                return completeFuture.get();
+            } catch (InterruptedException | ExecutionException e) {
+                return e;
             }
-
-            @Override
-            public void end(String end) {
-                log.info("{} has ended capture service.." , end);
-            }
-        });
-
-        try {
-            return completableFuture.get();
-        } catch (InterruptedException | ExecutionException e) {
-            return e;
         }
     }
 
@@ -138,15 +150,18 @@ public class PacketController {
     public BaseResponse stopService(@RequestParam String service_name){
         Common.SCHEDULE_RUNNING = false;
         CommonCacheUtil.setScheduleServiceRunningState(false);
-        synchronized (lock1){
-            if (!Common.hasStartedHost.contains(service_name)){
-                return BaseResponse.ERROR(500,service_name + " not open");
+        if (Common.systemRunType == 1) {
+            synchronized (lock1){
+                if (!Common.hasStartedHost.contains(service_name)){
+                    return BaseResponse.ERROR(500,service_name + " not open");
+                }
+                Common.hasStartedHost.remove(service_name);
             }
-            Common.hasStartedHost.remove(service_name);
+            log.info("close device : {} all opened device : {} " , service_name , Common.hasStartedHost);
+            return BaseResponse.OK(capturePacketService.stop());
+        }else{
+            return BaseResponse.OK(capturePacketService.stopSimulate());
         }
-        log.info("close device : {} all opened device : {} " , service_name , Common.hasStartedHost);
-        capturePacketService.stop();
-        return BaseResponse.OK();
     }
 
     @Log

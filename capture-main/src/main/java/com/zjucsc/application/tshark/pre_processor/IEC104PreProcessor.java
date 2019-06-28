@@ -18,7 +18,7 @@ import java.util.List;
 public class IEC104PreProcessor extends SinglePreProcessor<IEC104Packet> {
     @Override
     public FvDimensionLayer decode(IEC104Packet packetInstance) {
-        return packetInstance.layers.setFrameProtocols(PACKET_PROTOCOL.IEC104);
+        return packetInstance.layers;
     }
 
     @Override

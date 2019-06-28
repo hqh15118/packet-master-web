@@ -6,6 +6,7 @@ import com.zjucsc.application.domain.bean.FlowError;
 import com.zjucsc.application.domain.bean.GraphInfo;
 import com.zjucsc.application.domain.bean.StatisticInfoSaveBean;
 import com.zjucsc.application.domain.bean.StatisticsDataWrapper;
+import com.zjucsc.application.domain.non_hessian.DeviceMaxFlow;
 import com.zjucsc.application.system.service.common_iservice.CapturePacketService;
 import com.zjucsc.application.system.service.hessian_iservice.IArtHistoryDataService;
 import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
@@ -19,15 +20,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
+import static com.zjucsc.application.config.Common.DEVICE_TAG_TO_NAME;
 import static com.zjucsc.application.config.StatisticsData.*;
 
 @Slf4j
@@ -160,14 +159,20 @@ public class ScheduledService {
 //            }
             StatisticsData.ART_INFO.forEach((artName, artValueList) -> {
                 if (Common.SHOW_GRAPH_SET.contains(artName)){
-                    StatisticsData.ART_INFO_SEND.put(artName, artValueList);
+                    //StatisticsData.ART_INFO_SEND.put(artName, artValueList);
+                    if (artValueList.size() > 0)
+                        ART_INFO_SEND_SINGLE.put(artName,artValueList.getLast());
                 }
                 if (artValueList.size() > 0){
                     iArtHistoryDataService.saveArtData(artName,artValueList.getLast(),null);
                 }
             });
-            StatisticsData.ART_INFO_SEND.put("timestamp",StatisticsData.ART_INFO.get("timestamp"));
-            SocketServiceCenter.updateAllClient(SocketIoEvent.ART_INFO, StatisticsData.ART_INFO_SEND);
+            //StatisticsData.ART_INFO_SEND.put("timestamp",StatisticsData.ART_INFO.get("timestamp"));
+            LinkedList<String> timeStamp = StatisticsData.ART_INFO.get("timestamp");
+            if (timeStamp.size() > 0){
+                ART_INFO_SEND_SINGLE.put("timestamp",timeStamp.getLast());
+            }
+            SocketServiceCenter.updateAllClient(SocketIoEvent.ART_INFO, StatisticsData.ART_INFO_SEND_SINGLE);
             addArtData("timestamp", AppCommonUtil.getDateFormat().format(new Date()));
         }
     }
@@ -183,10 +188,35 @@ public class ScheduledService {
      */
     //@Scheduled(fixedRate = 5000)
     private void statisticFlow(){
-        int flowDiff = Common.FLOW.getAndSet(0);
-        if (flowDiff / 5 >= Common.maxFlowInByte){
+        int flowDiff = StatisticsData.FLOW.getAndSet(0);
+        if (flowDiff / 5.0 >= Common.maxFlowInByte){
             SocketServiceCenter.updateAllClient(SocketIoEvent.MAX_FLOW_ATTACK,new FlowError(new Date().toString(),flowDiff));
         }
+        /*
+        Set<String> devices = DEVICE_TAG_TO_NAME.values();
+        Iterator<String> iterator = devices.iterator();
+        if (iterator.hasNext()) {
+            do {
+                String deviceTag = iterator.next();
+                int flowDiffByDeviceIn = FLOW_BY_DEVICE_IN.get(deviceTag).getAndSet(0);
+                int flowDiffByDeviceOut = FLOW_BY_DEVICE_OUT.get(deviceTag).getAndSet(0);
+                DeviceMaxFlow max = StatisticsData.getDeviceMaxFlow(deviceTag);
+                //KB
+                if (max != null) {
+                    FlowError flowErrorOfDevice = new FlowError(new Date().toString(), flowDiff);
+                    flowErrorOfDevice.setDeviceNumber(deviceTag);
+                    if (((flowDiffByDeviceIn / 5) >>> 10) > max.getMaxFlowIn()) {
+                        flowErrorOfDevice.setComment("下行流量超过限制");
+                        SocketServiceCenter.updateAllClient(SocketIoEvent.MAX_FLOW_ATTACK, flowErrorOfDevice);
+                    }
+                    if (((flowDiffByDeviceOut / 5) >>> 10) > max.getMaxFlowOut()){
+                        flowErrorOfDevice.setComment("上行流量超过限制");
+                        SocketServiceCenter.updateAllClient(SocketIoEvent.MAX_FLOW_ATTACK, flowErrorOfDevice);
+                    }
+                }
+            } while (iterator.hasNext());
+        }
+        */
     }
 
     private static class SenderConsumer implements BiConsumer<String, Object>{
@@ -216,7 +246,7 @@ public class ScheduledService {
             if (bean == null) {
                 bean = new StatisticInfoSaveBean();
                 Common.STATISTICS_INFO_BEAN.put(deviceNumber,bean);
-                log.info("设备{}未添加StatisticInfoSaveBean，已重新添加，但程序中有错误...",deviceNumber);
+                log.info("设备{}未添加StatisticInfoSaveBean，已重新添加，程序中有错误,检查该设备是否已经被正确添加到组态图中？",deviceNumber);
             }
                 bean.setTime(timeStamp);
                 switch (index){

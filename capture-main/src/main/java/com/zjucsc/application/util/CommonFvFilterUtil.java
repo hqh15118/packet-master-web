@@ -23,10 +23,10 @@ public class CommonFvFilterUtil {
             fiveDimensionPacketFilter.setFilterList(filterList);
             analyzer = new FiveDimensionAnalyzer(fiveDimensionPacketFilter);
             Common.FV_DIMENSION_FILTER_PRO.put(deviceTag,analyzer);
-            log.info("add new fv dimension analyzer cause device {} is new !! NEW Filter list is : {} [如果是空的表示该设备没有配置规则]" , deviceTag , filterList);
+            //log.info("add new fv dimension analyzer cause device {} is new !! NEW Filter list is : {} [如果是空的表示该设备没有配置规则]" , deviceTag , filterList);
         }else {
             analyzer.getAnalyzer().setFilterList(filterList);
-            log.info("update old fv dimension analyzer cause device {} is existed !! NEW Filter list is : {} " , deviceTag , filterList);
+            //log.info("update old fv dimension analyzer cause device {} is existed !! NEW Filter list is : {} " , deviceTag , filterList);
         }
     }
 
