@@ -8,8 +8,6 @@ import com.zjucsc.tshark.pre_processor.SinglePreProcessor;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.zjucsc.tshark.util.PacketDecodeUtil.discernPacket;
-
 /**
  * #project packet-master-web
  *

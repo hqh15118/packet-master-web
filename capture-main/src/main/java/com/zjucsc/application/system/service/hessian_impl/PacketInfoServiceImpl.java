@@ -85,11 +85,6 @@ public class PacketInfoServiceImpl  implements IPacketInfoService {
 
     @Override
     public String selectPacketRawDataByTimeStamp(String timeStamp) {
-<<<<<<< HEAD
-        return null;
-=======
-        return packetInfoMapper.selectPacketRawDataByTimeStamp(timeStamp);
->>>>>>> 65e3cc7b906a3e5bad979c77c974dd267cf3c989
-    }
+        return packetInfoMapper.selectPacketRawDataByTimeStamp(timeStamp); }
 
 }

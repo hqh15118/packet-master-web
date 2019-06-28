@@ -1,7 +1,5 @@
 package com.zjucsc.application.system.service.common_impl;
 
-import com.sun.xml.internal.bind.v2.model.core.ID;
-import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.system.service.PacketAnalyzeService;
 import com.zjucsc.application.system.service.common_iservice.CapturePacketService;
@@ -11,6 +9,7 @@ import com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler;
 import com.zjucsc.application.tshark.pre_processor.*;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.CommonConfigUtil;
+import com.zjucsc.application.util.PacketDecodeUtil;
 import com.zjucsc.attack.common.AttackCommon;
 import com.zjucsc.common.common_util.ByteUtil;
 import com.zjucsc.common.common_util.DBUtil;
@@ -23,23 +22,15 @@ import com.zjucsc.tshark.handler.AbstractAsyncHandler;
 import com.zjucsc.tshark.handler.DefaultPipeLine;
 import com.zjucsc.tshark.packets.*;
 import com.zjucsc.tshark.pre_processor.BasePreProcessor;
-<<<<<<< HEAD
-import com.zjucsc.tshark.util.PacketDecodeUtil;
-=======
-import javafx.scene.control.RadioMenuItem;
-import jdk.nashorn.internal.scripts.JD;
-import lombok.Data;
->>>>>>> 65e3cc7b906a3e5bad979c77c974dd267cf3c989
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.SocketException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -96,7 +87,8 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         public FvDimensionLayer handle(Object t) {
             FvDimensionLayer fvDimensionLayer = ((FvDimensionLayer) t);
             //设置协议栈
-            fvDimensionLayer.frame_protocols[0] = PacketDecodeUtil.discernPacket(fvDimensionLayer.frame_protocols[0]);
+
+            fvDimensionLayer.frame_protocols[0] = PacketDecodeUtil.discernPacket(fvDimensionLayer.frame_protocols[0],fvDimensionLayer);
             //统计所有的IP地址
             if (fvDimensionLayer.ip_dst[0].length() > 0){
                 StatisticsData.statisticAllIpAddress(fvDimensionLayer.ip_dst[0]);

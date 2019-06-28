@@ -7,11 +7,6 @@ import com.zjucsc.tshark.pre_processor.SinglePreProcessor;
 import java.util.Arrays;
 import java.util.List;
 
-<<<<<<< HEAD
-import static com.zjucsc.tshark.util.PacketDecodeUtil.discernPacket;
-
-=======
->>>>>>> 65e3cc7b906a3e5bad979c77c974dd267cf3c989
 /**
  * #project packet-master-web
  *

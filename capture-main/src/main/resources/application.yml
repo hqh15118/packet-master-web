@@ -2,11 +2,7 @@ myconfig:
   #global_address : 192.168.1.106
   #global_address : 192.168.0.114
   #global_address : 10.180.81.207
-<<<<<<< HEAD
-  global_address : 192.168.0.133
-=======
   global_address : localhost
->>>>>>> 65e3cc7b906a3e5bad979c77c974dd267cf3c989
   admin_server_port : 8989
   packet_master_web_port : 8080
   kafka-server-url : 10.15.191.100:9092
@@ -19,7 +15,7 @@ myconfig:
 
 tshark-config:
   modbus_filter : tcp
-  s7comm_filter : tcp
+  s7comm_filter : not tcp
 
 hessian-config:
   hessian-url: 10.15.191.100:36955/hessian

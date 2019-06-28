@@ -1,8 +1,7 @@
 package com.zjucsc.application.util;
 
-import com.zjucsc.application.config.Common;
-import com.zjucsc.application.domain.bean.CollectorState;
 import com.zjucsc.common.common_util.ByteUtil;
+import com.zjucsc.tshark.bean.CollectorState;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import com.zjucsc.tshark.packets.S7CommPacket;
 import lombok.extern.slf4j.Slf4j;
@@ -183,7 +182,8 @@ public class PacketDecodeUtil {
             return MODBUS;
         }else if(protocolStack.endsWith("s7comm"))
         {
-            String rosctr = ((String) otherInfo[0]);
+            S7CommPacket.LayersBean layersX = ((S7CommPacket.LayersBean) otherInfo[0]);
+            String rosctr = layersX.s7comm_header_rosctr[0];
             if (S7CommPacket.ACK_DATA.equals(rosctr)){
                 return S7_Ack_data;
             }else if (S7CommPacket.JOB.equals(rosctr)) {

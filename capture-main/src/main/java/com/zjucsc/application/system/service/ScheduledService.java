@@ -192,7 +192,7 @@ public class ScheduledService {
         if (flowDiff / 5.0 >= Common.maxFlowInByte){
             SocketServiceCenter.updateAllClient(SocketIoEvent.MAX_FLOW_ATTACK,new FlowError(new Date().toString(),flowDiff));
         }
-
+        /*
         Set<String> devices = DEVICE_TAG_TO_NAME.values();
         Iterator<String> iterator = devices.iterator();
         if (iterator.hasNext()) {
@@ -216,6 +216,7 @@ public class ScheduledService {
                 }
             } while (iterator.hasNext());
         }
+        */
     }
 
     private static class SenderConsumer implements BiConsumer<String, Object>{
