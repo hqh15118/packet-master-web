@@ -8,7 +8,6 @@ import com.zjucsc.common.application.ProtocolIgnore;
  * @author hongqianhui
  * #create_time 2019-05-04 - 02:20
  *
- * @see Common Common中，协议的string和int的对应关系
  */
 public interface PACKET_PROTOCOL {
     String MODBUS = "modbus";

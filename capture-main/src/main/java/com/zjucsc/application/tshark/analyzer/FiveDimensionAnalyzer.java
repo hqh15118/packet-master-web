@@ -1,9 +1,11 @@
 package com.zjucsc.application.tshark.analyzer;
 
-import com.zjucsc.application.tshark.domain.BadPacket;
 import com.zjucsc.application.tshark.filter.FiveDimensionPacketFilter;
 import com.zjucsc.tshark.analyzer.AbstractAnalyzer;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * #project packet-master-web
@@ -27,14 +29,18 @@ public class FiveDimensionAnalyzer extends AbstractAnalyzer<FiveDimensionPacketF
     @Override
     public Object analyze(Object... objs) {
         FvDimensionLayer layer = ((FvDimensionLayer) objs[0]);
-        //BadPacket badPacket = getAnalyzer().ERROR(layer);
+        Map<String,Object> whiteprotocol = new HashMap<>();
+        /*
+        空的协议白名单替换成前端配置的
+        */
+//        BadPacket badPacket = getAnalyzer().ERROR(layer);
 //        if (badPacket != null){
 //            //黑名单匹配成功
 //            return badPacket;
 //        }
         //黑名单匹配失败后白名单匹配
         //这部分如果返回null，要么是白名单匹配成功，要么是白名单没有指定任何的规则
-        return getAnalyzer().OK(layer);
+        return getAnalyzer().OK(layer,whiteprotocol);
     }
 
 

@@ -10,6 +10,7 @@ import com.zjucsc.socket_io.SocketIoEvent;
 import com.zjucsc.socket_io.SocketServiceCenter;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.crypto.hash.Hash;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,6 +20,13 @@ import static com.zjucsc.application.config.Common.*;
 
 @Slf4j
 public class CommonCacheUtil {
+
+    /**
+     * 清楚当前组态图下所有缓存的配置
+     */
+    public static void clearAllCacheByGplotId(){
+
+    }
 
     /*********************************
      *
@@ -318,18 +326,26 @@ public class CommonCacheUtil {
     /***********************************
      * 五元组白名单
      **********************************/
-    private static final ConcurrentHashMap<String, String> RIGHT_PROTOCOL_LIST = new ConcurrentHashMap<>();
+    private static final byte[] LOCK_RIGHT_PROTOCOL_LIST = new byte[1];
+    private static final Map<String,Map<String,String>> RIGHT_PROTOCOL_LIST = new HashMap<>();
 
-    public static void addWhiteProtocolToCache(String protocolName) {
-        RIGHT_PROTOCOL_LIST.put(protocolName, protocolName);
+    public static void addWhiteProtocolToCache(String deviceNumber , String protocolName) {
+        Map<String,String> whiteProtocolMap = RIGHT_PROTOCOL_LIST.computeIfAbsent(deviceNumber,k->new HashMap<>());
+        whiteProtocolMap.put(protocolName,"");
     }
 
-    public static void removeWhiteProtocolFromCache(String protocolName) {
-        RIGHT_PROTOCOL_LIST.remove(protocolName);
+    public static void removeWhiteProtocolFromCache(String deviceNumber , String protocolName) {
+        Map<String,String> whiteProtocolMap = RIGHT_PROTOCOL_LIST.get(deviceNumber);
+        if (whiteProtocolMap!=null){
+            whiteProtocolMap.remove(protocolName);
+        }
     }
 
-    public static void clearAllWhiteProtocols() {
-        RIGHT_PROTOCOL_LIST.clear();
+    public static void clearAllWhiteProtocols(String deviceNumber) {
+        Map<String,String> whiteProtocolMap = RIGHT_PROTOCOL_LIST.get(deviceNumber);
+        if (whiteProtocolMap!=null){
+            whiteProtocolMap.clear();
+        }
     }
 
     /************************************
@@ -375,4 +391,6 @@ public class CommonCacheUtil {
             SocketServiceCenter.updateAllClient(SocketIoEvent.ATTACK_STATISTICS,ATTACK_PERCENT);
         }
     }
+
+
 }

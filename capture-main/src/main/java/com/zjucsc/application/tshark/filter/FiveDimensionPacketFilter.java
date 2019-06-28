@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static com.zjucsc.application.config.PACKET_PROTOCOL.OTHER;
@@ -201,28 +202,32 @@ public class FiveDimensionPacketFilter {
         allMap.get(type).put(str , str);
     }
 
-    public BadPacket OK(FvDimensionLayer layer){
-        if (!protocolWhiteMap.containsKey(layer.frame_protocols[0])){
-            return getBadPacket(layer,"协议不在白名单中",DangerLevel.DANGER);
+    public BadPacket OK(FvDimensionLayer layer, Map<String,Object> white_protocol){
+        if(white_protocol.containsKey(layer.frame_protocols[0]))//判断是否在白名单协议之内
+        {
+            return null;
         }
-        if (!srcPortWhiteMap.containsKey(layer.src_port[0])){
-            return getBadPacket(layer,"源端口不在白名单中",DangerLevel.DANGER);
-        }
-        if (!dstPortWhiteMap.containsKey(layer.dst_port[0])){
-            return getBadPacket(layer,"目的端口不在白名单中",DangerLevel.DANGER);
-        }
-        if (!srcIpWhiteMap.containsKey(layer.ip_src[0])){
-            return getBadPacket(layer,"源IP不在白名单中",DangerLevel.DANGER);
-        }
-        if (!dstIpWhiteMap.containsKey(layer.ip_dst[0])){
-            return getBadPacket(layer,"目的IP不在白名单中",DangerLevel.DANGER);
+        if (!layer.ip_dst[0].equals("--") && !dstIpWhiteMap.containsKey(layer.ip_dst[0])){
+            return getBadPacket(layer,"目的设备未知",DangerLevel.DANGER);//目的IP不在白名单
         }
         if (!dstMacAddressWhite.containsKey(layer.eth_dst[0])){
-            return getBadPacket(layer,"目的MAC不在白名单中",DangerLevel.DANGER);
+            return getBadPacket(layer,"目的设备未知",DangerLevel.DANGER);//目的mac不在白名单
+        }
+        if (!layer.ip_src[0].equals("--") && !srcIpWhiteMap.containsKey(layer.ip_src[0])){
+            return getBadPacket(layer,"非法站点入侵",DangerLevel.DANGER);//源ip不在白名单
         }
         if (!srcMacAddressWhite.containsKey(layer.eth_src[0])){
-            return getBadPacket(layer,"源MAC不在白名单中",DangerLevel.DANGER);
+            return getBadPacket(layer,"非法站点入侵",DangerLevel.DANGER);//源mac不在白名单
         }
+        if (!protocolWhiteMap.containsKey(layer.frame_protocols[0])){
+            return getBadPacket(layer,"设备发送非法报文",DangerLevel.DANGER);//协议不在白名单
+        }
+//        if (!srcPortWhiteMap.containsKey(layer.src_port[0])){
+//            return getBadPacket(layer,"源端口不在白名单中",DangerLevel.DANGER);
+//        }
+//        if (!dstPortWhiteMap.containsKey(layer.dst_port[0])){
+//            return getBadPacket(layer,"目的端口不在白名单中",DangerLevel.DANGER);
+//        }
         return null;
     }
 
