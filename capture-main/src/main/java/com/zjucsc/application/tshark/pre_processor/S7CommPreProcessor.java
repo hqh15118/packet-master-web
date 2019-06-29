@@ -32,6 +32,7 @@ public class S7CommPreProcessor extends SinglePreProcessor<S7CommPacket> {
             {
                 add("s7comm.param.func");
                 add("s7comm.header.rosctr");
+                add("s7comm.param.userdata.funcgroup");
             }
         };
     }

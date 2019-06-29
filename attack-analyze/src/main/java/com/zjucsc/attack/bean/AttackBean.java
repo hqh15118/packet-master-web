@@ -33,6 +33,70 @@ public class AttackBean {
         return attackInfo;
     }
 
+    public String getSrcMac() {
+        return srcMac;
+    }
+
+    public void setSrcMac(String srcMac) {
+        this.srcMac = srcMac;
+    }
+
+    public String getDstMac() {
+        return dstMac;
+    }
+
+    public void setDstMac(String dstMac) {
+        this.dstMac = dstMac;
+    }
+
+    public String getSrcIp() {
+        return srcIp;
+    }
+
+    public void setSrcIp(String srcIp) {
+        this.srcIp = srcIp;
+    }
+
+    public String getDstIp() {
+        return dstIp;
+    }
+
+    public void setDstIp(String dstIp) {
+        this.dstIp = dstIp;
+    }
+
+    public String getSrcPort() {
+        return srcPort;
+    }
+
+    public void setSrcPort(String srcPort) {
+        this.srcPort = srcPort;
+    }
+
+    public String getDstPort() {
+        return dstPort;
+    }
+
+    public void setDstPort(String dstPort) {
+        this.dstPort = dstPort;
+    }
+
+    public String getProtocolName() {
+        return protocolName;
+    }
+
+    public void setProtocolName(String protocolName) {
+        this.protocolName = protocolName;
+    }
+
+    public String getFunCode() {
+        return funCode;
+    }
+
+    public void setFunCode(String funCode) {
+        this.funCode = funCode;
+    }
+
     public void setAttackInfo(String attackInfo) {
         this.attackInfo = attackInfo;
     }
@@ -89,13 +153,14 @@ public class AttackBean {
         }
 
         public Builder fvDimension(FvDimensionLayer layer){
-            attackBean.funCode = layer.funCode;
-            attackBean.srcIp = layer.ip_src[0];
-            attackBean.dstIp = layer.ip_dst[0];
-            attackBean.srcPort = layer.src_port[0];
-            attackBean.dstPort = layer.dst_port[0];
-            attackBean.srcMac = layer.eth_src[0];
-            attackBean.dstMac = layer.eth_dst[0];
+            attackBean.setFunCode(layer.funCode);
+            attackBean.setSrcIp(layer.ip_src[0]);
+            attackBean.setDstIp(layer.ip_dst[0]);
+            attackBean.setSrcPort(layer.src_port[0]);
+            attackBean.setDstPort(layer.dst_port[0]);
+            attackBean.setSrcMac(layer.eth_src[0]);
+            attackBean.setDstMac(layer.eth_dst[0]);
+            attackBean.setProtocolName(layer.frame_protocols[0]);
             return this;
         }
 

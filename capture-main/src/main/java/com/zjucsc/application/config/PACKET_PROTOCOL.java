@@ -14,7 +14,7 @@ public interface PACKET_PROTOCOL {
     String S7 = "s7comm";
     String S7_JOB = "s7comm_job";
     String S7_Ack_data = "s7comm_ack_data";
-    String S7_User_data = "s7_comm_user_data";
+    String S7_User_data = "s7comm_user_data";
     @ProtocolIgnore
     String TCP = "tcp";
     @ProtocolIgnore

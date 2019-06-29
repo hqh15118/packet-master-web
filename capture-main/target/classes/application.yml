@@ -2,16 +2,17 @@ myconfig:
   #global_address : 192.168.1.106
   #global_address : 192.168.0.114
   #global_address : 10.180.81.207
-  global_address : localhost
+  global_address : 192.168.0.121
   admin_server_port : 8989
   packet_master_web_port : 8080
   kafka-server-url : 10.15.191.100:9092
   openAOPLog : true
   sendAopLog : false
-  showErrorOnly : true
+  showErrorOnly : false
   redis_ip : 10.15.191.100
   redis_port : 6379
   openMapperAop : true
+  reOpenTableName : -1
 
 tshark-config:
   modbus_filter : tcp

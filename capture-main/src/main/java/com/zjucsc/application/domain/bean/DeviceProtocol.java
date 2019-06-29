@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 public class DeviceProtocol {
     private String deviceNumber;
-    private String protocolName;
+    private String protocolName[];
 }

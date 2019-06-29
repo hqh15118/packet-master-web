@@ -119,6 +119,12 @@
       "defaultValue": false
     },
     {
+      "name": "myconfig.re-open-table-name",
+      "type": "java.lang.Integer",
+      "sourceType": "com.zjucsc.application.config.ConstantConfig",
+      "defaultValue": 0
+    },
+    {
       "name": "myconfig.send-aop-log",
       "type": "java.lang.Boolean",
       "sourceType": "com.zjucsc.application.config.ConstantConfig",

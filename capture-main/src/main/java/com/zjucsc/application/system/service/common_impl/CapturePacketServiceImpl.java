@@ -1,5 +1,6 @@
 package com.zjucsc.application.system.service.common_impl;
 
+import com.zjucsc.application.config.ConstantConfig;
 import com.zjucsc.application.config.KafkaConfig;
 import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.system.service.PacketAnalyzeService;
@@ -49,13 +50,16 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
 
     private final PacketAnalyzeService packetAnalyzeService;
 
+    @Autowired private ConstantConfig constantConfig;
+
     //五元kafka发送线程
     private final KafkaThread<FvDimensionLayer> FV_D_SENDER = KafkaThread.createNewKafkaThread("fv_dimension",KafkaConfig.SEND_ALL_PACKET_FV_DIMENSION);
     private final KafkaThread<AttackBean> ATTACK_SENDER = KafkaThread.createNewKafkaThread("packet_attack", KafkaConfig.SEND_PACKET_ATTACK);
-    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss:SS");
 
     public CapturePacketServiceImpl(PacketAnalyzeService packetAnalyzeService) {
         this.packetAnalyzeService = packetAnalyzeService;
+
         //所有攻击报文的入口
         AttackCommon.registerAttackCallback(attackBean -> {
             //设置攻击时间戳
@@ -96,7 +100,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
      * 接收协议解析好的五元组，并作五元组发送、报文流量统计处理
      * 单线程处理，保证线程安全
      */
-    public AbstractAsyncHandler<FvDimensionLayer> fvDimensionLayerAbstractAsyncHandler
+    private AbstractAsyncHandler<FvDimensionLayer> fvDimensionLayerAbstractAsyncHandler
             = new AbstractAsyncHandler<FvDimensionLayer>(Executors.newFixedThreadPool(1, r -> {
         Thread thread = new Thread(r);
         thread.setName("fv_dimension_handler_thread-");
@@ -147,8 +151,21 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         if (!(layer instanceof UndefinedPacket.LayersBean)) {
             int funCode = decodeFuncode(layer);
             if (funCode >= 0){
-                layer.funCodeMeaning = CommonConfigUtil.
-                        getTargetProtocolFuncodeMeanning(layer.frame_protocols[0],funCode);
+                if (layer.frame_protocols[0].equals(S7)){
+                    if (((S7CommPacket.LayersBean) layer).s7comm_header_rosctr[0].equals("7")) {
+                        //user data
+                        layer.funCodeMeaning = CommonConfigUtil.
+                                getTargetProtocolFuncodeMeanning(S7_User_data, funCode);
+                    }else{
+                        //other [job/ack_data]
+                        layer.funCodeMeaning = CommonConfigUtil.
+                                getTargetProtocolFuncodeMeanning(S7, funCode);
+                    }
+                }else{
+                    layer.funCodeMeaning = CommonConfigUtil.
+                            getTargetProtocolFuncodeMeanning(layer.frame_protocols[0],funCode);
+                }
+
                 layer.funCode = String.valueOf(funCode);
             }else{
                 layer.funCode = "--";
@@ -167,6 +184,9 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         if (t instanceof S7CommPacket.LayersBean){
             if (((S7CommPacket.LayersBean) t).s7comm_param_func!=null) {
                 funCodeStr = ((S7CommPacket.LayersBean) t).s7comm_param_func[0];
+                if (funCodeStr.equals("")){
+                    funCodeStr = ((S7CommPacket.LayersBean) t).s7comm_param_userdata_funcgroup[0];
+                }
                 return PacketDecodeUtil.decodeFuncode(S7, funCodeStr);
             }
         }else if (t instanceof ModbusPacket.LayersBean){
@@ -214,7 +234,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                 int collectorDelay = PacketDecodeUtil.decodeCollectorDelay(payload,4);
                 //设置ID和延时用于发送
                 //System.out.println("delay : " + collectorDelay);
-                //packetAnalyzeService.setCollectorDelay(collectorId,collectorDelay);
+                packetAnalyzeService.setCollectorDelay(collectorId,collectorDelay);
                 return collectorDelay;
             }
             return -1;
@@ -336,11 +356,11 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         return CompletableFuture.completedFuture(null);
     }
 
-    private static class SimulateThread extends Thread{
+    private class SimulateThread extends Thread{
         private DefaultPipeLine pipeLine;
         private boolean hasStart = false;
         private volatile boolean idle = false;
-        private static final byte[] IDLE_LOCK = new byte[1];
+        private final byte[] IDLE_LOCK = new byte[1];
         private int hasSendFvDimensionNumber = 0;
         private PreparedStatement preparedStatement;
         private Connection connection;
@@ -362,7 +382,12 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         private List<FvDimensionLayer> getPreparedStatement(int num) throws SQLException {
             fvDimensionLayers.clear();
             if (preparedStatement == null) {
-                int date = 20190625;
+                int date;
+                if (constantConfig.getReOpenTableName() > 0) {
+                    date = constantConfig.getReOpenTableName();
+                }else {
+                    date = 20190625;
+                }
                 String baseCurrentTableName = "packet_info_";
                 String tableName = baseCurrentTableName + date;
                 preparedStatement = connection.prepareStatement(String.format("SELECT * FROM %s WHERE id > %s and id < %s",

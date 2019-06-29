@@ -329,9 +329,11 @@ public class CommonCacheUtil {
     private static final byte[] LOCK_RIGHT_PROTOCOL_LIST = new byte[1];
     private static final Map<String,Map<String,String>> RIGHT_PROTOCOL_LIST = new HashMap<>();
 
-    public static void addWhiteProtocolToCache(String deviceNumber , String protocolName) {
+    public static void addWhiteProtocolToCache(String deviceNumber , String protocolName[]) {
         Map<String,String> whiteProtocolMap = RIGHT_PROTOCOL_LIST.computeIfAbsent(deviceNumber,k->new HashMap<>());
-        whiteProtocolMap.put(protocolName,"");
+        for (String name : protocolName) {
+            whiteProtocolMap.put(name,"");
+        }
     }
 
     public static void removeWhiteProtocolFromCache(String deviceNumber , String protocolName) {

@@ -25,5 +25,6 @@ public class S7CommPacket{
     public static class LayersBean extends FvDimensionLayer {
         public String[] s7comm_param_func={""};
         public String[] s7comm_header_rosctr={""};
+        public String[] s7comm_param_userdata_funcgroup={""};
     }
 }

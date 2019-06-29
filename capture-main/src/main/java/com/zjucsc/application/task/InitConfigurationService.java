@@ -1,20 +1,21 @@
 package com.zjucsc.application.task;
 
+import com.alibaba.fastjson.JSON;
 import com.zjucsc.IProtocolFuncodeMap;
 import com.zjucsc.application.config.*;
 import com.zjucsc.application.config.auth.Auth;
-import com.zjucsc.application.domain.bean.BaseResponse;
-import com.zjucsc.application.domain.bean.ConfigurationSetting;
-import com.zjucsc.application.domain.bean.PagedArtConfig;
-import com.zjucsc.application.domain.bean.Protocol;
+import com.zjucsc.application.domain.bean.*;
 import com.zjucsc.application.system.service.hessian_iservice.IArtConfigService;
 import com.zjucsc.application.system.service.hessian_iservice.IConfigurationSettingService;
 import com.zjucsc.application.system.service.hessian_iservice.IProtocolIdService;
+import com.zjucsc.application.system.service.hessian_mapper.PacketInfoMapper;
 import com.zjucsc.application.util.AppCommonUtil;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.art_decode.ArtDecodeCommon;
 import com.zjucsc.art_decode.artconfig.S7Config;
 import com.zjucsc.art_decode.base.BaseConfig;
+import com.zjucsc.attack.bean.ArtAttackAnalyzeConfig;
+import com.zjucsc.attack.common.AttackCommon;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.tshark.TsharkCommon;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +43,7 @@ public class InitConfigurationService implements ApplicationRunner {
     @Autowired private IConfigurationSettingService iConfigurationSettingService;
     @Autowired private IProtocolIdService iProtocolIdService;
     @Autowired private TsharkConfig tsharkConfig;
+    @Autowired private PacketInfoMapper packetInfoMapper;
 
     @Override
     public void run(ApplicationArguments args) throws IllegalAccessException, NoSuchFieldException, ProtocolIdNotValidException {
@@ -185,6 +187,7 @@ public class InitConfigurationService implements ApplicationRunner {
          * INIT ART DECODER
          ***************************/
         ArtDecodeCommon.init();
+
         /***************************
          * 初始化工艺参数配置
          **************************/
@@ -205,79 +208,19 @@ public class InitConfigurationService implements ApplicationRunner {
                     }else {
                         baseConfig.setProtocol(CommonCacheUtil.convertIdToName(baseConfig.getProtocolId()));
                     }
+                    //添加工艺参数配置到缓存中
                     ArtDecodeCommon.addArtDecodeConfig(baseConfig);
+                    //初始化工艺参数全局map，往里面放工艺参数名字和初始值0F
                     AppCommonUtil.initArtMap(baseConfig.getTag());
+                    if (baseConfig.getShowGraph() == 1){
+                        //添加要显示的工艺参数名字到缓存中
+                        CommonCacheUtil.addShowGraphArg(baseConfig.getProtocolId(),baseConfig.getTag());
+                    }
                 }
             }
         }
 
         /***************************
-<<<<<<< HEAD
-         * pn_io
-         **************************/
-//        PnioConfig pnioConfig = new PnioConfig();
-//        pnioConfig.setRange(new float[]{0f,120f});
-//        pnioConfig.setByteoffset(3);
-//        pnioConfig.setBitoffset(0);
-//        pnioConfig.setType("short");
-//        pnioConfig.setLength(2);
-//        pnioConfig.setProtocol(PACKET_PROTOCOL.PN_IO);
-//        pnioConfig.setMacaddress(new byte[]{0x28,0x63,0x36,(byte)0xef,0x31,(byte)0xcc});
-//        pnioConfig.setTag("test");
-//        AppCommonUtil.initArtMap(pnioConfig.getTag());
-//        CommonCacheUtil.addShowGraphArg(pnioConfig.getProtocolId(),pnioConfig.getTag());
-//        ArtDecodeCommon.addArtDecodeConfig(pnioConfig);
-        /***************************
-         * IEC104
-         **************************/
-//        IEC104Config iec104Config = new IEC104Config();
-//        iec104Config.setMVIOAAddress(16385);
-//        //iec104Config.setSetIOAAddress(24592);
-//        iec104Config.setTag("UA");
-//        iec104Config.setProtocol(PACKET_PROTOCOL.IEC104);
-//        iec104Config.setProtocolId(PACKET_PROTOCOL.IEC104_ID);
-//        AppCommonUtil.initArtMap(iec104Config.getTag());
-//        CommonCacheUtil.addShowGraphArg(iec104Config.getProtocolId(),iec104Config.getTag());
-//        ArtDecodeCommon.addArtDecodeConfig(iec104Config);
-
-        /***************************
-         * s7comm test
-         **************************/
-
-        S7Config s7Config1 = new S7Config();
-        s7Config1.setBitoffset(1);
-        s7Config1.setByteoffset(0);
-        s7Config1.setDatabase(2);
-        s7Config1.setLength(0);
-        s7Config1.setType("bool");
-        s7Config1.setTag("开关1");
-        s7Config1.setProtocol(PACKET_PROTOCOL.S7);
-        AppCommonUtil.initArtMap(s7Config1.getTag());
-        CommonCacheUtil.addShowGraphArg(s7Config1.getProtocolId(),s7Config1.getTag());
-        ArtDecodeCommon.addArtDecodeConfig(s7Config1);
-
-
-        /*
-        List<String> list = new ArrayList<String>()
-        {
-            {
-                add("水位1");
-                add("<");
-                add("100");
-                add("&&");
-                add("开关1");
-                add("=");
-                add("1");
-            }
-        };
-        */
-
-        //init art detection
-        //AttackCommon.addArtAttackAnalyzeConfig(new ArtAttackAnalyzeConfig(list,"test - -- - - "));
-
-        /***************************
-=======
->>>>>>> 65e3cc7b906a3e5bad979c77c974dd267cf3c989
          * INIT PROTOCOL COMMON
          * 1. IEC104
          * 2.
@@ -291,6 +234,21 @@ public class InitConfigurationService implements ApplicationRunner {
          ***************************/
         TsharkCommon.s7comm_filter = tsharkConfig.getS7comm_filter();
         TsharkCommon.modbus_filter = tsharkConfig.getModbus_filter();
+
+        /****************************
+         * 获取工艺参数攻击配置
+         ***************************/
+        List<ArtAttackConfigDB> configDBS = packetInfoMapper.selectArtAttackConfigPaged(999,1);
+
+        for (ArtAttackConfigDB configDB : configDBS) {
+            List<String> strings = new ArrayList<>();
+            List<ArtAttack2Config> artAttack2Configs = JSON.parseArray(configDB.getRuleJson(),ArtAttack2Config.class);
+            for (ArtAttack2Config artAttack2Config : artAttack2Configs) {
+                strings.add(artAttack2Config.getValue());
+            }
+            AttackCommon.addArtAttackAnalyzeConfig(new ArtAttackAnalyzeConfig(strings,configDB.getDetail(),
+                    configDB.isEnable(),0));
+        }
 
         /**************************
          *  PRINT INIT RESULT
