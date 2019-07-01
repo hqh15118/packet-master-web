@@ -1,6 +1,5 @@
 package com.zjucsc.application.util;
 
-import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.bean.OptFilterForFront;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
 import com.zjucsc.application.tshark.filter.OperationPacketFilter;
@@ -10,12 +9,23 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.zjucsc.application.config.Common.OPERATION_FILTER_PRO;
+import static com.zjucsc.application.config.Common.GPLOT_ID;
 import static com.zjucsc.application.util.CommonCacheUtil.convertIdToName;
 
 @Slf4j
 public class CommonOptFilterUtil {
 
+    /**
+     * cache6
+     * String 设备TAG
+     * String -> 协议
+     * OperationAnalyzer -> 报文操作分析器
+     */
+    public static ConcurrentHashMap<String,ConcurrentHashMap<String, OperationAnalyzer>> OPERATION_FILTER_PRO =
+            new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String, OperationAnalyzer> getTargetProtocolToOperationAnalyzerByDeviceTag(String tag){
+        return OPERATION_FILTER_PRO.get(tag);
+    }
     /**
      *
      * @param deviceTag 设备的TAG，可能是IP也可能是MAC
@@ -26,10 +36,10 @@ public class CommonOptFilterUtil {
     public static void addOrUpdateAnalyzer(String deviceTag , OptFilterForFront optFilterForFront , String filterName) throws ProtocolIdNotValidException {
         ConcurrentHashMap<String, OperationAnalyzer> analyzerMap;
         int type = 0;
-        if ((analyzerMap = Common.OPERATION_FILTER_PRO.get(deviceTag)) == null){
+        if ((analyzerMap = OPERATION_FILTER_PRO.get(deviceTag)) == null){
             //新建设备
             analyzerMap = new ConcurrentHashMap<>();
-            Common.OPERATION_FILTER_PRO.put(deviceTag, analyzerMap);
+            OPERATION_FILTER_PRO.put(deviceTag, analyzerMap);
         }else{
             type = 1;
         }
@@ -116,7 +126,7 @@ public class CommonOptFilterUtil {
      * @param protocolId
      * @throws ProtocolIdNotValidException
      */
-    public static void removeTargetDeviceAnalyzerFuncode(String deviceTag , int funcode , int protocolId) throws ProtocolIdNotValidException {
+    public static void removeTargetDeviceAnalyzerFuncode(String deviceTag , int funcode , int protocolId) throws ProtocolIdNotValidException, ProtocolIdNotValidException {
         ConcurrentHashMap<String,OperationAnalyzer> removedMap = OPERATION_FILTER_PRO.get(deviceTag);
         if (removedMap == null){
             log.error("[ANALYZER]\n**************\nremove WARNING BY FUNCODE ==> device id: [ {} ] protocol id : [ {} ] , protocol name : [ {} ] , cause can not find the target device id in OPERATION_FILTER MAP : {} \n" +
@@ -142,7 +152,7 @@ public class CommonOptFilterUtil {
     }
 
     public static void removeAllOptFilter(){
-        Common.OPERATION_FILTER_PRO.clear();
-        log.info("change gplot so -> clear all opt dimension filter of gplot_id : [{}] " , Common.GPLOT_ID);
+        OPERATION_FILTER_PRO.clear();
+        log.info("change gplot so -> clear all opt dimension filter of gplot_id : [{}] " , GPLOT_ID);
     }
 }

@@ -66,7 +66,7 @@ public class OptFilterServiceImpl extends BaseServiceImpl<OptFilter,OptFilterMap
     public CompletableFuture<List<Integer>> getTargetExistIdFilter(String deviceNumber, boolean cached , int protocolId) throws ProtocolIdNotValidException {
         if (cached){
             String deviceTag = CommonCacheUtil.getTargetDeviceTagByNumber(deviceNumber);
-            ConcurrentHashMap<String, OperationAnalyzer> map = Common.OPERATION_FILTER_PRO.get(deviceTag);
+            ConcurrentHashMap<String, OperationAnalyzer> map = CommonOptFilterUtil.getTargetProtocolToOperationAnalyzerByDeviceTag(deviceTag);
             if (map == null){
                 throw new ProtocolIdNotValidException("缓存中不存在ID为 " + deviceNumber + " 的规则");
             }
@@ -90,12 +90,7 @@ public class OptFilterServiceImpl extends BaseServiceImpl<OptFilter,OptFilterMap
             if (analyzer == null || analyzer.getAnalyzer() == null || analyzer.getAnalyzer().getWhiteMap() == null){
                 return CompletableFuture.completedFuture(new ArrayList<>(0));
             }
-            analyzer.getAnalyzer().getWhiteMap().forEach(new BiConsumer<Integer, String>() {
-                @Override
-                public void accept(Integer integer, String s) {
-                    optFilterList.add(integer);
-                }
-            });
+            analyzer.getAnalyzer().getWhiteMap().forEach((integer, s) -> optFilterList.add(integer));
             return CompletableFuture.completedFuture(optFilterList);
         }else{
             return CompletableFuture.completedFuture(selectTargetOptFilter(deviceNumber  , protocolId));

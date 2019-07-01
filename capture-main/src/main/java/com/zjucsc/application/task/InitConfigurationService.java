@@ -28,6 +28,7 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.Field;
 import java.util.*;
 
+import static com.zjucsc.application.util.CommonCacheUtil.AUTH_MAP;
 import static com.zjucsc.application.util.CommonCacheUtil.PROTOCOL_STR_TO_INT;
 import static com.zjucsc.application.util.CommonCacheUtil.convertIdToName;
 import static com.zjucsc.application.util.CommonConfigUtil.addProtocolFuncodeMeaning;
@@ -181,7 +182,7 @@ public class InitConfigurationService implements ApplicationRunner {
             if (field.getType().getTypeName().equals(str_name)){
                 String authName = (String) field.get(null);
                 int auth = (int) authClass.getDeclaredField(field.getName() + "_ID").get(null);
-                Common.AUTH_MAP.put(auth,authName);
+                AUTH_MAP.put(auth,authName);
             }
         }
 

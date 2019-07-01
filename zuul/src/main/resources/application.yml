@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: zuul-center
+server:
+  port: 7575
+  address: localhost
+
+zuul:
+  routes:
+    api-a-path:
+      path : /api-a-url/**
+    api-a-url:
+      url : http://localhost:8080/
+

@@ -22,19 +22,20 @@ import static com.zjucsc.application.config.Common.*;
 @Slf4j
 public class CommonCacheUtil {
 
-    /**
+    /*********************************
      * 清楚当前组态图下所有缓存的配置
-     */
+     ********************************/
     public static void clearAllCacheByGplotId(){
 
     }
+
+    public static final BiMap<Integer,String> AUTH_MAP = HashBiMap.create();
 
     /*********************************
      *
      *  CONFIGURATION_MAP
      *
      **********************************/
-
     /**
      * cache7
      * 所有可配置的协议
@@ -208,42 +209,56 @@ public class CommonCacheUtil {
      *
      **********************************/
     /**
-     * @param deviceNumber
+     * cache1
+     * 设备IP和DEVICE_NUMBER之间互相转换
+     */
+    public static final BiMap<String,String> DEVICE_TAG_TO_NAME = HashBiMap.create();
+    /**
+     * 【key 设备deviceNumber deviceTag设备标识（Ip/Mac）】
+     * 每台设备的统计信息
+     */
+    private static final ConcurrentHashMap<String, StatisticInfoSaveBean> STATISTICS_INFO_BEAN =
+            new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String, StatisticInfoSaveBean> getStatisticsInfoBean(){
+        return STATISTICS_INFO_BEAN;
+    }
+    /**
+     * @param deviceNumber 设备Number
      * @param deviceTag    device 的 ip地址或者mac地址
      */
     public static void addOrUpdateDeviceNumberAndTAG(String deviceNumber, String deviceTag) {
-        Common.DEVICE_TAG_TO_NAME.put(deviceTag, deviceNumber);
-        Common.STATISTICS_INFO_BEAN.put(deviceNumber, new StatisticInfoSaveBean());
-        log.info("add device number : {} [tag : {} ] and DEVICE_TAG_TO_NAME {}", deviceNumber, deviceTag, Common.DEVICE_TAG_TO_NAME);
+        DEVICE_TAG_TO_NAME.put(deviceTag, deviceNumber);
+        STATISTICS_INFO_BEAN.put(deviceNumber, new StatisticInfoSaveBean());
+        log.info("add device number : {} [tag : {} ] and DEVICE_TAG_TO_NAME {}", deviceNumber, deviceTag, DEVICE_TAG_TO_NAME);
     }
 
     public static void removeDeviceNumer(String deviceNumber) {
-        Common.DEVICE_TAG_TO_NAME.remove(deviceNumber);
-        Common.STATISTICS_INFO_BEAN.remove(deviceNumber);
-        log.info("remove device number : {} [TAG : {} ]", deviceNumber, Common.DEVICE_TAG_TO_NAME.inverse().get(deviceNumber));
+        DEVICE_TAG_TO_NAME.remove(deviceNumber);
+        STATISTICS_INFO_BEAN.remove(deviceNumber);
+        log.info("remove device number : {} [TAG : {} ]", deviceNumber, DEVICE_TAG_TO_NAME.inverse().get(deviceNumber));
     }
 
     public static String getTargetDeviceNumberByTag(String tag) {
-        return Common.DEVICE_TAG_TO_NAME.get(tag);
+        return DEVICE_TAG_TO_NAME.get(tag);
     }
 
     public static String getTargetDeviceNumberByTag(String ip_dst, String eth_dst) {
         //System.out.println("get " + deviceIp + "xxxxxx" + AttackCommon.DEVICE_IP_TO_NAME.get(deviceIp));
-        String tag = Common.DEVICE_TAG_TO_NAME.get(ip_dst);
+        String tag = DEVICE_TAG_TO_NAME.get(ip_dst);
         if (tag != null) {
             return tag;
         }
-        tag = Common.DEVICE_TAG_TO_NAME.get(eth_dst);
+        tag = DEVICE_TAG_TO_NAME.get(eth_dst);
         return tag;
     }
 
     public static String getTargetDeviceTagByNumber(String deviceNumber) {
-        return Common.DEVICE_TAG_TO_NAME.inverse().get(deviceNumber);
+        return DEVICE_TAG_TO_NAME.inverse().get(deviceNumber);
     }
 
     public static void removeAllCachedDeviceNumber() {
-        Common.DEVICE_TAG_TO_NAME.clear();
-        Common.STATISTICS_INFO_BEAN.clear();
+        DEVICE_TAG_TO_NAME.clear();
+        STATISTICS_INFO_BEAN.clear();
     }
 
     /*********************************
@@ -251,19 +266,28 @@ public class CommonCacheUtil {
      *  CACHED SHOW GRAPH ARGS
      *
      **********************************/
+    /**
+     * 要显示的工艺参数集合【将这个set里面的工艺参数数据传输到前端，其他的不用传】
+     */
+    public static final Set<String> SHOW_GRAPH_SET = Collections.synchronizedSet(new HashSet<>());
+
     public static void addShowGraphArg(int protocolId, String artArg) {
-        Common.SHOW_GRAPH_SET.add(artArg);
+        SHOW_GRAPH_SET.add(artArg);
         log.info("添加图表展示：协议 {} 下，工艺参数 {} ", protocolId, artArg);
     }
 
     public static boolean removeShowGraph(int protocolId, String artArg) {
-        if (Common.SHOW_GRAPH_SET.remove(artArg)) {
+        if (SHOW_GRAPH_SET.remove(artArg)) {
             log.info("取消协议 {} 下，工艺参数 {} 图表展示", protocolId, artArg);
             return true;
         } else {
             log.info("取消协议 {} 下，工艺参数 {} 图表展示失败，set中不存在名为{}的key值", protocolId, artArg, artArg);
             return false;
         }
+    }
+
+    public static boolean isArtShow(String name){
+        return SHOW_GRAPH_SET.contains(name);
     }
 
     /*********************************
@@ -291,20 +315,21 @@ public class CommonCacheUtil {
      * 重置，每次统计时都需要重置统计信息
      */
     public static void resetSaveBean() {
-        Common.STATISTICS_INFO_BEAN.forEach(biConsumer);
+        STATISTICS_INFO_BEAN.forEach(biConsumer);
     }
 
-    /**********************************
+     /**********************************
      *
      * 设置 SCHEDULE SERVICE 运行状态
      *
      *********************************/
+    private static volatile boolean SCHEDULE_RUNNING = false;
     public static void setScheduleServiceRunningState(boolean running) {
-        Common.SCHEDULE_RUNNING = running;
+        SCHEDULE_RUNNING = running;
     }
 
     public static boolean getScheduleServiceRunningState() {
-        return Common.SCHEDULE_RUNNING;
+        return SCHEDULE_RUNNING;
     }
 
     /**********************************
@@ -330,11 +355,11 @@ public class CommonCacheUtil {
      *
      *********************************/
     public static ConcurrentHashMap<String, OperationAnalyzer> getOptAnalyzer(FvDimensionLayer layer) {
-        ConcurrentHashMap<String, OperationAnalyzer> map = OPERATION_FILTER_PRO.get(layer.ip_dst[0]);
+        ConcurrentHashMap<String, OperationAnalyzer> map = CommonOptFilterUtil.getTargetProtocolToOperationAnalyzerByDeviceTag(layer.ip_dst[0]);
         if (map != null) {
             return map;
         }
-        return OPERATION_FILTER_PRO.get(layer.eth_dst[0]);
+        return CommonOptFilterUtil.getTargetProtocolToOperationAnalyzerByDeviceTag(layer.eth_dst[0]);
     }
 
     /***********************************
@@ -344,19 +369,23 @@ public class CommonCacheUtil {
     private static final Map<String,Map<String,String>> RIGHT_PROTOCOL_LIST = new HashMap<>();
 
     public static void addWhiteProtocolToCache(String deviceNumber , String protocolName[]) {
-        Map<String,String> whiteProtocolMap = RIGHT_PROTOCOL_LIST.computeIfAbsent(deviceNumber,k->new HashMap<>());
-        for (String name : protocolName) {
-            whiteProtocolMap.put(name,"");
+        synchronized (LOCK_RIGHT_PROTOCOL_LIST) {
+            Map<String, String> whiteProtocolMap = RIGHT_PROTOCOL_LIST.computeIfAbsent(deviceNumber, k -> new HashMap<>());
+            for (String name : protocolName) {
+                whiteProtocolMap.put(name, "");
+            }
         }
     }
 
     public static int removeWhiteProtocolFromCache(String deviceNumber , String protocolName[]) {
         int count = 0;
-        Map<String,String> whiteProtocolMap = RIGHT_PROTOCOL_LIST.get(deviceNumber);
-        if (whiteProtocolMap!=null){
-            for (String s : protocolName) {
-                if(whiteProtocolMap.remove(s)!=null){
-                    count++;
+        synchronized (LOCK_RIGHT_PROTOCOL_LIST) {
+            Map<String, String> whiteProtocolMap = RIGHT_PROTOCOL_LIST.get(deviceNumber);
+            if (whiteProtocolMap != null) {
+                for (String s : protocolName) {
+                    if (whiteProtocolMap.remove(s) != null) {
+                        count++;
+                    }
                 }
             }
         }
@@ -364,9 +393,11 @@ public class CommonCacheUtil {
     }
 
     public static void clearAllWhiteProtocols(String deviceNumber) {
-        Map<String,String> whiteProtocolMap = RIGHT_PROTOCOL_LIST.get(deviceNumber);
-        if (whiteProtocolMap!=null){
-            whiteProtocolMap.clear();
+        synchronized (LOCK_RIGHT_PROTOCOL_LIST) {
+            Map<String, String> whiteProtocolMap = RIGHT_PROTOCOL_LIST.get(deviceNumber);
+            if (whiteProtocolMap != null) {
+                whiteProtocolMap.clear();
+            }
         }
     }
 

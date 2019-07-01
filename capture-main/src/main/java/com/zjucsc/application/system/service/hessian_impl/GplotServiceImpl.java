@@ -77,8 +77,6 @@ public class GplotServiceImpl extends BaseServiceImpl<Gplot,GplotMapper> impleme
         //更新缓存中的组态图ID
         Common.GPLOT_ID = gplotId;
 
-        log.info("***************\n切换组态图,从数据库中重新加载新该组态图下的所有规则，新规则为：\n五元组规则：{} \n功能码规则：{} \n***************" , Common.FV_DIMENSION_FILTER_PRO,
-                Common.OPERATION_FILTER_PRO);
         return BaseResponse.OK();
     }
 

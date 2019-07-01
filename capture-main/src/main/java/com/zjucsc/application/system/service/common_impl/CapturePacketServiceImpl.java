@@ -51,6 +51,8 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
 
     private final PacketAnalyzeService packetAnalyzeService;
 
+    private SimulateThread simulateThread;
+
     @Autowired private ConstantConfig constantConfig;
 
     //五元kafka发送线程
@@ -59,7 +61,9 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
 
     public CapturePacketServiceImpl(PacketAnalyzeService packetAnalyzeService) {
         this.packetAnalyzeService = packetAnalyzeService;
-
+        if (Common.systemRunType == 0){
+            simulateThread = new SimulateThread();
+        }
         //所有攻击报文的入口
         AttackCommon.registerAttackCallback(attackBean -> {
             setDeviceInfo(attackBean);
@@ -368,8 +372,6 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         this.newFvDimensionCallback = newFvDimensionCallback;
     }
 
-    private SimulateThread simulateThread = new SimulateThread();
-
     @Async
     @Override
     public CompletableFuture<Exception> startSimulate() {
@@ -409,7 +411,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             try {
                 String PASSWORD = "920614";
                 String USER_NAME = "root";
-                String JDBC_URL = "jdbc:mysql://localhost:3306/csc_db?serverTimezone=UTC";
+                String JDBC_URL = "jdbc:mysql://10.15.191.100:3306/csc_db?serverTimezone=UTC";
                 connection = DBUtil.getConnection(JDBC_URL, USER_NAME, PASSWORD);
             } catch (SQLException e) {
                 e.printStackTrace();
