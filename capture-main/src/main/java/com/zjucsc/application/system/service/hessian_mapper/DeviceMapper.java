@@ -43,4 +43,6 @@ public interface DeviceMapper extends BaseMapper<Device> {
                                              int gplotId);
 
     void saveStatisticInfo(Map<String, StatisticInfoSaveBean> map, int gplotId);
+
+    List<Integer> selectAllDeviceIdByGplotId(int gplotId);
 }

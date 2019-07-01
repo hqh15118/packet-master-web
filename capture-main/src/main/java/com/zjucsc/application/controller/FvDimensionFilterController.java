@@ -69,12 +69,4 @@ public class FvDimensionFilterController {
         CompletableFuture<List<Rule>> future =  iFvDimensionFilterService.getTargetExistIdFilter(deviceNumber , true);
         return BaseResponse.OK(future.get());
     }
-
-    @Log
-    @ApiOperation("添加协议白名单")
-    @PostMapping("right_protocol")
-    public BaseResponse addRightProtocolToCache(@RequestBody DeviceProtocol rightProtocols){
-        CommonCacheUtil.addWhiteProtocolToCache(rightProtocols.getDeviceNumber(),rightProtocols.getProtocolName());
-        return BaseResponse.OK();
-    }
 }

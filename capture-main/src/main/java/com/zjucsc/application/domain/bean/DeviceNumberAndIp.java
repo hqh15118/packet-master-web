@@ -6,4 +6,6 @@ import lombok.Data;
 public class DeviceNumberAndIp {
     public String deviceNumber;
     public String deviceIp;
+    public int deviceId;
+    public String deviceInfo;
 }

@@ -26,30 +26,15 @@ public class OperationAnalyzer extends AbstractAnalyzer<OperationPacketFilter<In
         int fun_code = ((int) objs[0]);
         FvDimensionLayer layer = ((FvDimensionLayer) objs[1]);
         if (!getAnalyzer().getWhiteMap().containsKey(fun_code)){
-            if(fun_code!=-1) {
+            if(fun_code!=-1 && fun_code != 2) {
                 return new AttackBean.Builder()
-                        .attackInfo(attackrec(layer.frame_protocols[0], fun_code))
-                        .attackType(AttackTypePro.OPERATION)
+                        .attackInfo(attackrec(layer.protocol,fun_code))
+                        .attackType("非授权指令")
                         .fvDimension(layer)
                         .build();
             }
-            return null;
         }
         return null;
-    }
-
-    public OperationAnalyzer(OperationPacketFilter<Integer, String> integerStringPacketFilter) {
-        super(integerStringPacketFilter);
-    }
-
-    private String getOperation(String protocol , int fun_code) throws ProtocolIdNotValidException {
-        String str = CommonConfigUtil.getTargetProtocolFuncodeMeanning(protocol,fun_code);
-        return str==null ? "unknown operation" : str;
-    }
-
-    @Override
-    public String toString() {
-        return getAnalyzer().toString();
     }
 
     private String attackrec(String protocols , int Fun_code)
@@ -60,8 +45,7 @@ public class OperationAnalyzer extends AbstractAnalyzer<OperationPacketFilter<In
         }
         switch (protocols)
         {
-            case "s7comm_job":
-            case "s7comm_ack_data": {
+            case "s7comm": {
                 switch (Fun_code) {
                     case 0x04:
                         return "数据篡改攻击!";
@@ -78,8 +62,8 @@ public class OperationAnalyzer extends AbstractAnalyzer<OperationPacketFilter<In
                     case 0x28:
                     case 0x29:
                         return "配置篡改攻击!";
-                    case 0xf0:
-                        return "嗅探攻击";
+//                    case 0xf0:
+//                        return "嗅探攻击";
                     default:
                         return "非法功能码未知操作";
                 }
@@ -128,5 +112,14 @@ public class OperationAnalyzer extends AbstractAnalyzer<OperationPacketFilter<In
             default:
                 return "未知攻击";
         }
+    }
+
+    public OperationAnalyzer(OperationPacketFilter<Integer, String> integerStringPacketFilter) {
+        super(integerStringPacketFilter);
+    }
+
+    @Override
+    public String toString() {
+        return getAnalyzer().toString();
     }
 }

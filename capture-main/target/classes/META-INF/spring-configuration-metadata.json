@@ -7,8 +7,13 @@
     },
     {
       "name": "management.endpoint.sysconfig",
-      "type": "com.zjucsc.application.config.WatchConfig",
-      "sourceType": "com.zjucsc.application.config.WatchConfig"
+      "type": "com.zjucsc.application.config.watch_config.WatchConfig",
+      "sourceType": "com.zjucsc.application.config.watch_config.WatchConfig"
+    },
+    {
+      "name": "management.endpoint.white-packets",
+      "type": "com.zjucsc.application.config.watch_config.WatchConfig2",
+      "sourceType": "com.zjucsc.application.config.watch_config.WatchConfig2"
     },
     {
       "name": "myconfig",
@@ -88,17 +93,36 @@
       "sourceType": "com.zjucsc.application.system.service.hession_config.HessianConfig"
     },
     {
+      "name": "hessian-config.white-protocol",
+      "type": "java.lang.String",
+      "sourceType": "com.zjucsc.application.system.service.hession_config.HessianConfig"
+    },
+    {
       "name": "management.endpoint.sysconfig.cache.time-to-live",
       "type": "java.time.Duration",
       "description": "Maximum time that a response can be cached.",
-      "sourceType": "com.zjucsc.application.config.WatchConfig",
+      "sourceType": "com.zjucsc.application.config.watch_config.WatchConfig",
       "defaultValue": "0ms"
     },
     {
       "name": "management.endpoint.sysconfig.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable the sysconfig endpoint.",
-      "sourceType": "com.zjucsc.application.config.WatchConfig",
+      "sourceType": "com.zjucsc.application.config.watch_config.WatchConfig",
+      "defaultValue": true
+    },
+    {
+      "name": "management.endpoint.white-packets.cache.time-to-live",
+      "type": "java.time.Duration",
+      "description": "Maximum time that a response can be cached.",
+      "sourceType": "com.zjucsc.application.config.watch_config.WatchConfig2",
+      "defaultValue": "0ms"
+    },
+    {
+      "name": "management.endpoint.white-packets.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable the white-packets endpoint.",
+      "sourceType": "com.zjucsc.application.config.watch_config.WatchConfig2",
       "defaultValue": true
     },
     {
@@ -135,6 +159,12 @@
       "type": "java.lang.Boolean",
       "sourceType": "com.zjucsc.application.config.ConstantConfig",
       "defaultValue": false
+    },
+    {
+      "name": "myconfig.simulate-start-num",
+      "type": "java.lang.Integer",
+      "sourceType": "com.zjucsc.application.config.ConstantConfig",
+      "defaultValue": 0
     },
     {
       "name": "myconfig.system-properties-name",

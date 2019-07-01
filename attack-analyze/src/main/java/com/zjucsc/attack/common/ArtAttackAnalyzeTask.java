@@ -1,6 +1,7 @@
 package com.zjucsc.attack.common;
 
 import com.zjucsc.attack.bean.AttackBean;
+import com.zjucsc.tshark.packets.FvDimensionLayer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,11 +14,14 @@ public class ArtAttackAnalyzeTask implements Runnable{
     private String description;
     private static List<String> exp = new ArrayList<>();
     private AttackCallback attackCallback;
+    private FvDimensionLayer layer;
 
-    public ArtAttackAnalyzeTask(List<String> expression , Map<String,Float> techmap , String description) {
+    public ArtAttackAnalyzeTask(List<String> expression , Map<String,Float> techmap , String description,
+                                FvDimensionLayer layer) {
         this.expression = expression;
         this.techmap = techmap;
         this.description = description;
+        this.layer = layer;
     }
 
     Runnable setCallback(AttackCallback attackCallback){
@@ -32,6 +36,7 @@ public class ArtAttackAnalyzeTask implements Runnable{
             attackCallback.artCallback(
                     AttackBean.builder()
                     .attackType(AttackTypePro.HAZARD_ART)
+                    .fvDimension(layer)
                     .attackInfo(res).build());
         }
     }

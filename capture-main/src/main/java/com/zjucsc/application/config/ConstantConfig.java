@@ -29,4 +29,6 @@ public class ConstantConfig {
     private boolean showErrorOnly;
 
     private int reOpenTableName;
+
+    private int simulateStartNum;
 }

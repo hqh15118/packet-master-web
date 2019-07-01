@@ -28,7 +28,7 @@ public class PacketAnalyzeService {
         if ((delayInit = COLLECTOR_DELAY_MAP.get(collectorId))!=null){
             if (delayInit < delay){
                 COLLECTOR_DELAY_MAP.put(collectorId , delay);
-                log.debug("update collector id {} delay {}" , collectorId , delay);
+                //log.debug("update collector id {} delay {}" , collectorId , delay);
             }
         }else{
             COLLECTOR_DELAY_MAP.put(collectorId,delay);
@@ -39,15 +39,12 @@ public class PacketAnalyzeService {
 
     public synchronized HashMap<String,Integer> getCollectorNumToDelayList(){
         collectorNumToDelayMap.clear();
-        COLLECTOR_DELAY_MAP.forEach(new BiConsumer<Integer, Integer>() {
-            @Override
-            public void accept(Integer integer, Integer delay) {
-                String deviceNumber = iDeviceService.selectDeviceNumberByCollectorTag(String.valueOf(integer) , Common.GPLOT_ID);
-                if (deviceNumber!=null){
-                    collectorNumToDelayMap.put(deviceNumber,delay);
-                }else{
-                    log.debug("********************* 无法找到采集器ID为 {} 组态图ID为 {} 的设备号(device_number)" , integer , Common.GPLOT_ID);
-                }
+        COLLECTOR_DELAY_MAP.forEach((integer, delay) -> {
+            String deviceNumber = iDeviceService.selectDeviceNumberByCollectorTag(String.valueOf(integer) , Common.GPLOT_ID);
+            if (deviceNumber!=null){
+                collectorNumToDelayMap.put(deviceNumber,delay);
+            }else{
+                log.debug("********************* 无法找到采集器ID为 {} 组态图ID为 {} 的设备号(device_number)" , integer , Common.GPLOT_ID);
             }
         });
         clearCollectorDelay();                      //清除旧的时延数据

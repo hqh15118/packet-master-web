@@ -19,7 +19,7 @@ public class SavedAttackPacket implements Serializable {
      * length : 1
      */
 
-    private String timeStamp;
+    private String packetTimeStamp;
     private String protocolName;
     private String srcMac;
     private String dstMac;
@@ -27,9 +27,9 @@ public class SavedAttackPacket implements Serializable {
     private String dstIp;
     private String srcPort;
     private String dstPort;
-    private int funcode;
+    private String funCode;
     private String length;
-    private int badType;
     private int danger;
-    private String details;
+    private String attackInfo;
+    private String attackType;
 }

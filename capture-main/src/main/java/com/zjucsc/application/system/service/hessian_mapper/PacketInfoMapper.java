@@ -59,5 +59,5 @@ public interface PacketInfoMapper  {
 
     String selectPacketRawDataByTimeStamp(String timeStamp);
 
-    void addNormalPacket(RightPacketInfo rightPacketInfo , int gplotId);
+    void addNormalPacket(List<RightPacketInfo> rightPacketInfo , int gplotId);
 }

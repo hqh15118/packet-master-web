@@ -43,13 +43,6 @@ public class Common {
     public static List<String> hasStartedHost = new ArrayList<>();
 
     /**
-     * cache7
-     * 所有可配置的协议
-     * 协议 --> 功能码 以及 对应的含义 --> 从serviceLoader中加载
-     */
-    public static final HashMap<String , HashMap<Integer,String>> CONFIGURATION_MAP = new HashMap<>();
-
-    /**
      * cache6
      * String 设备TAG
      * String -> 协议
@@ -92,13 +85,6 @@ public class Common {
     public final static ConcurrentHashMap<String,Integer> ATTACK_TYPE_STATICS = new ConcurrentHashMap<>();
 
     public static final ThreadExceptionHandler COMMON_THREAD_EXCEPTION_HANDLER = new ThreadExceptionHandler();
-
-    /**
-     * cache2
-     *  init in
-     * @see com.zjucsc.application.task.InitConfigurationService
-     */
-    public static final BiMap<Integer,String> PROTOCOL_STR_TO_INT = HashBiMap.create();
 
     public static final BiMap<Integer,String> AUTH_MAP = HashBiMap.create();
 

@@ -36,16 +36,15 @@ public class OptFilterServiceImpl extends BaseServiceImpl<OptFilter,OptFilterMap
      * @param
      * @return
      */
-    @Async
     @Override
     public CompletableFuture<Exception> addOperationFilter(OptFilterForFront optFilterForFront) throws DeviceNotValidException {
-        String deviceIp = CommonCacheUtil.getTargetDeviceTagByNumber(optFilterForFront.getDeviceNumber());
-        if (deviceIp == null){
-            throw new DeviceNotValidException("未发现设备号为["+optFilterForFront.getDeviceNumber() +"]的设备");
+        String deviceTag = CommonCacheUtil.getTargetDeviceTagByNumber(optFilterForFront.getDeviceNumber());
+        if (deviceTag == null){
+            throw new DeviceNotValidException("ERROR : 未发现设备号为["+optFilterForFront.getDeviceNumber() +"]的设备");
         }
         try {
             //更新缓存
-            CommonOptFilterUtil.addOrUpdateAnalyzer(deviceIp,optFilterForFront,optFilterForFront.toString());
+            CommonOptFilterUtil.addOrUpdateAnalyzer(deviceTag,optFilterForFront,optFilterForFront.toString());
         } catch (ProtocolIdNotValidException e) {
             return CompletableFuture.completedFuture(e);
         }

@@ -61,7 +61,7 @@ public class AttackConfigController {
     @ApiOperation("攻击报文已处理")
     @PostMapping("handle_attacks")
     @Log
-    public BaseResponse handleAttacks(List<String> attackPacketTimeStamp){
+    public BaseResponse handleAttacks(@RequestBody List<String> attackPacketTimeStamp){
         int i = packetInfoMapper.handleAttackPacket(attackPacketTimeStamp);
         if (i != attackPacketTimeStamp.size()){
             //发送的报文数量和处理的报文数量相等
@@ -77,7 +77,7 @@ public class AttackConfigController {
         return BaseResponse.OK(packetInfoMapper.selectAttackBybadTypeAndLevel(attackF));
     }
 
-    @ApiOperation("添加工艺参数攻击监测配置")
+    @ApiOperation("添加/修改工艺参数攻击监测配置")
     @PostMapping("art_attack_config")
     public BaseResponse configArtAttack(@RequestBody ArtAttackConfig artAttackConfig){
         List<ArtAttack2Config> configs = artAttackConfig.getRule();
@@ -116,9 +116,11 @@ public class AttackConfigController {
 
     @ApiOperation("设置正常报文五元组")
     @PostMapping("set_right_packet")
-    public BaseResponse setRightPacket(@RequestBody RightPacketInfo rightPacketInfo){
+    public BaseResponse setRightPacket(@RequestBody List<RightPacketInfo> rightPacketInfo){
         packetInfoMapper.addNormalPacket(rightPacketInfo,Common.GPLOT_ID);
-        CommonCacheUtil.addNormalRightPacketInfo(rightPacketInfo);
+        for (RightPacketInfo packetInfo : rightPacketInfo) {
+            CommonCacheUtil.addNormalRightPacketInfo(packetInfo);
+        }
         return BaseResponse.OK();
     }
 

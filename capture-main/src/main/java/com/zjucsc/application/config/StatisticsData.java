@@ -193,7 +193,7 @@ public class StatisticsData {
     public static void addProtocolNum(String protocolName,int deltaNumber){
         AtomicLong atomicLong = PROTOCOL_NUM.get(protocolName);
         if (atomicLong == null){
-            PROTOCOL_NUM.putIfAbsent(protocolName,new AtomicLong(1));
+            PROTOCOL_NUM.put(protocolName,new AtomicLong(1));
         }else{
             atomicLong.addAndGet(deltaNumber);
         }

@@ -1,5 +1,7 @@
 package com.zjucsc.application.util;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.bean.StatisticInfoSaveBean;
 import com.zjucsc.application.domain.bean.RightPacketInfo;
@@ -10,7 +12,6 @@ import com.zjucsc.socket_io.SocketIoEvent;
 import com.zjucsc.socket_io.SocketServiceCenter;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.crypto.hash.Hash;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,6 +34,13 @@ public class CommonCacheUtil {
      *  CONFIGURATION_MAP
      *
      **********************************/
+
+    /**
+     * cache7
+     * 所有可配置的协议
+     * 协议 --> 功能码 以及 对应的含义 --> 从serviceLoader中加载
+     */
+    public static final HashMap<String , HashMap<Integer,String>> CONFIGURATION_MAP = new HashMap<>();
 
     public static void deleteCachedProtocolByName(String protocolName) {
         CONFIGURATION_MAP.remove(protocolName);
@@ -75,14 +83,14 @@ public class CommonCacheUtil {
     }
 
     private static void doAddNewProtocolToCache(String protocol, int protocolId, HashMap<Integer, String> funCodeMeaningMap) throws ProtocolIdNotValidException {
-        if (Common.CONFIGURATION_MAP.get(protocol) != null || Common.PROTOCOL_STR_TO_INT.get(protocolId) != null) {
+        if (CONFIGURATION_MAP.get(protocol) != null || PROTOCOL_STR_TO_INT.get(protocolId) != null) {
             throw new ProtocolIdNotValidException("protocol " + protocol + " is not valid , cause it exists in CONFIGURATION_MAP or PROTOCOL_STR_TO_INT \n CONFIGURATION_MAP is" +
                     CONFIGURATION_MAP + " PROTOCOL_STR_TO_INT" + PROTOCOL_STR_TO_INT);
         } else {
             if (funCodeMeaningMap == null) {
-                Common.CONFIGURATION_MAP.put(protocol, new HashMap<>());
+                CONFIGURATION_MAP.put(protocol, new HashMap<>());
             } else {
-                Common.CONFIGURATION_MAP.put(protocol, funCodeMeaningMap);
+                CONFIGURATION_MAP.put(protocol, funCodeMeaningMap);
             }
             addNewProtocolToId(protocol, protocolId);
         }
@@ -150,6 +158,12 @@ public class CommonCacheUtil {
      *
      **********************************/
 
+    /**
+     * cache2
+     *  init in
+     * @see com.zjucsc.application.task.InitConfigurationService
+     */
+    public static final BiMap<Integer,String> PROTOCOL_STR_TO_INT = HashBiMap.create();
     /**
      * @param protocolId
      * @return
@@ -336,11 +350,17 @@ public class CommonCacheUtil {
         }
     }
 
-    public static void removeWhiteProtocolFromCache(String deviceNumber , String protocolName) {
+    public static int removeWhiteProtocolFromCache(String deviceNumber , String protocolName[]) {
+        int count = 0;
         Map<String,String> whiteProtocolMap = RIGHT_PROTOCOL_LIST.get(deviceNumber);
         if (whiteProtocolMap!=null){
-            whiteProtocolMap.remove(protocolName);
+            for (String s : protocolName) {
+                if(whiteProtocolMap.remove(s)!=null){
+                    count++;
+                }
+            }
         }
+        return count;
     }
 
     public static void clearAllWhiteProtocols(String deviceNumber) {
@@ -384,6 +404,11 @@ public class CommonCacheUtil {
             return map.containsKey(rightPacketInfo);
         }
     }
+    public static Collection<HashMap<RightPacketInfo,String>> getNormalPacketInfo(){
+        synchronized (NORMAL_LOCK){
+            return RIGHT_PACKET_INFOS.values();
+        }
+    }
     /************************************
      *
      * 攻击占比统计 key : 攻击类型  value 攻击数目
@@ -403,5 +428,18 @@ public class CommonCacheUtil {
         }
     }
 
-
+    /*************************************
+     * [deviceNumber - deviceName]
+     ************************************/
+    private static final BiMap<String,String> DEVICE_NUMBER_TO_NAME =
+            HashBiMap.create();
+    public static void addDeviceNumberToName(String deviceNumber,String deviceName){
+        DEVICE_NUMBER_TO_NAME.put(deviceNumber, deviceName);
+    }
+    public static void removeAllDeviceNumberToName(){
+        DEVICE_NUMBER_TO_NAME.clear();
+    }
+    public static String convertDeviceNumberToName(String deviceNumber){
+        return DEVICE_NUMBER_TO_NAME.get(deviceNumber);
+    }
 }

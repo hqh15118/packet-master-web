@@ -59,7 +59,7 @@ public class CositeDOSAttackAnalyzeList extends TcpAttackAnalyzeList {
 
     private String doAnalyze(LinkedList<FvDimensionLayer> fvDimensionLayers,int index){
         long timeStamp;
-        for (int i = index; i >= 0 ; i--) {
+        for (int i = index - 1; i >= 0 ; i--) {
             timeStamp = fvDimensionLayers.get(i).timeStampInLong;
             while ((timeStamp - fvDimensionLayers.getLast().timeStampInLong) > AttackConfig.getCoSiteTimeGap()){
                 fvDimensionLayers.removeLast();

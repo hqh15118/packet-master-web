@@ -30,11 +30,14 @@ public class DeviceController {
     public BaseResponse addDeviceInfo(@RequestBody @Valid @NotEmpty List<Device> deviceList){
         iDeviceService.removeAllDevicesByGplotId(Common.GPLOT_ID);
         CommonCacheUtil.removeAllCachedDeviceNumber();
+        CommonCacheUtil.removeAllDeviceNumberToName();
         for (Device device : deviceList) {
             if (Common.filterStatement == 0) {
                 CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(device.getDeviceNumber(), device.getDeviceTag());
+                CommonCacheUtil.addDeviceNumberToName(device.getDeviceNumber(),device.getDeviceInfo());
             }else{
                 CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(device.getDeviceNumber(), device.getDeviceTag());
+                CommonCacheUtil.addDeviceNumberToName(device.getDeviceNumber(),device.getDeviceInfo());
             }
         }
         iDeviceService.saveBatch(deviceList);

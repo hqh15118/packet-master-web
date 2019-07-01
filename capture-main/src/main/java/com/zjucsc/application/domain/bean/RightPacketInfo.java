@@ -11,14 +11,14 @@ public class RightPacketInfo {
     private String dst_ip;
     private String src_mac;
     private String dst_mac;
-    private int funCode;
+    private String funCode;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         RightPacketInfo that = (RightPacketInfo) o;
-        return funCode == that.funCode &&
+        return funCode.equals(that.funCode)  &&
                 protocol.equals(that.protocol) &&
                 src_ip.equals(that.src_ip) &&
                 dst_ip.equals(that.dst_ip) &&

@@ -3,6 +3,7 @@ package com.zjucsc.application.tshark.handler;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.PACKET_PROTOCOL;
 import com.zjucsc.application.config.StatisticsData;
+import com.zjucsc.application.domain.bean.RightPacketInfo;
 import com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
 import com.zjucsc.application.util.AppCommonUtil;
@@ -24,6 +25,9 @@ import java.util.concurrent.ExecutorService;
 @Slf4j
 public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
 
+    private ThreadLocal<RightPacketInfo> rightPacketInfoThreadLocal =
+            ThreadLocal.withInitial(RightPacketInfo::new);
+
     public BadPacketAnalyzeHandler(ExecutorService executor) {
         super(executor);
     }
@@ -38,7 +42,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
         //工艺参数分析
         byte[] tcpPayload = PacketDecodeUtil.hexStringToByteArray(layer.tcp_payload[0]);
         Map<String,Float> res = null;
-        String protocol = layer.frame_protocols[0];
+        String protocol = layer.protocol;
         if (protocol.startsWith("s7comm")){
             if (!layer.tcp_flags_ack[0].equals("")){
                 res =  ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,"s7comm",1);
@@ -46,11 +50,11 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
                 res =  ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),layer.rawData,"s7comm",0);
             }
         }else if (protocol.equals(PACKET_PROTOCOL.MODBUS)){
-            res = ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.frame_protocols[0]);
+            res = ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.protocol);
         }else if (protocol.equals(PACKET_PROTOCOL.PN_IO)){
-            res = ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),layer.rawData,layer.frame_protocols[0]);
+            res = ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),layer.rawData,layer.protocol);
         }else if (protocol.equals(PACKET_PROTOCOL.IEC104)){
-            res = ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.frame_protocols[0]);
+            res = ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.protocol);
         }
         else{
 
@@ -60,7 +64,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
         if(res!=null){
             //数据发送
             StatisticsData.addArtMapData(res);
-            AttackCommon.appendArtAnalyze(res);
+            AttackCommon.appendArtAnalyze(res,layer);
         }
         return null;
     }
@@ -69,28 +73,33 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
     private void protocolAnalyze(FvDimensionLayer layer) {
         FiveDimensionAnalyzer fiveDimensionAnalyzer;
         //根据报文tag，定位到具体的报文过滤器进行分析
-        if ((fiveDimensionAnalyzer = CommonCacheUtil.getFvDimensionFilter(layer)) != null) {
-            AttackBean attackBean = ((AttackBean) fiveDimensionAnalyzer.analyze(layer));
-            if (attackBean != null) {
-                String deviceNumber = CommonCacheUtil.getTargetDeviceNumberByTag(layer.ip_dst[0],layer.eth_dst[0]);
-                attackBean.setDeviceNumber(deviceNumber);
-                //恶意报文统计
-                statisticsBadPacket(deviceNumber);
-                //回调对恶意报文进行发送和统计
-                AttackCommon.appendFvDimensionError(attackBean);
-            } else {
-                //五元组正常，再进行操作的匹配
-                //功能码分析
-                if (!(layer instanceof UndefinedPacket.LayersBean)) {
-                    String funCode = layer.funCode;
-                    if (!"--".equals(funCode)) {
-                        operationAnalyze(Integer.valueOf(funCode), layer);
-                    }
+        RightPacketInfo rightPacketInfo = rightPacketInfoThreadLocal.get();
+        rightPacketInfo.setDst_ip(layer.ip_dst[0]);
+        rightPacketInfo.setSrc_ip(layer.ip_src[0]);
+        rightPacketInfo.setDst_mac(layer.eth_dst[0]);
+        rightPacketInfo.setSrc_mac(layer.eth_src[0]);
+        rightPacketInfo.setFunCode(layer.funCode);
+        rightPacketInfo.setProtocol(layer.protocol);
+        if (CommonCacheUtil.isNormalRightPacket(rightPacketInfo)){
+            operationAnalyze(layer);
+        }else {
+            if ((fiveDimensionAnalyzer = CommonCacheUtil.getFvDimensionFilter(layer)) != null) {
+                AttackBean attackBean = ((AttackBean) fiveDimensionAnalyzer.analyze(layer));
+                if (attackBean != null) {
+                    String deviceNumber = CommonCacheUtil.getTargetDeviceNumberByTag(layer.ip_dst[0], layer.eth_dst[0]);
+                    attackBean.setDeviceNumber(deviceNumber);
+                    //恶意报文统计【五秒钟一次的延迟推送】
+                    statisticsBadPacket(deviceNumber);
+                    //回调对恶意报文进行发送和统计【实时推送】
+                    AttackCommon.appendFvDimensionError(attackBean);
+                } else {
+                    //五元组正常，再进行操作的匹配
+                    //功能码分析
+                    operationAnalyze(layer);
                 }
-            }
-        } else {
-            //忽略广播包
-            //TODO 未知设备
+            } else {
+                //忽略广播包
+                //TODO 未知设备
             /*
             if (!layer.eth_dst[0].equals("ff:ff:ff:ff:ff:ff")&&!layer.ip_dst[0].equals("255:255:255:255")) {
                 AttackBean attackBean = new AttackBean.Builder()
@@ -102,10 +111,21 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
                 AttackCommon.appendFvDimensionError(attackBean);
             }
             */
+            }
         }
     }
 
-    private void operationAnalyze(int funCode , FvDimensionLayer layer) {
+    private void operationAnalyze(FvDimensionLayer layer){
+        if (!(layer instanceof UndefinedPacket.LayersBean)) {
+            String funCode = layer.funCode;
+            //有功能码
+            if (!"--".equals(funCode)) {
+                doOperationAnalyze(Integer.valueOf(funCode), layer);
+            }
+        }
+    }
+
+    private void doOperationAnalyze(int funCode , FvDimensionLayer layer) {
         //根据目的IP/MAC地址获取对应的功能码分析器
         ConcurrentHashMap<String, OperationAnalyzer> map = CommonCacheUtil.getOptAnalyzer(layer);
         if (map != null){
@@ -118,16 +138,15 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
              * 缓存在：
              * @see Common 的 【PROTOCOL_STR_TO_INT】
              */
-            if ((operationAnalyzer = map.get(layer.frame_protocols[0]))!=null){
-                AttackBean attackBean;
-                attackBean = (AttackBean) operationAnalyzer.analyze(funCode,layer);
+            if ((operationAnalyzer = map.get(layer.protocol))!=null){
+                Object attackBean = operationAnalyzer.analyze(funCode,layer);
                 if (attackBean!=null){
                     String deviceNumber = CommonCacheUtil.getTargetDeviceNumberByTag(layer.ip_dst[0],layer.eth_dst[0]);
-                    attackBean.setDeviceNumber(deviceNumber);
+                    ((AttackBean) attackBean).setDeviceNumber(deviceNumber);
+                    ((AttackBean) attackBean).setAttackType("非授权指令");
+                    AttackCommon.appendFvDimensionError(((AttackBean) attackBean));
                     statisticsBadPacket(deviceNumber);
                 }
-            }else{
-                log.debug("can not find protocol {} 's operation analyzer" , layer.frame_protocols[0]);
             }
         }
     }
@@ -136,5 +155,4 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
         StatisticsData.attackNumber.incrementAndGet();
         StatisticsData.increaseAttackByDevice(deviceNumber);
     }
-
 }

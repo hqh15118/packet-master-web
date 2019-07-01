@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.zjucsc.application.config.Common.CONFIGURATION_MAP;
+import static com.zjucsc.application.util.CommonCacheUtil.CONFIGURATION_MAP;
 import static com.zjucsc.application.util.CommonCacheUtil.convertIdToName;
 
 
@@ -45,22 +45,8 @@ public class CommonConfigUtil {
         return funcodeMeaning;
     }
 
-
-    public static String getTargetProtocolFuncodeMeanning(int protocolId,int funcode) throws ProtocolIdNotValidException {
-        String funcodeMeaning = null;
-        String name = convertIdToName(protocolId);
-        if ((funcodeMeaning = getTargetProtocolAllFuncodeMeaning(name).get(funcode)) == null){
-            funcodeMeaning = "unknown operation";
-            if (SHOW_LOG) {
-                log.info("can not find protocol id {} [protocol {} ]funcode {} meaning in CONFIGURATION_MAP \n CONFIGURATION_MAP is {}"
-                        , protocolId, name, funcode, CONFIGURATION_MAP);
-            }
-        }
-        return funcodeMeaning;
-    }
-
     public static void addProtocolFuncodeMeaning(String protocol , int funcode , String optMeaning){
-        HashMap<Integer,String> funcodeMeaning = null;
+        HashMap<Integer,String> funcodeMeaning;
         if ((funcodeMeaning = CONFIGURATION_MAP.get(protocol)) == null){
             //CONFIGURATION_MAP中不包含该协议，需要添加一个新的map
             funcodeMeaning = new HashMap<>();
@@ -73,7 +59,7 @@ public class CommonConfigUtil {
             }
         }else{
             synchronized (CommonConfigUtil.class){
-                //防止多个线程对同一个hashmap并发访问
+                //防止多个线程对同一个hash map并发访问
                 //由于只是加了一个写锁，所以读的时候可能会出现滞后的问题
                 funcodeMeaning.put(funcode,optMeaning);
                 if (SHOW_LOG) {

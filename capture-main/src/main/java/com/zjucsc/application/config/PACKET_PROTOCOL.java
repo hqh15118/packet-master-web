@@ -10,9 +10,11 @@ package com.zjucsc.application.config;
  */
 public interface PACKET_PROTOCOL {
     String MODBUS = "modbus";
-    @ProtocolIgnore
+    //@ProtocolIgnore
     String S7 = "s7comm";
+    @ProtocolIgnore
     String S7_JOB = "s7comm_job";
+    @ProtocolIgnore
     String S7_Ack_data = "s7comm_ack_data";
     String S7_User_data = "s7comm_user_data";
     @ProtocolIgnore

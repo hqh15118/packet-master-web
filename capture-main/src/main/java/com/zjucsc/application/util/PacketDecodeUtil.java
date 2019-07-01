@@ -174,23 +174,12 @@ public class PacketDecodeUtil {
      * @see com.zjucsc.application.config.PACKET_PROTOCOL
      */
     public static String discernPacket(String protocolStack ,  Object...otherInfo){
-        if (protocolStack.endsWith("tcp")){
-            return TCP;
-        }
-        else if (protocolStack.endsWith("modbus"))
+//        if (protocolStack.endsWith("tcp")){
+//            return TCP;
+//        }
+        if (protocolStack.endsWith("modbus"))
         {
             return MODBUS;
-        }else if(protocolStack.endsWith("s7comm"))
-        {
-            S7CommPacket.LayersBean layersX = ((S7CommPacket.LayersBean) otherInfo[0]);
-            String rosctr = layersX.s7comm_header_rosctr[0];
-            if (S7CommPacket.ACK_DATA.equals(rosctr)){
-                return S7_Ack_data;
-            }else if (S7CommPacket.JOB.equals(rosctr)) {
-                return S7_JOB;
-            }else{
-                return S7;
-            }
         }
         else if(protocolStack.endsWith("dnp3"))
         {
@@ -201,12 +190,27 @@ public class PacketDecodeUtil {
             return IEC104;
         }
         else if(protocolStack.endsWith("data"))
-        {//udp...fixme
+        {
             return UDP;
         }
         else{
             return getUnDefinedPacketProtocol(protocolStack);
         }
+    }
+
+    public static String decodeS7Protocol(String protocolStack ,  Object...otherInfo){
+            S7CommPacket.LayersBean layersX = ((S7CommPacket.LayersBean) otherInfo[0]);
+            String rosctr = layersX.s7comm_header_rosctr[0];
+            if (S7CommPacket.ACK_DATA.equals(rosctr)){
+                return S7_Ack_data;
+            }else if (S7CommPacket.JOB.equals(rosctr)) {
+                return S7_JOB;
+            }else if (S7CommPacket.USER_DATA.equals(rosctr)){
+                return S7_User_data;
+            }
+            else{
+                return S7;
+            }
     }
 
     public static String getUnDefinedPacketProtocol(String protocolStack){

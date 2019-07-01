@@ -1,7 +1,10 @@
-package com.zjucsc.application.config;
+package com.zjucsc.application.config.watch_config;
 
 import com.corundumstudio.socketio.SocketIOClient;
+import com.zjucsc.application.config.Common;
+import com.zjucsc.application.config.TsharkConfig;
 import com.zjucsc.application.util.AppCommonUtil;
+import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.art_decode.ArtDecodeCommon;
 import com.zjucsc.kafka.KafkaCommon;
 import com.zjucsc.socket_io.SocketServiceCenter;
@@ -26,8 +29,8 @@ public class WatchConfig {
     @ReadOperation
     public Map<String,Object> getSysConfigCache(){
         HashMap<String,Object> map = new HashMap<>();
-        map.put("CONFIGURATION_MAP" , Common.CONFIGURATION_MAP);
-        map.put("PROTOCOL_STR_TO_INT", Common.PROTOCOL_STR_TO_INT);
+        map.put("CONFIGURATION_MAP" , CommonCacheUtil.CONFIGURATION_MAP);
+        map.put("PROTOCOL_STR_TO_INT", CommonCacheUtil.PROTOCOL_STR_TO_INT);
         map.put("OPERATION_FILTER_PRO" , Common.OPERATION_FILTER_PRO);
         map.put("FV_DIMENSION_FILTER_PRO" , Common.FV_DIMENSION_FILTER_PRO);
         map.put("DEVICE_TAG_TO_NAME" , Common.DEVICE_TAG_TO_NAME);
