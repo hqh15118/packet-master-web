@@ -138,6 +138,7 @@ public class InitConfigurationService implements ApplicationRunner {
             }
         }
         PROTOCOL_STR_TO_INT.put(2,"s7comm");
+
         if(reload || iConfigurationSettingService.selectAll().size() == 0) {
             if(!reload) {
                 log.info("no configuration in database and ready to load from libs ... ");
@@ -248,6 +249,8 @@ public class InitConfigurationService implements ApplicationRunner {
             AttackCommon.addArtAttackAnalyzeConfig(new ArtAttackAnalyzeConfig(strings,configDB.getDetail(),
                     configDB.isEnable(),configDB.getId()));
         }
+
+
 
         /**************************
          *  PRINT INIT RESULT

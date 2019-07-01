@@ -1,12 +1,8 @@
 package com.zjucsc.application.tshark.analyzer;
 
-import com.zjucsc.application.config.DangerLevel;
-import com.zjucsc.application.tshark.domain.BadPacket;
 import com.zjucsc.application.tshark.filter.OperationPacketFilter;
-import com.zjucsc.application.util.CommonConfigUtil;
 import com.zjucsc.attack.bean.AttackBean;
 import com.zjucsc.attack.common.AttackTypePro;
-import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.tshark.analyzer.AbstractAnalyzer;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import lombok.extern.slf4j.Slf4j;
@@ -25,14 +21,13 @@ public class OperationAnalyzer extends AbstractAnalyzer<OperationPacketFilter<In
     public Object analyze(Object... objs){
         int fun_code = ((int) objs[0]);
         FvDimensionLayer layer = ((FvDimensionLayer) objs[1]);
+        String protocol = (String)objs[2];
         if (!getAnalyzer().getWhiteMap().containsKey(fun_code)){
-            if(fun_code!=-1 && fun_code != 2) {
-                return new AttackBean.Builder()
-                        .attackInfo(attackrec(layer.protocol,fun_code))
-                        .attackType("非授权指令")
-                        .fvDimension(layer)
-                        .build();
-            }
+            return new AttackBean.Builder()
+                    .attackInfo(attackrec(protocol,fun_code))
+                    .attackType(AttackTypePro.VISIT_COMMAND)
+                    .fvDimension(layer)
+                    .build();
         }
         return null;
     }
@@ -68,7 +63,7 @@ public class OperationAnalyzer extends AbstractAnalyzer<OperationPacketFilter<In
                         return "非法功能码未知操作";
                 }
             }
-            case "s7_comm_user_data":
+            case "s7comm_user_data":
             {
                 switch (Fun_code) {
                     case 0xf:

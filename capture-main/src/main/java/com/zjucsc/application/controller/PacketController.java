@@ -68,7 +68,6 @@ public class PacketController {
                 public void error(Exception e) {
 
                 }
-
                 @Override
                 public void start(String start) {
                     log.info("{} has started capture service..", start);
@@ -87,6 +86,7 @@ public class PacketController {
             }
         }else{
             CompletableFuture<Exception> completeFuture = capturePacketService.startSimulate();
+            Common.hasStartedHost.add("simulate");
             //simulate packet analyze
             try {
                 return completeFuture.get();

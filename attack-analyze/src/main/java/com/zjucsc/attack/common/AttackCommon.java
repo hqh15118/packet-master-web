@@ -112,7 +112,7 @@ public class AttackCommon {
             String description = entry.append(layer);
             if (description!=null){
                 attackCallback.artCallback(AttackBean.builder()
-                        .attackType(AttackTypePro.DOS)
+                        .attackType(AttackTypePro.DOS_ATTACK)
                         .attackInfo(description)
                         .fvDimension(layer)
                         .build());

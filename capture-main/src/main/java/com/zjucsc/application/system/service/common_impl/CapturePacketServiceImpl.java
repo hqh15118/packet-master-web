@@ -1,5 +1,6 @@
 package com.zjucsc.application.system.service.common_impl;
 
+import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.ConstantConfig;
 import com.zjucsc.application.config.KafkaConfig;
 import com.zjucsc.application.config.StatisticsData;
@@ -162,11 +163,13 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             byte[] payload = ByteUtil.hexStringToByteArray(fvDimensionLayer.custom_ext_raw_data[0]);
             fvDimensionLayer.rawData = payload;
             //设置五元组中的功能码以及功能码对应的含义
-            try {
-                setFuncode(fvDimensionLayer);
-            } catch (ProtocolIdNotValidException e) {
-                //缓存中找不到该五元组对应的协议
-                log.error("error set Funcode , msg : {} [缓存中找不到该五元组协议：{} 对应的功能码表]" , e.getMsg(),fvDimensionLayer.frame_protocols[0]);
+            if (Common.systemRunType !=0) {
+                try {
+                    setFuncode(fvDimensionLayer);
+                } catch (ProtocolIdNotValidException e) {
+                    //缓存中找不到该五元组对应的协议
+                    log.error("error set Funcode , msg : {} [缓存中找不到该五元组协议：{} 对应的功能码表]", e.getMsg(), fvDimensionLayer.frame_protocols[0]);
+                }
             }
             sendFvDimensionPacket(fvDimensionLayer , payload);                    //发送五元组所有报文到前端
             sendPacketStatisticsEvent(fvDimensionLayer);                          //发送统计信息
@@ -406,7 +409,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             try {
                 String PASSWORD = "920614";
                 String USER_NAME = "root";
-                String JDBC_URL = "jdbc:mysql://10.15.191.100:3306/csc_db?serverTimezone=UTC";
+                String JDBC_URL = "jdbc:mysql://localhost:3306/csc_db?serverTimezone=UTC";
                 connection = DBUtil.getConnection(JDBC_URL, USER_NAME, PASSWORD);
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -469,7 +472,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                     }
                 }
                 //200 - 500
-                int num = (int)(300 * random.nextDouble()) + 200;
+                int num = (int)(30 * random.nextDouble()) + 50;
                 try {
                     List<FvDimensionLayer> layers = getPreparedStatement(num);
                     for (FvDimensionLayer layer : layers) {

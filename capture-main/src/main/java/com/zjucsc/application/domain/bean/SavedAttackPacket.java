@@ -32,4 +32,5 @@ public class SavedAttackPacket implements Serializable {
     private int danger;
     private String attackInfo;
     private String attackType;
+    private String protocol;
 }

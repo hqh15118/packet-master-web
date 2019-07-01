@@ -35,7 +35,7 @@ public class ArtAttackAnalyzeTask implements Runnable{
         if (res!=null){
             attackCallback.artCallback(
                     AttackBean.builder()
-                    .attackType(AttackTypePro.HAZARD_ART)
+                    .attackType(AttackTypePro.ART_EXCEPTION)
                     .fvDimension(layer)
                     .attackInfo(res).build());
         }

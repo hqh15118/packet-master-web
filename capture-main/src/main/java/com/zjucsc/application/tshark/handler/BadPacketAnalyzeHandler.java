@@ -44,7 +44,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
         Map<String,Float> res = null;
         String protocol = layer.protocol;
         if (protocol.startsWith("s7comm")){
-            if (!layer.tcp_flags_ack[0].equals("")){
+            if (!layer.tcp_flags_ack[0].equals("") || Common.systemRunType == 0){
                 res =  ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,"s7comm",1);
             }else{
                 res =  ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),layer.rawData,"s7comm",0);
@@ -128,6 +128,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
     private void doOperationAnalyze(int funCode , FvDimensionLayer layer) {
         //根据目的IP/MAC地址获取对应的功能码分析器
         ConcurrentHashMap<String, OperationAnalyzer> map = CommonCacheUtil.getOptAnalyzer(layer);
+        String protocol = checkProtocol(layer);
         if (map != null){
             OperationAnalyzer operationAnalyzer;
             /**
@@ -138,8 +139,8 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
              * 缓存在：
              * @see Common 的 【PROTOCOL_STR_TO_INT】
              */
-            if ((operationAnalyzer = map.get(layer.protocol))!=null){
-                Object attackBean = operationAnalyzer.analyze(funCode,layer);
+            if ((operationAnalyzer = map.get(protocol))!=null){
+                Object attackBean = operationAnalyzer.analyze(funCode,layer,protocol);
                 if (attackBean!=null){
                     String deviceNumber = CommonCacheUtil.getTargetDeviceNumberByTag(layer.ip_dst[0],layer.eth_dst[0]);
                     ((AttackBean) attackBean).setDeviceNumber(deviceNumber);
@@ -154,5 +155,17 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
     private void statisticsBadPacket(String deviceNumber){
         StatisticsData.attackNumber.incrementAndGet();
         StatisticsData.increaseAttackByDevice(deviceNumber);
+    }
+
+    private String checkProtocol(FvDimensionLayer layer){
+        if (layer.protocol.equals("s7comm")){
+            if (Common.systemRunType !=0 ) {
+                return PacketDecodeUtil.decodeS7Protocol(layer);
+            }else{
+                return PacketDecodeUtil.decodeS7Protocol2(layer);
+            }
+        }else {
+            return PacketDecodeUtil.discernPacket(layer.frame_protocols[0], layer);
+        }
     }
 }

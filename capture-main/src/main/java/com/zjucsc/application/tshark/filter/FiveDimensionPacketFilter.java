@@ -184,7 +184,6 @@ public class FiveDimensionPacketFilter {
     }
 
     /**
-     *
      * @param allMap
      * @param type 类型，如目的IP白名单
      * @param str 信息，如目的IP、目的MAC地址等
@@ -202,21 +201,22 @@ public class FiveDimensionPacketFilter {
                 return null;
             }
         }
-//        if (!layer.ip_dst[0].equals("--") && !dstIpWhiteMap.containsKey(layer.ip_dst[0])){
-//            return getBadPacket(layer,"非授权访问设备");//目的IP不在白名单
-//        }
+        if (!layer.ip_dst[0].equals("--") && !srcIpWhiteMap.containsKey(layer.ip_src[0])){
+            return getBadPacket(layer,AttackTypePro.VISIT_DEVICE,layer.ip_src[0]);//目的IP不在白名单
+        }
 //        if (!dstMacAddressWhite.containsKey(layer.eth_dst[0])){
 //            return getBadPacket(layer,"非授权访问设备");//目的mac不在白名单
 //        }
 //        if (!layer.ip_src[0].equals("--") && !srcIpWhiteMap.containsKey(layer.ip_src[0])){
 //            return getBadPacket(layer,"非授权访问设备");//源ip不在白名单
 //        }
-//        if (!dstMacAddressWhite.containsKey(layer.eth_src[0])){
-//            return getBadPacket(layer,"非授权访问设备");//源mac不在白名单
-//        }
-//        if (!protocolWhiteMap.containsKey(layer.protocol)){
-//            return getBadPacket(layer,"非授权访问协议");//协议不在白名单
-//        }
+        if (!srcMacAddressWhite.containsKey(layer.eth_src[0])){
+            return getBadPacket(layer,AttackTypePro.VISIT_DEVICE,layer.eth_src[0]);//源mac不在白名单
+        }
+        if (!protocolWhiteMap.containsKey(layer.protocol)){
+            return getBadPacket(layer,AttackTypePro.VISIT_PROTOCOL,layer.protocol);//协议不在白名单
+        }
+
 //        if (!srcPortWhiteMap.containsKey(layer.src_port[0])){
 //            return getBadPacket(layer,"源端口不在白名单中",DangerLevel.DANGER);
 //        }
@@ -226,36 +226,36 @@ public class FiveDimensionPacketFilter {
         return null;
     }
 
-    public AttackBean ERROR(FvDimensionLayer layer){
-        if (protocolBlackMap.containsKey(layer.protocol)){
-            return getBadPacket(layer, "黑名单协议");
-        }
-        if (srcPortBlackMap.containsKey(layer.src_port[0])){
-            return getBadPacket(layer, "黑名单源端口");
-        }
-        if (dstPortBlackMap.containsKey(layer.dst_port[0])){
-            return getBadPacket(layer, "黑名单目的端口");
-        }
-        if (srcIpBlackMap.containsKey(layer.ip_src[0])){
-            return getBadPacket(layer, "黑名单源IP");
-        }
-        if (dstIpBlackMap.containsKey(layer.ip_dst[0])){
-            return getBadPacket(layer, "黑名单目的IP");
-        }
-        if (dstMacAddressBlack.containsKey(layer.eth_dst[0])){
-            return getBadPacket(layer, "黑名单目的MAC");
-        }
-        if (srcMacAddressBlack.containsKey(layer.eth_src[0])){
-            return getBadPacket(layer, "黑名单源MAC");
-        }
-        return null;
-    }
+//    public AttackBean ERROR(FvDimensionLayer layer){
+//        if (protocolBlackMap.containsKey(layer.protocol)){
+//            return getBadPacket(layer, "黑名单协议");
+//        }
+//        if (srcPortBlackMap.containsKey(layer.src_port[0])){
+//            return getBadPacket(layer, "黑名单源端口");
+//        }
+//        if (dstPortBlackMap.containsKey(layer.dst_port[0])){
+//            return getBadPacket(layer, "黑名单目的端口");
+//        }
+//        if (srcIpBlackMap.containsKey(layer.ip_src[0])){
+//            return getBadPacket(layer, "黑名单源IP");
+//        }
+//        if (dstIpBlackMap.containsKey(layer.ip_dst[0])){
+//            return getBadPacket(layer, "黑名单目的IP");
+//        }
+//        if (dstMacAddressBlack.containsKey(layer.eth_dst[0])){
+//            return getBadPacket(layer, "黑名单目的MAC");
+//        }
+//        if (srcMacAddressBlack.containsKey(layer.eth_src[0])){
+//            return getBadPacket(layer, "黑名单源MAC");
+//        }
+//        return null;
+//    }
 
-    private AttackBean getBadPacket(FvDimensionLayer layer, String comment) {
+    private AttackBean getBadPacket(FvDimensionLayer layer, String attackType,String detail) {
         return new AttackBean.Builder()
                 .fvDimension(layer)
-                .attackType(AttackTypePro.FV_DIMENSION)
-                .attackInfo(comment).build();
+                .attackType(attackType)
+                .attackInfo(detail).build();
     }
 
     @Override

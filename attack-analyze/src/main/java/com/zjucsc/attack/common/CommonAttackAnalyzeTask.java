@@ -23,7 +23,7 @@ public class CommonAttackAnalyzeTask implements Runnable {
         String protocolStack = layer.frame_protocols[0];
         if (protocolStack.length() >= 8 && protocolStack.charAt(4) == 'l' && protocolStack.charAt(5) == 'l'
         && protocolStack.charAt(6) == 'c' && protocolStack.charAt(8) == 'd'){
-            attackCallback.artCallback(AttackBean.builder().attackType(AttackTypePro.SNIFF)
+            attackCallback.artCallback(AttackBean.builder().attackType(AttackTypePro.SNIFF_ATTACK)
             .fvDimension(layer).build());
         }
     }

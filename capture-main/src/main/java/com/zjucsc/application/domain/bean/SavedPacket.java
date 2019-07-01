@@ -28,8 +28,8 @@ public class SavedPacket implements Serializable {
     private String dstIp;
     private String srcPort;
     private String dstPort;
-    private String funcode;
+    private String funCode;
     private String length;
-
+    private String protocol;
 
 }

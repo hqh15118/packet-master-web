@@ -198,13 +198,13 @@ public class PacketDecodeUtil {
         }
     }
 
-    public static String decodeS7Protocol(String protocolStack ,  Object...otherInfo){
-            S7CommPacket.LayersBean layersX = ((S7CommPacket.LayersBean) otherInfo[0]);
+    public static String decodeS7Protocol(FvDimensionLayer layer){
+            S7CommPacket.LayersBean layersX = ((S7CommPacket.LayersBean) layer);
             String rosctr = layersX.s7comm_header_rosctr[0];
             if (S7CommPacket.ACK_DATA.equals(rosctr)){
-                return S7_Ack_data;
+                return S7;
             }else if (S7CommPacket.JOB.equals(rosctr)) {
-                return S7_JOB;
+                return S7;
             }else if (S7CommPacket.USER_DATA.equals(rosctr)){
                 return S7_User_data;
             }
@@ -213,6 +213,13 @@ public class PacketDecodeUtil {
             }
     }
 
+    public static String decodeS7Protocol2(FvDimensionLayer layer){
+        if (layer.funCodeMeaning.equals("循环数据") || layer.funCodeMeaning.equals("CPU功能")){
+            return S7_User_data;
+        }else{
+            return S7;
+        }
+    }
     public static String getUnDefinedPacketProtocol(String protocolStack){
         StringBuilder sb = stringBuilderThreadLocal.get();
         sb.delete(0,sb.length());

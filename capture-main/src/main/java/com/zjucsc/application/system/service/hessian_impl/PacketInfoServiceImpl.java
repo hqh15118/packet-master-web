@@ -65,14 +65,14 @@ public class PacketInfoServiceImpl  implements IPacketInfoService {
             //1：24小时
             data = packetInfoMapper.selectPacketHistoryIn24Hours();
             for (int i = 0; i < 24; i++) {
-                tempStart.add(Calendar.HOUR_OF_DAY,-1);
+                tempStart.add(Calendar.HOUR_OF_DAY,0);
                 time.addFirst(simpleDateFormat.format(tempStart.getTime()));
             }
         }else{
             simpleDateFormat = new SimpleDateFormat("MM-dd");
             data = packetInfoMapper.selectPacketHistoryIn7Days();
             for (int i = 0; i < 7; i++) {
-                tempStart.add(Calendar.DAY_OF_MONTH,-1);
+                tempStart.add(Calendar.DAY_OF_MONTH,0);
                 time.addFirst(simpleDateFormat.format(tempStart.getTime()));
             }
         }
