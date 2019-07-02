@@ -1,3 +1,8 @@
+myconfig :
+  host[0] : http://localhost:8080/
+  host[1] : http://localhost:8083/
+  showLog : true
+
 spring:
   application:
     name: zuul-center
@@ -10,5 +15,4 @@ zuul:
     api-a-path:
       path : /api-a-url/**
     api-a-url:
-      url : http://localhost:8080/
-
+      url : http://localhost:8080/error   #default url
