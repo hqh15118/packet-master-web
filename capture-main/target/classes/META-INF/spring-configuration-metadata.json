@@ -21,6 +21,11 @@
       "sourceType": "com.zjucsc.application.config.ConstantConfig"
     },
     {
+      "name": "pre-processors",
+      "type": "com.zjucsc.application.config.PreProcessor",
+      "sourceType": "com.zjucsc.application.config.PreProcessor"
+    },
+    {
       "name": "tshark-config",
       "type": "com.zjucsc.application.config.TsharkConfig",
       "sourceType": "com.zjucsc.application.config.TsharkConfig"
@@ -170,6 +175,11 @@
       "name": "myconfig.system-properties-name",
       "type": "java.lang.String",
       "sourceType": "com.zjucsc.application.config.ConstantConfig"
+    },
+    {
+      "name": "pre-processors.list",
+      "type": "java.util.List<java.lang.String>",
+      "sourceType": "com.zjucsc.application.config.PreProcessor"
     },
     {
       "name": "tshark-config.modbus-filter",

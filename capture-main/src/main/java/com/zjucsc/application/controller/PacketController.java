@@ -69,12 +69,16 @@ public class PacketController {
                 }
                 @Override
                 public void start(String start) {
-                    log.info("{} has started capture service..", start);
+                    if (log.isInfoEnabled()) {
+                        log.info("{} has started capture service..", start);
+                    }
                 }
 
                 @Override
                 public void end(String end) {
-                    log.info("{} has ended capture service..", end);
+                    if (log.isInfoEnabled()) {
+                        log.info("{} has ended capture service..", end);
+                    }
                 }
             });
 
@@ -104,15 +108,21 @@ public class PacketController {
         boolean b = MainServer.openWebSocketService(constantConfig.getGlobal_address(), Common.SOCKET_IO_PORT, socketIOClient -> {
             if (socketIoClientNumber.get() >= 1){
                 socketIOClient.disconnect();
-                log.info("reject socket io connect : {} " , socketIOClient.getRemoteAddress().toString());
+                if (log.isInfoEnabled()) {
+                    log.info("reject socket io connect : {} ", socketIOClient.getRemoteAddress().toString());
+                }
             }else{
                 socketIoClientNumber.addAndGet(1);
-                log.info("[{}] connected...",socketIOClient.getRemoteAddress().toString());
+                if (log.isInfoEnabled()) {
+                    log.info("[{}] connected...", socketIOClient.getRemoteAddress().toString());
+                }
                 SocketServiceCenter.addConnectedClient(socketIOClient);
             }
         }, socketIOClient -> {
             socketIoClientNumber.decrementAndGet();
-            log.info("[{}] disconnect...",socketIOClient.getRemoteAddress().toString());
+            if (log.isInfoEnabled()) {
+                log.info("[{}] disconnect...", socketIOClient.getRemoteAddress().toString());
+            }
             SocketServiceCenter.removeConnectedClient(socketIOClient);
         });
         if (b){

@@ -12,8 +12,17 @@ myconfig:
   redis_ip : 10.15.191.100
   redis_port : 6379
   openMapperAop : true
-  reOpenTableName : 20190701
+  reOpenTableName : 20190703
   simulateStartNum : 0
+
+pre-processors:
+  list[0] : s7comm
+  list[1] : modbus
+  list[2] : iec104
+  list[3] : dnp3_0
+  list[4] : pnio
+  list[5] : cip
+  list[6] : opcua
 
 tshark-config:
   modbus_filter : tcp

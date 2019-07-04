@@ -7,7 +7,7 @@ public class CommonUtil {
             new ThreadLocal<StringBuilder>(){
                 @Override
                 protected StringBuilder initialValue() {
-                    return  new StringBuilder(100);
+                    return new StringBuilder(100);
                 }
             };
 
@@ -25,5 +25,11 @@ public class CommonUtil {
     };
     public static SimpleDateFormat getDateFormat(){
         return SIMPLE_DATE_FORMAT_THREAD_LOCAL.get();
+    }
+
+    private static final ThreadLocal<SimpleDateFormat> SIMPLE_DATE_FORMAT_THREAD_LOCAL2
+            = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+    public static SimpleDateFormat getDateFormat2(){
+        return SIMPLE_DATE_FORMAT_THREAD_LOCAL2.get();
     }
 }

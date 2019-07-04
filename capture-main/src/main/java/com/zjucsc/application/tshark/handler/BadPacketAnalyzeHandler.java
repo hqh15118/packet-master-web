@@ -53,7 +53,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
             res = ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.protocol);
         }else if (protocol.equals(PACKET_PROTOCOL.PN_IO)){
             res = ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),layer.rawData,layer.protocol);
-        }else if (protocol.equals(PACKET_PROTOCOL.IEC104)){
+        }else if (protocol.equals(PACKET_PROTOCOL.IEC104_ASDU)){
             res = ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.protocol);
         }
         else{
@@ -165,7 +165,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
                 return PacketDecodeUtil.decodeS7Protocol2(layer);
             }
         }else {
-            return PacketDecodeUtil.discernPacket(layer.frame_protocols[0], layer);
+            return PacketDecodeUtil.discernPacket(layer);
         }
     }
 }

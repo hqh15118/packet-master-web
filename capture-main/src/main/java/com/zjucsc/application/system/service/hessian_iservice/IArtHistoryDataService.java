@@ -18,8 +18,7 @@ public interface IArtHistoryDataService {
      * 查询历史工艺数据
      * @param startTime 开始时间
      * @param endTime 结束时间
-     * @param timeType 查询的时间类型，年、月、日、时
      * @return
      */
-    CompletableFuture<ArtHistoryForFront> getArtData(String startTime, String endTime, List<String> artNames, int timeType) throws Exception;
+    CompletableFuture<ArtHistoryForFront> getArtData(String startTime, String endTime, List<String> artNames) throws Exception;
 }

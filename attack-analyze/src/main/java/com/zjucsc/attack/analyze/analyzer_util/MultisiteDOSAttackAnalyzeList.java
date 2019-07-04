@@ -28,7 +28,7 @@ public class MultisiteDOSAttackAnalyzeList extends TcpAttackAnalyzeList {
     protected String analyze(int index, LinkedList<FvDimensionLayer> fvDimensionLayers, FvDimensionLayer layer) {
         hashSet.clear();
         long timeStamp;
-        for (int i = index; i >= 0 ; i--) {
+        for (int i = index - 1; i >= 0 ; i--) {
             timeStamp = fvDimensionLayers.get(i).timeStampInLong;
             while ((timeStamp - fvDimensionLayers.getLast().timeStampInLong) > AttackConfig.getMultiSiteTimeGap()){
                 fvDimensionLayers.removeLast();

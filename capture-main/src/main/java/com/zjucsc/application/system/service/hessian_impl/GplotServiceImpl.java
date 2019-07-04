@@ -45,7 +45,6 @@ public class GplotServiceImpl extends BaseServiceImpl<Gplot,GplotMapper> impleme
         //同时删除该组态图对应的所有DEVICE_NUMBER保存的StatisticInfoSaveBean【设备upload、download等报文信息】
         CommonCacheUtil.removeAllCachedDeviceNumber();
         CommonCacheUtil.removeAllDeviceNumberToName();
-
         //reload filters
         List<DeviceNumberAndIp> deviceNumbers = iDeviceService.loadAllDevicesByGplotId(gplotId);   //load all device from device_info table by gplot_id
         log.info("***************\n切换组态图，加载新组态图下所有设备，新设备：{} ***************" , deviceNumbers);

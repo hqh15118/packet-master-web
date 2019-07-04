@@ -35,7 +35,7 @@ public class WatchConfig {
         map.put("PROTOCOL_STR_TO_INT", CommonCacheUtil.PROTOCOL_STR_TO_INT);
         map.put("OPERATION_FILTER_PRO" , CommonOptFilterUtil.OPERATION_FILTER_PRO);
         map.put("FV_DIMENSION_FILTER_PRO" , Common.FV_DIMENSION_FILTER_PRO);
-        map.put("DEVICE_TAG_TO_NAME" , CommonCacheUtil.DEVICE_TAG_TO_NAME);
+        map.put("DEVICE_TAG_TO_NAME" , CommonCacheUtil.DEVICE_NUMBER_TO_TAG);
         map.put("GPLOT_ID" , Common.GPLOT_ID);
         map.put("SHOW_GRAPH_SET",CommonCacheUtil.SHOW_GRAPH_SET);
         map.put("KAFKA_SERVICE", KafkaCommon.getKafkaServiceState());

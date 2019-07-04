@@ -4,6 +4,7 @@ import com.zjucsc.tshark.packets.Dnp3_0Packet;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import com.zjucsc.tshark.pre_processor.SinglePreProcessor;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,10 +32,12 @@ public class DNP3_0PreProcessor extends SinglePreProcessor<Dnp3_0Packet> {
 
     @Override
     public List<String> filterFields() {
-        return Arrays.asList(
-                "dnp3.ctl.dir",
-                "dnp3.ctl.prm",
-                "dnp3.ctl.dfc"
-        );
+        return new ArrayList<String>(){
+            {
+                add("dnp3.ctl.prm");
+                add("dnp3.ctl.prifunc");
+                add("dnp3.ctl.secfunc");
+            }
+        };
     }
 }

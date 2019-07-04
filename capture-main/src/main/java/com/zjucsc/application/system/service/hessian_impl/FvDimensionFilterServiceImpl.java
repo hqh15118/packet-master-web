@@ -52,12 +52,14 @@ public class FvDimensionFilterServiceImpl extends BaseServiceImpl<Rule,FvDimensi
             Common.FV_DIMENSION_FILTER_PRO.get(deviceNumber).getAnalyzer().setFilterList(rules);
         }
         //更新数据库
+        /*
         List<FvDimensionFilter> list = new ArrayList<>();
         for (Rule rule : rules) {
             list.add(rule.getFvDimensionFilter());
         }
         this.baseMapper.saveOrUpdateBatch(list,Common.GPLOT_ID);//保存五元组
-
+        */
+        this.baseMapper.saveOrUpdateBatchRules(rules,Common.GPLOT_ID);//保存五元组
         //保存功能码
         for (Rule rule : rules) {
             OptFilterForFront optFilterForFront = new OptFilterForFront();

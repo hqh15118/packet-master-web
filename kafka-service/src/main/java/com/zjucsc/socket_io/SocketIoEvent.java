@@ -25,4 +25,6 @@ public class SocketIoEvent {
     public static final String MAX_FLOW_ATTACK = "max_flow";
     //攻击统计
     public static final String ATTACK_STATISTICS = "attack_statistics";
+    //检测到新设备
+    public static final String NEW_DEVICE = "new_device";
 }

@@ -3,10 +3,12 @@ package com.zjucsc.application.util;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.zjucsc.application.config.Common;
+import com.zjucsc.application.domain.bean.Device;
 import com.zjucsc.application.domain.bean.StatisticInfoSaveBean;
 import com.zjucsc.application.domain.bean.RightPacketInfo;
 import com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
+import com.zjucsc.common.common_util.CommonUtil;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.socket_io.SocketIoEvent;
 import com.zjucsc.socket_io.SocketServiceCenter;
@@ -26,7 +28,7 @@ public class CommonCacheUtil {
      * 清楚当前组态图下所有缓存的配置
      ********************************/
     public static void clearAllCacheByGplotId(){
-
+        removeAllDeviceNumberToName();
     }
 
     public static final BiMap<Integer,String> AUTH_MAP = HashBiMap.create();
@@ -212,7 +214,7 @@ public class CommonCacheUtil {
      * cache1
      * 设备IP和DEVICE_NUMBER之间互相转换
      */
-    public static final BiMap<String,String> DEVICE_TAG_TO_NAME = HashBiMap.create();
+    public static final BiMap<String,String> DEVICE_NUMBER_TO_TAG = HashBiMap.create();
     /**
      * 【key 设备deviceNumber deviceTag设备标识（Ip/Mac）】
      * 每台设备的统计信息
@@ -227,37 +229,36 @@ public class CommonCacheUtil {
      * @param deviceTag    device 的 ip地址或者mac地址
      */
     public static void addOrUpdateDeviceNumberAndTAG(String deviceNumber, String deviceTag) {
-        DEVICE_TAG_TO_NAME.put(deviceTag, deviceNumber);
+        DEVICE_NUMBER_TO_TAG.forcePut(deviceNumber, deviceTag);
         STATISTICS_INFO_BEAN.put(deviceNumber, new StatisticInfoSaveBean());
-        log.info("add device number : {} [tag : {} ] and DEVICE_TAG_TO_NAME {}", deviceNumber, deviceTag, DEVICE_TAG_TO_NAME);
+        log.info("add device number : {} [tag : {} ] and DEVICE_TAG_TO_NAME {}", deviceNumber, deviceTag, DEVICE_NUMBER_TO_TAG);
     }
 
-    public static void removeDeviceNumer(String deviceNumber) {
-        DEVICE_TAG_TO_NAME.remove(deviceNumber);
+    public static void removeDeviceNumberToTag(String deviceNumber) {
+        DEVICE_NUMBER_TO_TAG.remove(deviceNumber);
         STATISTICS_INFO_BEAN.remove(deviceNumber);
-        log.info("remove device number : {} [TAG : {} ]", deviceNumber, DEVICE_TAG_TO_NAME.inverse().get(deviceNumber));
     }
 
     public static String getTargetDeviceNumberByTag(String tag) {
-        return DEVICE_TAG_TO_NAME.get(tag);
+        return DEVICE_NUMBER_TO_TAG.get(tag);
     }
 
     public static String getTargetDeviceNumberByTag(String ip_dst, String eth_dst) {
         //System.out.println("get " + deviceIp + "xxxxxx" + AttackCommon.DEVICE_IP_TO_NAME.get(deviceIp));
-        String tag = DEVICE_TAG_TO_NAME.get(ip_dst);
+        String tag = DEVICE_NUMBER_TO_TAG.inverse().get(ip_dst);
         if (tag != null) {
             return tag;
         }
-        tag = DEVICE_TAG_TO_NAME.get(eth_dst);
+        tag = DEVICE_NUMBER_TO_TAG.inverse().get(eth_dst);
         return tag;
     }
 
     public static String getTargetDeviceTagByNumber(String deviceNumber) {
-        return DEVICE_TAG_TO_NAME.inverse().get(deviceNumber);
+        return DEVICE_NUMBER_TO_TAG.inverse().get(deviceNumber);
     }
 
     public static void removeAllCachedDeviceNumber() {
-        DEVICE_TAG_TO_NAME.clear();
+        DEVICE_NUMBER_TO_TAG.clear();
         STATISTICS_INFO_BEAN.clear();
     }
 
@@ -465,12 +466,61 @@ public class CommonCacheUtil {
     private static final BiMap<String,String> DEVICE_NUMBER_TO_NAME =
             HashBiMap.create();
     public static void addDeviceNumberToName(String deviceNumber,String deviceName){
-        DEVICE_NUMBER_TO_NAME.put(deviceNumber, deviceName);
+        DEVICE_NUMBER_TO_NAME.forcePut(deviceNumber, deviceName);
     }
     public static void removeAllDeviceNumberToName(){
         DEVICE_NUMBER_TO_NAME.clear();
     }
     public static String convertDeviceNumberToName(String deviceNumber){
         return DEVICE_NUMBER_TO_NAME.get(deviceNumber);
+    }
+    public static String convertDeviceNameToNumber(String deviceName){
+        return DEVICE_NUMBER_TO_NAME.inverse().get(deviceName);
+    }
+    public static void removeDeviceNumberToName(String deviceNumber){
+        DEVICE_NUMBER_TO_NAME.remove(deviceNumber);
+    }
+
+    /*************************************
+     *
+     * 所有IP地址和MAC地址
+     *
+     ************************************/
+    private static final ConcurrentHashMap<String, Device> ALL_DEVICES = new ConcurrentHashMap<>();
+    /**
+     *
+     * @param layer 五元组
+     * @return 新增之前的设备，如果不存在为null
+     */
+    public static Device autoAddDevice(FvDimensionLayer layer){
+        if (!ALL_DEVICES.containsKey(layer.eth_dst[0])){
+            if (!layer.eth_dst[0].equals("ff:ff:ff:ff:ff:ff")) {
+                //非广播mac地址
+                Device device = createDevice(layer);
+                ALL_DEVICES.putIfAbsent(layer.eth_dst[0], device);
+                //new device
+                CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(device.getDeviceNumber(), device.getDeviceTag());
+                CommonCacheUtil.addDeviceNumberToName(device.getDeviceNumber(), device.getDeviceInfo());
+                return device;
+            }
+        }
+        return null;
+    }
+    public static ConcurrentHashMap<String, Device> getAllDevices(){
+        return ALL_DEVICES;
+    }
+    private static Device createDevice(FvDimensionLayer layer){
+        StringBuilder sb = CommonUtil.getGlobalStringBuilder();
+        long timeNow = System.currentTimeMillis();
+        Device device = new Device();
+        sb.append("设备").append(CommonUtil.getDateFormat2().format(new Date()));
+        device.setDeviceInfo(sb.toString());
+        device.setDeviceNumber(String.valueOf(timeNow));
+        device.setDeviceType(1);
+        device.setDeviceMac(layer.eth_dst[0]);
+        device.setDeviceTag(layer.ip_dst[0].equals("--")?layer.eth_dst[0] : layer.ip_dst[0]);
+        device.setGPlotId(Common.GPLOT_ID);
+        device.setDeviceIp(layer.ip_dst[0]);
+        return device;
     }
 }

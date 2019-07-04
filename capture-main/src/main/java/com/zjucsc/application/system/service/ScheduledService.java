@@ -245,7 +245,6 @@ public class ScheduledService {
             if (bean == null) {
                 bean = new StatisticInfoSaveBean();
                 CommonCacheUtil.getStatisticsInfoBean().put(deviceNumber,bean);
-                log.info("设备{}未添加StatisticInfoSaveBean，已重新添加，程序中有错误,检查该设备是否已经被正确添加到组态图中？",deviceNumber);
             }
                 bean.setTime(timeStamp);
                 switch (index){

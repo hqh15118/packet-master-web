@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -59,21 +60,22 @@ public class ArtHistoryDataServiceImpl extends BaseServiceImpl<ArtHistoryData,Ar
 
     @Async
     @Override
-    public CompletableFuture<ArtHistoryForFront> getArtData(String startTime, String endTime, List<String> artNames, int timeType) throws Exception {
+    public CompletableFuture<ArtHistoryForFront> getArtData(String startTime, String endTime, List<String> artNames) throws Exception {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh");
         ArtHistoryForFront artHistoryForFront = new ArtHistoryForFront();
-        artHistoryForFront.setNameList(TIME_LIST.get(timeType));
-        Map<String, Map<String,List<String>>> map = new HashMap<>();
+        List<String> timeList = new ArrayList<>();
+        artHistoryForFront.setNameList(timeList);
+        Map<String, Map<String,List<Float>>> map = new HashMap<>();
         artHistoryForFront.setDataOrz(map);
         List<String> nameList = iArtConfigService.selectAllShowArt();
         artHistoryForFront.setNameList(nameList);
         List<String> checkArtNameList = artNames == null ? nameList : artNames;
-        int nextTimeType = T2TMap.get(timeType);
-        if (nextTimeType < 0){
-            throw new Exception("时间类型不可用 ： " + timeType);
-        }
         Date startDate = new Date(Long.parseLong(startTime));
         Date endDate = new Date(Long.parseLong(endTime));
-        List<Date> dates = DateUtil.getBetweenDates(startDate,endDate,nextTimeType);
+        List<Date> dates = DateUtil.getBetweenDates(startDate,endDate,Calendar.HOUR_OF_DAY);
+        for (Date date : dates) {
+            timeList.add(simpleDateFormat.format(date));
+        }
         String start , end;
 
         for (int i = 0 , len = dates.size(); i < len - 1; i++) {
@@ -81,8 +83,8 @@ public class ArtHistoryDataServiceImpl extends BaseServiceImpl<ArtHistoryData,Ar
             end = dates.get(i + 1).toString();
             //该时间节点下的所有工艺参数
             for (String artName : checkArtNameList) {
-                Map<String,List<String>> var = map.putIfAbsent(start,new HashMap<>());//[2019-05-25,{var:list<value>}]
-                List<String> artHistoryData = this.baseMapper.getArtData(start,end,artName, Common.GPLOT_ID);
+                Map<String,List<Float>> var = map.putIfAbsent(start,new HashMap<>());//[2019-05-25,{var:list<value>}]
+                List<Float> artHistoryData = this.baseMapper.getArtData(start,end,artName, Common.GPLOT_ID);
                 assert var!=null && artHistoryData!=null;
                 var.put(artName,artHistoryData);
             }

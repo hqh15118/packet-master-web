@@ -24,7 +24,7 @@ public class ArtHistoryDataController {
     @PostMapping("history")
     public BaseResponse getArtHistoryData(@RequestBody ArtHistoryBean artHistoryBean) throws Exception {
         return BaseResponse.OK(iArtHistoryDataService.getArtData(artHistoryBean.getStart(),
-                artHistoryBean.getEnd(),artHistoryBean.getNameList() , artHistoryBean.getTimeInterval()));
+                artHistoryBean.getEnd(),artHistoryBean.getNameList()));
     }
 
 }

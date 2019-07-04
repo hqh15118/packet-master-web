@@ -94,7 +94,7 @@ public class FiveDimensionPacketFilter {
 //                //黑名单
 //                setFilterMap(allMap, fiveDimensionFilter, DST_IP_BLACK, SRC_IP_BLACK, DST_PORT_BLACK, SRC_PORT_BLACK, DST_MAC_ADDRESS_BLACK, SRC_MAC_ADDRESS_BLACK, PROTOCOL_BLACK);
 //            }
-            setFilterMap(allMap, rule.getFvDimensionFilter());
+            setFilterMap(allMap, rule.getFvDimensionFilter(),rule.getDstPorts());
         }
 
         Set<String> stringSet = allMap.keySet();
@@ -150,7 +150,7 @@ public class FiveDimensionPacketFilter {
     }
 
     private void setFilterMap(HashMap<String, HashMap<String, String>> allMap,
-                              FvDimensionFilter fiveDimensionFilter) {
+                              FvDimensionFilter fiveDimensionFilter,List<String> dstPorts) {
         String str;
         if (StringUtils.isNotBlank((str = fiveDimensionFilter.getDstIp()))){
             doSet(allMap, FiveDimensionPacketFilter.DST_IP_WHITE,str);
@@ -158,8 +158,15 @@ public class FiveDimensionPacketFilter {
         if (StringUtils.isNotBlank((str = fiveDimensionFilter.getSrcIp()))){
             doSet(allMap, FiveDimensionPacketFilter.SRC_IP_WHITE,str);
         }
-        if (StringUtils.isNotBlank((str = fiveDimensionFilter.getDstPort()))){
-            doSet(allMap, FiveDimensionPacketFilter.DST_PORT_WHITE,str);
+//        if (StringUtils.isNotBlank((str = fiveDimensionFilter.getDstPort()))){
+//            doSet(allMap, FiveDimensionPacketFilter.DST_PORT_WHITE,str);
+//        }
+        if (dstPorts!=null) {
+            for (String dstPort : dstPorts) {
+                if (StringUtils.isNotBlank(dstPort)) {
+                    doSet(allMap, FiveDimensionPacketFilter.DST_PORT_WHITE, dstPort);
+                }
+            }
         }
         if (StringUtils.isNotBlank((str = fiveDimensionFilter.getSrcPort()))){
             doSet(allMap, FiveDimensionPacketFilter.SRC_PORT_WHITE,str);
@@ -196,7 +203,7 @@ public class FiveDimensionPacketFilter {
     public AttackBean OK(FvDimensionLayer layer){
         String deviceNumber = CommonCacheUtil.getTargetDeviceNumberByTag(layer.ip_dst[0],layer.eth_dst[0]);
         if (deviceNumber!=null) {
-            if (CommonCacheUtil.isNormalWhiteProtocol(deviceNumber,layer.protocol))//判断是否在白名单协议之内
+                if (CommonCacheUtil.isNormalWhiteProtocol(deviceNumber,layer.protocol))//判断是否在白名单协议之内
             {
                 return null;
             }

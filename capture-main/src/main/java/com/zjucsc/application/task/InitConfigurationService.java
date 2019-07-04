@@ -198,7 +198,8 @@ public class InitConfigurationService implements ApplicationRunner {
         pagedArtConfig.setPage(1);
         pagedArtConfig.setLimit(999);
         pagedArtConfig.setTag("");
-        List<Integer> protocolIds = Arrays.asList(PACKET_PROTOCOL.MODBUS_ID,PACKET_PROTOCOL.S7_ID);
+        List<Integer> protocolIds = Arrays.asList(PACKET_PROTOCOL.MODBUS_ID,PACKET_PROTOCOL.S7_ID,
+                PACKET_PROTOCOL.IEC104_ASDU_ID);
         for (Integer protocolId : protocolIds) {
             pagedArtConfig.setProtocolId(protocolId);
             BaseResponse baseResponse = iArtConfigService.getConfigPaged(pagedArtConfig);

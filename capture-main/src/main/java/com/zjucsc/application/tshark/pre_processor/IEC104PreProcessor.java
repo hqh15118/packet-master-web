@@ -37,6 +37,7 @@ public class IEC104PreProcessor extends SinglePreProcessor<IEC104Packet> {
             {
                 add("104asdu.typeid");
                 add("104apci.type");
+                add("104apci.utype");
             }
         };
     }

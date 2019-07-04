@@ -11,12 +11,13 @@ import org.springframework.cloud.netflix.zuul.filters.route.SimpleHostRoutingFil
 import javax.servlet.http.HttpServletRequest;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CustomHostRoutingFilter extends SimpleHostRoutingFilter {
 
     private URL defaultUrl;
-    private List<String> hosts;
+    private List<URL> hosts = new ArrayList<>();
     private boolean debug;
 
     public CustomHostRoutingFilter(ProxyRequestHelper helper, ZuulProperties properties, ApacheHttpClientConnectionManagerFactory connectionManagerFactory, ApacheHttpClientFactory httpClientFactory) {
@@ -31,7 +32,13 @@ public class CustomHostRoutingFilter extends SimpleHostRoutingFilter {
         this.debug = debug;
     }
     public void setHosts(List<String> hosts){
-        this.hosts = hosts;
+        for (String host : hosts) {
+            try {
+                this.hosts.add(new URL(host));
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -42,12 +49,8 @@ public class CustomHostRoutingFilter extends SimpleHostRoutingFilter {
             defaultUrl = context.getRouteHost();
         }
         long startTime = System.currentTimeMillis();
-        for (String host : hosts) {
-            try {
-                context.setRouteHost(new URL(host));
-            } catch (MalformedURLException e) {
-                context.setRouteHost(defaultUrl);
-            }
+        for (URL host : hosts) {
+            context.setRouteHost(host);
             super.run();
         }
         if (debug){

@@ -33,7 +33,7 @@ public class CommonConfigUtil {
     }
 
     public static String getTargetProtocolFuncodeMeanning(String protocol,int funcode) throws ProtocolIdNotValidException {
-        String funcodeMeaning = null;
+        String funcodeMeaning;
         HashMap<Integer,String> map = getTargetProtocolAllFuncodeMeaning(protocol);
         if (map==null|| (funcodeMeaning = map.get(funcode)) == null){
             funcodeMeaning = "unknown operation";

@@ -6,11 +6,9 @@ import com.zjucsc.tshark.packets.FvDimensionLayer;
 import com.zjucsc.tshark.packets.S7CommPacket;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
-
 import static com.zjucsc.application.config.PACKET_PROTOCOL.*;
 
 /**
@@ -152,13 +150,7 @@ public class PacketDecodeUtil {
         //System.out.println(str_fun_code);
         int fun_code = -1;
         try {
-            switch (protocol) {
-                case MODBUS:
-                case S7:
-                case IEC104:
-                    fun_code = Integer.decode(str_fun_code);
-                    break;
-            }
+            fun_code = Integer.decode(str_fun_code);
         }catch (NumberFormatException e){
             log.error("exception when decode protocol {} fun_code {}" , protocol , str_fun_code , e);
         }
@@ -166,36 +158,33 @@ public class PacketDecodeUtil {
     }
 
 
-    /**
-     * 用于识别报文协议
-     * @param protocolStack 协议栈
-     * @param otherInfo 用于识别具体协议的其他信息
-     * @return 系统格式的协议信息
-     * @see com.zjucsc.application.config.PACKET_PROTOCOL
-     */
-    public static String discernPacket(String protocolStack ,  Object...otherInfo){
-//        if (protocolStack.endsWith("tcp")){
-//            return TCP;
+    public static String discernPacket(FvDimensionLayer layer){
+//        String protocolStack = layer.frame_protocols[0];
+//        if (protocolStack.endsWith("s7comm")){
+//            return "s7comm";
 //        }
-        if (protocolStack.endsWith("modbus"))
-        {
-            return MODBUS;
-        }
-        else if(protocolStack.endsWith("dnp3"))
-        {
-            return DNP3_0;
-        }
-        else if(protocolStack.endsWith("iec60870_104"))
-        {
-            return IEC104;
-        }
-        else if(protocolStack.endsWith("data"))
-        {
-            return UDP;
-        }
-        else{
-            return getUnDefinedPacketProtocol(protocolStack);
-        }
+//        if (protocolStack.endsWith("modbus"))
+//        {
+//            return MODBUS;
+//        }
+//        else if(protocolStack.endsWith("dnp3"))
+//        {
+//
+//        }
+//        else if(protocolStack.endsWith("104apci"))
+//        {
+//            return IEC104_APCI;
+//        }
+//        else if (protocolStack.endsWith("104asdu")){
+//            return IEC104_ASDU;
+//        }
+//        else if(protocolStack.endsWith("data"))
+//        {
+//            return UDP;
+//        }
+//        else{
+        return getUnDefinedPacketProtocol(layer.frame_protocols[0]);
+//        }
     }
 
     public static String decodeS7Protocol(FvDimensionLayer layer){

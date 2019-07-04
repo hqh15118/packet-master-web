@@ -13,5 +13,6 @@ public class ThreadExceptionHandler implements Thread.UncaughtExceptionHandler{
     @Override
     public void uncaughtException(Thread t, Throwable e) {
         System.err.println(String.format("thread [%s] catch a unhandle exception : [%s]\n",t.getName(),e.getStackTrace()[0].toString()));
+        e.printStackTrace();
     }
 }

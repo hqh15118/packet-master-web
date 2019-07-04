@@ -62,7 +62,7 @@ public abstract class BasePreProcessor implements PreProcessor {
     public void execCommand(int type , int limit) {
         assert pipeLine!=null;
         StringBuilder commandBuilder = new StringBuilder();
-        /**
+        /*
          * command builder
          */
         List<String> fieldList = filterFields();
@@ -187,7 +187,7 @@ public abstract class BasePreProcessor implements PreProcessor {
         try {
             if ((str = bufferedReader.readLine()) != null) {
                 System.out.println("error stream : [如果是capture xxx表示正常运行] >> " + str);
-                /**
+                /*
                  * 当接收到capture on xxx的时候，就表示该tshark进程已经开启完毕了，那么就可以释放
                  * 信号量，让下一个线程打开tshark
                  */

@@ -30,7 +30,7 @@ public class LogAspect {
             KafkaThread.createNewKafkaThread("normal_log", KafkaConfig.SEND_NORMAL_LOG);
 
     {
-        LOG_BEAN_SEND_KAFKA_THREAD.start();
+        LOG_BEAN_SEND_KAFKA_THREAD.startService();
     }
 
     @Autowired
@@ -101,7 +101,7 @@ public class LogAspect {
                             .append("\n");
                 }
                 sb.append("****************");
-                log.info("info:\n{}",sb.toString());
+                log.info("\n{}",sb.toString());
                 if (exception!=null){
                     log.error("detail \n{}: " , exception , "↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑");
                 }

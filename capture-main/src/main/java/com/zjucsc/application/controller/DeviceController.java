@@ -45,6 +45,26 @@ public class DeviceController {
     }
 
     @Log
+    @ApiOperation("添加/修改设备信息")
+    @PostMapping("update_device")
+    public BaseResponse addOrUpdateDeviceInfo(@RequestBody Device device){
+        CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(device.getDeviceNumber(), device.getDeviceTag());
+        CommonCacheUtil.addDeviceNumberToName(device.getDeviceNumber(),device.getDeviceInfo());
+        iDeviceService.saveOrUpdateDevice(device);
+        return BaseResponse.OK();
+    }
+
+    @Log
+    @ApiOperation("删除设备")
+    @DeleteMapping("delete_device")
+    public BaseResponse deleteDevice(@RequestParam String deviceNumber){
+        CommonCacheUtil.removeDeviceNumberToTag(deviceNumber);
+        CommonCacheUtil.removeDeviceNumberToName(deviceNumber);
+        iDeviceService.removeDevice(deviceNumber);
+        return BaseResponse.OK();
+    }
+
+    @Log
     @ApiOperation("通过组态图ID发现所有设备")
     @GetMapping("gplot_devices")
     public BaseResponse getDevicesByGplotId(@RequestParam int gplotId){
