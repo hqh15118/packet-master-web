@@ -68,6 +68,7 @@ public class ScheduledService {
                 statisticFlow();
                 CommonCacheUtil.updateAttackLog();
                 count = 0;
+                sendDevice2DevicePackets();
             }
             try {
                 sendAllFvDimensionPacket2();
@@ -76,6 +77,11 @@ public class ScheduledService {
             }
         }
     }
+
+    private void sendDevice2DevicePackets() {
+        SocketServiceCenter.updateAllClient(SocketIoEvent.DEVICE_2_DEVICE_PACKETS,CommonCacheUtil.getDeviceToDevicePackets());
+    }
+
     /**
      * 5秒钟发送一次统计信息
      */

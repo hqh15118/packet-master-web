@@ -37,10 +37,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import static com.zjucsc.application.config.Common.COMMON_THREAD_EXCEPTION_HANDLER;
 import static com.zjucsc.application.config.PACKET_PROTOCOL.*;
@@ -179,13 +176,6 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             FV_D_SENDER.sendMsg(fvDimensionLayer);                                //发送消息到数据库服务器
             AttackCommon.appendFvDimension(fvDimensionLayer);                     //将五元组添加到攻击分析模块中分析
             AttackCommon.appendCommonAttackAnalyze(fvDimensionLayer);
-            Device device = CommonCacheUtil.autoAddDevice(fvDimensionLayer);      //检测到新设备，推送新设备信息
-            if (device!=null){
-                //come new device
-                SocketServiceCenter.updateAllClient(SocketIoEvent.NEW_DEVICE,device);
-                //save device
-                iDeviceService.saveOrUpdateDevice(device);
-            }
             return fvDimensionLayer;                                              //将五元组发送给BadPacketHandler
         }
     };
@@ -381,6 +371,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         DefaultPipeLine pipeLine = new DefaultPipeLine(processName);
         //fv_dimension_handler --> bad_packet_analyze_handler
         pipeLine.addLast(fvDimensionHandler);
+        pipeLine.addLast(deviceHandler);
         pipeLine.addLast(badPacketAnalyzeHandler);
         basePreProcessor.setPipeLine(pipeLine);
         Thread processThread = new Thread(() -> {
@@ -428,7 +419,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     private void analyzeCollectorState(byte[] payload , int collectorId){
         CollectorState collectorState = PacketDecodeUtil.decodeCollectorState(payload,24,collectorId);
         if (collectorState!=null){
-            //log.info("**********************\ncollector state change : {} \n **********************" , collectorState);
+            //log.info("**********************\n collector state change : {} \n **********************" , collectorState);
             SocketServiceCenter.updateAllClient(SocketIoEvent.COLLECTOR_STATE,collectorState);
         }
         //System.out.println(collectorId + " -- " + collectorState);
@@ -566,4 +557,30 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             }
         }
     }
+
+    private final AbstractAsyncHandler<FvDimensionLayer> deviceHandler =
+            new AbstractAsyncHandler<FvDimensionLayer>(Executors.newFixedThreadPool(1,
+                    r -> {
+                        Thread thread = new Thread(r);
+                        thread.setName("-device-analyze-");
+                        thread.setUncaughtExceptionHandler(Common.COMMON_THREAD_EXCEPTION_HANDLER);
+                        return thread;
+                    })) {
+                @Override
+                public FvDimensionLayer handle(Object t) {
+                    //新设备统计
+                    FvDimensionLayer layer = ((FvDimensionLayer) t);
+                    Device device = CommonCacheUtil.autoAddDevice(layer);      //检测到新设备，推送新设备信息
+                    if (device!=null){
+                        //come new device
+                        SocketServiceCenter.updateAllClient(SocketIoEvent.NEW_DEVICE,device);
+                        //save device async
+                        iDeviceService.saveOrUpdateDevice(device);
+                    }
+                    //设备流量统计
+                    CommonCacheUtil.addTargetDevicePacket(layer);
+                    return layer;
+                }
+            };
+
 }
