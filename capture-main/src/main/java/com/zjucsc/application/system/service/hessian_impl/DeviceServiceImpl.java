@@ -78,4 +78,15 @@ public class DeviceServiceImpl extends BaseServiceImpl< Device , DeviceMapper> i
     public void saveStatisticInfo(Map<String,StatisticInfoSaveBean> map) {
         this.baseMapper.saveStatisticInfo(map, Common.GPLOT_ID);
     }
+
+    @Override
+    public void saveOrUpdateDevice(Device device) {
+        this.baseMapper.saveOrUpdateDevice(device);
+    }
+
+    @Override
+    public void removeDevice(String deviceNumber) {
+        this.baseMapper.removeDeviceByDeviceNumber(deviceNumber);
+    }
+
 }

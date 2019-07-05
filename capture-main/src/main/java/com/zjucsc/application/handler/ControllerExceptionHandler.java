@@ -97,5 +97,6 @@ public class ControllerExceptionHandler {
 
     private void printException(Exception e){
         log.error("catch controller exception : \n **************\nclass : {} ; msg : {} \n**************" , e.getClass() , e.getStackTrace()[0].toString());
+        e.printStackTrace();
     }
 }

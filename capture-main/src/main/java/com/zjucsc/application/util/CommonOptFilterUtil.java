@@ -1,6 +1,5 @@
 package com.zjucsc.application.util;
 
-import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.bean.OptFilterForFront;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
 import com.zjucsc.application.tshark.filter.OperationPacketFilter;
@@ -10,26 +9,37 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.zjucsc.application.config.Common.OPERATION_FILTER_PRO;
+import static com.zjucsc.application.config.Common.GPLOT_ID;
 import static com.zjucsc.application.util.CommonCacheUtil.convertIdToName;
 
 @Slf4j
 public class CommonOptFilterUtil {
 
     /**
+     * cache6
+     * String 设备TAG
+     * String -> 协议
+     * OperationAnalyzer -> 报文操作分析器
+     */
+    public static ConcurrentHashMap<String,ConcurrentHashMap<String, OperationAnalyzer>> OPERATION_FILTER_PRO =
+            new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String, OperationAnalyzer> getTargetProtocolToOperationAnalyzerByDeviceTag(String tag){
+        return OPERATION_FILTER_PRO.get(tag);
+    }
+    /**
      *
-     * @param deviceIp 设备的IP
+     * @param deviceTag 设备的TAG，可能是IP也可能是MAC
      * @param optFilterForFront 过滤器集合
      * @param filterName 过滤器名字，随便写一个就好
      * @throws ProtocolIdNotValidException
      */
-    public static void addOrUpdateAnalyzer(String deviceIp , OptFilterForFront optFilterForFront , String filterName) throws ProtocolIdNotValidException {
+    public static void addOrUpdateAnalyzer(String deviceTag , OptFilterForFront optFilterForFront , String filterName) throws ProtocolIdNotValidException {
         ConcurrentHashMap<String, OperationAnalyzer> analyzerMap;
         int type = 0;
-        if ((analyzerMap = Common.OPERATION_FILTER_PRO.get(deviceIp)) == null){
+        if ((analyzerMap = OPERATION_FILTER_PRO.get(deviceTag)) == null){
             //新建设备
             analyzerMap = new ConcurrentHashMap<>();
-            Common.OPERATION_FILTER_PRO.put(deviceIp, analyzerMap);
+            OPERATION_FILTER_PRO.put(deviceTag, analyzerMap);
         }else{
             type = 1;
         }
@@ -53,9 +63,9 @@ public class CommonOptFilterUtil {
 
         if (type == 0){
             //new analyze map
-            log.info("新建设备：{} 的功能码过滤规则MAP , 新的规律规则为 {} ",deviceIp , analyzerMap);
+            log.info("新建设备：【{}】 的【功能码】过滤规则MAP , 新的规律规则为 \n 【{}】 ",deviceTag , analyzerMap);
         }else{
-            log.info("更新设备：{} 功能码过滤规则MAP, 新的规律规则为 {} " , deviceIp, analyzerMap);
+            log.info("更新设备：【{}】 【功能码】过滤规则MAP, 新的规律规则为 \n 【{}】 " , deviceTag, analyzerMap);
         }
     }
 
@@ -116,16 +126,17 @@ public class CommonOptFilterUtil {
      * @param protocolId
      * @throws ProtocolIdNotValidException
      */
-    public static void removeTargetDeviceAnalyzerFuncode(String deviceTag , int funcode , int protocolId) throws ProtocolIdNotValidException {
+    public static void removeTargetDeviceAnalyzerFuncode(String deviceTag , int funcode , int protocolId) throws ProtocolIdNotValidException, ProtocolIdNotValidException {
         ConcurrentHashMap<String,OperationAnalyzer> removedMap = OPERATION_FILTER_PRO.get(deviceTag);
         if (removedMap == null){
-            log.info("[ANALYZER]**************remove WARNING BY FUNCODE ==> device id: [ {} ] protocol id : [ {} ] , protocol name : [ {} ] , cause can not find the target device id in OPERATION_FILTER MAP : {} " ,
+            log.error("[ANALYZER]\n**************\nremove WARNING BY FUNCODE ==> device id: [ {} ] protocol id : [ {} ] , protocol name : [ {} ] , cause can not find the target device id in OPERATION_FILTER MAP : {} \n" +
+                            "**************" ,
                     deviceTag , protocolId , convertIdToName(protocolId) , OPERATION_FILTER_PRO);
         }else{
             OperationAnalyzer analyzer = removedMap.get(convertIdToName(protocolId));
             analyzer.getAnalyzer().getBlackMap().remove(funcode);
             analyzer.getAnalyzer().getWhiteMap().remove(funcode);
-            log.info("remove device id : [ {} ] protocol id : [ {} ] , protocol name : [ {} ]  , funcode : [ {} ], and now  OPERATION_FILTER MAP is : {} " ,
+            log.info("**************\nremove device id : [ {} ] protocol id : [ {} ] , protocol name : [ {} ]  , funcode : [ {} ], and now  OPERATION_FILTER MAP is : {} \n**************" ,
                     deviceTag , protocolId , convertIdToName(protocolId) , funcode , OPERATION_FILTER_PRO.get(deviceTag));
         }
     }
@@ -141,7 +152,7 @@ public class CommonOptFilterUtil {
     }
 
     public static void removeAllOptFilter(){
-        Common.OPERATION_FILTER_PRO.clear();
-        log.info("change gplot so -> clear all opt dimension filter of gplotid : {} " , Common.GPLOT_ID);
+        OPERATION_FILTER_PRO.clear();
+        log.info("change gplot so -> clear all opt dimension filter of gplot_id : [{}] " , GPLOT_ID);
     }
 }

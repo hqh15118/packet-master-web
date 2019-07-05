@@ -6,7 +6,6 @@ import com.zjucsc.application.domain.bean.FlowError;
 import com.zjucsc.application.domain.bean.GraphInfo;
 import com.zjucsc.application.domain.bean.StatisticInfoSaveBean;
 import com.zjucsc.application.domain.bean.StatisticsDataWrapper;
-import com.zjucsc.application.domain.non_hessian.DeviceMaxFlow;
 import com.zjucsc.application.system.service.common_iservice.CapturePacketService;
 import com.zjucsc.application.system.service.hessian_iservice.IArtHistoryDataService;
 import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
@@ -26,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
-import static com.zjucsc.application.config.Common.DEVICE_TAG_TO_NAME;
 import static com.zjucsc.application.config.StatisticsData.*;
 
 @Slf4j
@@ -62,12 +60,13 @@ public class ScheduledService {
 
     @Scheduled(fixedRate = 1000)
     public void commonScheduleService(){
-        if (Common.SCHEDULE_RUNNING){
+        if (CommonCacheUtil.getScheduleServiceRunningState()){
             count ++;
             if (count >= 5){
                 sendPacketStatisticsMsg();
                 sendGraphInfo();
                 statisticFlow();
+                CommonCacheUtil.updateAttackLog();
                 count = 0;
             }
             try {
@@ -110,7 +109,7 @@ public class ScheduledService {
         SocketServiceCenter.updateAllClient(SocketIoEvent.GRAPH_INFO,StatisticsData.GRAPH_BY_DEVICE);
 
         //保存每个设备当前时间间隔内的统计信息到数据库服务器
-        iDeviceService.saveStatisticInfo(Common.STATISTICS_INFO_BEAN);
+        iDeviceService.saveStatisticInfo(CommonCacheUtil.getStatisticsInfoBean());
     }
 
     private List<FvDimensionLayer> layers = new ArrayList<>();
@@ -158,7 +157,7 @@ public class ScheduledService {
 //                StatisticsData.ART_INFO_SEND.put(artName, StatisticsData.ART_INFO.get(artName));
 //            }
             StatisticsData.ART_INFO.forEach((artName, artValueList) -> {
-                if (Common.SHOW_GRAPH_SET.contains(artName)){
+                if (CommonCacheUtil.isArtShow(artName)){
                     //StatisticsData.ART_INFO_SEND.put(artName, artValueList);
                     if (artValueList.size() > 0)
                         ART_INFO_SEND_SINGLE.put(artName,artValueList.getLast());
@@ -242,11 +241,10 @@ public class ScheduledService {
             /**
              * 设置需要保存的统计信息
              */
-            StatisticInfoSaveBean bean = Common.STATISTICS_INFO_BEAN.get(deviceNumber);
+            StatisticInfoSaveBean bean = CommonCacheUtil.getStatisticsInfoBean().get(deviceNumber);
             if (bean == null) {
                 bean = new StatisticInfoSaveBean();
-                Common.STATISTICS_INFO_BEAN.put(deviceNumber,bean);
-                log.info("设备{}未添加StatisticInfoSaveBean，已重新添加，程序中有错误,检查该设备是否已经被正确添加到组态图中？",deviceNumber);
+                CommonCacheUtil.getStatisticsInfoBean().put(deviceNumber,bean);
             }
                 bean.setTime(timeStamp);
                 switch (index){

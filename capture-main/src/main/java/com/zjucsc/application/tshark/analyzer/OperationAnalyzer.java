@@ -1,10 +1,8 @@
 package com.zjucsc.application.tshark.analyzer;
 
-import com.zjucsc.application.config.DangerLevel;
-import com.zjucsc.application.tshark.domain.BadPacket;
 import com.zjucsc.application.tshark.filter.OperationPacketFilter;
-import com.zjucsc.application.util.CommonConfigUtil;
-import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
+import com.zjucsc.attack.bean.AttackBean;
+import com.zjucsc.attack.common.AttackTypePro;
 import com.zjucsc.tshark.analyzer.AbstractAnalyzer;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import lombok.extern.slf4j.Slf4j;
@@ -23,38 +21,15 @@ public class OperationAnalyzer extends AbstractAnalyzer<OperationPacketFilter<In
     public Object analyze(Object... objs){
         int fun_code = ((int) objs[0]);
         FvDimensionLayer layer = ((FvDimensionLayer) objs[1]);
+        String protocol = (String)objs[2];
         if (!getAnalyzer().getWhiteMap().containsKey(fun_code)){
-            try {
-                if(fun_code!=-1) {
-                    return new BadPacket.Builder(layer.frame_protocols[0])
-                            .setComment(attackrec(layer.frame_protocols[0], fun_code))//具体报警信息
-                            .set_five_Dimension(layer)
-                            .setDangerLevel(DangerLevel.VERY_DANGER)
-                            .setFun_code(fun_code)
-                            .setOperation(getOperation(layer.frame_protocols[0], fun_code))
-                            .build();
-                }
-                return null;
-
-            } catch (ProtocolIdNotValidException e) {
-                log.error("protocol <==> ID not valid " , e);
-            }
+            return new AttackBean.Builder()
+                    .attackInfo(attackrec(protocol,fun_code))
+                    .attackType(AttackTypePro.VISIT_COMMAND)
+                    .fvDimension(layer)
+                    .build();
         }
         return null;
-    }
-
-    public OperationAnalyzer(OperationPacketFilter<Integer, String> integerStringPacketFilter) {
-        super(integerStringPacketFilter);
-    }
-
-    private String getOperation(String protocol , int fun_code) throws ProtocolIdNotValidException {
-        String str = CommonConfigUtil.getTargetProtocolFuncodeMeanning(protocol,fun_code);
-        return str==null ? "unknown operation" : str;
-    }
-
-    @Override
-    public String toString() {
-        return getAnalyzer().toString();
     }
 
     private String attackrec(String protocols , int Fun_code)
@@ -83,6 +58,8 @@ public class OperationAnalyzer extends AbstractAnalyzer<OperationPacketFilter<In
                     case 0x28:
                     case 0x29:
                         return "配置篡改攻击!";
+//                    case 0xf0:
+//                        return "嗅探攻击";
                     default:
                         return "非法功能码未知操作";
                 }
@@ -131,5 +108,14 @@ public class OperationAnalyzer extends AbstractAnalyzer<OperationPacketFilter<In
             default:
                 return "未知攻击";
         }
+    }
+
+    public OperationAnalyzer(OperationPacketFilter<Integer, String> integerStringPacketFilter) {
+        super(integerStringPacketFilter);
+    }
+
+    @Override
+    public String toString() {
+        return getAnalyzer().toString();
     }
 }

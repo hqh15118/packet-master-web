@@ -2,8 +2,10 @@ package com.zjucsc.application.controller;
 
 import com.zjucsc.application.config.auth.Log;
 import com.zjucsc.application.domain.bean.BaseResponse;
+import com.zjucsc.application.domain.bean.DeviceProtocol;
 import com.zjucsc.application.domain.bean.Rule;
 import com.zjucsc.application.system.service.hessian_iservice.IFvDimensionFilterService;
+import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.common.exceptions.DeviceNotValidException;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -25,8 +25,6 @@ public class Common {
 
     public static final int SOCKET_IO_PORT = 8081;
 
-    public static volatile boolean SCHEDULE_RUNNING = false;
-
     public static volatile long maxFlowInByte = Long.MAX_VALUE;
 
     //1 真实场景下， 0 仿真模拟
@@ -41,25 +39,6 @@ public class Common {
      * 是否已经打开某个抓包机器上的抓包服务
      */
     public static List<String> hasStartedHost = new ArrayList<>();
-
-    /**
-     * cache7
-     * 所有可配置的协议
-     * 协议 --> 功能码 以及 对应的含义 --> 从serviceLoader中加载
-     */
-    public static final HashMap<String , HashMap<Integer,String>> CONFIGURATION_MAP = new HashMap<>();
-
-    /**
-     * cache6
-     * String 设备TAG
-     * String -> 协议
-     * OperationAnalyzer -> 报文操作分析器
-     */
-    public static ConcurrentHashMap<String,ConcurrentHashMap<String, OperationAnalyzer>> OPERATION_FILTER_PRO =
-            new ConcurrentHashMap<>();
-
-    public static final ConcurrentHashMap<String, StatisticInfoSaveBean> STATISTICS_INFO_BEAN =
-            new ConcurrentHashMap<>();
     /**
      * cache5
      * DEVICE_TAG 五元组过滤器
@@ -88,34 +67,5 @@ public class Common {
     //已经登录过的用户
     public final static List<String> LOGGINED_USERS = new ArrayList<>();
 
-    //攻击的统计信息【攻击种类 - 攻击次数】
-    public final static ConcurrentHashMap<String,Integer> ATTACK_TYPE_STATICS = new ConcurrentHashMap<>();
-
     public static final ThreadExceptionHandler COMMON_THREAD_EXCEPTION_HANDLER = new ThreadExceptionHandler();
-
-    /**
-     * cache2
-     *  init in
-     * @see com.zjucsc.application.task.InitConfigurationService
-     */
-    public static final BiMap<Integer,String> PROTOCOL_STR_TO_INT = HashBiMap.create();
-
-    public static final BiMap<Integer,String> AUTH_MAP = HashBiMap.create();
-
-    /**
-     * 给tshark用的，表示设置的要捕获的协议集合
-     */
-    public static final Set<String> CAPTURE_PROTOCOL = new HashSet<>();
-
-    /**
-     * cache1
-     * 设备IP和DEVICE_NUMBER之间互相转换
-     */
-    public static final BiMap<String,String> DEVICE_TAG_TO_NAME = HashBiMap.create();
-
-    /**
-     * 要显示的工艺参数集合【将这个set里面的工艺参数数据传输到前端，其他的不用传】
-     */
-    public static final Set<String> SHOW_GRAPH_SET = Collections.synchronizedSet(new HashSet<>());
-
 }

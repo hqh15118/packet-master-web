@@ -23,4 +23,8 @@ public interface IDeviceService {
     StatisticInfo selectHistoryDeviceRunInfo(String deviceId, String startTime, String endTime, String intervalType);
 
     void saveStatisticInfo(Map<String, StatisticInfoSaveBean> map);
+
+    void saveOrUpdateDevice(Device device);
+
+    void removeDevice(String deviceNumber);
 }

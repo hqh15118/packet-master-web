@@ -1,8 +1,10 @@
 package com.zjucsc.application.system.service.common_impl;
 
-import com.zjucsc.application.config.StatisticsData;
+import com.zjucsc.application.config.*;
+import com.zjucsc.application.domain.bean.Device;
 import com.zjucsc.application.system.service.PacketAnalyzeService;
 import com.zjucsc.application.system.service.common_iservice.CapturePacketService;
+import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
 import com.zjucsc.application.tshark.capture.NewFvDimensionCallback;
 import com.zjucsc.application.tshark.capture.ProcessCallback;
 import com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler;
@@ -10,6 +12,7 @@ import com.zjucsc.application.tshark.pre_processor.*;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.CommonConfigUtil;
 import com.zjucsc.application.util.PacketDecodeUtil;
+import com.zjucsc.attack.bean.AttackBean;
 import com.zjucsc.attack.common.AttackCommon;
 import com.zjucsc.common.common_util.ByteUtil;
 import com.zjucsc.common.common_util.DBUtil;
@@ -23,6 +26,7 @@ import com.zjucsc.tshark.handler.DefaultPipeLine;
 import com.zjucsc.tshark.packets.*;
 import com.zjucsc.tshark.pre_processor.BasePreProcessor;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -31,10 +35,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
@@ -47,10 +49,71 @@ import static com.zjucsc.application.config.PACKET_PROTOCOL.*;
 @Service
 public class CapturePacketServiceImpl implements CapturePacketService<String,String> {
 
-    @Autowired private PacketAnalyzeService packetAnalyzeService;
+    private final PacketAnalyzeService packetAnalyzeService;
+
+    private SimulateThread simulateThread;
+
+    @Autowired private ConstantConfig constantConfig;
+    @Autowired private PreProcessor preProcessor;
+    @Autowired private IDeviceService iDeviceService;
 
     //五元kafka发送线程
-    private final KafkaThread<FvDimensionLayer> FV_D_SENDER = KafkaThread.createNewKafkaThread("fv_dimension","fv_dimension");
+    private final KafkaThread<FvDimensionLayer> FV_D_SENDER = KafkaThread.createNewKafkaThread("fv_dimension",KafkaConfig.SEND_ALL_PACKET_FV_DIMENSION);
+    private final KafkaThread<AttackBean> ATTACK_SENDER = KafkaThread.createNewKafkaThread("packet_attack", KafkaConfig.SEND_PACKET_ATTACK);
+
+    public CapturePacketServiceImpl(PacketAnalyzeService packetAnalyzeService) {
+        this.packetAnalyzeService = packetAnalyzeService;
+        //所有攻击报文的入口
+        AttackCommon.registerAttackCallback(attackBean -> {
+            setDeviceInfo(attackBean);
+            //通知攻击到达
+            SocketServiceCenter.updateAllClient(SocketIoEvent.ATTACK_INFO, attackBean);
+            //发送攻击信息保存
+            ATTACK_SENDER.sendMsg(attackBean);
+            //统计攻击类型
+            CommonCacheUtil.addNewAttackLog(attackBean.getAttackType());
+        });
+    }
+
+    private void setDeviceInfo(AttackBean attackBean){
+        String srcDeviceNumber = CommonCacheUtil.getTargetDeviceNumberByTag(attackBean.getDstIp(),attackBean.getDstMac());
+        if (srcDeviceNumber!=null){
+            attackBean.setSrcDevice(CommonCacheUtil.convertDeviceNumberToName(srcDeviceNumber));
+        }else{
+            setUnknownAttackDevice(attackBean,0);
+        }
+        String dstDeviceNumber = CommonCacheUtil.getTargetDeviceNumberByTag(attackBean.getSrcIp(),attackBean.getSrcMac());
+        if (dstDeviceNumber!=null){
+            attackBean.setDstDevice(CommonCacheUtil.convertDeviceNumberToName(dstDeviceNumber));
+        }else{
+            setUnknownAttackDevice(attackBean,1);
+        }
+    }
+
+    private void setUnknownAttackDevice(AttackBean attackBean, int i) {
+        if (i == 0){
+            if (!attackBean.getDstIp().equals("--")){
+                attackBean.setDstDevice(attackBean.getDstIp());
+            }else{
+                attackBean.setDstDevice(attackBean.getDstMac());
+            }
+        }else{
+            if (!attackBean.getSrcIp().equals("--")){
+                attackBean.setSrcDevice(attackBean.getSrcIp());
+            }else{
+                attackBean.setSrcDevice(attackBean.getSrcMac());
+            }
+        }
+    }
+
+    private void startAllKafkaThread(){
+        FV_D_SENDER.startService();
+        ATTACK_SENDER.startService();
+    }
+    private void stopAllKafkaThread(){
+        FV_D_SENDER.stopService();
+        ATTACK_SENDER.stopService();
+    }
 
     private NewFvDimensionCallback newFvDimensionCallback;
 
@@ -70,10 +133,10 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
      * 接收协议解析好的五元组，并作五元组发送、报文流量统计处理
      * 单线程处理，保证线程安全
      */
-    public AbstractAsyncHandler<FvDimensionLayer> fvDimensionLayerAbstractAsyncHandler
+    private AbstractAsyncHandler<FvDimensionLayer> fvDimensionLayerAbstractAsyncHandler
             = new AbstractAsyncHandler<FvDimensionLayer>(Executors.newFixedThreadPool(1, r -> {
         Thread thread = new Thread(r);
-        thread.setName("fv_dimension_handler_thread-");
+        thread.setName("-fv-dimension-handler-thread-");
         thread.setUncaughtExceptionHandler(COMMON_THREAD_EXCEPTION_HANDLER);
         return thread;
     })) {
@@ -87,23 +150,25 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         public FvDimensionLayer handle(Object t) {
             FvDimensionLayer fvDimensionLayer = ((FvDimensionLayer) t);
             //设置协议栈
-
-            fvDimensionLayer.frame_protocols[0] = PacketDecodeUtil.discernPacket(fvDimensionLayer.frame_protocols[0],fvDimensionLayer);
+            fvDimensionLayer.protocol = PacketDecodeUtil.discernPacket(fvDimensionLayer);   //t-s
             //统计所有的IP地址
             if (fvDimensionLayer.ip_dst[0].length() > 0){
-                StatisticsData.statisticAllIpAddress(fvDimensionLayer.ip_dst[0]);
+                StatisticsData.statisticAllIpAddress(fvDimensionLayer.ip_dst[0]);           //t-s
             }
             //统计协议
-            StatisticsData.addProtocolNum(fvDimensionLayer.frame_protocols[0],1);
+            //协议比例
+            StatisticsData.addProtocolNum(fvDimensionLayer.protocol,1);         //t-s
             //解析原始数据
-            byte[] payload = ByteUtil.hexStringToByteArray(fvDimensionLayer.custom_ext_raw_data[0]);
+            byte[] payload = ByteUtil.hexStringToByteArray(fvDimensionLayer.custom_ext_raw_data[0]);    //t-s
             fvDimensionLayer.rawData = payload;
             //设置五元组中的功能码以及功能码对应的含义
-            try {
-                setFuncode(fvDimensionLayer);
-            } catch (ProtocolIdNotValidException e) {
-                //缓存中找不到该五元组对应的协议
-                log.error("error set Funcode , msg : {} [缓存中找不到该五元组协议：{} 对应的功能码表]" , e.getMsg(),fvDimensionLayer.frame_protocols[0]);
+            if (Common.systemRunType !=0) {
+                try {
+                    setFuncode(fvDimensionLayer);                                           //t-s
+                } catch (ProtocolIdNotValidException e) {
+                    //缓存中找不到该五元组对应的协议
+                    log.error("error set Funcode , msg : {} [缓存中找不到该五元组协议：{} 对应的功能码表]", e.getMsg(), fvDimensionLayer.frame_protocols[0]);
+                }
             }
             sendFvDimensionPacket(fvDimensionLayer , payload);                    //发送五元组所有报文到前端
             sendPacketStatisticsEvent(fvDimensionLayer);                          //发送统计信息
@@ -112,19 +177,26 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             fvDimensionLayer.delay = collectorDelayInfo(payload,collectorId);     //解析时延信息
             fvDimensionLayer.collectorId = collectorId;                           //设置报文采集器ID
             FV_D_SENDER.sendMsg(fvDimensionLayer);                                //发送消息到数据库服务器
-            AttackCommon.appendFvDimension(fvDimensionLayer);                     //将五元组发送添加到攻击分析模块中分析
+            AttackCommon.appendFvDimension(fvDimensionLayer);                     //将五元组添加到攻击分析模块中分析
+            AttackCommon.appendCommonAttackAnalyze(fvDimensionLayer);
+            Device device = CommonCacheUtil.autoAddDevice(fvDimensionLayer);      //检测到新设备，推送新设备信息
+            if (device!=null){
+                //come new device
+                SocketServiceCenter.updateAllClient(SocketIoEvent.NEW_DEVICE,device);
+                //save device
+                iDeviceService.saveOrUpdateDevice(device);
+            }
             return fvDimensionLayer;                                              //将五元组发送给BadPacketHandler
         }
     };
 
     public void setFuncode(FvDimensionLayer layer) throws ProtocolIdNotValidException {
         if (!(layer instanceof UndefinedPacket.LayersBean)) {
-            int funCode = decodeFuncode(layer);
-            if (funCode >= 0){
-                layer.funCodeMeaning = CommonConfigUtil.
-                        getTargetProtocolFuncodeMeanning(layer.frame_protocols[0],funCode);
+            int funCode = decodeFuncodeAndSetFuncodeMeaning(layer);
+            if (funCode >= 0) {
                 layer.funCode = String.valueOf(funCode);
-            }else{
+            }
+            else{
                 layer.funCode = "--";
             }
         }
@@ -133,47 +205,127 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     /**
      * 解析功能码，一些协议有些报文有功能码有些报文没有功能码，要做区分
      * 没有功能码返回-1
+     * IEC104有一个特殊的-2功能码
      * @param t 五元组
      * @return 功能码
      */
-    private int decodeFuncode(FvDimensionLayer t) {
+    private int decodeFuncodeAndSetFuncodeMeaning(FvDimensionLayer t) throws ProtocolIdNotValidException {
         String funCodeStr;
+        int funCode = -1;
         if (t instanceof S7CommPacket.LayersBean){
-            if (((S7CommPacket.LayersBean) t).s7comm_param_func!=null) {
-                funCodeStr = ((S7CommPacket.LayersBean) t).s7comm_param_func[0];
-                return PacketDecodeUtil.decodeFuncode(S7, funCodeStr);
+            S7CommPacket.LayersBean s7Packet = ((S7CommPacket.LayersBean) t);
+            if (s7Packet.s7comm_param_func!=null) {
+                //decode s7comm funcode
+                funCodeStr = s7Packet.s7comm_param_func[0];
+                if (funCodeStr.equals("")){
+                    funCodeStr = s7Packet.s7comm_param_userdata_funcgroup[0];
+                }
+                funCode =  PacketDecodeUtil.decodeFuncode("s7comm", funCodeStr);
+                //setFuncodeMeaning of s7comm
+                if (s7Packet.s7comm_header_rosctr[0].equals(S7CommPacket.USER_DATA)) {
+                    //user data
+                    t.funCodeMeaning = CommonConfigUtil.
+                            getTargetProtocolFuncodeMeanning(S7_User_data, funCode);
+                } else {
+                    //other [job/ack_data]
+                    t.funCodeMeaning = CommonConfigUtil.
+                            getTargetProtocolFuncodeMeanning(S7, funCode);
+                }
             }
         }else if (t instanceof ModbusPacket.LayersBean){
             if (((ModbusPacket.LayersBean) t).modbus_func_code!=null) {
                 funCodeStr = ((ModbusPacket.LayersBean) t).modbus_func_code[0];
-                return PacketDecodeUtil.decodeFuncode(MODBUS, funCodeStr);
+                funCode =  PacketDecodeUtil.decodeFuncode("modbus", funCodeStr);
+                t.funCodeMeaning = CommonConfigUtil.
+                        getTargetProtocolFuncodeMeanning(MODBUS, funCode);
             }
         }else if (t instanceof IEC104Packet.LayersBean){
             IEC104Packet.LayersBean iec104_packet = ((IEC104Packet.LayersBean) t);
-            if (iec104_packet.iec104_funcode!=null) {
-                funCodeStr = ((IEC104Packet.LayersBean) t).iec104_funcode[0];
-                return PacketDecodeUtil.decodeFuncode(IEC104, funCodeStr);
+                int type = Integer.decode(iec104_packet.iec104_type[0]);
+                switch (type){
+                    case 0 :
+                        //decode iec funcode
+                        funCodeStr = iec104_packet.iec104asdu_typeid[0];
+                        funCode =  PacketDecodeUtil.decodeFuncode("iec104", funCodeStr);
+                        //decode funcode meaning by funcode
+                        t.funCodeMeaning = CommonConfigUtil.
+                                getTargetProtocolFuncodeMeanning(PACKET_PROTOCOL.IEC104_ASDU, funCode);
+                        break;
+                    case 1 :
+                        t.funCodeMeaning = "确认数据接收";
+                        break;
+                    case 3 :
+                        //decode iec funcode
+                        funCodeStr = iec104_packet.iec104apci_utype[0];
+                        funCode =  PacketDecodeUtil.decodeFuncode("iec104", funCodeStr);
+                        //decode funcode meaning by funcode
+                        t.funCodeMeaning = CommonConfigUtil.
+                                getTargetProtocolFuncodeMeanning(PACKET_PROTOCOL.IEC104_APCI, funCode);
+                        break;
+                }
+        }else if (t instanceof Dnp3_0Packet.LayersBean){
+            Dnp3_0Packet.LayersBean dnpPacket = ((Dnp3_0Packet.LayersBean) t);
+            int type = Integer.decode(dnpPacket.dnp3_ctl_prm[0]);
+            switch (type){
+                case 1:
+                    //decode dnp funcode
+                    funCodeStr = dnpPacket.dnp3_ctl_prifunc[0];
+                    funCode = PacketDecodeUtil.decodeFuncode("dnp3.0", funCodeStr);
+                    //decode funcode meaning by funcode
+                    t.funCodeMeaning = CommonConfigUtil.
+                            getTargetProtocolFuncodeMeanning(PACKET_PROTOCOL.DNP3_0_PRI, funCode);
+                    break;
+                case 0:
+                    funCodeStr = dnpPacket.dnp3_ctl_setfunc[0];
+                    funCode = PacketDecodeUtil.decodeFuncode("dnp3.0", funCodeStr);
+                    t.funCodeMeaning = CommonConfigUtil.
+                            getTargetProtocolFuncodeMeanning(PACKET_PROTOCOL.DNP3_0_SET, funCode);
+                    break;
             }
+        }else if (t instanceof CipPacket.LayersBean){
+            CipPacket.LayersBean cipPacket = ((CipPacket.LayersBean) t);
+            funCode = Integer.decode(cipPacket.cip_funcode[0]);
+            t.funCodeMeaning = CommonConfigUtil.
+                    getTargetProtocolFuncodeMeanning(PACKET_PROTOCOL.CIP_IP, funCode);
         }
-        else{
-            //log.error("can not decode funCode of protocol : {} cause it is not defined" , t.frame_protocols[0]);
-            return -1;
-        }
-        return -1;
+        return funCode;
     }
 
     @Async
     @Override
     public CompletableFuture<Exception> start(ProcessCallback<String,String> callback) {
-        FV_D_SENDER.startService();
+        startAllKafkaThread();
         this.callback = callback;
+        List<BasePreProcessor> basePreProcessors = new LinkedList<>();
+        for (String preProcessorName : preProcessor.getList()) {
+            switch (preProcessorName){
+                case "s7comm" :
+                    basePreProcessors.add(new S7CommPreProcessor());
+                    break;
+                case "modbus" :
+                    basePreProcessors.add(new ModbusPreProcessor());
+                    break;
+                case "iec104" :
+                    basePreProcessors.add(new IEC104PreProcessor());
+                    break;
+                case "dnp3_0" :
+                    basePreProcessors.add(new DNP3_0PreProcessor());
+                    break;
+                case "pnio" :
+                    basePreProcessors.add(new PnioPreProcessor());
+                    break;
+                case "cip" :
+                    basePreProcessors.add(new CipPreProcessor());
+                    break;
+                case "opcua" :
+                    basePreProcessors.add(new OpcuaPreProcessor());
+                    break;
+            }
+        }
+        basePreProcessors.add(new UndefinedPreProcessor());
         try {
-            callback.start(doStart(fvDimensionLayerAbstractAsyncHandler
-                                   ,new ModbusPreProcessor()
-                                   ,new S7CommPreProcessor()
-                                   ,new IEC104PreProcessor()
-                                   ,new PnioPreProcessor()
-                                   ,new UndefinedPreProcessor()      //必须放在解析协议的最后
+            callback.start(doStart(fvDimensionLayerAbstractAsyncHandler,
+                                    basePreProcessors
                                    ));
         } catch (InterruptedException e) {
             return CompletableFuture.completedFuture(e);
@@ -188,7 +340,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                 int collectorDelay = PacketDecodeUtil.decodeCollectorDelay(payload,4);
                 //设置ID和延时用于发送
                 //System.out.println("delay : " + collectorDelay);
-                //packetAnalyzeService.setCollectorDelay(collectorId,collectorDelay);
+                packetAnalyzeService.setCollectorDelay(collectorId,collectorDelay);
                 return collectorDelay;
             }
             return -1;
@@ -204,21 +356,21 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             callback.end("end " + basePreProcessor.getClass().getName());
         }
         processorList.clear();
-        FV_D_SENDER.stopService();
+        stopAllKafkaThread();
         return CompletableFuture.completedFuture(null);
     }
 
     private String doStart(AbstractAsyncHandler<FvDimensionLayer> fvDimensionHandler ,
-                           BasePreProcessor... packetPreProcessor) throws InterruptedException {
-        CountDownLatch downLatch = new CountDownLatch(packetPreProcessor.length - 1);
+                           List<BasePreProcessor> packetPreProcessor) throws InterruptedException {
+        CountDownLatch downLatch = new CountDownLatch(packetPreProcessor.size() - 1);
         StringBuilder sb = new StringBuilder();
         int i = 0;
-        for (; i < packetPreProcessor.length - 1; i++) {
-            BasePreProcessor basePreProcessor = packetPreProcessor[i];
+        for (; i < packetPreProcessor.size() - 1; i++) {
+            BasePreProcessor basePreProcessor = packetPreProcessor.get(i);
             doNow(basePreProcessor , fvDimensionHandler , downLatch , sb);
         }
         downLatch.await(100, TimeUnit.SECONDS);
-        doNow(packetPreProcessor[i] , fvDimensionHandler,null , sb);
+        doNow(packetPreProcessor.get(i) , fvDimensionHandler,null , sb);
         return sb.toString();
     }
 
@@ -248,16 +400,17 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         fvDimensionLayer.timeStamp = PacketDecodeUtil.decodeTimeStamp(payload,20,fvDimensionLayer);
         //SocketServiceCenter.updateAllClient(SocketIoEvent.ALL_PACKET,fvDimensionLayer);
         if (newFvDimensionCallback!=null){
-            newFvDimensionCallback.newCome(fvDimensionLayer);
+            //控制报文发送数量
+            newFvDimensionCallback.newCome(fvDimensionLayer);               //not t-s
         }
     }
 
     private void sendPacketStatisticsEvent(FvDimensionLayer fvDimensionLayer) {
         int capLength = Integer.parseInt(fvDimensionLayer.frame_cap_len[0]);
 
-        StatisticsData.FLOW.addAndGet(capLength);                          //计算报文流量
+        StatisticsData.FLOW.addAndGet(capLength);                          //计算报文总流量
 
-        StatisticsData.recvPacketNumber.addAndGet(1);      //总报文数
+        StatisticsData.recvPacketNumber.addAndGet(1);                //总报文数
         //外界 --> PLC[ip_dst]  设备接收的报文数
         StatisticsData.increaseNumberByDeviceIn(CommonCacheUtil.getTargetDeviceNumberByTag(fvDimensionLayer.ip_dst[0],fvDimensionLayer.eth_dst[0])
             ,1);
@@ -275,7 +428,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     private void analyzeCollectorState(byte[] payload , int collectorId){
         CollectorState collectorState = PacketDecodeUtil.decodeCollectorState(payload,24,collectorId);
         if (collectorState!=null){
-            log.info("**********************\ncollector state change : {} \n **********************" , collectorState);
+            //log.info("**********************\ncollector state change : {} \n **********************" , collectorState);
             SocketServiceCenter.updateAllClient(SocketIoEvent.COLLECTOR_STATE,collectorState);
         }
         //System.out.println(collectorId + " -- " + collectorState);
@@ -285,15 +438,17 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         this.newFvDimensionCallback = newFvDimensionCallback;
     }
 
-    private SimulateThread simulateThread = new SimulateThread();
-
     @Async
     @Override
     public CompletableFuture<Exception> startSimulate() {
-        FV_D_SENDER.startService();
+        startAllKafkaThread();
+        if (simulateThread == null){
+            simulateThread = new SimulateThread();
+        }
         if (!simulateThread.hasStart){
             DefaultPipeLine pipeLine = new DefaultPipeLine("simulate");
             pipeLine.addLast(fvDimensionLayerAbstractAsyncHandler);
+            pipeLine.addLast(badPacketAnalyzeHandler);
             simulateThread.pipeLine = pipeLine;
             simulateThread.start();
         }else{
@@ -305,16 +460,16 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     @Async
     @Override
     public CompletableFuture<Exception> stopSimulate() {
-        FV_D_SENDER.stopService();
+        stopAllKafkaThread();
         simulateThread.idleNow();
         return CompletableFuture.completedFuture(null);
     }
 
-    private static class SimulateThread extends Thread{
+    private class SimulateThread extends Thread{
         private DefaultPipeLine pipeLine;
         private boolean hasStart = false;
         private volatile boolean idle = false;
-        private static final byte[] IDLE_LOCK = new byte[1];
+        private final byte[] IDLE_LOCK = new byte[1];
         private int hasSendFvDimensionNumber = 0;
         private PreparedStatement preparedStatement;
         private Connection connection;
@@ -336,7 +491,12 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         private List<FvDimensionLayer> getPreparedStatement(int num) throws SQLException {
             fvDimensionLayers.clear();
             if (preparedStatement == null) {
-                int date = 20190625;
+                int date;
+                if (constantConfig.getReOpenTableName() > 0) {
+                    date = constantConfig.getReOpenTableName();
+                }else {
+                    date = 20190625;
+                }
                 String baseCurrentTableName = "packet_info_";
                 String tableName = baseCurrentTableName + date;
                 preparedStatement = connection.prepareStatement(String.format("SELECT * FROM %s WHERE id > %s and id < %s",
@@ -383,7 +543,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                     }
                 }
                 //200 - 500
-                int num = (int)(300 * random.nextDouble()) + 200;
+                int num = (int)(30 * random.nextDouble()) + 50;
                 try {
                     List<FvDimensionLayer> layers = getPreparedStatement(num);
                     for (FvDimensionLayer layer : layers) {

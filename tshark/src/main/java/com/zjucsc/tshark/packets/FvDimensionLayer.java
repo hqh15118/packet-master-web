@@ -14,6 +14,9 @@ import java.util.Arrays;
  */
 
 public class FvDimensionLayer {
+    //用于前端显示的协议
+    public String protocol;
+    //更细致的协议
     public String[] frame_protocols = {"--"};
     public String[] eth_dst = {"--"};
     public String[] frame_cap_len = {"--"};
@@ -39,20 +42,12 @@ public class FvDimensionLayer {
     public String[] tcp_flags_syn={""};
     //raw data
     public String[] custom_ext_raw_data = {""};
-    @JSONField(serialize = false)
+    @JSONField(deserialize = false)
     public int delay;
-    @JSONField(serialize = false)
+    @JSONField(deserialize = false)
     public int collectorId;
     @JSONField(serialize = false,deserialize = false)
     public byte[] rawData;
-
-
-    public FvDimensionLayer setFrameProtocols(String protocol){
-        if (protocol!=null) {
-            frame_protocols[0] = protocol;
-        }
-        return this;
-    }
 
     @Override
     public String toString() {

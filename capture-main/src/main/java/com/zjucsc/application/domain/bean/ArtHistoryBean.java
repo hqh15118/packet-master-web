@@ -9,5 +9,4 @@ public class ArtHistoryBean {
     List<String> nameList;
     private String start;
     private String end;
-    private int timeInterval;
 }

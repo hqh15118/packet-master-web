@@ -21,5 +21,5 @@ public interface ArtHistoryDataMapper extends BaseMapper<ArtHistoryData> {
      * @param artName 工艺参数名
      * @return
      */
-    List<String> getArtData(String startTime, String endTime, String artName, int gplotId);
+    List<Float> getArtData(String startTime, String endTime, String artName, int gplotId);
 }

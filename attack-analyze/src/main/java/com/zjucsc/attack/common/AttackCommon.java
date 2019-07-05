@@ -40,11 +40,14 @@ public class AttackCommon {
         }
     };
     private static ExecutorService ATTACK_MAIN_SERVICE = Executors.newFixedThreadPool(
-            5,
+            1,
             r -> {
                 Thread thread = new Thread(r);
                 thread.setName("-attack-service-");
-                thread.setUncaughtExceptionHandler((t, e) -> System.err.println("error in attack-service-thread " + e));
+                thread.setUncaughtExceptionHandler((t, e) -> {
+                    System.err.println("error in attack-service-thread " + e);
+                    e.printStackTrace();
+                });
                 return thread;
             }
     );
@@ -95,18 +98,24 @@ public class AttackCommon {
 
     /**
      * 添加五元组进行分析
+     * DOS 2019/6/28
+     *
      * @param layer 五元组
      */
     public static void appendFvDimension(final FvDimensionLayer layer){
         ATTACK_MAIN_SERVICE.execute(new AnalyzeTask(layer));
     }
 
+    //五元组分析
     static void doAnalyzeFvDimension(FvDimensionLayer layer){
         for (Entry entry : ATTACK_ENTRY) {
             String description = entry.append(layer);
             if (description!=null){
-                attackCallback.artCallback(AttackBean.builder().attackType(AttackTypePro.DOS).attackInfo(description)
-                .data(layer).build());
+                attackCallback.artCallback(AttackBean.builder()
+                        .attackType(AttackTypePro.DOS_ATTACK)
+                        .attackInfo(description)
+                        .fvDimension(layer)
+                        .build());
             }
         }
     }
@@ -134,18 +143,35 @@ public class AttackCommon {
      * 工艺参数攻击检测
      * @param techmap
      */
-    public static void appendArtAnalyze( Map<String,Float> techmap){
+    public static void appendArtAnalyze( Map<String,Float> techmap,FvDimensionLayer layer){
         for (ArtAttackAnalyzeConfig artAttackAnalyzeConfig : ART_ATTACK_ANALYZE_CONFIGS) {
             if (artAttackAnalyzeConfig.isEnable()) {
                 doAppendArtAnalyze(artAttackAnalyzeConfig.getExpression(), techmap, artAttackAnalyzeConfig.getDescription(),
-                        attackCallback);
+                        attackCallback , layer);
             }
         }
     }
 
     private static void doAppendArtAnalyze(List<String> expression , Map<String,Float> techmap , String description,
-                                        AttackCallback attackCallback){
-        ATTACK_MAIN_SERVICE.execute(new ArtAttackAnalyzeTask(expression, techmap, description)
+                                        AttackCallback attackCallback,FvDimensionLayer layer){
+        ATTACK_MAIN_SERVICE.execute(new ArtAttackAnalyzeTask(expression, techmap, description , layer)
         .setCallback(attackCallback));
     }
+
+    /**
+     * 五元组异常
+     * @param attackBean
+     */
+    public static void appendFvDimensionError(AttackBean attackBean){
+        attackCallback.artCallback(attackBean);
+    }
+
+    public static void appendCommonAttackAnalyze(FvDimensionLayer layer,Object...objs){
+        ATTACK_MAIN_SERVICE.execute(new CommonAttackAnalyzeTask(layer,attackCallback ,objs));
+    }
+
+    /**
+     * 操作指令检测识别
+     */
+
 }

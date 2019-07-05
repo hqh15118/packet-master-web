@@ -2,12 +2,11 @@ package com.zjucsc;
 
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.controller.PacketController;
+import com.zjucsc.application.domain.bean.RightPacketInfo;
+import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.PacketDecodeUtil;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 
 //@RunWith(SpringRunner.class)
@@ -35,4 +34,27 @@ public class PacketMasterWebApplicationTest {
         System.out.println(PacketDecodeUtil.getUnDefinedPacketProtocol(http));
     }
 
+    @Test
+    public void rightWhitePacketTest(){
+        RightPacketInfo rightPacketInfo = new RightPacketInfo();
+        rightPacketInfo.setDst_ip("dst_ip");
+        rightPacketInfo.setDst_mac("dst_mac");
+        rightPacketInfo.setSrc_ip("src_ip");
+        rightPacketInfo.setSrc_mac("src_mac");
+        rightPacketInfo.setProtocol("protocol");
+        CommonCacheUtil.addNormalRightPacketInfo(rightPacketInfo);
+        RightPacketInfo rightPacketInfo1 = new RightPacketInfo();
+        rightPacketInfo1.setDst_ip("dst_ip");
+        rightPacketInfo1.setDst_mac("dst_mac");
+        rightPacketInfo1.setSrc_ip("src_ip");
+        rightPacketInfo1.setSrc_mac("src_mac");
+        rightPacketInfo1.setProtocol("protocol");
+        System.out.println(CommonCacheUtil.isNormalRightPacket(rightPacketInfo1));
+        rightPacketInfo1.setProtocol("protocol1");
+        System.out.println(CommonCacheUtil.isNormalRightPacket(rightPacketInfo1));
+        rightPacketInfo1.setProtocol("protocol");
+        System.out.println(CommonCacheUtil.isNormalRightPacket(rightPacketInfo1));
+        rightPacketInfo.setFunCode(1);
+        System.out.println(CommonCacheUtil.isNormalRightPacket(rightPacketInfo1));
+    }
 }

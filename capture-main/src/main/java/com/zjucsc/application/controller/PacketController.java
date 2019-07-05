@@ -40,9 +40,8 @@ public class PacketController {
     @ApiOperation(value="开始抓包")
     @RequestMapping(value = "/start_service" , method = RequestMethod.POST)
     public BaseResponse startCaptureService(@RequestBody CaptureService service) {
-        CommonCacheUtil.setScheduleServiceRunningState(true);
         //开始周期任务
-        Common.SCHEDULE_RUNNING = true;
+        CommonCacheUtil.setScheduleServiceRunningState(true);
         return BaseResponse.OK(doStartService(service));
     }
 
@@ -68,15 +67,18 @@ public class PacketController {
                 public void error(Exception e) {
 
                 }
-
                 @Override
                 public void start(String start) {
-                    log.info("{} has started capture service..", start);
+                    if (log.isInfoEnabled()) {
+                        log.info("{} has started capture service..", start);
+                    }
                 }
 
                 @Override
                 public void end(String end) {
-                    log.info("{} has ended capture service..", end);
+                    if (log.isInfoEnabled()) {
+                        log.info("{} has ended capture service..", end);
+                    }
                 }
             });
 
@@ -87,6 +89,7 @@ public class PacketController {
             }
         }else{
             CompletableFuture<Exception> completeFuture = capturePacketService.startSimulate();
+            Common.hasStartedHost.add("simulate");
             //simulate packet analyze
             try {
                 return completeFuture.get();
@@ -105,15 +108,21 @@ public class PacketController {
         boolean b = MainServer.openWebSocketService(constantConfig.getGlobal_address(), Common.SOCKET_IO_PORT, socketIOClient -> {
             if (socketIoClientNumber.get() >= 1){
                 socketIOClient.disconnect();
-                log.info("reject socket io connect : {} " , socketIOClient.getRemoteAddress().toString());
+                if (log.isInfoEnabled()) {
+                    log.info("reject socket io connect : {} ", socketIOClient.getRemoteAddress().toString());
+                }
             }else{
                 socketIoClientNumber.addAndGet(1);
-                log.info("[{}] connected...",socketIOClient.getRemoteAddress().toString());
+                if (log.isInfoEnabled()) {
+                    log.info("[{}] connected...", socketIOClient.getRemoteAddress().toString());
+                }
                 SocketServiceCenter.addConnectedClient(socketIOClient);
             }
         }, socketIOClient -> {
             socketIoClientNumber.decrementAndGet();
-            log.info("[{}] disconnect...",socketIOClient.getRemoteAddress().toString());
+            if (log.isInfoEnabled()) {
+                log.info("[{}] disconnect...", socketIOClient.getRemoteAddress().toString());
+            }
             SocketServiceCenter.removeConnectedClient(socketIOClient);
         });
         if (b){
@@ -148,7 +157,6 @@ public class PacketController {
     @ApiOperation("停止抓包")
     @GetMapping("stop_service")
     public BaseResponse stopService(@RequestParam String service_name){
-        Common.SCHEDULE_RUNNING = false;
         CommonCacheUtil.setScheduleServiceRunningState(false);
         if (Common.systemRunType == 1) {
             synchronized (lock1){

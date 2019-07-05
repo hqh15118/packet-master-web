@@ -13,6 +13,7 @@ public class S7CommPacket{
 
     public static final String JOB = "1";
     public static final String ACK_DATA = "3";
+    public static final String USER_DATA = "7";
 
     @JSONField(name = "layers")
     public LayersBean layersX;
@@ -25,5 +26,6 @@ public class S7CommPacket{
     public static class LayersBean extends FvDimensionLayer {
         public String[] s7comm_param_func={""};
         public String[] s7comm_header_rosctr={""};
+        public String[] s7comm_param_userdata_funcgroup={""};
     }
 }

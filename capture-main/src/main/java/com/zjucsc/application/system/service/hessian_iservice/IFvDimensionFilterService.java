@@ -1,5 +1,6 @@
 package com.zjucsc.application.system.service.hessian_iservice;
 
+import com.zjucsc.application.domain.bean.DeviceProtocol;
 import com.zjucsc.application.domain.bean.Rule;
 import com.zjucsc.common.exceptions.DeviceNotValidException;
 

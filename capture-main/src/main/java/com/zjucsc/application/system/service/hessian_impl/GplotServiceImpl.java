@@ -5,6 +5,7 @@ import com.zjucsc.application.domain.bean.*;
 import com.zjucsc.application.system.mapper.base.BaseServiceImpl;
 import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
 import com.zjucsc.application.system.service.hessian_iservice.IGplotService;
+import com.zjucsc.application.system.service.hessian_iservice.IWhiteProtocolService;
 import com.zjucsc.application.system.service.hessian_mapper.GplotMapper;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.CommonFvFilterUtil;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,6 +27,7 @@ import java.util.List;
 public class GplotServiceImpl extends BaseServiceImpl<Gplot,GplotMapper> implements IGplotService {
 
     @Autowired private IDeviceService iDeviceService;
+    @Autowired private IWhiteProtocolService iWhiteProtocolService;
 
     @Override
     public BaseResponse addNewGplot(Gplot gplot) {
@@ -41,7 +44,7 @@ public class GplotServiceImpl extends BaseServiceImpl<Gplot,GplotMapper> impleme
         //移除旧组态图上的所有DEVICE_NUMBER和DEVICE_IP之间的对应关系
         //同时删除该组态图对应的所有DEVICE_NUMBER保存的StatisticInfoSaveBean【设备upload、download等报文信息】
         CommonCacheUtil.removeAllCachedDeviceNumber();
-
+        CommonCacheUtil.removeAllDeviceNumberToName();
         //reload filters
         List<DeviceNumberAndIp> deviceNumbers = iDeviceService.loadAllDevicesByGplotId(gplotId);   //load all device from device_info table by gplot_id
         log.info("***************\n切换组态图，加载新组态图下所有设备，新设备：{} ***************" , deviceNumbers);
@@ -63,11 +66,16 @@ public class GplotServiceImpl extends BaseServiceImpl<Gplot,GplotMapper> impleme
             //更新DEVICE_NUMBER和DEVICE_IP之间的对应关系
             //更新DEVICE_NUMBER和StatisticInfoSaveBean【设备upload、download等报文信息】
             CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(deviceNumberAndIp.deviceNumber , deviceNumberAndIp.deviceIp);
+            CommonCacheUtil.addDeviceNumberToName(deviceNumberAndIp.getDeviceNumber(),deviceNumberAndIp.getDeviceInfo());
+            /*************************
+             * INIT WHITE PROTOCOL
+             *************************/
+            DeviceProtocol deviceProtocol = iWhiteProtocolService.selectByDeviceNumber(deviceNumberAndIp.getDeviceId());
+            CommonCacheUtil.addWhiteProtocolToCache(deviceProtocol.getDeviceNumber(),deviceProtocol.getProtocolName());
         }
         //更新缓存中的组态图ID
         Common.GPLOT_ID = gplotId;
-        log.info("***************\n切换组态图,从数据库中重新加载新该组态图下的所有规则，新规则为：\n五元组规则：{} \n功能码规则：{} \n***************" , Common.FV_DIMENSION_FILTER_PRO,
-                Common.OPERATION_FILTER_PRO);
+
         return BaseResponse.OK();
     }
 

@@ -20,5 +20,6 @@ public class Device  extends BaseResponse implements Serializable {
     private String deviceTag;
     private String deviceInfo;
     private int gPlotId;
-    //private String deviceMac;
+    private String deviceIp;
+    private String deviceMac;
 }

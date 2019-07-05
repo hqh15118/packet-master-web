@@ -30,14 +30,37 @@ public class DeviceController {
     public BaseResponse addDeviceInfo(@RequestBody @Valid @NotEmpty List<Device> deviceList){
         iDeviceService.removeAllDevicesByGplotId(Common.GPLOT_ID);
         CommonCacheUtil.removeAllCachedDeviceNumber();
+        CommonCacheUtil.removeAllDeviceNumberToName();
         for (Device device : deviceList) {
             if (Common.filterStatement == 0) {
                 CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(device.getDeviceNumber(), device.getDeviceTag());
+                CommonCacheUtil.addDeviceNumberToName(device.getDeviceNumber(),device.getDeviceInfo());
             }else{
                 CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(device.getDeviceNumber(), device.getDeviceTag());
+                CommonCacheUtil.addDeviceNumberToName(device.getDeviceNumber(),device.getDeviceInfo());
             }
         }
         iDeviceService.saveBatch(deviceList);
+        return BaseResponse.OK();
+    }
+
+    @Log
+    @ApiOperation("添加/修改设备信息")
+    @PostMapping("update_device")
+    public BaseResponse addOrUpdateDeviceInfo(@RequestBody Device device){
+        CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(device.getDeviceNumber(), device.getDeviceTag());
+        CommonCacheUtil.addDeviceNumberToName(device.getDeviceNumber(),device.getDeviceInfo());
+        iDeviceService.saveOrUpdateDevice(device);
+        return BaseResponse.OK();
+    }
+
+    @Log
+    @ApiOperation("删除设备")
+    @DeleteMapping("delete_device")
+    public BaseResponse deleteDevice(@RequestParam String deviceNumber){
+        CommonCacheUtil.removeDeviceNumberToTag(deviceNumber);
+        CommonCacheUtil.removeDeviceNumberToName(deviceNumber);
+        iDeviceService.removeDevice(deviceNumber);
         return BaseResponse.OK();
     }
 

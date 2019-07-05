@@ -1,6 +1,7 @@
 package com.zjucsc.application.system.service.hessian_impl;
 
 import com.zjucsc.application.config.Common;
+import com.zjucsc.application.domain.bean.DeviceProtocol;
 import com.zjucsc.application.domain.bean.FvDimensionFilter;
 import com.zjucsc.application.domain.bean.OptFilterForFront;
 import com.zjucsc.application.domain.bean.Rule;
@@ -37,6 +38,7 @@ public class FvDimensionFilterServiceImpl extends BaseServiceImpl<Rule,FvDimensi
     public CompletableFuture<Exception> addFvDimensionFilter(List<Rule> rules) {
         //更新缓存
         String deviceNumber = rules.get(0).getFvDimensionFilter().getDeviceNumber();
+        //删除数据库中的所有旧规则
         deleteAllFilterByDeviceNumberAndGplotId(deviceNumber,Common.GPLOT_ID);
         if (Common.FV_DIMENSION_FILTER_PRO.get(deviceNumber) == null){
             //未添加过该设备，缓存中没有该分析器，需要新加一个
@@ -50,15 +52,17 @@ public class FvDimensionFilterServiceImpl extends BaseServiceImpl<Rule,FvDimensi
             Common.FV_DIMENSION_FILTER_PRO.get(deviceNumber).getAnalyzer().setFilterList(rules);
         }
         //更新数据库
+        /*
         List<FvDimensionFilter> list = new ArrayList<>();
         for (Rule rule : rules) {
             list.add(rule.getFvDimensionFilter());
         }
         this.baseMapper.saveOrUpdateBatch(list,Common.GPLOT_ID);//保存五元组
-
+        */
+        this.baseMapper.saveOrUpdateBatchRules(rules,Common.GPLOT_ID);//保存五元组
         //保存功能码
-        OptFilterForFront optFilterForFront = new OptFilterForFront();
         for (Rule rule : rules) {
+            OptFilterForFront optFilterForFront = new OptFilterForFront();
             List<Integer> funCodes = rule.getFunCodes();
             optFilterForFront.setDeviceNumber(rule.getFvDimensionFilter().getDeviceNumber());
             optFilterForFront.setFvId(rule.getFvDimensionFilter().getFvId());

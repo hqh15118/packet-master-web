@@ -1,6 +1,7 @@
 package com.zjucsc;
 
 import com.zjucsc.application.config.ConstantConfig;
+import com.zjucsc.application.config.PreProcessor;
 import com.zjucsc.application.util.TsharkUtil;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,7 +16,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableScheduling
 @EnableAsync
 @EnableCaching
-@EnableConfigurationProperties(ConstantConfig.class)
+@EnableConfigurationProperties({ConstantConfig.class, PreProcessor.class})
 public class PacketMasterWebApplication{
 
     public static void main(String[] args) {

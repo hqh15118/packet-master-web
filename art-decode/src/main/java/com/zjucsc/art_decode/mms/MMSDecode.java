@@ -19,8 +19,8 @@ public class MMSDecode extends BaseArtDecode<MMSConfig> {
      */
 
 
-    public Map<String, String> MMS_title = new HashMap<String, String>();
-    public Map<String, String> MMSData_map = new HashMap<String, String>();
+    private Map<String, String> MMS_title = new HashMap<String, String>();
+    private Map<String, String> MMSData_map = new HashMap<String, String>();
 
 
     private void putMMS_title(byte[] bytes) {

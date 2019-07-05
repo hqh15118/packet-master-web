@@ -216,11 +216,11 @@ public class S7Decode extends BaseArtDecode<S7Config> {
                 }
                 tech_map.put(S7tech.getTag(), (float) ByteUtil.bytesToShort(bytes, 0));
             } else if (S7tech.getType().equals("bool")) {
-                if (datamap==null || datamap.get(S7tech.getByteoffset())==null)
+                if(datamap==null || datamap.get(S7tech.getByteoffset())==null)
                 {
                     return tech_map;
                 }
-                else if (datamap!=null && (((int) datamap.get(S7tech.getByteoffset())) & (1 << S7tech.getBitoffset())) == 0) {
+                else if (((int) datamap.get(S7tech.getByteoffset()) & 1 << S7tech.getBitoffset()) == 0) {
                     tech_map.put(S7tech.getTag(), 0f);
                 } else {
                     tech_map.put(S7tech.getTag(), 1f);
@@ -243,7 +243,7 @@ public class S7Decode extends BaseArtDecode<S7Config> {
 
     private OperationBean OperationDecode(FvDimensionLayer S7layer)
     {
-        if()
+        //if()
     }
 }
 

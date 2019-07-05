@@ -1,6 +1,8 @@
 package com.zjucsc.application.tshark.filter;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * #project packet-master-web
@@ -9,8 +11,8 @@ import java.util.HashMap;
  * #create_time 2019-05-02 - 16:17
  */
 public class OperationPacketFilter<K,V> {
-    private HashMap<K,V> whiteMap = new HashMap<>();
-    private HashMap<K,V> blackMap = new HashMap<>();
+    private Map<K,V> whiteMap = new ConcurrentHashMap<>();
+    private Map<K,V> blackMap = new ConcurrentHashMap<>();
     private String filterName;
 
     public OperationPacketFilter(String filterName){
@@ -21,23 +23,24 @@ public class OperationPacketFilter<K,V> {
         whiteMap.put(key,value);
     }
 
+
     public void addBlackRule(K key,V value){
         blackMap.put(key,value);
     }
 
-    public HashMap<K, V> getWhiteMap() {
+    public Map<K, V> getWhiteMap() {
         return whiteMap;
     }
 
-    public void setWhiteMap(HashMap<K, V> whiteMap) {
+    public void setWhiteMap(Map<K, V> whiteMap) {
         this.whiteMap = whiteMap;
     }
 
-    public HashMap<K, V> getBlackMap() {
+    public Map<K, V> getBlackMap() {
         return blackMap;
     }
 
-    public void setBlackMap(HashMap<K, V> blackMap) {
+    public void setBlackMap(Map<K, V> blackMap) {
         this.blackMap = blackMap;
     }
 
@@ -45,7 +48,7 @@ public class OperationPacketFilter<K,V> {
     public String toString() {
         return "OperationPacketFilter{" +
                 "whiteMap=" + whiteMap +
-                ", blackMap=" + blackMap +
+                //", blackMap=" + blackMap +
                 ", filterName='" + filterName + '\'' +
                 '}';
     }

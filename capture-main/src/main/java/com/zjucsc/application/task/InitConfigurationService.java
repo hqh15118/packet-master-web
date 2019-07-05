@@ -1,20 +1,22 @@
 package com.zjucsc.application.task;
 
+import com.alibaba.fastjson.JSON;
 import com.zjucsc.IProtocolFuncodeMap;
 import com.zjucsc.application.config.*;
 import com.zjucsc.application.config.auth.Auth;
-import com.zjucsc.application.domain.bean.BaseResponse;
-import com.zjucsc.application.domain.bean.ConfigurationSetting;
-import com.zjucsc.application.domain.bean.PagedArtConfig;
-import com.zjucsc.application.domain.bean.Protocol;
+import com.zjucsc.application.domain.bean.*;
 import com.zjucsc.application.system.service.hessian_iservice.IArtConfigService;
 import com.zjucsc.application.system.service.hessian_iservice.IConfigurationSettingService;
 import com.zjucsc.application.system.service.hessian_iservice.IProtocolIdService;
+import com.zjucsc.application.system.service.hessian_iservice.IWhiteProtocolService;
+import com.zjucsc.application.system.service.hessian_mapper.PacketInfoMapper;
 import com.zjucsc.application.util.AppCommonUtil;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.art_decode.ArtDecodeCommon;
 import com.zjucsc.art_decode.artconfig.S7Config;
 import com.zjucsc.art_decode.base.BaseConfig;
+import com.zjucsc.attack.bean.ArtAttackAnalyzeConfig;
+import com.zjucsc.attack.common.AttackCommon;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.tshark.TsharkCommon;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,8 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.Field;
 import java.util.*;
 
+import static com.zjucsc.application.util.CommonCacheUtil.AUTH_MAP;
+import static com.zjucsc.application.util.CommonCacheUtil.PROTOCOL_STR_TO_INT;
 import static com.zjucsc.application.util.CommonCacheUtil.convertIdToName;
 import static com.zjucsc.application.util.CommonConfigUtil.addProtocolFuncodeMeaning;
 
@@ -42,6 +46,7 @@ public class InitConfigurationService implements ApplicationRunner {
     @Autowired private IConfigurationSettingService iConfigurationSettingService;
     @Autowired private IProtocolIdService iProtocolIdService;
     @Autowired private TsharkConfig tsharkConfig;
+    @Autowired private PacketInfoMapper packetInfoMapper;
 
     @Override
     public void run(ApplicationArguments args) throws IllegalAccessException, NoSuchFieldException, ProtocolIdNotValidException {
@@ -49,7 +54,7 @@ public class InitConfigurationService implements ApplicationRunner {
          * RELOAD FROM JAR
          ***************************/
         List<String> virReload = args.getOptionValues("reload");
-        System.out.println("*******************\n" + "program args [reload]: " + virReload);
+        System.out.println("*******************\n" + "program args [reload<--reload>]: " + virReload);
         boolean reload = false;
         if (virReload!=null && virReload.size() > 0){
             if ("true".equals(virReload.get(0))){
@@ -63,7 +68,7 @@ public class InitConfigurationService implements ApplicationRunner {
          * IP OR MAC_ADDRESS
          ***************************/
         List<String> virFilterStatement = args.getOptionValues("statement");
-        System.out.println("program args : [filterStatement]" + virFilterStatement + "\n*******************");
+        System.out.println("program args : [filterStatement<--statement>]" + virFilterStatement + "\n*******************");
         if (virFilterStatement!=null && virFilterStatement.size() > 0){
             Common.filterStatement = Integer.parseInt(virFilterStatement.get(0));
             if (Common.filterStatement == 0){
@@ -76,7 +81,7 @@ public class InitConfigurationService implements ApplicationRunner {
          * TSHARK PRE_PROCESSOR
          ***************************/
         List<String> virPreProcessor = args.getOptionValues("processor");
-        System.out.println("program args [pre_processor]: " + virPreProcessor + "\n*******************");
+        System.out.println("program args [pre_processor<--processor>]: " + virPreProcessor + "\n*******************");
         if (virPreProcessor!=null && virPreProcessor.size() > 0){
             Common.TSHARK_PRE_PROCESSOR_PROTOCOLS.addAll(virPreProcessor);
         }
@@ -85,7 +90,7 @@ public class InitConfigurationService implements ApplicationRunner {
          * 演示/真实场景
          ***************************/
         List<String> virType = args.getOptionValues("type");
-        System.out.println("program args [type]: " + virType + "\n*******************");
+        System.out.println("program args [type--type]: " + virType + "\n*******************");
         if (virType!=null && virType.size() > 0){
             Common.systemRunType = Integer.valueOf(virType.get(0));
         }
@@ -94,7 +99,7 @@ public class InitConfigurationService implements ApplicationRunner {
          * INIT FILTER
          ***************************/
         List<String> virFilter = args.getOptionValues("filter");
-        System.out.println("program args : [filter]" + virFilter + "\n*******************");
+        System.out.println("program args : [filter<--filter>]" + virFilter + "\n*******************");
         if (virFilter!=null && virFilter.size() > 0){
             //通用filter，特殊的filter如S7Common-Filter/Modbus-Filter会覆盖这个通用的Filter
             TsharkCommon.filter = virFilter.get(0);
@@ -103,7 +108,7 @@ public class InitConfigurationService implements ApplicationRunner {
          * INIT -M <Tshark Session Reset>
          ***************************/
         List<String> virSessionReset = args.getOptionValues("session");
-        System.out.println("program args : [session reset ]" + virSessionReset + "\n*******************");
+        System.out.println("program args : [session reset<--session>]" + virSessionReset + "\n*******************");
         if (virSessionReset!=null && virSessionReset.size() > 0){
             TsharkCommon.sessionReset = virSessionReset.get(0);
         }
@@ -122,7 +127,7 @@ public class InitConfigurationService implements ApplicationRunner {
                 if (field.getType().getTypeName().equals(str_name) && field.getAnnotation(ProtocolIgnore.class) == null){
                     String protocol_name = (String) field.get(null);
                     int protocol_id = (int) packet_protocolClass.getDeclaredField(field.getName() + "_ID").get(null);
-                    Common.PROTOCOL_STR_TO_INT.put(protocol_id,protocol_name);
+                    PROTOCOL_STR_TO_INT.put(protocol_id,protocol_name);
                     protocols.add(new Protocol(protocol_id , protocol_name));
                 }
             }
@@ -130,9 +135,10 @@ public class InitConfigurationService implements ApplicationRunner {
         }else{
             protocols = iProtocolIdService.selectAll();
             for (Protocol protocol : protocols) {
-                Common.PROTOCOL_STR_TO_INT.put(protocol.getProtocolId() , protocol.getProtocolName());
+                PROTOCOL_STR_TO_INT.put(protocol.getProtocolId() , protocol.getProtocolName());
             }
         }
+        PROTOCOL_STR_TO_INT.put(2,"s7comm");
 
         if(reload || iConfigurationSettingService.selectAll().size() == 0) {
             if(!reload) {
@@ -166,7 +172,6 @@ public class InitConfigurationService implements ApplicationRunner {
                         configuration.getFunCode(),configuration.getOpt());
             }
         }
-
         /***************************
          * INIT AUTH
          ***************************/
@@ -177,7 +182,7 @@ public class InitConfigurationService implements ApplicationRunner {
             if (field.getType().getTypeName().equals(str_name)){
                 String authName = (String) field.get(null);
                 int auth = (int) authClass.getDeclaredField(field.getName() + "_ID").get(null);
-                Common.AUTH_MAP.put(auth,authName);
+                AUTH_MAP.put(auth,authName);
             }
         }
 
@@ -185,6 +190,7 @@ public class InitConfigurationService implements ApplicationRunner {
          * INIT ART DECODER
          ***************************/
         ArtDecodeCommon.init();
+
         /***************************
          * 初始化工艺参数配置
          **************************/
@@ -192,7 +198,8 @@ public class InitConfigurationService implements ApplicationRunner {
         pagedArtConfig.setPage(1);
         pagedArtConfig.setLimit(999);
         pagedArtConfig.setTag("");
-        List<Integer> protocolIds = Arrays.asList(PACKET_PROTOCOL.MODBUS_ID,PACKET_PROTOCOL.S7_ID);
+        List<Integer> protocolIds = Arrays.asList(PACKET_PROTOCOL.MODBUS_ID,PACKET_PROTOCOL.S7_ID,
+                PACKET_PROTOCOL.IEC104_ASDU_ID);
         for (Integer protocolId : protocolIds) {
             pagedArtConfig.setProtocolId(protocolId);
             BaseResponse baseResponse = iArtConfigService.getConfigPaged(pagedArtConfig);
@@ -205,79 +212,19 @@ public class InitConfigurationService implements ApplicationRunner {
                     }else {
                         baseConfig.setProtocol(CommonCacheUtil.convertIdToName(baseConfig.getProtocolId()));
                     }
+                    //添加工艺参数配置到缓存中
                     ArtDecodeCommon.addArtDecodeConfig(baseConfig);
+                    //初始化工艺参数全局map，往里面放工艺参数名字和初始值0F
                     AppCommonUtil.initArtMap(baseConfig.getTag());
+                    if (baseConfig.getShowGraph() == 1){
+                        //添加要显示的工艺参数名字到缓存中
+                        CommonCacheUtil.addShowGraphArg(baseConfig.getProtocolId(),baseConfig.getTag());
+                    }
                 }
             }
         }
 
         /***************************
-<<<<<<< HEAD
-         * pn_io
-         **************************/
-//        PnioConfig pnioConfig = new PnioConfig();
-//        pnioConfig.setRange(new float[]{0f,120f});
-//        pnioConfig.setByteoffset(3);
-//        pnioConfig.setBitoffset(0);
-//        pnioConfig.setType("short");
-//        pnioConfig.setLength(2);
-//        pnioConfig.setProtocol(PACKET_PROTOCOL.PN_IO);
-//        pnioConfig.setMacaddress(new byte[]{0x28,0x63,0x36,(byte)0xef,0x31,(byte)0xcc});
-//        pnioConfig.setTag("test");
-//        AppCommonUtil.initArtMap(pnioConfig.getTag());
-//        CommonCacheUtil.addShowGraphArg(pnioConfig.getProtocolId(),pnioConfig.getTag());
-//        ArtDecodeCommon.addArtDecodeConfig(pnioConfig);
-        /***************************
-         * IEC104
-         **************************/
-//        IEC104Config iec104Config = new IEC104Config();
-//        iec104Config.setMVIOAAddress(16385);
-//        //iec104Config.setSetIOAAddress(24592);
-//        iec104Config.setTag("UA");
-//        iec104Config.setProtocol(PACKET_PROTOCOL.IEC104);
-//        iec104Config.setProtocolId(PACKET_PROTOCOL.IEC104_ID);
-//        AppCommonUtil.initArtMap(iec104Config.getTag());
-//        CommonCacheUtil.addShowGraphArg(iec104Config.getProtocolId(),iec104Config.getTag());
-//        ArtDecodeCommon.addArtDecodeConfig(iec104Config);
-
-        /***************************
-         * s7comm test
-         **************************/
-
-        S7Config s7Config1 = new S7Config();
-        s7Config1.setBitoffset(1);
-        s7Config1.setByteoffset(0);
-        s7Config1.setDatabase(2);
-        s7Config1.setLength(0);
-        s7Config1.setType("bool");
-        s7Config1.setTag("开关1");
-        s7Config1.setProtocol(PACKET_PROTOCOL.S7);
-        AppCommonUtil.initArtMap(s7Config1.getTag());
-        CommonCacheUtil.addShowGraphArg(s7Config1.getProtocolId(),s7Config1.getTag());
-        ArtDecodeCommon.addArtDecodeConfig(s7Config1);
-
-
-        /*
-        List<String> list = new ArrayList<String>()
-        {
-            {
-                add("水位1");
-                add("<");
-                add("100");
-                add("&&");
-                add("开关1");
-                add("=");
-                add("1");
-            }
-        };
-        */
-
-        //init art detection
-        //AttackCommon.addArtAttackAnalyzeConfig(new ArtAttackAnalyzeConfig(list,"test - -- - - "));
-
-        /***************************
-=======
->>>>>>> 65e3cc7b906a3e5bad979c77c974dd267cf3c989
          * INIT PROTOCOL COMMON
          * 1. IEC104
          * 2.
@@ -285,21 +232,36 @@ public class InitConfigurationService implements ApplicationRunner {
         ProtocolCommon.init();
 
         /****************************
-         *
          * INIT TSHARK COMMON CONFIG
-         *
          ***************************/
         TsharkCommon.s7comm_filter = tsharkConfig.getS7comm_filter();
         TsharkCommon.modbus_filter = tsharkConfig.getModbus_filter();
 
+        /****************************
+         * 获取工艺参数攻击配置
+         ***************************/
+        List<ArtAttackConfigDB> configDBS = packetInfoMapper.selectArtAttackConfigPaged(999,1);
+
+        for (ArtAttackConfigDB configDB : configDBS) {
+            List<String> strings = new ArrayList<>();
+            List<ArtAttack2Config> artAttack2Configs = JSON.parseArray(configDB.getRuleJson(),ArtAttack2Config.class);
+            for (ArtAttack2Config artAttack2Config : artAttack2Configs) {
+                strings.add(artAttack2Config.getValue());
+            }
+            AttackCommon.addArtAttackAnalyzeConfig(new ArtAttackAnalyzeConfig(strings,configDB.getDetail(),
+                    configDB.isEnable(),configDB.getId()));
+        }
+
+
+
         /**************************
          *  PRINT INIT RESULT
          ***************************/
-        log.info("\n******************** \n AUTH_MAP : {} \n********************" , Common.AUTH_MAP);
-        log.info("\n******************** \n size : {} ; CONFIGURATION_MAP : {}\n********************" ,  Common.CONFIGURATION_MAP.size() , Common.CONFIGURATION_MAP);
-        log.info("\n******************** \n size : {} ; PROTOCOL_STR_TO_INT : {} \n********************" , Common.PROTOCOL_STR_TO_INT.size() ,  Common.PROTOCOL_STR_TO_INT  );
-        log.info("\n******************** \n size : {} ; ALL_ART_CONFIG : {} \n********************",ArtDecodeCommon.getAllArtConfigs().size(),ArtDecodeCommon.getAllArtConfigs());
-        System.out.println("spring boot admin address : http://your-address:8989");
-        System.out.println("swagger-ui address : http://your-address:your-port/swagger-ui.html#/greeting-controller");
+        //log.info("\n******************** \n AUTH_MAP : {} \n********************" , Common.AUTH_MAP);
+        //log.info("\n******************** \n size : {} ; CONFIGURATION_MAP : {}\n********************" ,  Common.CONFIGURATION_MAP.size() , Common.CONFIGURATION_MAP);
+        //log.info("\n******************** \n size : {} ; PROTOCOL_STR_TO_INT : {} \n********************" , Common.PROTOCOL_STR_TO_INT.size() ,  Common.PROTOCOL_STR_TO_INT  );
+        //log.info("\n******************** \n size : {} ; ALL_ART_CONFIG : {} \n********************",ArtDecodeCommon.getAllArtConfigs().size(),ArtDecodeCommon.getAllArtConfigs());
+        //System.out.println("spring boot admin address : http://your-address:8989");
+        //System.out.println("swagger-ui address : http://your-address:your-port/swagger-ui.html#/greeting-controller");
     }
 }

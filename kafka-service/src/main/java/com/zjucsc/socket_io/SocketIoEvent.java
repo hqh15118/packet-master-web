@@ -4,7 +4,7 @@ public class SocketIoEvent {
     //报文统计结果[流量、包数]推送
     public static final String STATISTICS_PACKET = "statistics_packet";
     //异常报文推送
-    public static final String BAD_PACKET = "bad_packet";
+    //public static final String BAD_PACKET = "bad_packet";
     //所有报文推送
     public static final String ALL_PACKET = "all_packet";
     //采集器设备运行状态变化推送
@@ -23,4 +23,8 @@ public class SocketIoEvent {
     public static final String NEW_IP = "new_ip";
     //一定时间内最大流量报警
     public static final String MAX_FLOW_ATTACK = "max_flow";
+    //攻击统计
+    public static final String ATTACK_STATISTICS = "attack_statistics";
+    //检测到新设备
+    public static final String NEW_DEVICE = "new_device";
 }

@@ -10,11 +10,13 @@ package com.zjucsc.application.config;
  */
 public interface PACKET_PROTOCOL {
     String MODBUS = "modbus";
-    @ProtocolIgnore
+    //@ProtocolIgnore
     String S7 = "s7comm";
-    String S7_JOB = "s7comm_job";
-    String S7_Ack_data = "s7comm_ack_data";
-    String S7_User_data = "s7_comm_user_data";
+//    @ProtocolIgnore
+//    String S7_JOB = "s7comm_job";
+//    @ProtocolIgnore
+//    String S7_Ack_data = "s7comm_ack_data";
+    String S7_User_data = "s7comm_user_data";
     @ProtocolIgnore
     String TCP = "tcp";
     @ProtocolIgnore
@@ -34,8 +36,10 @@ public interface PACKET_PROTOCOL {
     @ProtocolIgnore
     String ETHERNET = "ethernet";
     String OPCA_UA = "opcaua";
-    String IEC104 = "iec104";
-    String DNP3_0 = "dnp3.0";
+    String IEC104_APCI = "iec104apci";
+    String IEC104_ASDU = "iec104asdu";
+    String DNP3_0_PRI = "dnp3.0_pri";
+    String DNP3_0_SET = "dnp3.0_set";
     @ProtocolIgnore
     String NBNS = "nbns";
     @ProtocolIgnore
@@ -55,6 +59,7 @@ public interface PACKET_PROTOCOL {
     @ProtocolIgnore
     String UNKNOWN = "unknown";
     String PN_IO = "pn_io";
+    String CIP_IP = "cip";
 
     int MODBUS_ID = 1;
     int S7_ID = 2;
@@ -70,8 +75,10 @@ public interface PACKET_PROTOCOL {
     int DNS_ID = 10;
     int ETHERNET_ID = 11;
     int OPCA_UA_ID = 12;
-    int IEC104_ID = 13;
-    int DNP3_0_ID = 14;
+    int IEC104_ASDU_ID = 13;
+    int IEC104_APCI_ID = 25;
+    int DNP3_0_PRI_ID = 14;
+    int DMP3_0_SET_ID = 26;
     int NBNS_ID = 15;
     int GOOSE_ID = 16;
     int STP_ID = 17;
@@ -83,4 +90,5 @@ public interface PACKET_PROTOCOL {
     int UNKNOWN_ID = -100;
     int PN_IO_ID = 23;
     int S7_User_data_ID = 24;
+    int CIP_ID = 27;
 }

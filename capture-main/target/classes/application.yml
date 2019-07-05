@@ -8,14 +8,25 @@ myconfig:
   kafka-server-url : 10.15.191.100:9092
   openAOPLog : true
   sendAopLog : false
-  showErrorOnly : true
+  showErrorOnly : false
   redis_ip : 10.15.191.100
   redis_port : 6379
   openMapperAop : true
+  reOpenTableName : 20190703
+  simulateStartNum : 0
+
+pre-processors:
+  list[0] : s7comm
+  list[1] : modbus
+  list[2] : iec104
+  list[3] : dnp3_0
+  list[4] : pnio
+  list[5] : cip
+  list[6] : opcua
 
 tshark-config:
   modbus_filter : tcp
-  s7comm_filter : not tcp
+  s7comm_filter : tcp
 
 hessian-config:
   hessian-url: 10.15.191.100:36955/hessian
@@ -32,6 +43,7 @@ hessian-config:
   attack_info : http://${hessian-config.hessian-url}/AttackInfoMapper.hessian
   packet_history: http://${hessian-config.hessian-url}/PacketInfoMapper.hessian
   attack_config : http://${hessian-config.hessian-url}/AttackConfigMapper.hessian
+  white_protocol : http://${hessian-config.hessian-url}/WhiteProtocolMapper.hessian
 
 server:
   port: ${myconfig.packet_master_web_port}
