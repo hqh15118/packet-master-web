@@ -29,6 +29,7 @@ public class AttackBean {
     private int length;
     private String srcDevice;
     private String dstDevice;
+    private String funCodeMeaning;
 
     private String rawData;
 
@@ -128,6 +129,13 @@ public class AttackBean {
         this.attackType = attackBean;
     }
 
+    public String getFunCodeMeaning() {
+        return funCodeMeaning;
+    }
+
+    public void setFunCodeMeaning(String funCodeMeaning) {
+        this.funCodeMeaning = funCodeMeaning;
+    }
 
     public static Builder builder(){
         return new Builder();
@@ -195,6 +203,7 @@ public class AttackBean {
             attackBean.setPacketTimeStamp(layer.timeStamp);
             attackBean.setLength(layer.rawData.length);
             attackBean.setRawData(layer.custom_ext_raw_data[0]);
+            attackBean.setFunCodeMeaning(layer.funCodeMeaning);
             return this;
         }
 

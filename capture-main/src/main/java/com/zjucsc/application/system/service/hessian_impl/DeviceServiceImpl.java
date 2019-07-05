@@ -4,6 +4,7 @@ import com.zjucsc.application.domain.bean.*;
 import com.zjucsc.application.system.mapper.base.BaseServiceImpl;
 import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
 import com.zjucsc.application.system.service.hessian_mapper.DeviceMapper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -79,6 +80,7 @@ public class DeviceServiceImpl extends BaseServiceImpl< Device , DeviceMapper> i
         this.baseMapper.saveStatisticInfo(map, Common.GPLOT_ID);
     }
 
+    @Async
     @Override
     public void saveOrUpdateDevice(Device device) {
         this.baseMapper.saveOrUpdateDevice(device);
