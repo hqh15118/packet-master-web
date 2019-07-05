@@ -65,8 +65,7 @@ public class OperationAnalyzer extends AbstractAnalyzer<OperationPacketFilter<In
         }
         switch (protocols)
         {
-            case "s7comm_job":
-            case "s7comm_ack_data": {
+            case "s7comm": {
                 switch (Fun_code) {
                     case 0x04:
                         return "数据篡改攻击!";
@@ -74,8 +73,9 @@ public class OperationAnalyzer extends AbstractAnalyzer<OperationPacketFilter<In
                         return "非法读取数据!";
                     case 0x1a:
                     case 0x1b:
-                    case 0x1c:
                         return "代码篡改攻击";
+                    case 0x1c:
+                        return "代码异常攻击";
                     case 0x1d:
                     case 0x1e:
                     case 0x1f:
@@ -83,13 +83,11 @@ public class OperationAnalyzer extends AbstractAnalyzer<OperationPacketFilter<In
                     case 0x28:
                     case 0x29:
                         return "配置篡改攻击!";
-                    case 0xf0:
-                        return "嗅探攻击";
                     default:
                         return "非法功能码未知操作";
                 }
             }
-            case "s7_comm_user_data":
+            case "s7comm_user_data":
             {
                 switch (Fun_code) {
                     case 0xf:
@@ -109,7 +107,7 @@ public class OperationAnalyzer extends AbstractAnalyzer<OperationPacketFilter<In
             {
                 switch (Fun_code) {
                     case 43:
-                        return "嗅探攻击!";
+                        return "嗅探攻击";
                     case 5:
                     case 15:
                     case 6:

@@ -1,15 +1,14 @@
 package com.zjucsc.art_decode.s7comm;
 
 
+import com.zjucsc.art_decode.OperationBean;
 import com.zjucsc.art_decode.artconfig.S7Config;
 import com.zjucsc.art_decode.base.BaseArtDecode;
 import com.zjucsc.common.common_util.ByteUtil;
 import com.zjucsc.common.common_util.Bytecut;
+import com.zjucsc.tshark.packets.FvDimensionLayer;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class S7Decode extends BaseArtDecode<S7Config> {
 
@@ -217,7 +216,11 @@ public class S7Decode extends BaseArtDecode<S7Config> {
                 }
                 tech_map.put(S7tech.getTag(), (float) ByteUtil.bytesToShort(bytes, 0));
             } else if (S7tech.getType().equals("bool")) {
-                if (datamap!=null && (((int) datamap.get(S7tech.getByteoffset())) & (1 << S7tech.getBitoffset())) == 0) {
+                if (datamap==null || datamap.get(S7tech.getByteoffset())==null)
+                {
+                    return tech_map;
+                }
+                else if (datamap!=null && (((int) datamap.get(S7tech.getByteoffset())) & (1 << S7tech.getBitoffset())) == 0) {
                     tech_map.put(S7tech.getTag(), 0f);
                 } else {
                     tech_map.put(S7tech.getTag(), 1f);
@@ -238,6 +241,10 @@ public class S7Decode extends BaseArtDecode<S7Config> {
     }
 
 
+    private OperationBean OperationDecode(FvDimensionLayer S7layer)
+    {
+        if()
+    }
 }
 
 
