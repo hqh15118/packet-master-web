@@ -4,6 +4,7 @@ import com.zjucsc.application.config.*;
 import com.zjucsc.application.domain.bean.Device;
 import com.zjucsc.application.system.service.PacketAnalyzeService;
 import com.zjucsc.application.system.service.common_iservice.CapturePacketService;
+import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
 import com.zjucsc.application.tshark.capture.NewFvDimensionCallback;
 import com.zjucsc.application.tshark.capture.ProcessCallback;
 import com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler;
@@ -54,6 +55,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
 
     @Autowired private ConstantConfig constantConfig;
     @Autowired private PreProcessor preProcessor;
+    @Autowired private IDeviceService iDeviceService;
 
     //五元kafka发送线程
     private final KafkaThread<FvDimensionLayer> FV_D_SENDER = KafkaThread.createNewKafkaThread("fv_dimension",KafkaConfig.SEND_ALL_PACKET_FV_DIMENSION);
@@ -148,21 +150,21 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         public FvDimensionLayer handle(Object t) {
             FvDimensionLayer fvDimensionLayer = ((FvDimensionLayer) t);
             //设置协议栈
-            fvDimensionLayer.protocol = PacketDecodeUtil.discernPacket(fvDimensionLayer);
+            fvDimensionLayer.protocol = PacketDecodeUtil.discernPacket(fvDimensionLayer);   //t-s
             //统计所有的IP地址
             if (fvDimensionLayer.ip_dst[0].length() > 0){
-                StatisticsData.statisticAllIpAddress(fvDimensionLayer.ip_dst[0]);
+                StatisticsData.statisticAllIpAddress(fvDimensionLayer.ip_dst[0]);           //t-s
             }
             //统计协议
             //协议比例
-            StatisticsData.addProtocolNum(fvDimensionLayer.protocol,1);
+            StatisticsData.addProtocolNum(fvDimensionLayer.protocol,1);         //t-s
             //解析原始数据
-            byte[] payload = ByteUtil.hexStringToByteArray(fvDimensionLayer.custom_ext_raw_data[0]);
+            byte[] payload = ByteUtil.hexStringToByteArray(fvDimensionLayer.custom_ext_raw_data[0]);    //t-s
             fvDimensionLayer.rawData = payload;
             //设置五元组中的功能码以及功能码对应的含义
             if (Common.systemRunType !=0) {
                 try {
-                    setFuncode(fvDimensionLayer);
+                    setFuncode(fvDimensionLayer);                                           //t-s
                 } catch (ProtocolIdNotValidException e) {
                     //缓存中找不到该五元组对应的协议
                     log.error("error set Funcode , msg : {} [缓存中找不到该五元组协议：{} 对应的功能码表]", e.getMsg(), fvDimensionLayer.frame_protocols[0]);
@@ -182,6 +184,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                 //come new device
                 SocketServiceCenter.updateAllClient(SocketIoEvent.NEW_DEVICE,device);
                 //save device
+                iDeviceService.saveOrUpdateDevice(device);
             }
             return fvDimensionLayer;                                              //将五元组发送给BadPacketHandler
         }
@@ -279,6 +282,11 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                             getTargetProtocolFuncodeMeanning(PACKET_PROTOCOL.DNP3_0_SET, funCode);
                     break;
             }
+        }else if (t instanceof CipPacket.LayersBean){
+            CipPacket.LayersBean cipPacket = ((CipPacket.LayersBean) t);
+            funCode = Integer.decode(cipPacket.cip_funcode[0]);
+            t.funCodeMeaning = CommonConfigUtil.
+                    getTargetProtocolFuncodeMeanning(PACKET_PROTOCOL.CIP_IP, funCode);
         }
         return funCode;
     }
@@ -393,7 +401,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         //SocketServiceCenter.updateAllClient(SocketIoEvent.ALL_PACKET,fvDimensionLayer);
         if (newFvDimensionCallback!=null){
             //控制报文发送数量
-            newFvDimensionCallback.newCome(fvDimensionLayer);
+            newFvDimensionCallback.newCome(fvDimensionLayer);               //not t-s
         }
     }
 

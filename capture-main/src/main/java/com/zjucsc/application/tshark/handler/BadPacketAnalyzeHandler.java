@@ -55,8 +55,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
             res = ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),layer.rawData,layer.protocol);
         }else if (protocol.equals(PACKET_PROTOCOL.IEC104_ASDU)){
             res = ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.protocol);
-        }
-        else{
+        }else{
 
         }
         //分析结果
