@@ -41,7 +41,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
 
         //工艺参数分析
         byte[] tcpPayload = PacketDecodeUtil.hexStringToByteArray(layer.tcp_payload[0]);
-        Map<String,Float> res = null;
+        Map<String,Float> res = AppCommonUtil.getGlobalArtMap();
         String protocol = layer.protocol;
         if (protocol.startsWith("s7comm")){
             if (!layer.tcp_flags_ack[0].equals("") || Common.systemRunType == 0){
@@ -55,16 +55,17 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
             res = ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),layer.rawData,layer.protocol);
         }else if (protocol.equals(PACKET_PROTOCOL.IEC104_ASDU)){
             res = ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.protocol);
-        }else{
+        }else if (protocol.equals(PACKET_PROTOCOL.OPCA_UA)){
+            res = ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.protocol,layer);
+        }
+        else{
 
         }
         //分析结果
         //res可能为null
-        if(res!=null){
-            //数据发送
-            StatisticsData.addArtMapData(res);
-            AttackCommon.appendArtAnalyze(res,layer);
-        }
+        //数据发送
+        StatisticsData.addArtMapData(res);
+        AttackCommon.appendArtAnalyze(res,layer);
         return null;
     }
 

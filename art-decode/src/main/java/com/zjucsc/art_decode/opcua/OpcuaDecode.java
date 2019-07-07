@@ -501,7 +501,7 @@ public class OpcuaDecode extends BaseArtDecode<OpcuaConfig> {
                         }
                         else {
                             //TODO:对于这种只有handle和value对应的变量，如何处理比较合适？
-                            System.out.println("警告：监控变量没有对应的变量名");
+                            //System.out.println("警告：监控变量没有对应的变量名");
                             opcuaMap.Output_Map.put("clienthandle=" + clienthandle, value);
                         }
                     }

@@ -16,13 +16,21 @@ myconfig:
   simulateStartNum : 0
 
 pre-processors:
-  list[0] : s7comm
-  list[1] : modbus
-  list[2] : iec104
-  list[3] : dnp3_0
-  list[4] : pnio
-  list[5] : cip
-  list[6] : opcua
+#  list[0] : s7comm
+#  list[1] : modbus
+#  list[2] : iec104
+#  list[3] : dnp3_0
+#  list[4] : pnio
+#  list[5] : cip
+#  list[6] : opcua
+  list :
+    # - s7comm
+    # - modbus
+    # - iec104
+    # - dnp3_0
+    # - pnio
+    # - cip
+     - opcua
 
 tshark-config:
   modbus_filter : tcp

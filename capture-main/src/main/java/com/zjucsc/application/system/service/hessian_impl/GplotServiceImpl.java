@@ -46,8 +46,10 @@ public class GplotServiceImpl extends BaseServiceImpl<Gplot,GplotMapper> impleme
         CommonCacheUtil.removeAllCachedDeviceNumber();
         CommonCacheUtil.removeAllDeviceNumberToName();
         //reload filters
-        List<DeviceNumberAndIp> deviceNumbers = iDeviceService.loadAllDevicesByGplotId(gplotId);   //load all device from device_info table by gplot_id
-        log.info("***************\n切换组态图，加载新组态图下所有设备，新设备：{} ***************" , deviceNumbers);
+        List<DeviceNumberAndIp> deviceNumbers = iDeviceService.loadAllDevicesByGplotId(gplotId);   //load all device
+        if (log.isInfoEnabled()) {// from device_info table by gplot_id
+            log.info("***************\n切换组态图，加载新组态图下所有设备，新设备：{} ***************", deviceNumbers);
+        }
         for (DeviceNumberAndIp deviceNumberAndIp : deviceNumbers) {
             sb.delete(0 , sb.length());
             //load all fv dimension rule from fv_dimension table by device_number + gplot_id

@@ -13,6 +13,7 @@ import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.socket_io.SocketIoEvent;
 import com.zjucsc.socket_io.SocketServiceCenter;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
+import io.netty.util.internal.ThreadLocalRandom;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
@@ -169,9 +170,9 @@ public class CommonCacheUtil {
      */
     public static final BiMap<Integer,String> PROTOCOL_STR_TO_INT = HashBiMap.create();
     /**
-     * @param protocolId
-     * @return
-     * @throws ProtocolIdNotValidException
+     * @param protocolId 协议ID
+     * @return 协议名字
+     * @throws ProtocolIdNotValidException 未发现指定协议ID
      */
 
     public static String convertIdToName(int protocolId) throws ProtocolIdNotValidException {
@@ -232,7 +233,8 @@ public class CommonCacheUtil {
     public static void addOrUpdateDeviceNumberAndTAG(String deviceNumber, String deviceTag) {
         DEVICE_NUMBER_TO_TAG.forcePut(deviceNumber, deviceTag);
         STATISTICS_INFO_BEAN.put(deviceNumber, new StatisticInfoSaveBean());
-        log.info("add device number : {} [tag : {} ] and DEVICE_TAG_TO_NAME {}", deviceNumber, deviceTag, DEVICE_NUMBER_TO_TAG);
+        if (log.isInfoEnabled())
+            log.info("add device number : {} [tag : {} ]", deviceNumber, deviceTag);
     }
 
     public static void removeDeviceNumberToTag(String deviceNumber) {
@@ -464,19 +466,16 @@ public class CommonCacheUtil {
     /*************************************
      * [deviceNumber - deviceName]
      ************************************/
-    private static final BiMap<String,String> DEVICE_NUMBER_TO_NAME =
-            HashBiMap.create();
+    private static final Map<String,String> DEVICE_NUMBER_TO_NAME =
+            new HashMap<>();
     public static void addDeviceNumberToName(String deviceNumber,String deviceName){
-        DEVICE_NUMBER_TO_NAME.forcePut(deviceNumber, deviceName);
+        DEVICE_NUMBER_TO_NAME.put(deviceNumber, deviceName);
     }
     public static void removeAllDeviceNumberToName(){
         DEVICE_NUMBER_TO_NAME.clear();
     }
     public static String convertDeviceNumberToName(String deviceNumber){
         return DEVICE_NUMBER_TO_NAME.get(deviceNumber);
-    }
-    public static String convertDeviceNameToNumber(String deviceName){
-        return DEVICE_NUMBER_TO_NAME.inverse().get(deviceName);
     }
     public static void removeDeviceNumberToName(String deviceNumber){
         DEVICE_NUMBER_TO_NAME.remove(deviceNumber);
@@ -514,17 +513,19 @@ public class CommonCacheUtil {
         }
         return dstDevice;
     }
-    public static Device getDeviceByTag(String macAddress){
+    private static Device getDeviceByTag(String macAddress){
         return ALL_DEVICES.get(macAddress);
     }
     public static ConcurrentHashMap<String, Device> getAllDevices(){
         return ALL_DEVICES;
     }
+    private static final ThreadLocalRandom threadLocalRandom = ThreadLocalRandom.current();
     private static Device createDevice(FvDimensionLayer layer){
         StringBuilder sb = CommonUtil.getGlobalStringBuilder();
         long timeNow = System.currentTimeMillis();
         Device device = new Device();
-        sb.append("设备").append(CommonUtil.getDateFormat2().format(new Date(timeNow)));
+        sb.append("设备").append(CommonUtil.getDateFormat2().format(new Date(timeNow)))
+        .append("_").append(threadLocalRandom.nextInt(10000));
         device.setDeviceInfo(sb.toString());
         device.setDeviceNumber(String.valueOf(timeNow));
         device.setDeviceType(1);
@@ -544,7 +545,8 @@ public class CommonCacheUtil {
         StringBuilder sb = CommonUtil.getGlobalStringBuilder();
         long timeNow = System.currentTimeMillis() + 1;          //防止太快重复设备
         Device device = new Device();
-        sb.append("设备").append(CommonUtil.getDateFormat2().format(new Date(timeNow)));
+        sb.append("设备").append(CommonUtil.getDateFormat2().format(new Date(timeNow)))
+                .append("_").append(threadLocalRandom.nextInt(10000));
         device.setDeviceInfo(sb.toString());
         device.setDeviceNumber(String.valueOf(timeNow));
         device.setDeviceType(1);

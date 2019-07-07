@@ -3,6 +3,7 @@ package com.zjucsc;
 import com.zjucsc.application.config.ConstantConfig;
 import com.zjucsc.application.config.PreProcessor;
 import com.zjucsc.application.util.TsharkUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -18,6 +19,7 @@ import java.io.IOException;
 @EnableAsync
 @EnableCaching
 @EnableConfigurationProperties({ConstantConfig.class, PreProcessor.class})
+@Slf4j
 public class PacketMasterWebApplication{
 
     public static void main(String[] args) {
@@ -30,9 +32,13 @@ public class PacketMasterWebApplication{
             System.out.println("**************\nfind tshark in: " + str + " \napplication start now >>>\n**************");
         }
         try {
-            TsharkUtil.addTsharkPlugin();
+            if(!TsharkUtil.addTsharkPlugin()){
+                System.err.println("无法自动创建【tshark插件】，请检查权限或者手动添加到wireshark/plugins目录下");
+                return;
+            }
         } catch (IOException e) {
             System.err.println("无法自动创建【tshark插件】，请检查权限或者手动添加到wireshark/plugins目录下");
+            log.error("创建tshark插件失败***",e);
             return;
         }
         SpringApplication.run(PacketMasterWebApplication.class, args);

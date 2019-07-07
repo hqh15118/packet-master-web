@@ -27,12 +27,15 @@ public class TsharkUtil {
         return null;
     }
 
-    public static void addTsharkPlugin() throws IOException {
+    public static boolean addTsharkPlugin() throws IOException {
         String pluginPath = getTsharkPath() + "\\plugins\\mywireshark_plugin.lua";
         File file = new File(pluginPath);
         if (!file.exists()){
             if(file.createNewFile()){
                 System.out.println("未检测到tshark【mywireshark_plugin.lua】插件，已自动创建");
+            }else{
+                System.err.println("未检测到tshark【mywireshark_plugin.lua】插件，创建失败，检查权限");
+                return false;
             }
             InputStream is = TsharkUtil.class.getResourceAsStream("/mywireshark_plugin.lua");
             int length = is.available();
@@ -45,5 +48,6 @@ public class TsharkUtil {
         }else{
             System.out.println("检测到tshark插件>>");
         }
+        return true;
     }
 }

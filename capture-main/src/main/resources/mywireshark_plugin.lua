@@ -1,5 +1,5 @@
 -- @brief A simple post-dissector, just append string to info column
--- @author hqh
+-- @author hongqianhui
 -- https://wiki.wireshark.org/Lua/Examples?action=AttachFile&do=get&target=dissector.lua 《参考》
 
 
