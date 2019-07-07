@@ -5,7 +5,7 @@ public class DataAccessException extends RuntimeException{
     private String msg;
 
     public DataAccessException(int code, String msg) {
-        super(msg);
+        super("code : " + String.valueOf(code) + " msg : " + msg);
         this.code = code;
         this.msg = msg;
     }

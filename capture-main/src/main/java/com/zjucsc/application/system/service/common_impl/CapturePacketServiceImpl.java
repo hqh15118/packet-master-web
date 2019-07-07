@@ -75,15 +75,25 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     private void setDeviceInfo(AttackBean attackBean){
         String srcDeviceNumber = CommonCacheUtil.getTargetDeviceNumberByTag(attackBean.getDstIp(),attackBean.getDstMac());
         if (srcDeviceNumber!=null){
-            attackBean.setSrcDevice(CommonCacheUtil.convertDeviceNumberToName(srcDeviceNumber));
+            String deviceName = CommonCacheUtil.convertDeviceNumberToName(srcDeviceNumber);
+            if (deviceName!=null) {
+                attackBean.setSrcDevice(deviceName);
+            }else{
+                setUnknownAttackDevice(attackBean,1);
+            }
         }else{
-            setUnknownAttackDevice(attackBean,0);
+            setUnknownAttackDevice(attackBean,1);
         }
         String dstDeviceNumber = CommonCacheUtil.getTargetDeviceNumberByTag(attackBean.getSrcIp(),attackBean.getSrcMac());
         if (dstDeviceNumber!=null){
-            attackBean.setDstDevice(CommonCacheUtil.convertDeviceNumberToName(dstDeviceNumber));
+            String deviceName = CommonCacheUtil.convertDeviceNumberToName(dstDeviceNumber);
+            if (deviceName!=null) {
+                attackBean.setDstDevice(deviceName);
+            }else {
+                setUnknownAttackDevice(attackBean,0);
+            }
         }else{
-            setUnknownAttackDevice(attackBean,1);
+            setUnknownAttackDevice(attackBean,0);
         }
     }
 
