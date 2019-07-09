@@ -246,16 +246,6 @@ public class InitConfigurationService implements ApplicationRunner {
                     configDB.isEnable(),configDB.getId()));
         }
 
-        /**
-         *
-         */
-        OpcuaConfig opcuaConfig = new OpcuaConfig();
-        opcuaConfig.setProtocol(PACKET_PROTOCOL.OPCA_UA);
-        opcuaConfig.setShowGraph(1);
-        opcuaConfig.setTag("canshu1");
-        opcuaConfig.setProtocolId(PACKET_PROTOCOL.OPCA_UA_ID);
-        ArtDecodeCommon.addArtDecodeConfig(opcuaConfig);
-
         /**************************
          *  PRINT INIT RESULT
          ***************************/

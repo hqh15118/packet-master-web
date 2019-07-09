@@ -16,8 +16,8 @@ public class Dnp3_0Packet {
     public static class LayersBean extends FvDimensionLayer {
         @JSONField(name = "dnp3_ctl_prifunc")
         public String[] dnp3_ctl_prifunc = {""};
-        @JSONField(name = "dnp3_ctl_setfunc")
-        public String[] dnp3_ctl_setfunc = {""};
+        @JSONField(name = "dnp3_ctl_secfunc")
+        public String[] dnp3_ctl_secfunc = {""};
         @JSONField(name = "dnp3_ctl_prm")
         public String[] dnp3_ctl_prm={"-1"};
     }

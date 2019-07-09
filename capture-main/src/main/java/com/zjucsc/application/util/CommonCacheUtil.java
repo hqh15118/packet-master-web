@@ -231,7 +231,7 @@ public class CommonCacheUtil {
      * @param deviceTag    device 的 ip地址或者mac地址
      */
     public static void addOrUpdateDeviceNumberAndTAG(String deviceNumber, String deviceTag) {
-        DEVICE_NUMBER_TO_TAG.forcePut(deviceNumber, deviceTag);
+        DEVICE_NUMBER_TO_TAG.put(deviceNumber, deviceTag);
         STATISTICS_INFO_BEAN.put(deviceNumber, new StatisticInfoSaveBean());
         if (log.isInfoEnabled())
             log.info("add device number : {} [tag : {} ]", deviceNumber, deviceTag);
@@ -498,18 +498,20 @@ public class CommonCacheUtil {
             if (!layer.eth_dst[0].equals("ff:ff:ff:ff:ff:ff")) {
                 //非广播mac地址
                 dstDevice = createDevice(layer);
-                ALL_DEVICES.putIfAbsent(layer.eth_dst[0], dstDevice);
+                ALL_DEVICES.put(layer.eth_dst[0], dstDevice);
                 //new device
                 CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(dstDevice.getDeviceNumber(), dstDevice.getDeviceTag());
                 CommonCacheUtil.addDeviceNumberToName(dstDevice.getDeviceNumber(), dstDevice.getDeviceInfo());
             }
         }
         if (!ALL_DEVICES.containsKey(layer.eth_src[0])){
-            Device srcDevice = createDeviceInverse(layer);
-            ALL_DEVICES.putIfAbsent(layer.eth_src[0], srcDevice);
-            //new device
-            CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(srcDevice.getDeviceNumber(), srcDevice.getDeviceTag());
-            CommonCacheUtil.addDeviceNumberToName(srcDevice.getDeviceNumber(), srcDevice.getDeviceInfo());
+            if (!layer.eth_src[0].equals("ff:ff:ff:ff:ff:ff")) {
+                Device srcDevice = createDeviceInverse(layer);
+                ALL_DEVICES.put(layer.eth_src[0], srcDevice);
+                //new device
+                CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(srcDevice.getDeviceNumber(), srcDevice.getDeviceTag());
+                CommonCacheUtil.addDeviceNumberToName(srcDevice.getDeviceNumber(), srcDevice.getDeviceInfo());
+            }
         }
         return dstDevice;
     }
@@ -522,7 +524,7 @@ public class CommonCacheUtil {
     private static final ThreadLocalRandom threadLocalRandom = ThreadLocalRandom.current();
     private static Device createDevice(FvDimensionLayer layer){
         StringBuilder sb = CommonUtil.getGlobalStringBuilder();
-        long timeNow = System.currentTimeMillis();
+        long timeNow = System.nanoTime();
         Device device = new Device();
         sb.append("设备").append(CommonUtil.getDateFormat2().format(new Date(timeNow)))
         .append("_").append(threadLocalRandom.nextInt(10000));
@@ -543,7 +545,7 @@ public class CommonCacheUtil {
      */
     private static Device createDeviceInverse(FvDimensionLayer layer){
         StringBuilder sb = CommonUtil.getGlobalStringBuilder();
-        long timeNow = System.currentTimeMillis() + 1;          //防止太快重复设备
+        long timeNow = System.nanoTime();          //防止太快重复设备
         Device device = new Device();
         sb.append("设备").append(CommonUtil.getDateFormat2().format(new Date(timeNow)))
                 .append("_").append(threadLocalRandom.nextInt(10000));

@@ -73,7 +73,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     }
 
     private void setDeviceInfo(AttackBean attackBean){
-        String srcDeviceNumber = CommonCacheUtil.getTargetDeviceNumberByTag(attackBean.getDstIp(),attackBean.getDstMac());
+        String srcDeviceNumber = CommonCacheUtil.getTargetDeviceNumberByTag(attackBean.getSrcIp(),attackBean.getSrcMac());
         if (srcDeviceNumber!=null){
             String deviceName = CommonCacheUtil.convertDeviceNumberToName(srcDeviceNumber);
             if (deviceName!=null) {
@@ -84,7 +84,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         }else{
             setUnknownAttackDevice(attackBean,1);
         }
-        String dstDeviceNumber = CommonCacheUtil.getTargetDeviceNumberByTag(attackBean.getSrcIp(),attackBean.getSrcMac());
+        String dstDeviceNumber = CommonCacheUtil.getTargetDeviceNumberByTag(attackBean.getDstIp(),attackBean.getDstMac());
         if (dstDeviceNumber!=null){
             String deviceName = CommonCacheUtil.convertDeviceNumberToName(dstDeviceNumber);
             if (deviceName!=null) {
@@ -276,7 +276,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                             getTargetProtocolFuncodeMeanning(PACKET_PROTOCOL.DNP3_0_PRI, funCode);
                     break;
                 case 0:
-                    funCodeStr = dnpPacket.dnp3_ctl_setfunc[0];
+                    funCodeStr = dnpPacket.dnp3_ctl_secfunc[0];
                     funCode = PacketDecodeUtil.decodeFuncode("dnp3.0", funCodeStr);
                     t.funCodeMeaning = CommonConfigUtil.
                             getTargetProtocolFuncodeMeanning(PACKET_PROTOCOL.DNP3_0_SET, funCode);

@@ -24,12 +24,12 @@ pre-processors:
 #  list[5] : cip
 #  list[6] : opcua
   list :
-    # - s7comm
-    # - modbus
-    # - iec104
-    # - dnp3_0
-    # - pnio
-    # - cip
+     - s7comm
+     - modbus
+     - iec104
+     - dnp3_0
+     - pnio
+     - cip
      - opcua
 
 tshark-config:
