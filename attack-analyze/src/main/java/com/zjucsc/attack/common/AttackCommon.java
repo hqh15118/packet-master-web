@@ -149,8 +149,7 @@ public class AttackCommon {
                 doAppendArtAnalyze(artAttackAnalyzeConfig.getExpression(), techmap, artAttackAnalyzeConfig.getDescription(),
                         attackCallback , layer);
             }
-        }
-    }
+        }}
 
     private static void doAppendArtAnalyze(List<String> expression , Map<String,Float> techmap , String description,
                                         AttackCallback attackCallback,FvDimensionLayer layer){

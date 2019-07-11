@@ -2,12 +2,21 @@ package com.zjucsc.art_decode.artconfig;
 
 import com.zjucsc.art_decode.base.BaseConfig;
 
-public class S7Config extends BaseConfig {
+public class  S7Config extends BaseConfig {
     private String type;
     private int database;
     private int byteoffset;
     private int bitoffset;
     private int length;
+    private float[] range;
+
+    public float[] getRange() {
+        return range;
+    }
+
+    public void setRange(float[] range) {
+        this.range = range;
+    }
 
     public void setLength(int length) {
         this.length = length;

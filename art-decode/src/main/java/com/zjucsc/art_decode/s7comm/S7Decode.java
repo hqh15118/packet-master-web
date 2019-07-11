@@ -1,12 +1,10 @@
 package com.zjucsc.art_decode.s7comm;
 
 
-import com.zjucsc.art_decode.OperationBean;
 import com.zjucsc.art_decode.artconfig.S7Config;
 import com.zjucsc.art_decode.base.BaseArtDecode;
 import com.zjucsc.common.common_util.ByteUtil;
 import com.zjucsc.common.common_util.Bytecut;
-import com.zjucsc.tshark.packets.FvDimensionLayer;
 
 import java.util.*;
 
@@ -207,14 +205,14 @@ public class S7Decode extends BaseArtDecode<S7Config> {
                 if (S7tech.getType().equals("float")) {
                     tech_map.put(S7tech.getTag(), Bytecut.BytesTofloat(bytes, 0));
                 } else if (S7tech.getType().equals("int")) {
-                    tech_map.put(S7tech.getTag(), (float) ByteUtil.bytesToInt(bytes, 0));
+                    tech_map.put(S7tech.getTag(), (float) ByteUtil.bytesToInt(bytes, 0)/(2^32-1) *S7tech.getRange()[1]);
                 }
             } else if (datamap!=null && S7tech.getType().equals("short") && S7tech.getLength() == 2) {
                 byte[] bytes = new byte[2];
                 for (int s = 0; s < 2; s++) {
                     bytes[s] = datamap.get(S7tech.getByteoffset() + s);
                 }
-                tech_map.put(S7tech.getTag(), (float) ByteUtil.bytesToShort(bytes, 0));
+                tech_map.put(S7tech.getTag(), (float) ByteUtil.bytesToShort(bytes, 0)/ 65535 * S7tech.getRange()[1]);
             } else if (S7tech.getType().equals("bool")) {
                 if(datamap==null || datamap.get(S7tech.getByteoffset())==null)
                 {
@@ -241,10 +239,7 @@ public class S7Decode extends BaseArtDecode<S7Config> {
     }
 
 
-    private OperationBean OperationDecode(FvDimensionLayer S7layer)
-    {
-        //if()
-    }
+
 }
 
 

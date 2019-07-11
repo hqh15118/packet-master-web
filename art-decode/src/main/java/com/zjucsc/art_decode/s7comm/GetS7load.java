@@ -8,14 +8,14 @@ import java.util.Arrays;
 
 class GetS7load {
 
-    private byte[] getfromtcp(byte[] payload)
+    private  byte[] getfromtcp(byte[] payload)
     {
         int length = ByteUtil.bytesToShort(payload,2);
         int ISOlen = (int)payload[4];
         return Bytecut.Bytecut(payload,(5 + ISOlen),(length - 5 - ISOlen));
     }
 
-    private byte[] getfromiso(byte[] rawload)
+    private  byte[] getfromiso(byte[] rawload)
     {
         int length = ByteUtil.bytesToShort(rawload,12);
         if(Arrays.equals(Bytecut.Bytecut(rawload,14,3),new byte[] {(byte)0xfe,(byte)0xfe,(byte)0x03}))
@@ -28,7 +28,7 @@ class GetS7load {
         return null;
     }
 
-    byte[] S7load(byte[] load, int i)
+    public  byte[] S7load(byte[] load, int i)
     {
         if(load != null) {
             if (i == 0) {

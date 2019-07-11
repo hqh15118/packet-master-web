@@ -41,7 +41,7 @@ public class ArtAttackAnalyzeTask implements Runnable{
         }
     }
 
-    private String attackDecode(List<String> expression, Map<String, Float> techmap, String description)
+    public static String attackDecode(List<String> expression, Map<String, Float> techmap, String description)
     {
         if(expression ==null)
         {
@@ -96,7 +96,7 @@ public class ArtAttackAnalyzeTask implements Runnable{
         return null;
     }
 
-    private Boolean decodebool(List<String> list, Map<String, Float> techmap)
+    private static Boolean decodebool(List<String> list, Map<String, Float> techmap)
     {
         if(list == null || list.isEmpty())
         {
@@ -143,6 +143,10 @@ public class ArtAttackAnalyzeTask implements Runnable{
             {
                 return null;
             }
+        }
+        else if(len==2)
+        {
+            return null;
         }
         else
         {
