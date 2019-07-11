@@ -1,16 +1,8 @@
 package com.zjucsc.attack.base;
 
-import com.sun.jndi.cosnaming.IiopUrl;
 import com.zjucsc.attack.bean.AttackBean;
-import com.zjucsc.attack.common.ArtAttackAnalyzeTask;
-import com.zjucsc.common.common_util.ByteUtil;
-import com.zjucsc.common.common_util.Bytecut;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 public abstract class BaseOptAnalyzer<T extends BaseOptConfig> implements IOptAttackEntry {
@@ -55,7 +47,5 @@ public abstract class BaseOptAnalyzer<T extends BaseOptConfig> implements IOptAt
     }
 
     public abstract AttackBean doAnalyze(FvDimensionLayer layer, T t, Object... objs);
-
-
 
 }
