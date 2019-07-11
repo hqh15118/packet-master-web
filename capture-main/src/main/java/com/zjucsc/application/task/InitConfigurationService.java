@@ -13,6 +13,7 @@ import com.zjucsc.application.system.service.hessian_mapper.PacketInfoMapper;
 import com.zjucsc.application.util.AppCommonUtil;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.art_decode.ArtDecodeCommon;
+import com.zjucsc.art_decode.artconfig.OpcuaConfig;
 import com.zjucsc.art_decode.artconfig.S7Config;
 import com.zjucsc.art_decode.base.BaseConfig;
 import com.zjucsc.attack.bean.ArtAttackAnalyzeConfig;
@@ -224,13 +225,6 @@ public class InitConfigurationService implements ApplicationRunner {
             }
         }
 
-        /***************************
-         * INIT PROTOCOL COMMON
-         * 1. IEC104
-         * 2.
-         **************************/
-        ProtocolCommon.init();
-
         /****************************
          * INIT TSHARK COMMON CONFIG
          ***************************/
@@ -251,8 +245,6 @@ public class InitConfigurationService implements ApplicationRunner {
             AttackCommon.addArtAttackAnalyzeConfig(new ArtAttackAnalyzeConfig(strings,configDB.getDetail(),
                     configDB.isEnable(),configDB.getId()));
         }
-
-
 
         /**************************
          *  PRINT INIT RESULT

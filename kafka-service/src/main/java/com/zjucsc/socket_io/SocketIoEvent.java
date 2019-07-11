@@ -27,4 +27,6 @@ public class SocketIoEvent {
     public static final String ATTACK_STATISTICS = "attack_statistics";
     //检测到新设备
     public static final String NEW_DEVICE = "new_device";
+    //设备到设备的报文
+    public static final String DEVICE_2_DEVICE_PACKETS = "d2d_packet";
 }

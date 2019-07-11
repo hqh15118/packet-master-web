@@ -24,7 +24,7 @@ public class ArtDecodeCommon {
         ART_DECODE_CONCURRENT_HASH_MAP.put("modbus",new ModbusDecode());
         ART_DECODE_CONCURRENT_HASH_MAP.put("s7comm",new S7Decode());
         ART_DECODE_CONCURRENT_HASH_MAP.put("pn_io",new PnioDecode());
-        ART_DECODE_CONCURRENT_HASH_MAP.put("iec104asdu",new IEC104Decode());
+        ART_DECODE_CONCURRENT_HASH_MAP.put("104asdu",new IEC104Decode());
         ART_DECODE_CONCURRENT_HASH_MAP.put("opcua",new OpcuaDecode());
     }
 

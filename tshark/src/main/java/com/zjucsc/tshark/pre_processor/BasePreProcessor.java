@@ -115,9 +115,6 @@ public abstract class BasePreProcessor implements PreProcessor {
         commandBuilder.append("\"");   // 最后的部分 + s7comm/...用于过滤
         commandBuilder.append(" -M ").append(TsharkCommon.sessionReset);    //设置n条之后重置回话
         String command = commandBuilder.toString();
-        if (commandBuildFinishCallback!=null){
-            commandBuildFinishCallback.commandBuildFinish();
-        }
         try {
             /**
              * 这里必须要保证一次只能有一个线程运行tshark程序
@@ -136,6 +133,9 @@ public abstract class BasePreProcessor implements PreProcessor {
             if (type != 0) {
                 //本地离线不需要设置error stream
                 doWithErrorStream(process.getErrorStream(), command);
+            }
+            if (commandBuildFinishCallback!=null){
+                commandBuildFinishCallback.commandBuildFinish();
             }
             //log.info("start running --------------------> now ");//TODO LOG HERE
             processRunning = true;

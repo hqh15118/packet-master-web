@@ -1,5 +1,9 @@
 -- @brief A simple post-dissector, just append string to info column
+<<<<<<< HEAD
 -- @author hqh
+=======
+-- @author hongqianhui
+>>>>>>> a97ac589c5127ce53e852df5cc2765c139437cbd
 -- https://wiki.wireshark.org/Lua/Examples?action=AttachFile&do=get&target=dissector.lua 《参考》
 
 

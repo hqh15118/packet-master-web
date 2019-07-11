@@ -35,9 +35,9 @@ public interface PACKET_PROTOCOL {
     String DNS = "dns";
     @ProtocolIgnore
     String ETHERNET = "ethernet";
-    String OPCA_UA = "opcaua";
-    String IEC104_APCI = "iec104apci";
-    String IEC104_ASDU = "iec104asdu";
+    String OPC_UA = "opcua";
+    String IEC104_APCI = "104apci";
+    String IEC104_ASDU = "104asdu";
     String DNP3_0_PRI = "dnp3.0_pri";
     String DNP3_0_SET = "dnp3.0_set";
     @ProtocolIgnore

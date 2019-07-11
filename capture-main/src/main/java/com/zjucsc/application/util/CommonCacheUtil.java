@@ -13,10 +13,12 @@ import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.socket_io.SocketIoEvent;
 import com.zjucsc.socket_io.SocketServiceCenter;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
+import io.netty.util.internal.ThreadLocalRandom;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
 import static com.zjucsc.application.config.Common.*;
@@ -168,9 +170,9 @@ public class CommonCacheUtil {
      */
     public static final BiMap<Integer,String> PROTOCOL_STR_TO_INT = HashBiMap.create();
     /**
-     * @param protocolId
-     * @return
-     * @throws ProtocolIdNotValidException
+     * @param protocolId 协议ID
+     * @return 协议名字
+     * @throws ProtocolIdNotValidException 未发现指定协议ID
      */
 
     public static String convertIdToName(int protocolId) throws ProtocolIdNotValidException {
@@ -229,9 +231,10 @@ public class CommonCacheUtil {
      * @param deviceTag    device 的 ip地址或者mac地址
      */
     public static void addOrUpdateDeviceNumberAndTAG(String deviceNumber, String deviceTag) {
-        DEVICE_NUMBER_TO_TAG.forcePut(deviceNumber, deviceTag);
+        DEVICE_NUMBER_TO_TAG.put(deviceNumber, deviceTag);
         STATISTICS_INFO_BEAN.put(deviceNumber, new StatisticInfoSaveBean());
-        log.info("add device number : {} [tag : {} ] and DEVICE_TAG_TO_NAME {}", deviceNumber, deviceTag, DEVICE_NUMBER_TO_TAG);
+        if (log.isInfoEnabled())
+            log.info("add device number : {} [tag : {} ]", deviceNumber, deviceTag);
     }
 
     public static void removeDeviceNumberToTag(String deviceNumber) {
@@ -463,19 +466,16 @@ public class CommonCacheUtil {
     /*************************************
      * [deviceNumber - deviceName]
      ************************************/
-    private static final BiMap<String,String> DEVICE_NUMBER_TO_NAME =
-            HashBiMap.create();
+    private static final Map<String,String> DEVICE_NUMBER_TO_NAME =
+            new HashMap<>();
     public static void addDeviceNumberToName(String deviceNumber,String deviceName){
-        DEVICE_NUMBER_TO_NAME.forcePut(deviceNumber, deviceName);
+        DEVICE_NUMBER_TO_NAME.put(deviceNumber, deviceName);
     }
     public static void removeAllDeviceNumberToName(){
         DEVICE_NUMBER_TO_NAME.clear();
     }
     public static String convertDeviceNumberToName(String deviceNumber){
         return DEVICE_NUMBER_TO_NAME.get(deviceNumber);
-    }
-    public static String convertDeviceNameToNumber(String deviceName){
-        return DEVICE_NUMBER_TO_NAME.inverse().get(deviceName);
     }
     public static void removeDeviceNumberToName(String deviceNumber){
         DEVICE_NUMBER_TO_NAME.remove(deviceNumber);
@@ -493,27 +493,41 @@ public class CommonCacheUtil {
      * @return 新增之前的设备，如果不存在为null
      */
     public static Device autoAddDevice(FvDimensionLayer layer){
+        Device dstDevice = null;
         if (!ALL_DEVICES.containsKey(layer.eth_dst[0])){
             if (!layer.eth_dst[0].equals("ff:ff:ff:ff:ff:ff")) {
                 //非广播mac地址
-                Device device = createDevice(layer);
-                ALL_DEVICES.putIfAbsent(layer.eth_dst[0], device);
+                dstDevice = createDevice(layer);
+                ALL_DEVICES.put(layer.eth_dst[0], dstDevice);
                 //new device
-                CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(device.getDeviceNumber(), device.getDeviceTag());
-                CommonCacheUtil.addDeviceNumberToName(device.getDeviceNumber(), device.getDeviceInfo());
-                return device;
+                CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(dstDevice.getDeviceNumber(), dstDevice.getDeviceTag());
+                CommonCacheUtil.addDeviceNumberToName(dstDevice.getDeviceNumber(), dstDevice.getDeviceInfo());
             }
         }
-        return null;
+        if (!ALL_DEVICES.containsKey(layer.eth_src[0])){
+            if (!layer.eth_src[0].equals("ff:ff:ff:ff:ff:ff")) {
+                Device srcDevice = createDeviceInverse(layer);
+                ALL_DEVICES.put(layer.eth_src[0], srcDevice);
+                //new device
+                CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(srcDevice.getDeviceNumber(), srcDevice.getDeviceTag());
+                CommonCacheUtil.addDeviceNumberToName(srcDevice.getDeviceNumber(), srcDevice.getDeviceInfo());
+            }
+        }
+        return dstDevice;
+    }
+    private static Device getDeviceByTag(String macAddress){
+        return ALL_DEVICES.get(macAddress);
     }
     public static ConcurrentHashMap<String, Device> getAllDevices(){
         return ALL_DEVICES;
     }
+    private static final ThreadLocalRandom threadLocalRandom = ThreadLocalRandom.current();
     private static Device createDevice(FvDimensionLayer layer){
         StringBuilder sb = CommonUtil.getGlobalStringBuilder();
-        long timeNow = System.currentTimeMillis();
+        long timeNow = System.nanoTime();
         Device device = new Device();
-        sb.append("设备").append(CommonUtil.getDateFormat2().format(new Date()));
+        sb.append("设备").append(CommonUtil.getDateFormat2().format(new Date(timeNow)))
+        .append("_").append(threadLocalRandom.nextInt(10000));
         device.setDeviceInfo(sb.toString());
         device.setDeviceNumber(String.valueOf(timeNow));
         device.setDeviceType(1);
@@ -522,5 +536,53 @@ public class CommonCacheUtil {
         device.setGPlotId(Common.GPLOT_ID);
         device.setDeviceIp(layer.ip_dst[0]);
         return device;
+    }
+
+    /**
+     * 根据源地址创建设备
+     * @param layer 五元组
+     * @return 设备
+     */
+    private static Device createDeviceInverse(FvDimensionLayer layer){
+        StringBuilder sb = CommonUtil.getGlobalStringBuilder();
+        long timeNow = System.nanoTime();          //防止太快重复设备
+        Device device = new Device();
+        sb.append("设备").append(CommonUtil.getDateFormat2().format(new Date(timeNow)))
+                .append("_").append(threadLocalRandom.nextInt(10000));
+        device.setDeviceInfo(sb.toString());
+        device.setDeviceNumber(String.valueOf(timeNow));
+        device.setDeviceType(1);
+        device.setDeviceMac(layer.eth_src[0]);
+        device.setDeviceTag(layer.ip_src[0].equals("--")?layer.eth_src[0] : layer.ip_src[0]);
+        device.setGPlotId(Common.GPLOT_ID);
+        device.setDeviceIp(layer.ip_src[0]);
+        return device;
+    }
+
+    /*************************************
+     * 报文 : 当前设备【srcMacAddress】 --> 目的设备【dstMacAddress】
+     * 源设备发送到其他设备的报文数量 [当前设备，[目的设备，报文流量]]
+     ************************************/
+    private static final ConcurrentHashMap<Device,ConcurrentHashMap<Device, AtomicInteger>> DEVICE_TO_DEVICE_PACKETS
+            = new ConcurrentHashMap<>();
+
+    public static void addTargetDevicePacket(FvDimensionLayer layer){
+        if (!layer.eth_dst[0].equals("ff:ff:ff:ff:ff:ff")) {
+            Device srcDevice = getDeviceByTag(layer.eth_src[0]);        //发送设备
+            Device dstDevice = getDeviceByTag(layer.eth_dst[0]);        //接收设备
+            ConcurrentHashMap<Device, AtomicInteger> device2PacketNum = DEVICE_TO_DEVICE_PACKETS.get(srcDevice);
+            if (device2PacketNum == null) {
+                device2PacketNum = new ConcurrentHashMap<>();
+                DEVICE_TO_DEVICE_PACKETS.put(srcDevice,device2PacketNum);
+            }
+            AtomicInteger atomicInteger = device2PacketNum.putIfAbsent(dstDevice, new AtomicInteger(1));
+            if (atomicInteger!=null){
+                atomicInteger.incrementAndGet();
+            }
+        }
+    }
+
+    public static ConcurrentHashMap<Device,ConcurrentHashMap<Device, AtomicInteger>> getDeviceToDevicePackets(){
+        return DEVICE_TO_DEVICE_PACKETS;
     }
 }

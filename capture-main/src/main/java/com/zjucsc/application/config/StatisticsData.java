@@ -169,7 +169,7 @@ public class StatisticsData {
             LinkedList<String> var = ART_INFO.get(artArg);
         if (var == null){
             //需要先调用AppCommonUtil.initArtMap
-            log.error("工艺参数 {} 未初始化添加到ART_INFO中，请修正" , artArg);
+            AppCommonUtil.initArtMap(artArg);
         }else{
                 if (var.size() >= 6){
                     var.removeFirst();
