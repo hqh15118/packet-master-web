@@ -35,9 +35,11 @@ public class DeviceController {
             if (Common.filterStatement == 0) {
                 CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(device.getDeviceNumber(), device.getDeviceTag());
                 CommonCacheUtil.addDeviceNumberToName(device.getDeviceNumber(),device.getDeviceInfo());
+                CommonCacheUtil.addOrUpdateDeviceManually(device);
             }else{
                 CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(device.getDeviceNumber(), device.getDeviceTag());
                 CommonCacheUtil.addDeviceNumberToName(device.getDeviceNumber(),device.getDeviceInfo());
+                CommonCacheUtil.addOrUpdateDeviceManually(device);
             }
         }
         iDeviceService.saveBatch(deviceList);
@@ -48,8 +50,6 @@ public class DeviceController {
     @ApiOperation("添加/修改设备信息")
     @PostMapping("update_device")
     public BaseResponse addOrUpdateDeviceInfo(@RequestBody Device device){
-        CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(device.getDeviceNumber(), device.getDeviceTag());
-        CommonCacheUtil.addDeviceNumberToName(device.getDeviceNumber(),device.getDeviceInfo());
         iDeviceService.saveOrUpdateDevice(device);
         return BaseResponse.OK();
     }
@@ -58,9 +58,10 @@ public class DeviceController {
     @ApiOperation("删除设备")
     @DeleteMapping("delete_device")
     public BaseResponse deleteDevice(@RequestParam String deviceNumber){
+        Device device = iDeviceService.removeDevice(deviceNumber);
         CommonCacheUtil.removeDeviceNumberToTag(deviceNumber);
         CommonCacheUtil.removeDeviceNumberToName(deviceNumber);
-        iDeviceService.removeDevice(deviceNumber);
+        CommonCacheUtil.removeAllDeviceListByMacAddress(device.getDeviceMac());
         return BaseResponse.OK();
     }
 
@@ -81,6 +82,20 @@ public class DeviceController {
                 statisticSelect.getEnd(),
                 statisticSelect.getIntervalType()
         ));
+    }
+
+
+    @ApiOperation("修改设备配置状态")
+    @GetMapping("config_state")
+    public BaseResponse changeDeviceConfigState(@RequestParam String deviceNumber , @RequestParam boolean isConfig){
+        iDeviceService.changeDeviceConfigState(deviceNumber , isConfig);
+        return BaseResponse.OK();
+    }
+
+    @ApiOperation("获取所有配置过的设备")
+    @GetMapping("configured_devices")
+    public BaseResponse getAllConfiguredDevices(){
+        return BaseResponse.OK(iDeviceService.selectAllConfiguredDevices());
     }
 
 }

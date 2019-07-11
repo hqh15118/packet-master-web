@@ -1,0 +1,40 @@
+Manifest-Version: 1.0
+Class-Path: spring-boot-starter-logging-1.5.21.RELEASE.jar jcl-over-sl
+ f4j-1.7.26.jar spring-boot-starter-tomcat-1.5.21.RELEASE.jar snakeyam
+ l-1.17.jar spring-cloud-context-1.3.6.RELEASE.jar commons-lang3-3.1.j
+ ar spring-aop-4.3.24.RELEASE.jar HdrHistogram-2.1.9.jar spring-boot-s
+ tarter-actuator-1.5.21.RELEASE.jar ribbon-transport-2.2.5.jar jsr311-
+ api-1.1.1.jar jackson-annotations-2.8.0.jar javax.inject-1.jar spring
+ -cloud-commons-1.3.6.RELEASE.jar zuul-core-1.3.1.jar jackson-databind
+ -2.8.11.3.jar commons-lang-2.6.jar hystrix-core-1.5.12.jar spring-clo
+ ud-starter-netflix-hystrix-1.4.7.RELEASE.jar commons-codec-1.9.jar ht
+ tpcore-4.4.3.jar logback-core-1.1.11.jar spring-security-crypto-4.2.1
+ 2.RELEASE.jar guava-18.0.jar netflix-statistics-0.1.1.jar jsr305-3.0.
+ 1.jar validation-api-1.1.0.Final.jar commons-collections-3.2.2.jar sp
+ ring-cloud-netflix-core-1.4.7.RELEASE.jar bcprov-jdk15on-1.55.jar spr
+ ing-beans-4.3.24.RELEASE.jar logback-classic-1.1.11.jar spring-cloud-
+ starter-netflix-zuul-1.4.7.RELEASE.jar asm-5.0.4.jar hystrix-serializ
+ ation-1.5.12.jar spring-boot-actuator-1.5.21.RELEASE.jar slf4j-api-1.
+ 7.6.jar jersey-core-1.19.1.jar netflix-commons-util-0.1.1.jar ribbon-
+ 2.2.5.jar tomcat-embed-core-8.5.40.jar commons-io-2.4.jar servo-core-
+ 0.7.2.jar spring-boot-autoconfigure-1.5.21.RELEASE.jar spring-cloud-s
+ tarter-netflix-archaius-1.4.7.RELEASE.jar archaius-core-0.7.4.jar hys
+ trix-javanica-1.5.12.jar jackson-core-2.8.11.jar spring-webmvc-4.3.24
+ .RELEASE.jar jersey-client-1.19.1.jar spring-core-4.3.24.RELEASE.jar 
+ spring-cloud-starter-netflix-ribbon-1.4.7.RELEASE.jar tomcat-embed-we
+ bsocket-8.5.40.jar ribbon-core-2.2.5.jar spring-boot-starter-1.5.21.R
+ ELEASE.jar spring-cloud-starter-zuul-1.4.7.RELEASE.jar annotations-2.
+ 0.0.jar rxnetty-0.4.9.jar spring-context-4.3.24.RELEASE.jar jackson-m
+ odule-afterburner-2.7.5.jar hystrix-metrics-event-stream-1.5.12.jar j
+ boss-logging-3.3.0.Final.jar spring-security-rsa-1.0.3.RELEASE.jar rx
+ netty-contexts-0.4.9.jar spring-web-4.3.24.RELEASE.jar ribbon-loadbal
+ ancer-2.2.5.jar bcpkix-jdk15on-1.55.jar classmate-1.3.1.jar ribbon-ht
+ tpclient-2.2.5.jar spring-boot-starter-web-1.5.21.RELEASE.jar tomcat-
+ embed-el-8.5.40.jar spring-boot-1.5.21.RELEASE.jar spring-cloud-start
+ er-1.3.6.RELEASE.jar log4j-over-slf4j-1.7.26.jar rxnetty-servo-0.4.9.
+ jar httpclient-4.5.1.jar jul-to-slf4j-1.7.26.jar rxjava-1.2.0.jar jer
+ sey-apache-client4-1.19.1.jar aspectjweaver-1.8.6.jar commons-configu
+ ration-1.8.jar tomcat-annotations-api-8.5.40.jar hibernate-validator-
+ 5.3.6.Final.jar spring-expression-4.3.24.RELEASE.jar
+Main-Class: com.zjucsc.zuul.ZuulApplication
+

@@ -29,6 +29,7 @@ public class HessianConfig {
     private String packet_history;
     private String attack_config;
     private String white_protocol;
+    private String opt_attack;
 
 
     @Bean
@@ -94,5 +95,10 @@ public class HessianConfig {
     @Bean
     public WhiteProtocolMapper whiteProtocolMapperBean() throws MalformedURLException {
         return (WhiteProtocolMapper) new HessianProxyFactory().create(WhiteProtocolMapper.class, white_protocol);
+    }
+
+    @Bean
+    public OptAttackMapper optAttackMapperBean() throws MalformedURLException {
+        return (OptAttackMapper) new HessianProxyFactory().create(OptAttackMapper.class, opt_attack);
     }
 }

@@ -14,7 +14,7 @@ import static com.zjucsc.application.util.CommonCacheUtil.convertIdToName;
 @Slf4j
 public class CommonConfigUtil {
 
-    public static boolean SHOW_LOG = false;
+    public static boolean SHOW_LOG = true;
 
     public static HashMap<Integer,String> getTargetProtocolAllFuncodeMeaning(String protocol) {
         HashMap<Integer,String> map;
@@ -32,11 +32,11 @@ public class CommonConfigUtil {
         return getTargetProtocolAllFuncodeMeaning(convertIdToName(protocolId));
     }
 
-    public static String getTargetProtocolFuncodeMeanning(String protocol,int funcode) throws ProtocolIdNotValidException {
+    public static String getTargetProtocolFuncodeMeaning(String protocol,int funcode) throws ProtocolIdNotValidException {
         String funcodeMeaning;
         HashMap<Integer,String> map = getTargetProtocolAllFuncodeMeaning(protocol);
         if (map==null|| (funcodeMeaning = map.get(funcode)) == null){
-            funcodeMeaning = "unknown operation";
+            funcodeMeaning = "未知功能码操作";
             if (SHOW_LOG) {
                 log.info("can not find protocol {} funcode {} meaning in CONFIGURATION_MAP \n CONFIGURATION_MAP is {}"
                         , protocol, funcode, CONFIGURATION_MAP);

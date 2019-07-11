@@ -20,7 +20,7 @@
         <artifactId>packet-master-web</artifactId>
         <version>0.0.1-SNAPSHOT</version>
         <name>packet-master-web</name>
-    <description>project for Spring Boot</description>
+        <description>project for Spring Boot</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -106,7 +106,7 @@ public class PacketController {
     @RequestMapping(value = "/connect_socketio" , method = RequestMethod.GET)
     public BaseResponse startRecvRealTimePacket(){
         boolean b = MainServer.openWebSocketService(constantConfig.getGlobal_address(), Common.SOCKET_IO_PORT, socketIOClient -> {
-            if (socketIoClientNumber.get() >= 1){
+            if (socketIoClientNumber.get() >= 2){
                 socketIOClient.disconnect();
                 if (log.isInfoEnabled()) {
                     log.info("reject socket io connect : {} ", socketIOClient.getRemoteAddress().toString());

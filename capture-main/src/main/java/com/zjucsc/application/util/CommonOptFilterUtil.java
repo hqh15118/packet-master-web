@@ -51,14 +51,14 @@ public class CommonOptFilterUtil {
 //            if (filterType == 0){
 //                //white
 //                analyzerMap.get(protocolName).getAnalyzer().addWhiteRule(optFilter.getFunCode(),
-//                        CommonConfigUtil.getTargetProtocolFuncodeMeanning(protocolName,optFilter.getFunCode()));
+//                        CommonConfigUtil.getTargetProtocolFuncodeMeaning(protocolName,optFilter.getFunCode()));
 //            }else{
 //                analyzerMap.get(protocolName).getAnalyzer().addBlackRule(optFilter.getFunCode(),
-//                        CommonConfigUtil.getTargetProtocolFuncodeMeanning(protocolName,optFilter.getFunCode()));
+//                        CommonConfigUtil.getTargetProtocolFuncodeMeaning(protocolName,optFilter.getFunCode()));
 //            }
             //white
             analyzerMap.get(protocolName).getAnalyzer().addWhiteRule(funCode,
-                    CommonConfigUtil.getTargetProtocolFuncodeMeanning(protocolName,funCode));
+                    CommonConfigUtil.getTargetProtocolFuncodeMeaning(protocolName,funCode));
         }
 
         if (type == 0){

@@ -4,6 +4,7 @@ import com.zjucsc.application.domain.bean.*;
 import com.zjucsc.application.system.mapper.base.BaseServiceImpl;
 import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
 import com.zjucsc.application.system.service.hessian_mapper.DeviceMapper;
+import com.zjucsc.application.util.CommonCacheUtil;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -84,11 +85,29 @@ public class DeviceServiceImpl extends BaseServiceImpl< Device , DeviceMapper> i
     @Override
     public void saveOrUpdateDevice(Device device) {
         this.baseMapper.saveOrUpdateDevice(device);
+        CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(device.getDeviceNumber(), device.getDeviceTag());
+        CommonCacheUtil.addDeviceNumberToName(device.getDeviceNumber(),device.getDeviceInfo());
+        CommonCacheUtil.addOrUpdateDeviceManually(device);
     }
 
     @Override
-    public void removeDevice(String deviceNumber) {
-        this.baseMapper.removeDeviceByDeviceNumber(deviceNumber);
+    public Device removeDevice(String deviceNumber) {
+        return this.baseMapper.removeDeviceByDeviceNumber(deviceNumber);
+    }
+
+    @Override
+    public void changeDeviceConfigState(String deviceNumber , boolean isConfig) {
+        this.baseMapper.changeDeviceConfigState(deviceNumber , isConfig);
+    }
+
+    @Override
+    public List<Device> selectAllConfiguredDevices() {
+        return this.baseMapper.selectAllConfiguredDevices();
+    }
+
+    @Override
+    public Device selectDeviceByDeviceNumber(String deviceNumber) {
+        return this.baseMapper.selectDeviceByDeviceNumber(deviceNumber);
     }
 
 }

@@ -11,5 +11,5 @@ public interface AttackTypePro {
     String CODE_EXCEPTION = "代码异常";
     String SNIFF_ATTACK = "嗅探攻击";
     String CONFIG_FALSIFY = "配置篡改";
-    String VISIT_PROTOCOL = "非授权访问协议";
+    String VISIT_PROTOCOL = "非授权协议访问";
 }

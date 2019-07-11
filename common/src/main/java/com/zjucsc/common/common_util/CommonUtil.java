@@ -28,7 +28,7 @@ public class CommonUtil {
     }
 
     private static final ThreadLocal<SimpleDateFormat> SIMPLE_DATE_FORMAT_THREAD_LOCAL2
-            = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SS"));
+            = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyyMMddHHmmssSS"));
     public static SimpleDateFormat getDateFormat2(){
         return SIMPLE_DATE_FORMAT_THREAD_LOCAL2.get();
     }
