@@ -98,6 +98,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     }
 
     private void setUnknownAttackDevice(AttackBean attackBean, int i) {
+        System.out.println(attackBean);
         if (i == 0){
             if (!attackBean.getDstIp().equals("--")){
                 attackBean.setDstDevice(attackBean.getDstIp());
@@ -225,11 +226,11 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                 if (s7Packet.s7comm_header_rosctr[0].equals(S7CommPacket.USER_DATA)) {
                     //user data
                     t.funCodeMeaning = CommonConfigUtil.
-                            getTargetProtocolFuncodeMeanning(S7_User_data, funCode);
+                            getTargetProtocolFuncodeMeaning(S7_User_data, funCode);
                 } else {
                     //other [job/ack_data]
                     t.funCodeMeaning = CommonConfigUtil.
-                            getTargetProtocolFuncodeMeanning(S7, funCode);
+                            getTargetProtocolFuncodeMeaning(S7, funCode);
                 }
             }
         }else if (t instanceof ModbusPacket.LayersBean){
@@ -237,7 +238,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                 funCodeStr = ((ModbusPacket.LayersBean) t).modbus_func_code[0];
                 funCode =  PacketDecodeUtil.decodeFuncode("modbus", funCodeStr);
                 t.funCodeMeaning = CommonConfigUtil.
-                        getTargetProtocolFuncodeMeanning(MODBUS, funCode);
+                        getTargetProtocolFuncodeMeaning(MODBUS, funCode);
             }
         }else if (t instanceof IEC104Packet.LayersBean){
             IEC104Packet.LayersBean iec104_packet = ((IEC104Packet.LayersBean) t);
@@ -249,7 +250,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                         funCode =  PacketDecodeUtil.decodeFuncode("iec104", funCodeStr);
                         //decode funcode meaning by funcode
                         t.funCodeMeaning = CommonConfigUtil.
-                                getTargetProtocolFuncodeMeanning(PACKET_PROTOCOL.IEC104_ASDU, funCode);
+                                getTargetProtocolFuncodeMeaning(PACKET_PROTOCOL.IEC104_ASDU, funCode);
                         break;
                     case 1 :
                         t.funCodeMeaning = "确认数据接收";
@@ -260,7 +261,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                         funCode =  PacketDecodeUtil.decodeFuncode("iec104", funCodeStr);
                         //decode funcode meaning by funcode
                         t.funCodeMeaning = CommonConfigUtil.
-                                getTargetProtocolFuncodeMeanning(PACKET_PROTOCOL.IEC104_APCI, funCode);
+                                getTargetProtocolFuncodeMeaning(PACKET_PROTOCOL.IEC104_APCI, funCode);
                         break;
                 }
         }else if (t instanceof Dnp3_0Packet.LayersBean){
@@ -273,20 +274,20 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                     funCode = PacketDecodeUtil.decodeFuncode("dnp3.0", funCodeStr);
                     //decode funcode meaning by funcode
                     t.funCodeMeaning = CommonConfigUtil.
-                            getTargetProtocolFuncodeMeanning(PACKET_PROTOCOL.DNP3_0_PRI, funCode);
+                            getTargetProtocolFuncodeMeaning(PACKET_PROTOCOL.DNP3_0_PRI, funCode);
                     break;
                 case 0:
                     funCodeStr = dnpPacket.dnp3_ctl_secfunc[0];
                     funCode = PacketDecodeUtil.decodeFuncode("dnp3.0", funCodeStr);
                     t.funCodeMeaning = CommonConfigUtil.
-                            getTargetProtocolFuncodeMeanning(PACKET_PROTOCOL.DNP3_0_SET, funCode);
+                            getTargetProtocolFuncodeMeaning(PACKET_PROTOCOL.DNP3_0_SET, funCode);
                     break;
             }
         }else if (t instanceof CipPacket.LayersBean){
             CipPacket.LayersBean cipPacket = ((CipPacket.LayersBean) t);
             funCode = Integer.decode(cipPacket.cip_funcode[0]);
             t.funCodeMeaning = CommonConfigUtil.
-                    getTargetProtocolFuncodeMeanning(PACKET_PROTOCOL.CIP_IP, funCode);
+                    getTargetProtocolFuncodeMeaning(PACKET_PROTOCOL.CIP_IP, funCode);
         }
         return funCode;
     }
@@ -580,12 +581,18 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                 public FvDimensionLayer handle(Object t) {
                     //新设备统计
                     FvDimensionLayer layer = ((FvDimensionLayer) t);
-                    Device device = CommonCacheUtil.autoAddDevice(layer);      //检测到新设备，推送新设备信息
-                    if (device!=null){
+                    Device[] device = CommonCacheUtil.autoAddDevice(layer);      //检测到新设备，推送新设备信息
+                    if (device[0]!=null){
                         //come new device
-                        SocketServiceCenter.updateAllClient(SocketIoEvent.NEW_DEVICE,device);
+                        SocketServiceCenter.updateAllClient(SocketIoEvent.NEW_DEVICE,device[0]);
                         //save device async
-                        iDeviceService.saveOrUpdateDevice(device);
+                        iDeviceService.saveOrUpdateDevice(device[0]);
+                    }
+                    if (device[1]!=null){
+                        //come new device
+                        SocketServiceCenter.updateAllClient(SocketIoEvent.NEW_DEVICE,device[1]);
+                        //save device async
+                        iDeviceService.saveOrUpdateDevice(device[1]);
                     }
                     //设备流量统计
                     CommonCacheUtil.addTargetDevicePacket(layer);

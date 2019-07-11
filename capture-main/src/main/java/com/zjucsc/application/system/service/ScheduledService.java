@@ -1,11 +1,9 @@
 package com.zjucsc.application.system.service;
 
+import com.alibaba.fastjson.JSON;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.StatisticsData;
-import com.zjucsc.application.domain.bean.FlowError;
-import com.zjucsc.application.domain.bean.GraphInfo;
-import com.zjucsc.application.domain.bean.StatisticInfoSaveBean;
-import com.zjucsc.application.domain.bean.StatisticsDataWrapper;
+import com.zjucsc.application.domain.bean.*;
 import com.zjucsc.application.system.service.common_iservice.CapturePacketService;
 import com.zjucsc.application.system.service.hessian_iservice.IArtHistoryDataService;
 import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
@@ -20,6 +18,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -73,13 +72,36 @@ public class ScheduledService {
             try {
                 sendAllFvDimensionPacket2();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                System.err.println("五元组发送异常");
             }
         }
     }
 
+    private final HashMap<DeviceForScheduleSend,Map<DeviceForScheduleSend,Integer>>
+        D2DPacketInfoMap = new HashMap<>();
     private void sendDevice2DevicePackets() {
-        SocketServiceCenter.updateAllClient(SocketIoEvent.DEVICE_2_DEVICE_PACKETS,CommonCacheUtil.getDeviceToDevicePackets());
+        D2DPacketInfoMap.clear();
+        CommonCacheUtil.getDeviceToDevicePackets().forEach((dstDevice, deviceAtomicIntegerConcurrentHashMap) -> {
+            if (dstDevice.getDeviceType() != 1){
+                DeviceForScheduleSend dstDeviceForScheduleSend = new DeviceForScheduleSend();
+                setScheduleSenderDevice(dstDeviceForScheduleSend,dstDevice);
+                Map<DeviceForScheduleSend,Integer> map = new HashMap<>();
+                deviceAtomicIntegerConcurrentHashMap.forEach((srcDevice, atomicInteger) -> {
+                    DeviceForScheduleSend deviceForScheduleSend = new DeviceForScheduleSend();
+                    setScheduleSenderDevice(deviceForScheduleSend,srcDevice);
+                    map.put(deviceForScheduleSend,atomicInteger.get());
+                });
+                D2DPacketInfoMap.put(dstDeviceForScheduleSend,map);
+            }
+        });
+        SocketServiceCenter.updateAllClient(SocketIoEvent.DEVICE_2_DEVICE_PACKETS, JSON.toJSONString(D2DPacketInfoMap));
+    }
+
+    private void setScheduleSenderDevice(DeviceForScheduleSend deviceForScheduleSend, Device srcDevice) {
+        deviceForScheduleSend.setDeviceIp(srcDevice.getDeviceIp());
+        deviceForScheduleSend.setDeviceMac(srcDevice.getDeviceMac());
+        deviceForScheduleSend.setDeviceName(srcDevice.getDeviceInfo());
+        deviceForScheduleSend.setDeviceNumber(srcDevice.getDeviceNumber());
     }
 
     /**
@@ -118,34 +140,37 @@ public class ScheduledService {
         iDeviceService.saveStatisticInfo(CommonCacheUtil.getStatisticsInfoBean());
     }
 
-    private List<FvDimensionLayer> layers = new ArrayList<>();
 
     //@Scheduled(fixedRate = 1000)
-    private void sendAllFvDimensionPacket() throws InterruptedException {
-        layers.clear();
-        for (int i = 0; i < 2000; i++) {
-            FvDimensionLayer layer = fvDimensionLayers.poll(200, TimeUnit.MILLISECONDS);
-            if (layer!=null){
-                layers.add(layer);
-            }else{
-                break;
-            }
-            doSendBatch(layers);
-            //doSend(fvDimensionLayers.poll());
-        }
-    }
+//    private void sendAllFvDimensionPacket() throws InterruptedException {
+//        layers.clear();
+//        for (int i = 0; i < 2000; i++) {
+//            FvDimensionLayer layer = fvDimensionLayers.poll(200, TimeUnit.MILLISECONDS);
+//            if (layer!=null){
+//                layers.add(layer);
+//            }else{
+//                break;
+//            }
+//            if (layers.size() > 0) {
+//                doSendBatch(layers);
+//            }
+//            //doSend(fvDimensionLayers.poll());
+//        }
+//    }
 
     private void sendAllFvDimensionPacket2() throws InterruptedException {
-        layers.clear();
+        List<FvDimensionLayer> layers = new ArrayList<>(5);
         for (int i = 0; i < 5; i++) {
-            FvDimensionLayer layer = fvDimensionLayers.poll(200, TimeUnit.MILLISECONDS);
+            FvDimensionLayer layer = fvDimensionLayers.poll(100, TimeUnit.MILLISECONDS);
             if (layer!=null){
                 layers.add(layer);
             }else{
                 break;
             }
         }
-        doSendBatch(layers);
+        if (layers.size() > 0) {
+            doSendBatch(layers);
+        }
     }
 
     private void doSendBatch(List<FvDimensionLayer> layers) {

@@ -78,6 +78,11 @@
       "sourceType": "com.zjucsc.application.system.service.hession_config.HessianConfig"
     },
     {
+      "name": "hessian-config.opt-attack",
+      "type": "java.lang.String",
+      "sourceType": "com.zjucsc.application.system.service.hession_config.HessianConfig"
+    },
+    {
       "name": "hessian-config.opt-filter",
       "type": "java.lang.String",
       "sourceType": "com.zjucsc.application.system.service.hession_config.HessianConfig"

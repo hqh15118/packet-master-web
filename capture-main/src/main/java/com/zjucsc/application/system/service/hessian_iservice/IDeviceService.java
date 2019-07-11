@@ -26,5 +26,11 @@ public interface IDeviceService {
 
     void saveOrUpdateDevice(Device device);
 
-    void removeDevice(String deviceNumber);
+    Device removeDevice(String deviceNumber);
+
+    void changeDeviceConfigState(String deviceNumber , boolean isConfig);
+
+    List<Device> selectAllConfiguredDevices();
+
+    Device selectDeviceByDeviceNumber(String deviceNumber);
 }

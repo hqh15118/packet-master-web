@@ -25,6 +25,7 @@ public class Device extends BaseResponse implements Serializable {
     private int gPlotId;
     private String deviceIp;
     private String deviceMac;
+    private boolean isConfig;
 
     @Override
     public boolean equals(Object o) {

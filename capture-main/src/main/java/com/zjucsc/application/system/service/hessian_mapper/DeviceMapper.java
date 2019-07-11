@@ -48,5 +48,11 @@ public interface DeviceMapper extends BaseMapper<Device> {
 
     List<Integer> selectAllDeviceIdByGplotId(int gplotId);
 
-    void removeDeviceByDeviceNumber(String deviceNumber);
+    Device removeDeviceByDeviceNumber(String deviceNumber);
+
+    void changeDeviceConfigState(String deviceNumber , boolean isConfig);
+
+    List<Device> selectAllConfiguredDevices();
+
+    Device selectDeviceByDeviceNumber(String deviceNumber);
 }
