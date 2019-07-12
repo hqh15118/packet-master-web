@@ -1,12 +1,25 @@
 package com.zjucsc.attack.pn_io;
 
-public class pnioOpconfig {
+import com.zjucsc.attack.base.BaseOptConfig;
+
+import java.util.List;
+
+public class pnioOpconfig extends BaseOptConfig {
     private String techname;
     private byte[] macaddress;
     private int byteoffset;
     private int bitoffset;
     private boolean result;
+    private List<String> expression;
     private String comment;
+
+    public void setExpression(List<String> expression) {
+        this.expression = expression;
+    }
+
+    public List<String> getExpression() {
+        return expression;
+    }
 
     public boolean isResult() {
         return result;

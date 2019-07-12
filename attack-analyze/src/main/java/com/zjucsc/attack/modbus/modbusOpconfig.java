@@ -1,14 +1,27 @@
 package com.zjucsc.attack.modbus;
 
 
-public class modbusOpconfig {
+import com.zjucsc.attack.base.BaseOptConfig;
+
+import java.util.List;
+
+public class modbusOpconfig extends BaseOptConfig {
 
     private String Opname;
     private int reg;//0线圈1是保持寄存器
     private int address;
     private int bitoffset;
     private boolean result;
+    private List<String> expression;
     private String comment;
+
+    public List<String> getExpression() {
+        return expression;
+    }
+
+    public void setExpression(List<String> expression) {
+        this.expression = expression;
+    }
 
     public boolean isResult() {
         return result;

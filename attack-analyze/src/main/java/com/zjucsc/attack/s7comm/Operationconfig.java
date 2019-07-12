@@ -1,12 +1,25 @@
 package com.zjucsc.attack.s7comm;
 
-public class Operationconfig {
+import com.zjucsc.attack.base.BaseOptConfig;
+
+import java.util.List;
+
+public class Operationconfig extends BaseOptConfig {
     private String opname;
     private int DBnum;
     private int Byteoffset;
     private int Bitoffset;
     private boolean result;
+    private List<String> expression;
     private String comment;
+
+    public List<String> getExpression() {
+        return expression;
+    }
+
+    public void setExpression(List<String> expression) {
+        this.expression = expression;
+    }
 
     public void setOpname(String opname) {
         this.opname = opname;

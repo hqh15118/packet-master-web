@@ -4,6 +4,7 @@ package com.zjucsc.attack.s7comm;
 import com.zjucsc.attack.base.BaseOptAnalyzer;
 import com.zjucsc.attack.bean.AttackBean;
 import com.zjucsc.attack.common.ArtAttackAnalyzeTask;
+import com.zjucsc.attack.pn_io.pnioOpconfig;
 import com.zjucsc.common.common_util.ByteUtil;
 import com.zjucsc.common.common_util.Bytecut;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
@@ -12,20 +13,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class s7optdecode {
+public class s7optdecode extends BaseOptAnalyzer<Operationconfig>{
 
 
-    private AttackBean Attackdecode(FvDimensionLayer layer, Operationconfig operationconfig, List<String> expression, Map<String,Float> techmap)
+    private AttackBean Attackdecode(FvDimensionLayer layer, Operationconfig operationconfig, Map<String,Float> techmap)
     {
-        if(ArtAttackAnalyzeTask.attackDecode(expression,techmap,"1")==null || Writejobdecode(layer)==null)
+        if(ArtAttackAnalyzeTask.attackDecode(operationconfig.getExpression(),techmap,"1")==null || Writejobdecode(layer)==null)
         {
             return null;
         }
-        else if(ArtAttackAnalyzeTask.attackDecode(expression,techmap,"1").equals("配置错误"))
+        else if(ArtAttackAnalyzeTask.attackDecode(operationconfig.getExpression(),techmap,"1").equals("配置错误"))
         {
             return new AttackBean.Builder().attackType("配置错误").fvDimension(layer).attackInfo("").build();
         }
-        else if(ArtAttackAnalyzeTask.attackDecode(expression,techmap,"1").equals("1"))
+        else if(ArtAttackAnalyzeTask.attackDecode(operationconfig.getExpression(),techmap,"1").equals("1"))
         {
             if(OperationDecode(Writejobdecode(layer),operationconfig))
             {
@@ -119,4 +120,9 @@ public class s7optdecode {
 //    private Map<Integer, List<DBclass>> DBmap = new HashMap<>();
 
     private List<DBclass> DBlist = new ArrayList<>();
+
+    @Override
+    public AttackBean doAnalyze(FvDimensionLayer layer, Map<String,Float> techmap, Operationconfig operationconfig, Object... objs) {
+        return Attackdecode(layer, operationconfig,techmap);
+    }
 }
