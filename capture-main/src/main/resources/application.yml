@@ -5,15 +5,15 @@ myconfig:
   global_address : 192.168.0.121
   admin_server_port : 8989
   packet_master_web_port : 8080
-  kafka-server-url : 10.15.191.100:9092
-  openAOPLog : true
-  sendAopLog : false
-  showErrorOnly : false
-  redis_ip : 10.15.191.100
-  redis_port : 6379
-  openMapperAop : true
-  reOpenTableName : 20190703
-  simulateStartNum : 0
+  openAOPLog : true   # 是否开启请求日志
+  sendAopLog : false  # 是否将请求日志消息发送到服务器
+  showErrorOnly : true  # 是否只显示异常日志
+  redis_ip : 10.15.191.100  # redis ip地址
+  redis_port : 6379         # redis 端口
+  openMapperAop : true      # 是否开启hessian mapper检测
+  reOpenTableName : 20190703  # 重放的数据库表名【packet_info_】 + 【表名】
+  simulateStartNum : 0        # 从第几条数据开始
+  virtual_network : \Device\NPF_{06E3803C-6CBD-4AD5-829B-58220E549DE0}         # 建立的虚拟网卡的名字
 
 pre-processors:
 #  list[0] : s7comm
@@ -31,6 +31,15 @@ pre-processors:
      - pnio
      - cip
      - opcua
+  i_protocols:
+    - s7comm
+    - modbus
+    - 104apci
+    - 104asdu
+    - dnp3
+    - opcua
+    - cip
+    - pn_io
 
 tshark-config:
   modbus_filter : tcp

@@ -61,7 +61,7 @@ public class DeviceController {
         Device device = iDeviceService.removeDevice(deviceNumber);
         CommonCacheUtil.removeDeviceNumberToTag(deviceNumber);
         CommonCacheUtil.removeDeviceNumberToName(deviceNumber);
-        CommonCacheUtil.removeAllDeviceListByMacAddress(device.getDeviceMac());
+        CommonCacheUtil.removeAllDeviceListByMacAddress(device.getDeviceTag());
         return BaseResponse.OK();
     }
 

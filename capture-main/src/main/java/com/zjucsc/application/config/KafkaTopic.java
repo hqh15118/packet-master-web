@@ -1,7 +1,7 @@
 package com.zjucsc.application.config;
 
 
-public class KafkaConfig {
+public class KafkaTopic {
     /*****************
      * Kafka Topics
      *****************/

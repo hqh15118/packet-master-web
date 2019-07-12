@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -20,29 +21,18 @@ import java.util.concurrent.ThreadPoolExecutor;
 @EnableAsync
 public class ServiceConfig {
 
-    private Executor getNewExecutor(String name){
-        ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
-        taskExecutor.setQueueCapacity(100);
-        taskExecutor.setRejectedExecutionHandler(new RejectedExecutionHandler() {
-            @Override
-            public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-                r.run();
-            }
-        });
-        taskExecutor.setCorePoolSize(1);
-        taskExecutor.setMaxPoolSize(5);
-        taskExecutor.setThreadGroupName(name);
-        taskExecutor.initialize();
-        return taskExecutor;
-    }
-
-    @Bean
+    @Bean("common")
     public Executor taskExecutor() {
         return new SimpleAsyncTaskExecutor();
     }
 
-//    @Bean("common_schedule_service")
-//    public Executor commonScheduleService(){
-//        return Executors.newScheduledThreadPool(1);
-//    }
+    @Bean("device_schedule_service")
+    public Executor deviceScheduleService(){
+        return Executors.newScheduledThreadPool(1);
+    }
+
+    @Bean("d2d_schedule_service")
+    public Executor d2dScheduleService(){
+        return Executors.newScheduledThreadPool(1);
+    }
 }

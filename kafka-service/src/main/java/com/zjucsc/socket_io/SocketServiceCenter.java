@@ -1,5 +1,6 @@
 package com.zjucsc.socket_io;
 
+import com.corundumstudio.socketio.AckCallback;
 import com.corundumstudio.socketio.SocketIOClient;
 
 import java.util.ArrayList;
@@ -27,6 +28,12 @@ public class SocketServiceCenter {
     public static void updateAllClient(String event , Object...obj){
         for (SocketIOClient socketIOClient : connectedClient) {
             socketIOClient.sendEvent(event,obj);
+        }
+    }
+
+    public static <T> void updateFvDimensionLayerClient(String event,AckCallback<T> ackCallback,Object...obj ){
+        for (SocketIOClient socketIOClient : connectedClient) {
+            socketIOClient.sendEvent(event, ackCallback , obj);
         }
     }
 

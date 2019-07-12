@@ -49,6 +49,7 @@ public class WatchConfig {
         map.put("ART_DATA",AppCommonUtil.getGlobalArtMap());
         map.put("TSHARK-FILTER-S7COMM",tsharkConfig.getS7comm_filter());
         map.put("TSHARK-FILTER-MODBUS",tsharkConfig.getModbus_filter());
+        map.put("ALL_DROP_PROTOCOL",CommonCacheUtil.getAllDropProtocol());
         return map;
     }
 

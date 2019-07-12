@@ -31,4 +31,6 @@ public class ConstantConfig {
     private int reOpenTableName;
 
     private int simulateStartNum;
+
+    private String virtual_network;
 }

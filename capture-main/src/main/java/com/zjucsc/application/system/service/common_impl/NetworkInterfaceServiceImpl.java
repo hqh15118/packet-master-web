@@ -32,7 +32,7 @@ public class NetworkInterfaceServiceImpl implements INetworkInterfaceService {
         return doGetAllNetworkInterface();
     }
 
-    private List<NetworkInterface> doGetAllNetworkInterface() throws SocketException {
+    public static  List<NetworkInterface> doGetAllNetworkInterface() throws SocketException {
         List<NetworkInterface> all = new ArrayList<>();
         try {
             Enumeration<java.net.NetworkInterface> networkInterfaces  = java.net.NetworkInterface.getNetworkInterfaces();

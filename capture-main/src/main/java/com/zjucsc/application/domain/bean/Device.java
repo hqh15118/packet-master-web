@@ -43,7 +43,7 @@ public class Device extends BaseResponse implements Serializable {
     @Override
     public String toString() {
         return "Device{" +
-                ", deviceNumber='" + deviceNumber + '\'' +
+                "deviceNumber='" + deviceNumber + '\'' +
                 ", deviceType=" + deviceType +
                 ", deviceTag='" + deviceTag + '\'' +
                 ", deviceInfo='" + deviceInfo + '\'' +

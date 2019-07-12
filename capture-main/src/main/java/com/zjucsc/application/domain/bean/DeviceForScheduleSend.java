@@ -8,4 +8,13 @@ public class DeviceForScheduleSend {
     private String deviceName;
     private String deviceIp;
     private String deviceNumber;
+
+    @Override
+    public String toString() {
+        return " deviceMac='" + deviceMac + '\'' +
+                ", deviceName='" + deviceName + '\'' +
+                ", deviceIp='" + deviceIp + '\'' +
+                ", deviceNumber='" + deviceNumber + '\'' +
+                '}';
+    }
 }

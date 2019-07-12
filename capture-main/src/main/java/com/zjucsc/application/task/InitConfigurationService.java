@@ -5,6 +5,7 @@ import com.zjucsc.IProtocolFuncodeMap;
 import com.zjucsc.application.config.*;
 import com.zjucsc.application.config.auth.Auth;
 import com.zjucsc.application.domain.bean.*;
+import com.zjucsc.application.system.service.common_impl.NetworkInterfaceServiceImpl;
 import com.zjucsc.application.system.service.hessian_iservice.IArtConfigService;
 import com.zjucsc.application.system.service.hessian_iservice.IConfigurationSettingService;
 import com.zjucsc.application.system.service.hessian_iservice.IProtocolIdService;
@@ -18,21 +19,28 @@ import com.zjucsc.art_decode.artconfig.S7Config;
 import com.zjucsc.art_decode.base.BaseConfig;
 import com.zjucsc.attack.bean.ArtAttackAnalyzeConfig;
 import com.zjucsc.attack.common.AttackCommon;
+import com.zjucsc.common.exceptions.PacketDetailServiceNotValidException;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.tshark.TsharkCommon;
 import lombok.extern.slf4j.Slf4j;
+import org.pcap4j.core.PcapNativeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
+import java.net.SocketException;
 import java.util.*;
 
 import static com.zjucsc.application.util.CommonCacheUtil.AUTH_MAP;
 import static com.zjucsc.application.util.CommonCacheUtil.PROTOCOL_STR_TO_INT;
 import static com.zjucsc.application.util.CommonCacheUtil.convertIdToName;
 import static com.zjucsc.application.util.CommonConfigUtil.addProtocolFuncodeMeaning;
+import static com.zjucsc.application.util.TsharkUtil.startHistoryPacketAnalyzeThread;
 
 /**
  * 加载组态配置到内存中 + 保存到本地数据库
@@ -48,6 +56,8 @@ public class InitConfigurationService implements ApplicationRunner {
     @Autowired private IProtocolIdService iProtocolIdService;
     @Autowired private TsharkConfig tsharkConfig;
     @Autowired private PacketInfoMapper packetInfoMapper;
+    @Autowired private ConstantConfig constantConfig;
+    @Autowired private PreProcessor preProcessor;
 
     @Override
     public void run(ApplicationArguments args) throws IllegalAccessException, NoSuchFieldException, ProtocolIdNotValidException {
@@ -246,6 +256,7 @@ public class InitConfigurationService implements ApplicationRunner {
                     configDB.isEnable(),configDB.getId()));
         }
 
+        CommonCacheUtil.initIProtocol(preProcessor.getI_protocols());
         /**************************
          *  PRINT INIT RESULT
          ***************************/
@@ -255,5 +266,59 @@ public class InitConfigurationService implements ApplicationRunner {
         //log.info("\n******************** \n size : {} ; ALL_ART_CONFIG : {} \n********************",ArtDecodeCommon.getAllArtConfigs().size(),ArtDecodeCommon.getAllArtConfigs());
         //System.out.println("spring boot admin address : http://your-address:8989");
         //System.out.println("swagger-ui address : http://your-address:your-port/swagger-ui.html#/greeting-controller");
+
+        String virtualNetworkcardName = constantConfig.getVirtual_network();
+        List<String> ipAddress = new ArrayList<>();
+        try {
+            List<NetworkInterface> networkInterfaces = NetworkInterfaceServiceImpl.doGetAllNetworkInterface();
+            for (NetworkInterface networkInterface : networkInterfaces) {
+                if (virtualNetworkcardName != null){
+                    if (virtualNetworkcardName.equals(networkInterface.getDeviceRealName())){
+                        ipAddress.addAll(networkInterface.getIpAddressed());
+                        break;
+                    }
+                }else {
+                    if (networkInterface.getDescription().contains("Npcap Loopback Adapter")) {
+                        virtualNetworkcardName = networkInterface.getDeviceRealName();
+                        ipAddress.addAll(networkInterface.getIpAddressed());
+                        break;
+                    }
+                }
+            }
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+        if (virtualNetworkcardName == null){
+            System.err.println("未检测到回环网卡，报文分析无法进行");
+            throw new PacketDetailServiceNotValidException("未检测到回环网卡，报文分析无法进行");
+        }
+        doStartPacketDetailThread(virtualNetworkcardName,ipAddress);
     }
+
+    private void doStartPacketDetailThread(String virtualLoopback , List<String> ipAddresses) {
+        StringBuilder commandBuilder = new StringBuilder();
+        //ipv6.src != fe80::d19:df03:c48a:11a8 && ip.src != 192.168.232.123
+        String ipV4 = null;
+        for (String ipAddress : ipAddresses) {
+            if (!ipAddress.contains(":")){
+                ipV4 = ipAddress;
+                break;
+            }
+        }
+        assert ipV4 != null;
+        System.out.println("*******************");
+        System.out.println("【回环IP地址】：" + ipV4);
+        System.out.println("*******************");
+        //tshark -i "{device_name}" -T ek -Y "ip.src!=192.168.123.232"
+        commandBuilder.append("tshark -i \"").append(virtualLoopback).append("\"")
+                .append(" -T ek").append(" -Y \"ip.src!=")
+                .append(ipV4).append("\"").append(" -M 1000");
+        try {
+            startHistoryPacketAnalyzeThread(commandBuilder.toString(),virtualLoopback);
+        } catch (PcapNativeException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 }

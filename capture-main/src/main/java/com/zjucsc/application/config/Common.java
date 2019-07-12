@@ -17,7 +17,7 @@ public class Common {
      */
     public static volatile int filterStatement = 0;
 
-    public static int GPLOT_ID = 0;
+    public static int GPLOT_ID = 69;
 
     public static final int SOCKET_IO_PORT = 8081;
 

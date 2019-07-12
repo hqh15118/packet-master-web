@@ -178,10 +178,10 @@ public class PacketDecodeUtil {
 //        else if (protocolStack.endsWith("104asdu")){
 //            return IEC104_ASDU;
 //        }
-//        else if(protocolStack.endsWith("data"))
-//        {
-//            return UDP;
-//        }
+        if(layer.frame_protocols[0].endsWith("data"))
+        {
+            return UDP;
+        }
 //        else{
         return getUnDefinedPacketProtocol(layer.frame_protocols[0]);
 //        }
@@ -304,4 +304,5 @@ public class PacketDecodeUtil {
         }
         return allBytes;
     }
+
 }

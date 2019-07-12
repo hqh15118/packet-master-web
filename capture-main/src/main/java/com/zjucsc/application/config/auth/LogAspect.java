@@ -2,7 +2,7 @@ package com.zjucsc.application.config.auth;
 
 import com.alibaba.fastjson.JSON;
 import com.zjucsc.application.config.ConstantConfig;
-import com.zjucsc.application.config.KafkaConfig;
+import com.zjucsc.application.config.KafkaTopic;
 import com.zjucsc.application.domain.bean.LogBean;
 import com.zjucsc.kafka.KafkaThread;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ import java.util.Date;
 public class LogAspect {
 
     private final KafkaThread<LogBean> LOG_BEAN_SEND_KAFKA_THREAD =
-            KafkaThread.createNewKafkaThread("normal_log", KafkaConfig.SEND_NORMAL_LOG);
+            KafkaThread.createNewKafkaThread("normal_log", KafkaTopic.SEND_NORMAL_LOG);
 
     {
         LOG_BEAN_SEND_KAFKA_THREAD.startService();

@@ -8,6 +8,7 @@ import com.zjucsc.application.domain.bean.CaptureService;
 import com.zjucsc.application.domain.bean.ServiceStatus;
 import com.zjucsc.application.system.service.common_impl.NetworkInterfaceServiceImpl;
 import com.zjucsc.application.system.service.common_iservice.CapturePacketService;
+import com.zjucsc.application.system.service.common_iservice.IPacketService;
 import com.zjucsc.application.tshark.capture.ProcessCallback;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.common.exceptions.OpenCaptureServiceException;
@@ -35,6 +36,7 @@ public class PacketController {
     @Autowired private NetworkInterfaceServiceImpl networkInterfaceService;
     @Autowired private CapturePacketService capturePacketService;
     @Autowired private ConstantConfig constantConfig;
+    @Autowired private IPacketService iPacketService;
 
     @Log
     @ApiOperation(value="开始抓包")
@@ -178,5 +180,15 @@ public class PacketController {
     public BaseResponse getInterfaceStatus(){
         int webSocketState = MainServer.getWebSocketServiceState()?1:0;
         return BaseResponse.OK(new ServiceStatus(webSocketState , Common.hasStartedHost.size() == 0 ? " " : Common.hasStartedHost.get(0)));
+    }
+
+    @ApiOperation("查询报文详细信息")
+    @PostMapping("packet_detail")
+    public BaseResponse getPacketDetail(@RequestBody String rawData){
+        String data = iPacketService.getPacketDetail(rawData);
+        if (data == null){
+            return BaseResponse.OK("解析超时，请重试");
+        }
+        return BaseResponse.OK(data);
     }
 }

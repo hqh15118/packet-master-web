@@ -26,7 +26,6 @@ import com.zjucsc.tshark.handler.DefaultPipeLine;
 import com.zjucsc.tshark.packets.*;
 import com.zjucsc.tshark.pre_processor.BasePreProcessor;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -35,7 +34,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -55,8 +53,8 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     @Autowired private IDeviceService iDeviceService;
 
     //五元kafka发送线程
-    private final KafkaThread<FvDimensionLayer> FV_D_SENDER = KafkaThread.createNewKafkaThread("fv_dimension",KafkaConfig.SEND_ALL_PACKET_FV_DIMENSION);
-    private final KafkaThread<AttackBean> ATTACK_SENDER = KafkaThread.createNewKafkaThread("packet_attack", KafkaConfig.SEND_PACKET_ATTACK);
+    private final KafkaThread<FvDimensionLayer> FV_D_SENDER = KafkaThread.createNewKafkaThread("fv_dimension", KafkaTopic.SEND_ALL_PACKET_FV_DIMENSION);
+    private final KafkaThread<AttackBean> ATTACK_SENDER = KafkaThread.createNewKafkaThread("packet_attack", KafkaTopic.SEND_PACKET_ATTACK);
 
     public CapturePacketServiceImpl(PacketAnalyzeService packetAnalyzeService) {
         this.packetAnalyzeService = packetAnalyzeService;
@@ -581,18 +579,24 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                 public FvDimensionLayer handle(Object t) {
                     //新设备统计
                     FvDimensionLayer layer = ((FvDimensionLayer) t);
-                    Device[] device = CommonCacheUtil.autoAddDevice(layer);      //检测到新设备，推送新设备信息
-                    if (device[0]!=null){
+                    Device device = CommonCacheUtil.autoAddDevice(layer);      //检测到新设备，推送新设备信息
+//                    if (device[0]!=null){
+//                        //come new device
+//                        SocketServiceCenter.updateAllClient(SocketIoEvent.NEW_DEVICE,device[0]);
+//                        //save device async
+//                        iDeviceService.saveOrUpdateDevice(device[0]);
+//                    }
+//                    if (device[1]!=null){
+//                        //come new device
+//                        SocketServiceCenter.updateAllClient(SocketIoEvent.NEW_DEVICE,device[1]);
+//                        //save device async
+//                        iDeviceService.saveOrUpdateDevice(device[1]);
+//                    }
+                    if (device!=null){
                         //come new device
-                        SocketServiceCenter.updateAllClient(SocketIoEvent.NEW_DEVICE,device[0]);
+                        SocketServiceCenter.updateAllClient(SocketIoEvent.NEW_DEVICE,device);
                         //save device async
-                        iDeviceService.saveOrUpdateDevice(device[0]);
-                    }
-                    if (device[1]!=null){
-                        //come new device
-                        SocketServiceCenter.updateAllClient(SocketIoEvent.NEW_DEVICE,device[1]);
-                        //save device async
-                        iDeviceService.saveOrUpdateDevice(device[1]);
+                        iDeviceService.saveOrUpdateDevice(device);
                     }
                     //设备流量统计
                     CommonCacheUtil.addTargetDevicePacket(layer);

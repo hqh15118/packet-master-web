@@ -1,6 +1,5 @@
 package com.zjucsc.application.system.service;
 
-import com.alibaba.fastjson.JSON;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.domain.bean.*;
@@ -14,11 +13,11 @@ import com.zjucsc.socket_io.SocketServiceCenter;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -57,17 +56,16 @@ public class ScheduledService {
 
     private int count = 0;
 
-    @Scheduled(fixedRate = 1000)
+    @Scheduled(fixedDelay = 1000)
+    @Async(value = "common")
     public void commonScheduleService(){
         if (CommonCacheUtil.getScheduleServiceRunningState()){
             count ++;
             if (count >= 5){
-                sendPacketStatisticsMsg();
                 sendGraphInfo();
                 statisticFlow();
                 CommonCacheUtil.updateAttackLog();
                 count = 0;
-                sendDevice2DevicePackets();
             }
             try {
                 sendAllFvDimensionPacket2();
@@ -77,32 +75,38 @@ public class ScheduledService {
         }
     }
 
-    private final HashMap<DeviceForScheduleSend,Map<DeviceForScheduleSend,Integer>>
+    @Scheduled(fixedRate = 5000)
+    @Async("device_schedule_service")
+    public void deviceStatisticsInfo(){
+        if (CommonCacheUtil.getScheduleServiceRunningState()) {
+            sendPacketStatisticsMsg();
+        }
+    }
+
+    @Scheduled(fixedRate = 10000)
+    @Async("d2d_schedule_service")
+    public void device2DevicePacketInfo(){
+        if (CommonCacheUtil.getScheduleServiceRunningState()) {
+            sendDevice2DevicePackets();
+        }
+    }
+
+    private final HashMap<String,Map<String,Integer>>
         D2DPacketInfoMap = new HashMap<>();
     private void sendDevice2DevicePackets() {
         D2DPacketInfoMap.clear();
         CommonCacheUtil.getDeviceToDevicePackets().forEach((dstDevice, deviceAtomicIntegerConcurrentHashMap) -> {
             if (dstDevice.getDeviceType() != 1){
-                DeviceForScheduleSend dstDeviceForScheduleSend = new DeviceForScheduleSend();
-                setScheduleSenderDevice(dstDeviceForScheduleSend,dstDevice);
-                Map<DeviceForScheduleSend,Integer> map = new HashMap<>();
+                Map<String,Integer> map = new HashMap<>();
                 deviceAtomicIntegerConcurrentHashMap.forEach((srcDevice, atomicInteger) -> {
-                    DeviceForScheduleSend deviceForScheduleSend = new DeviceForScheduleSend();
-                    setScheduleSenderDevice(deviceForScheduleSend,srcDevice);
-                    map.put(deviceForScheduleSend,atomicInteger.get());
+                    map.put(srcDevice.getDeviceNumber(),atomicInteger.get());
                 });
-                D2DPacketInfoMap.put(dstDeviceForScheduleSend,map);
+                D2DPacketInfoMap.put(dstDevice.getDeviceNumber(),map);
             }
         });
-        SocketServiceCenter.updateAllClient(SocketIoEvent.DEVICE_2_DEVICE_PACKETS, JSON.toJSONString(D2DPacketInfoMap));
+        SocketServiceCenter.updateAllClient(SocketIoEvent.DEVICE_2_DEVICE_PACKETS, D2DPacketInfoMap);
     }
 
-    private void setScheduleSenderDevice(DeviceForScheduleSend deviceForScheduleSend, Device srcDevice) {
-        deviceForScheduleSend.setDeviceIp(srcDevice.getDeviceIp());
-        deviceForScheduleSend.setDeviceMac(srcDevice.getDeviceMac());
-        deviceForScheduleSend.setDeviceName(srcDevice.getDeviceInfo());
-        deviceForScheduleSend.setDeviceNumber(srcDevice.getDeviceNumber());
-    }
 
     /**
      * 5秒钟发送一次统计信息
@@ -161,7 +165,7 @@ public class ScheduledService {
     private void sendAllFvDimensionPacket2() throws InterruptedException {
         List<FvDimensionLayer> layers = new ArrayList<>(5);
         for (int i = 0; i < 5; i++) {
-            FvDimensionLayer layer = fvDimensionLayers.poll(100, TimeUnit.MILLISECONDS);
+            FvDimensionLayer layer = fvDimensionLayers.poll(200, TimeUnit.MILLISECONDS);
             if (layer!=null){
                 layers.add(layer);
             }else{

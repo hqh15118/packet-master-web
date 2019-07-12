@@ -14,7 +14,7 @@ import static com.zjucsc.application.util.CommonCacheUtil.convertIdToName;
 @Slf4j
 public class CommonConfigUtil {
 
-    public static boolean SHOW_LOG = true;
+    public static boolean SHOW_LOG = false;
 
     public static HashMap<Integer,String> getTargetProtocolAllFuncodeMeaning(String protocol) {
         HashMap<Integer,String> map;

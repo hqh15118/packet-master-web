@@ -1,6 +1,5 @@
 package com.zjucsc.application.tshark.pre_processor;
 
-import com.zjucsc.application.config.PACKET_PROTOCOL;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import com.zjucsc.tshark.packets.PnioPacket;
 import com.zjucsc.tshark.pre_processor.SinglePreProcessor;
@@ -27,5 +26,10 @@ public class PnioPreProcessor extends SinglePreProcessor<PnioPacket> {
     @Override
     public List<String> filterFields() {
         return new ArrayList<>();
+    }
+
+    @Override
+    public String filter() {
+        return " not tcp ";
     }
 }

@@ -77,6 +77,7 @@ public class DeviceServiceImpl extends BaseServiceImpl< Device , DeviceMapper> i
     }
 
     @Override
+    @Async
     public void saveStatisticInfo(Map<String,StatisticInfoSaveBean> map) {
         this.baseMapper.saveStatisticInfo(map, Common.GPLOT_ID);
     }

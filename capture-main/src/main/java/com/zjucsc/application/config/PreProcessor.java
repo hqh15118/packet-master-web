@@ -9,4 +9,5 @@ import java.util.List;
 @Data
 public class PreProcessor {
     private List<String> list;
+    private List<String> i_protocols;
 }
