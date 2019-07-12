@@ -35,10 +35,10 @@ public abstract class BaseOptAnalyzer<T extends BaseOptConfig> implements IOptAt
     }
 
     @Override
-    public AttackBean analyze(FvDimensionLayer layer, Object... objs) {
+    public AttackBean analyze(FvDimensionLayer layer, Map<String,Float> techmap , Object... objs) {
         AttackBean attackBean = null;
         for (T config : configs) {
-            attackBean = doAnalyze(layer,config,objs);
+            attackBean = doAnalyze(layer,techmap,config,objs);
             if (attackBean!=null){
                 return attackBean;
             }
@@ -46,6 +46,6 @@ public abstract class BaseOptAnalyzer<T extends BaseOptConfig> implements IOptAt
         return null;
     }
 
-    public abstract AttackBean doAnalyze(FvDimensionLayer layer, T t, Object... objs);
+    public abstract AttackBean doAnalyze(FvDimensionLayer layer,Map<String,Float>techmap, T t, Object... objs);
 
 }

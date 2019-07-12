@@ -1,7 +1,10 @@
 package com.zjucsc.attack.pn_io;
 
+import com.zjucsc.attack.base.BaseOptAnalyzer;
+import com.zjucsc.attack.base.BaseOptConfig;
 import com.zjucsc.attack.bean.AttackBean;
 import com.zjucsc.attack.common.ArtAttackAnalyzeTask;
+import com.zjucsc.attack.modbus.modbusOpconfig;
 import com.zjucsc.common.common_util.ByteUtil;
 import com.zjucsc.common.common_util.Bytecut;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
@@ -9,21 +12,21 @@ import com.zjucsc.tshark.packets.FvDimensionLayer;
 import java.util.List;
 import java.util.Map;
 
-public class pniooptdecode {
+public class pniooptdecode extends BaseOptAnalyzer<pnioOpconfig> {
 
     private static final int paddinglength = 24;
 
-    public AttackBean attackdecode(FvDimensionLayer layer, pnioOpconfig pnioopconfig, List<String> expression, Map<String,Float> techmap)
+    public AttackBean attackdecode(FvDimensionLayer layer,  Map<String,Float> techmap,pnioOpconfig pnioopconfig)
     {
-        if(ArtAttackAnalyzeTask.attackDecode(expression,techmap,"1")==null)
+        if(ArtAttackAnalyzeTask.attackDecode(pnioopconfig.getExpression(),techmap,"1")==null)
         {
             return null;
         }
-        else if(ArtAttackAnalyzeTask.attackDecode(expression,techmap,"1").equals("配置错误"))
+        else if(ArtAttackAnalyzeTask.attackDecode(pnioopconfig.getExpression(),techmap,"1").equals("配置错误"))
         {
             return new AttackBean.Builder().attackType("配置错误").fvDimension(layer).attackInfo("").build();
         }
-        else if(ArtAttackAnalyzeTask.attackDecode(expression,techmap,"1").equals("1"))
+        else if(ArtAttackAnalyzeTask.attackDecode(pnioopconfig.getExpression(),techmap,"1").equals("1"))
         {
             if(operationdecode(layer,pnioopconfig))
             {
@@ -57,4 +60,10 @@ public class pniooptdecode {
         }
         return false;
     }
+
+    @Override
+    public AttackBean doAnalyze(FvDimensionLayer layer, Map<String,Float> techmap, pnioOpconfig pnioopconfig, Object... objs) {
+        return attackdecode(layer, techmap, pnioopconfig);
+    }
+
 }
