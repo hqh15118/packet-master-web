@@ -1,5 +1,6 @@
 package com.zjucsc.attack.common;
 
+import com.zjucsc.attack.AttackCommon;
 import com.zjucsc.attack.util.AttackAnalyzeUtil;
 import org.junit.Test;
 import redis.clients.jedis.Jedis;

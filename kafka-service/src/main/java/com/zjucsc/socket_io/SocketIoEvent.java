@@ -29,4 +29,6 @@ public class SocketIoEvent {
     public static final String NEW_DEVICE = "new_device";
     //设备到设备的报文
     public static final String DEVICE_2_DEVICE_PACKETS = "d2d_packet";
+    //实时五元组过滤推送
+    public static final String REAL_TIME_PACKET_FILTER = "filter_packet";
 }

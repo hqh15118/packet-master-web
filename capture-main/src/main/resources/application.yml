@@ -62,6 +62,7 @@ hessian-config:
   attack_config : http://${hessian-config.hessian-url}/AttackConfigMapper.hessian
   white_protocol : http://${hessian-config.hessian-url}/WhiteProtocolMapper.hessian
   opt_attack : http://${hessian-config.hessian-url}/OptAttackMapper.hessian
+  device_max_flow : http://${hessian-config.hessian-url}/DeviceMaxFlowMapper.hessian
 
 server:
   port: ${myconfig.packet_master_web_port}

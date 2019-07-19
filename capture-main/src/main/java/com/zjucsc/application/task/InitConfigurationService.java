@@ -9,16 +9,14 @@ import com.zjucsc.application.system.service.common_impl.NetworkInterfaceService
 import com.zjucsc.application.system.service.hessian_iservice.IArtConfigService;
 import com.zjucsc.application.system.service.hessian_iservice.IConfigurationSettingService;
 import com.zjucsc.application.system.service.hessian_iservice.IProtocolIdService;
-import com.zjucsc.application.system.service.hessian_iservice.IWhiteProtocolService;
 import com.zjucsc.application.system.service.hessian_mapper.PacketInfoMapper;
 import com.zjucsc.application.util.AppCommonUtil;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.art_decode.ArtDecodeCommon;
-import com.zjucsc.art_decode.artconfig.OpcuaConfig;
-import com.zjucsc.art_decode.artconfig.S7Config;
 import com.zjucsc.art_decode.base.BaseConfig;
+import com.zjucsc.art_decode.dnp.DNP3Config;
 import com.zjucsc.attack.bean.ArtAttackAnalyzeConfig;
-import com.zjucsc.attack.common.AttackCommon;
+import com.zjucsc.attack.AttackCommon;
 import com.zjucsc.common.exceptions.PacketDetailServiceNotValidException;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.tshark.TsharkCommon;
@@ -29,9 +27,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.net.SocketException;
 import java.util.*;
@@ -60,7 +56,21 @@ public class InitConfigurationService implements ApplicationRunner {
     @Autowired private PreProcessor preProcessor;
 
     @Override
-    public void run(ApplicationArguments args) throws IllegalAccessException, NoSuchFieldException, ProtocolIdNotValidException {
+    public void run(ApplicationArguments args) throws IllegalAccessException, NoSuchFieldException, ProtocolIdNotValidException, IOException {
+        /*
+        List<String> virTempPath = args.getOptionValues("temp");
+        //设置临时文件夹路径
+        String command;
+        if (virTempPath == null) {
+            command = "md C:\\temp\n" +
+                    "setx TEMP C:\\temp";
+            System.out.println("*******************\\n\" + \"program args [temp<--temp>]: \" + C:\\temp");
+        }else{
+            command = "md " + virTempPath.get(0) + " \n" + "setx TEMP " + virTempPath.get(0);
+            System.out.println("*******************\\n\" + \"program args [temp<--temp>]: \" + " + virTempPath.get(0));
+        }
+        Runtime.getRuntime().exec(command);
+        */
         /***************************
          * RELOAD FROM JAR
          ***************************/
@@ -198,10 +208,10 @@ public class InitConfigurationService implements ApplicationRunner {
         }
 
         /***************************
-         * INIT ART DECODER
+         * INIT ART|OPT ATTACK DECODER
          ***************************/
         ArtDecodeCommon.init();
-
+        AttackCommon.init();
         /***************************
          * 初始化工艺参数配置
          **************************/
@@ -257,6 +267,8 @@ public class InitConfigurationService implements ApplicationRunner {
         }
 
         CommonCacheUtil.initIProtocol(preProcessor.getI_protocols());
+
+        initArtTest();
         /**************************
          *  PRINT INIT RESULT
          ***************************/
@@ -293,6 +305,12 @@ public class InitConfigurationService implements ApplicationRunner {
             throw new PacketDetailServiceNotValidException("未检测到回环网卡，报文分析无法进行");
         }
         doStartPacketDetailThread(virtualNetworkcardName,ipAddress);
+
+
+        /**********************************
+         * 初始化DOS攻击配置
+         **********************************/
+
     }
 
     private void doStartPacketDetailThread(String virtualLoopback , List<String> ipAddresses) {
@@ -318,6 +336,19 @@ public class InitConfigurationService implements ApplicationRunner {
         } catch (PcapNativeException e) {
             e.printStackTrace();
         }
+    }
+
+    private void initArtTest(){
+//        DNP3Config dnp3Config = new DNP3Config();
+//        dnp3Config.setProtocol("dnp3");
+//        dnp3Config.setProtocolId(PACKET_PROTOCOL.DNP3_0_PRI_ID);
+//        dnp3Config.setShowGraph(1);
+//        dnp3Config.setTag("Ub");
+//        dnp3Config.setindex(1);
+//        dnp3Config.setObjGroup(30);
+//        ArtDecodeCommon.addArtDecodeConfig(dnp3Config);
+//        StatisticsData.initArtArgs("Ub");
+//        CommonCacheUtil.addShowGraphArg(PACKET_PROTOCOL.DNP3_0_PRI_ID,"Ub");
     }
 
 

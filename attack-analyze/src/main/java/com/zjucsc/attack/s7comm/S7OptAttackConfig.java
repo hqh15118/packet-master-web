@@ -4,30 +4,12 @@ import com.zjucsc.attack.base.BaseOptConfig;
 
 import java.util.List;
 
-public class Operationconfig extends BaseOptConfig {
-    private String opname;
+public class S7OptAttackConfig extends BaseOptConfig {
     private int DBnum;
     private int Byteoffset;
     private int Bitoffset;
     private boolean result;
-    private List<String> expression;
     private String comment;
-
-    public List<String> getExpression() {
-        return expression;
-    }
-
-    public void setExpression(List<String> expression) {
-        this.expression = expression;
-    }
-
-    public void setOpname(String opname) {
-        this.opname = opname;
-    }
-
-    public String getOpname() {
-        return opname;
-    }
 
     public void setResult(boolean result) {
         this.result = result;
@@ -67,13 +49,5 @@ public class Operationconfig extends BaseOptConfig {
 
     public int getDBnum() {
         return DBnum;
-    }
-
-    public String getTechname() {
-        return opname;
-    }
-
-    public void setTechname(String techname) {
-        this.opname = techname;
     }
 }

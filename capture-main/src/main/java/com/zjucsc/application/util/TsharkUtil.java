@@ -94,7 +94,9 @@ public class TsharkUtil {
                     String content = bfReader.readLine();
                     if (content.length() > 90){
                         PacketDetail detail = JSON.parseObject(content,PacketDetail.class);
-                        historyPacketCallback.callback(detail.getLayers().getExt().getExt_custom_ext_raw_data(),content);
+                        if (historyPacketCallback!=null) {
+                            historyPacketCallback.callback(detail.getLayers().getExt().getExt_custom_ext_raw_data(), content);
+                        }
                     }
                 }
             }catch (Exception e){

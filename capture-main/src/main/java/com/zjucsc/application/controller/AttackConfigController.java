@@ -9,20 +9,18 @@ import com.zjucsc.application.config.auth.Log;
 import com.zjucsc.application.domain.bean.*;
 import com.zjucsc.application.domain.non_hessian.DeviceMaxFlow;
 import com.zjucsc.application.domain.bean.RightPacketInfo;
+import com.zjucsc.application.system.service.hessian_mapper.DeviceMaxFlowMapper;
 import com.zjucsc.application.system.service.hessian_mapper.OptAttackMapper;
 import com.zjucsc.application.system.service.hessian_mapper.PacketInfoMapper;
-import com.zjucsc.application.util.AppCommonUtil;
 import com.zjucsc.application.util.CommonCacheUtil;
-import com.zjucsc.art_decode.ArtDecodeCommon;
-import com.zjucsc.art_decode.artconfig.IEC104Config;
-import com.zjucsc.art_decode.artconfig.ModBusConfig;
-import com.zjucsc.art_decode.artconfig.PnioConfig;
-import com.zjucsc.art_decode.artconfig.S7Config;
-import com.zjucsc.art_decode.base.BaseConfig;
+import com.zjucsc.application.util.ConfigUtil;
 import com.zjucsc.attack.base.BaseOptConfig;
 import com.zjucsc.attack.bean.ArtAttackAnalyzeConfig;
 import com.zjucsc.attack.bean.AttackConfig;
-import com.zjucsc.attack.common.AttackCommon;
+import com.zjucsc.attack.AttackCommon;
+import com.zjucsc.attack.modbus.ModbusOptConfig;
+import com.zjucsc.attack.pn_io.PnioOptConfig;
+import com.zjucsc.attack.s7comm.S7OptAttackConfig;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +41,7 @@ public class AttackConfigController {
 
     @Autowired private PacketInfoMapper packetInfoMapper;
     @Autowired private OptAttackMapper optAttackMapper;
+    @Autowired private DeviceMaxFlowMapper deviceMaxFlowMapper;
     /**
      * 配置一定时间内的最大流量，超过报警
      * @param flowInByte
@@ -53,25 +52,54 @@ public class AttackConfigController {
     @Log
     public BaseResponse configMaxFlow(@RequestParam int flowInByte){
         Common.maxFlowInByte = flowInByte;
+        ConfigUtil.setData("max_flow",String.valueOf(flowInByte));
         return BaseResponse.OK();
+    }
+
+    @GetMapping("get_max_flow")
+    @ApiOperation("获取配置过的一定时间内的总最大流量")
+    public BaseResponse getConfigurationMaxFlow(){
+        return BaseResponse.OK(Common.maxFlowInByte);
     }
 
     @ApiOperation("配置一定时间内的设备的最大流量，超过报警")
     @PostMapping("device_max_flow")
     @Log
     public BaseResponse configMaxFlowOfDevice(@RequestBody DeviceMaxFlow deviceMaxFlow){
+        deviceMaxFlowMapper.insertByDeviceNumber(deviceMaxFlow);
         StatisticsData.addDeviceMaxFlowConfig(deviceMaxFlow);
         return BaseResponse.OK();
     }
 
     @ApiOperation("DOS攻击配置")
-    @PostMapping("dos_config")
+    @PostMapping("new_dos_config")
     public BaseResponse dosConfig(@RequestBody DosConfig dosConfig) {
         AttackConfig.setCoSiteTimeGap(dosConfig.getCoSiteTime());
         AttackConfig.setCoSiteNum(dosConfig.getCoSiteNum());
         AttackConfig.setMultiSiteNum(dosConfig.getMulSiteNum());
         AttackConfig.setMultiSiteTimeGap(dosConfig.getMulSiteTime());
+        ConfigUtil.setData("cosite_timegap",String.valueOf(dosConfig.getCoSiteTime()));
+        ConfigUtil.setData("cosite_num",String.valueOf(dosConfig.getCoSiteNum()));
+        ConfigUtil.setData("multisite_timegap",String.valueOf(dosConfig.getMulSiteTime()));
+        ConfigUtil.setData("multisite_num",String.valueOf(dosConfig.getMulSiteNum()));
         return BaseResponse.OK();
+    }
+
+    @ApiOperation("获取Dos攻击配置")
+    @GetMapping("get_dos_config")
+    public BaseResponse getDosConfigs(){
+        DosConfig dosConfig = new DosConfig();
+        dosConfig.setCoSiteNum(AttackConfig.getCoSiteNum());
+        dosConfig.setCoSiteTime(AttackConfig.getCoSiteTimeGap());
+        dosConfig.setMulSiteTime(AttackConfig.getMultiSiteTimeGap());
+        dosConfig.setMulSiteNum(AttackConfig.getMultiSiteNum());
+        return BaseResponse.OK(dosConfig);
+    }
+
+    @ApiOperation("获取设备配置的最大流量")
+    @GetMapping("get_device_max_flow")
+    public BaseResponse deviceMaxFlow(@RequestParam String deviceNumber){
+        return BaseResponse.OK(deviceMaxFlowMapper.selectByDeviceNumber(deviceNumber));
     }
 
     @ApiOperation("攻击报文已处理")
@@ -152,29 +180,34 @@ public class AttackConfigController {
         String jsonData = sb.toString();
         BaseOptConfig baseConfig = JSON.parseObject(jsonData,BaseOptConfig.class);
         int protocolId = baseConfig.getProtocolId();
+        optAttackMapper.addOrUpdateAllOptAttackConfigByProtocolAndId(baseConfig.getProtocolId(),baseConfig.getId(),jsonData);
         if (protocolId == PACKET_PROTOCOL.S7_ID){
-
+            S7OptAttackConfig s7OptAttackConfig = JSON.parseObject(jsonData,S7OptAttackConfig.class);
+            AttackCommon.addOptAttackConfig(s7OptAttackConfig);
         }else if (protocolId == PACKET_PROTOCOL.MODBUS_ID){
-
-        }else {
-
+            ModbusOptConfig modbusOptConfig = JSON.parseObject(jsonData,ModbusOptConfig.class);
+            AttackCommon.addOptAttackConfig(modbusOptConfig);
+        }else if (protocolId == PACKET_PROTOCOL.PN_IO_ID){
+            PnioOptConfig pnioOptConfig = JSON.parseObject(jsonData,PnioOptConfig.class);
+            AttackCommon.addOptAttackConfig(pnioOptConfig);
         }
         return BaseResponse.OK();
     }
 
     @ApiOperation("删除协议操作攻击配置")
     @PostMapping("delete_opt_config")
-    public BaseResponse deleteOptAttackConfig(@RequestBody OptAttackF attackF) throws ProtocolIdNotValidException {
-        String protocol = CommonCacheUtil.convertIdToName(attackF.getProtocolId());
-        optAttackMapper.deleteOptAttackConfigById(protocol,attackF.getId());
+    public BaseResponse deleteOptAttackConfig(@RequestBody OptAttackF attackF) {
+        BaseOptConfig baseOptConfig = optAttackMapper.deleteOptAttackConfigById(attackF.getProtocolId(),attackF.getId());
+        AttackCommon.deleteOptAttackConfig(baseOptConfig);
         return BaseResponse.OK();
     }
 
+    @Log
     @ApiOperation("查询协议操作攻击配置")
-    @GetMapping("opt_configs")
-    public BaseResponse getAllOptAttackConfigsByProtocol(@RequestParam int protocolId) throws ProtocolIdNotValidException {
-        String protocol = CommonCacheUtil.convertIdToName(protocolId);
-        List configs = optAttackMapper.selectAllOptAttackConfigByProtocol(protocol);
+    @PostMapping("opt_configs")
+    public BaseResponse getAllOptAttackConfigsByProtocol(@RequestBody OptAttackPage optAttackPage) {
+        List configs = optAttackMapper.selectAllOptAttackConfigByProtocol(optAttackPage.getProtocolId() , optAttackPage.getPage() ,
+                optAttackPage.getLimit());
         return BaseResponse.OK(configs);
     }
 }

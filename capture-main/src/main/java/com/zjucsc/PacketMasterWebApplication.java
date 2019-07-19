@@ -22,10 +22,10 @@ import java.io.IOException;
 @Slf4j
 public class PacketMasterWebApplication{
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         String str = TsharkUtil.checkTsharkValid();
         if (str == null) {
-            System.err.println("tshark not in system PATH,application failed to start");
+            System.err.println("tshark is not in system PATH , application failed to start");
             return;
         }else{
             TsharkUtil.setTsharkPath(str);
@@ -43,5 +43,4 @@ public class PacketMasterWebApplication{
         }
         SpringApplication.run(PacketMasterWebApplication.class, args);
     }
-
 }

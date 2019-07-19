@@ -37,8 +37,6 @@ public class S7CommPreProcessor extends SinglePreProcessor<S7CommPacket> {
         };
     }
 
-    private S7CommPacket.LayersBean layersBean;
-
     @Override
     public FvDimensionLayer decode(S7CommPacket packetInstance) {
         return packetInstance.layersX;

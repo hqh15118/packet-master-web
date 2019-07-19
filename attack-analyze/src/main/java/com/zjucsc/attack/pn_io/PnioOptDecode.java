@@ -1,22 +1,19 @@
 package com.zjucsc.attack.pn_io;
 
 import com.zjucsc.attack.base.BaseOptAnalyzer;
-import com.zjucsc.attack.base.BaseOptConfig;
 import com.zjucsc.attack.bean.AttackBean;
 import com.zjucsc.attack.common.ArtAttackAnalyzeTask;
-import com.zjucsc.attack.modbus.modbusOpconfig;
 import com.zjucsc.common.common_util.ByteUtil;
 import com.zjucsc.common.common_util.Bytecut;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 
-import java.util.List;
 import java.util.Map;
 
-public class pniooptdecode extends BaseOptAnalyzer<pnioOpconfig> {
+public class PnioOptDecode extends BaseOptAnalyzer<PnioOptConfig> {
 
     private static final int paddinglength = 24;
 
-    public AttackBean attackdecode(FvDimensionLayer layer,  Map<String,Float> techmap,pnioOpconfig pnioopconfig)
+    public AttackBean attackdecode(FvDimensionLayer layer, Map<String,Float> techmap, PnioOptConfig pnioopconfig)
     {
         if(ArtAttackAnalyzeTask.attackDecode(pnioopconfig.getExpression(),techmap,"1")==null)
         {
@@ -36,7 +33,7 @@ public class pniooptdecode extends BaseOptAnalyzer<pnioOpconfig> {
         return null;
     }
 
-    private boolean operationdecode(FvDimensionLayer layer,pnioOpconfig pnioopconfig)
+    private boolean operationdecode(FvDimensionLayer layer, PnioOptConfig pnioopconfig)
     {
         if(layer==null || pnioopconfig==null)
         {
@@ -62,7 +59,7 @@ public class pniooptdecode extends BaseOptAnalyzer<pnioOpconfig> {
     }
 
     @Override
-    public AttackBean doAnalyze(FvDimensionLayer layer, Map<String,Float> techmap, pnioOpconfig pnioopconfig, Object... objs) {
+    public AttackBean doAnalyze(FvDimensionLayer layer, Map<String,Float> techmap, PnioOptConfig pnioopconfig, Object... objs) {
         return attackdecode(layer, techmap, pnioopconfig);
     }
 

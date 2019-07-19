@@ -17,18 +17,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class AttackAnalyzeUtil {
 
-    /*********************************
-     *
-     * 统一以【纳秒】为单位
-     *
-     ********************************/
-
-    private static final List<IAttack> ATTACK_LIST
-            = Arrays.asList(
-            new CositeDOSAttackAnalyzer(new ConcurrentHashMap<>()),
-            new MultisiteDOSAttackAnalyzer(new MultisiteDOSAttackAnalyzeList())
-    );
-
     /**
      * @param oldTimeStamp 旧报文时间戳 ns
      * @param newTimeStamp 新报文时间戳 ns

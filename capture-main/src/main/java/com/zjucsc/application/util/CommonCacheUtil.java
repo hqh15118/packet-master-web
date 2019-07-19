@@ -6,6 +6,7 @@ import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.bean.Device;
 import com.zjucsc.application.domain.bean.StatisticInfoSaveBean;
 import com.zjucsc.application.domain.bean.RightPacketInfo;
+import com.zjucsc.application.domain.non_hessian.FvDimensionFilterCondition;
 import com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
 import com.zjucsc.common.common_util.CommonUtil;
@@ -15,13 +16,12 @@ import com.zjucsc.socket_io.SocketServiceCenter;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import io.netty.util.internal.ThreadLocalRandom;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
-
-import static com.zjucsc.application.config.Common.*;
 
 @Slf4j
 public class CommonCacheUtil {
@@ -153,7 +153,6 @@ public class CommonCacheUtil {
                 funcodeMeaningMap.put(funcode, opt);
             }
         }
-        log.info("update PROTOCOL_STR_TO_INT protocol : {} funcode : {}  opt : {}", protocolId, funcode, opt);
     }
 
 
@@ -174,7 +173,6 @@ public class CommonCacheUtil {
      * @return 协议名字
      * @throws ProtocolIdNotValidException 未发现指定协议ID
      */
-
     public static String convertIdToName(int protocolId) throws ProtocolIdNotValidException {
         if (PROTOCOL_STR_TO_INT.get(protocolId) == null) {
             throw new ProtocolIdNotValidException(protocolId + " << PROTOCOL ID not exist and the PROTOCOL_STR_TO_INT is : \n" + PROTOCOL_STR_TO_INT);
@@ -274,15 +272,12 @@ public class CommonCacheUtil {
 
     public static void addShowGraphArg(int protocolId, String artArg) {
         SHOW_GRAPH_SET.add(artArg);
-        log.info("添加图表展示：协议 {} 下，工艺参数 {} ", protocolId, artArg);
     }
 
     public static boolean removeShowGraph(int protocolId, String artArg) {
         if (SHOW_GRAPH_SET.remove(artArg)) {
-            log.info("取消协议 {} 下，工艺参数 {} 图表展示", protocolId, artArg);
             return true;
         } else {
-            log.info("取消协议 {} 下，工艺参数 {} 图表展示失败，缓存中不存在名为{}的key值", protocolId, artArg, artArg);
             return false;
         }
     }
@@ -520,7 +515,7 @@ public class CommonCacheUtil {
 //                CommonCacheUtil.addDeviceNumberToName(dstDevice.getDeviceNumber(), dstDevice.getDeviceInfo());
 //            }
 //        }
-        if (CommonCacheUtil.iProtocolExist(layer.protocol) && DeviceOptUtil.validPacketInfo(layer)){
+        if (/*CommonCacheUtil.iProtocolExist(layer.protocol) && */DeviceOptUtil.validPacketInfo(layer)){
             String deviceTag = DeviceOptUtil.getSrcDeviceTag(layer);
             if (!ALL_DEVICES.containsKey(deviceTag)) {
                     Device srcDevice;
@@ -531,10 +526,23 @@ public class CommonCacheUtil {
                     CommonCacheUtil.addDeviceNumberToName(srcDevice.getDeviceNumber(), srcDevice.getDeviceInfo());
                     return srcDevice;
             }
-        }else{
+        }
+        /*
+        else{
+            String deviceTag = DeviceOptUtil.getSrcDeviceTag(layer);
             CommonCacheUtil.addDropProtocol(layer.protocol);
+            if (!ALL_DEVICES.containsKey(deviceTag)) {
+                Device srcDevice;
+                //srcDevice = createDeviceInverse(layer, deviceTag);
+                //ALL_DEVICES.put(srcDevice.getDeviceTag(), srcDevice);
+                //new device
+                //CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(srcDevice.getDeviceNumber(), srcDevice.getDeviceTag());
+                //CommonCacheUtil.addDeviceNumberToName(srcDevice.getDeviceNumber(), srcDevice.getDeviceInfo());
+                return addUnKnownDevice(deviceTag,layer);
+            }
         }
         //return new Device[]{dstDevice,srcDevice};
+        */
         return null;
     }
     private static Device getDeviceByTag(String deviceTag){
@@ -544,21 +552,6 @@ public class CommonCacheUtil {
         return ALL_DEVICES;
     }
     private static final ThreadLocalRandom threadLocalRandom = ThreadLocalRandom.current();
-    private static Device createDevice(FvDimensionLayer layer){
-        StringBuilder sb = CommonUtil.getGlobalStringBuilder();
-        long timeNow = System.nanoTime();
-        Device device = new Device();
-        sb.append("设备").append(CommonUtil.getDateFormat2().format(new Date()))
-        .append("_").append(threadLocalRandom.nextInt(10000));
-        device.setDeviceInfo(sb.toString());
-        device.setDeviceNumber(String.valueOf(timeNow));
-        device.setDeviceType(1);
-        device.setDeviceMac(layer.eth_dst[0]);
-        device.setDeviceTag(layer.ip_dst[0].equals("--")?layer.eth_dst[0] : layer.ip_dst[0]);
-        device.setGPlotId(Common.GPLOT_ID);
-        device.setDeviceIp(layer.ip_dst[0]);
-        return device;
-    }
 
     /**
      * 根据源地址创建设备
@@ -589,23 +582,22 @@ public class CommonCacheUtil {
             = new ConcurrentHashMap<>();
 
     public static void addTargetDevicePacket(FvDimensionLayer layer){
-        if (!layer.eth_dst[0].equals("ff:ff:ff:ff:ff:ff")) {
-            String srcTag = DeviceOptUtil.getSrcDeviceTag(layer);
-            Device srcDevice = getDeviceByTag(srcTag);        //发送设备
-            String dstTag = DeviceOptUtil.getDstDeviceTag(layer);
-            Device dstDevice = getDeviceByTag(dstTag);        //接收设备
-            if (srcDevice!=null && dstDevice!=null) {
-                ConcurrentHashMap<Device, AtomicInteger> device2PacketNum = DEVICE_TO_DEVICE_PACKETS.get(dstDevice);
-                if (device2PacketNum == null) {
-                    device2PacketNum = new ConcurrentHashMap<>();
-                    DEVICE_TO_DEVICE_PACKETS.put(dstDevice, device2PacketNum);
-                }
-                AtomicInteger atomicInteger = device2PacketNum.putIfAbsent(srcDevice, new AtomicInteger(1));
-                if (atomicInteger != null) {
-                    atomicInteger.incrementAndGet();
-                }
+        String srcTag = DeviceOptUtil.getSrcDeviceTag(layer);
+        Device srcDevice = getDeviceByTag(srcTag);        //发送设备
+        String dstTag = DeviceOptUtil.getDstDeviceTag(layer);
+        Device dstDevice = getDeviceByTag(dstTag);        //接收设备
+        if (srcDevice!=null && dstDevice!=null) {
+            ConcurrentHashMap<Device, AtomicInteger> device2PacketNum = DEVICE_TO_DEVICE_PACKETS.get(dstDevice);
+            if (device2PacketNum == null) {
+                device2PacketNum = new ConcurrentHashMap<>();
+                DEVICE_TO_DEVICE_PACKETS.put(dstDevice, device2PacketNum);
+            }
+            AtomicInteger atomicInteger = device2PacketNum.putIfAbsent(srcDevice, new AtomicInteger(1));
+            if (atomicInteger != null) {
+                atomicInteger.incrementAndGet();
             }
         }
+
     }
 
     public static ConcurrentHashMap<Device,ConcurrentHashMap<Device, AtomicInteger>> getDeviceToDevicePackets(){
@@ -634,6 +626,66 @@ public class CommonCacheUtil {
         return ALL_DROP_PROTOCOL.keySet();
     }
 
+    /************************************
+     * 所有的未知设备
+     ***********************************/
+//    private static final ConcurrentHashMap<String, Device> UNKNOWN_DEVICE_CONCURRENT_HASH_MAP
+//            = new ConcurrentHashMap<>();
+//    public static Device addUnKnownDevice(String deviceTag,FvDimensionLayer layer){
+//        UNKNOWN_DEVICE_CONCURRENT_HASH_MAP.putIfAbsent(deviceTag,createUnknownDevice(layer));
+//        return UNKNOWN_DEVICE_CONCURRENT_HASH_MAP.get(deviceTag);
+//    }
+//    public static void transferUnKnownDeviceToKnownDevice(String deviceTag){
+//        Device device = UNKNOWN_DEVICE_CONCURRENT_HASH_MAP.remove(deviceTag);
+//        addOrUpdateDeviceManually(device);
+//    }
+    private static Device createUnknownDevice(FvDimensionLayer layer){
+        StringBuilder sb = CommonUtil.getGlobalStringBuilder();
+        long timeNow = System.nanoTime();
+        Device device = new Device();
+        sb.append("未知设备").append(CommonUtil.getDateFormat2().format(new Date()))
+                .append("_").append(threadLocalRandom.nextInt(10000));
+        device.setDeviceInfo(sb.toString());
+        device.setDeviceNumber(String.valueOf(timeNow));
+        device.setDeviceType(-1);
+        device.setDeviceMac(layer.eth_dst[0]);
+        device.setDeviceTag(layer.ip_dst[0].equals("--")?layer.eth_dst[0] : layer.ip_dst[0]);
+        device.setGPlotId(Common.GPLOT_ID);
+        device.setDeviceIp(layer.ip_dst[0]);
+        return device;
+    }
 
-    //private static final ConcurrentHashMap<String,AtomicInteger>
+    /*************************************
+     * 实时五元组过滤规则
+     ************************************/
+    private static FvDimensionFilterCondition fvDimensionFilterCondition;
+    public static void addOrUpdateFvDimensionFilterCondition(FvDimensionFilterCondition fvDimensionFilterCondition){
+        CommonCacheUtil.fvDimensionFilterCondition = fvDimensionFilterCondition;
+    }
+    public static boolean realTimeFvDimensionFilter(FvDimensionLayer layer){
+        if (fvDimensionFilterCondition == null){
+            return false;
+        }
+        return match(fvDimensionFilterCondition.getSrcMac(),layer.eth_src[0])&&
+            match(fvDimensionFilterCondition.getSrcIp(),layer.ip_src[0])&&
+            match(fvDimensionFilterCondition.getSrcPort(),layer.src_port[0])&&
+            match(fvDimensionFilterCondition.getDstMac(),layer.eth_dst[0])&&
+            match(fvDimensionFilterCondition.getDstIp(),layer.ip_dst[0])&&
+            match(fvDimensionFilterCondition.getDstPort(),layer.dst_port[0])&&
+            match(fvDimensionFilterCondition.getProtocol(),layer.protocol)&&
+            match(fvDimensionFilterCondition.getFunCode(),layer.funCode);
+    }
+
+    /**
+     * @param matcher 匹配规则
+     * @param matchor 被匹配
+     * @return
+     */
+    private static boolean match(String matcher,String matchor){
+        if (StringUtils.isBlank(matcher)){
+            return true;
+        }else{
+            return matcher.equals(matchor);
+        }
+    }
 }

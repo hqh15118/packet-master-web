@@ -17,6 +17,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -116,7 +117,6 @@ public class ScheduledService {
         SEND_CONSUMER.setTimeStamp(new Date().toString());
         //将之前的统计信息置0
         CommonCacheUtil.resetSaveBean();
-
         final HashMap<String,Integer> DELAY_INFO = packetAnalyzeService.getCollectorNumToDelayList();
         ATTACK_BY_DEVICE.forEach(SEND_CONSUMER.setMap(attackByDevice , 1));
         EXCEPTION_BY_DEVICE.forEach(SEND_CONSUMER.setMap(exceptionByDevice , 2));
@@ -144,7 +144,21 @@ public class ScheduledService {
         iDeviceService.saveStatisticInfo(CommonCacheUtil.getStatisticsInfoBean());
     }
 
-
+    @Scheduled(cron = "0 0 0 * * ? *")
+    public void deletePcapFileScheduled(){
+        File file = new File(Common.WIRESHARK_TEMP_FILE);
+        File[] files = file.listFiles();
+        if (files!=null) {
+            for (File tempFile : files) {
+                if (tempFile.getName().startsWith("wireshark")) {//wireshark temp pcap file
+                    File file1 = new File(tempFile.getAbsolutePath());
+                    if(file1.delete()){
+                        System.out.println("成功删除【wireshark】临时文件" + file1.getAbsolutePath());
+                    } //如果文件正在被占用，那么会先删除失败，没关系第二天继续尝试就好了
+                }
+            }
+        }
+    }
     //@Scheduled(fixedRate = 1000)
 //    private void sendAllFvDimensionPacket() throws InterruptedException {
 //        layers.clear();

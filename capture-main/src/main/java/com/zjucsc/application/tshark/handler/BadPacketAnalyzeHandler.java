@@ -11,7 +11,7 @@ import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.PacketDecodeUtil;
 import com.zjucsc.art_decode.ArtDecodeCommon;
 import com.zjucsc.attack.bean.AttackBean;
-import com.zjucsc.attack.common.AttackCommon;
+import com.zjucsc.attack.AttackCommon;
 import com.zjucsc.attack.common.AttackTypePro;
 import com.zjucsc.tshark.handler.AbstractAsyncHandler;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
@@ -38,34 +38,6 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
         FvDimensionLayer layer = ((FvDimensionLayer) t);
         //五元组分析
         protocolAnalyze(layer);
-
-        //工艺参数分析
-        byte[] tcpPayload = PacketDecodeUtil.hexStringToByteArray(layer.tcp_payload[0]);
-        Map<String,Float> res = AppCommonUtil.getGlobalArtMap();
-        String protocol = layer.protocol;
-        if (protocol.startsWith("s7comm")){
-            if (!layer.tcp_flags_ack[0].equals("") || Common.systemRunType == 0){
-                res =  ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,"s7comm",1);
-            }else{
-                res =  ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),layer.rawData,"s7comm",0);
-            }
-        }else if (protocol.equals(PACKET_PROTOCOL.MODBUS)){
-            res = ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.protocol);
-        }else if (protocol.equals(PACKET_PROTOCOL.PN_IO)){
-            res = ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),layer.rawData,layer.protocol);
-        }else if (protocol.equals(PACKET_PROTOCOL.IEC104_ASDU)){
-            res = ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.protocol);
-        }else if (protocol.equals(PACKET_PROTOCOL.OPC_UA)){
-            res = ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.protocol,layer);
-        }
-        else{
-
-        }
-        //分析结果
-        //res可能为null
-        //数据发送
-        StatisticsData.addArtMapData(res);
-        AttackCommon.appendArtAnalyze(res,layer);
         return null;
     }
 
@@ -84,6 +56,14 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
             operationAnalyze(layer);
         }else {
             if ((fiveDimensionAnalyzer = CommonCacheUtil.getFvDimensionFilter(layer)) != null) {
+                //sniff
+                //eth:llc:data
+                String protocolStack = layer.frame_protocols[0];
+                if (protocolStack.length() >= 8 && protocolStack.charAt(4) == 'l' && protocolStack.charAt(5) == 'l'
+                        && protocolStack.charAt(6) == 'c' && layer.rawData[14]==(byte)0xaa && layer.rawData[15]==(byte)0xaa ){
+                    AttackCommon.appendFvDimensionError(AttackBean.builder().attackType(AttackTypePro.SNIFF_ATTACK)
+                            .fvDimension(layer).build());
+                }
                 AttackBean attackBean = ((AttackBean) fiveDimensionAnalyzer.analyze(layer));
                 if (attackBean != null) {
                     String deviceNumber = CommonCacheUtil.getTargetDeviceNumberByTag(layer.ip_dst[0], layer.eth_dst[0]);

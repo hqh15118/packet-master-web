@@ -38,7 +38,6 @@ public interface ArtConfigMapper extends BaseMapper<BaseArtConfig> {
      */
     BaseArtConfig delArtConfigByProtocolIdAndId(int protocolId, int id);
 
-
     BaseArtConfig getArtConfigByProtocolIdAndId(int protocolId, int id);
 
     Map<String, List<ArtShowState>> selectAllArtConfigShowState();

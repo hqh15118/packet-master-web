@@ -4,12 +4,15 @@ import com.zjucsc.application.config.auth.Log;
 import com.zjucsc.application.domain.bean.BaseResponse;
 import com.zjucsc.application.domain.bean.DeviceProtocol;
 import com.zjucsc.application.domain.bean.Rule;
+import com.zjucsc.application.domain.non_hessian.FvDimensionFilterCondition;
 import com.zjucsc.application.system.service.hessian_iservice.IFvDimensionFilterService;
 import com.zjucsc.application.util.CommonCacheUtil;
+import com.zjucsc.application.util.ConfigUtil;
 import com.zjucsc.common.exceptions.DeviceNotValidException;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import sun.security.krb5.Config;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
@@ -68,5 +71,21 @@ public class FvDimensionFilterController {
     public BaseResponse loadFvDimensionPacketRuleCached(@RequestParam String deviceNumber) throws DeviceNotValidException, ExecutionException, InterruptedException {
         CompletableFuture<List<Rule>> future =  iFvDimensionFilterService.getTargetExistIdFilter(deviceNumber , true);
         return BaseResponse.OK(future.get());
+    }
+
+
+    @ApiOperation("实时五元组过滤规则")
+    @PostMapping("filter_rule")
+    public BaseResponse addRealTimeFilterRule(@RequestBody FvDimensionFilterCondition fvDimensionFilterCondition){
+        ConfigUtil.setData("filter_src_mac",fvDimensionFilterCondition.getSrcMac());
+        ConfigUtil.setData("filter_src_ip",fvDimensionFilterCondition.getSrcIp());
+        ConfigUtil.setData("filter_src_port",fvDimensionFilterCondition.getSrcPort());
+        ConfigUtil.setData("filter_dst_mac",fvDimensionFilterCondition.getDstMac());
+        ConfigUtil.setData("filter_dst_ip",fvDimensionFilterCondition.getDstIp());
+        ConfigUtil.setData("filter_dst_port",fvDimensionFilterCondition.getDstPort());
+        ConfigUtil.setData("filter_protocol",fvDimensionFilterCondition.getProtocol());
+        ConfigUtil.setData("filter_funcode",fvDimensionFilterCondition.getFunCode());
+        CommonCacheUtil.addOrUpdateFvDimensionFilterCondition(fvDimensionFilterCondition);
+        return BaseResponse.OK();
     }
 }

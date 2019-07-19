@@ -15,9 +15,6 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
 
 public class TsharkCommon {
-
-    public final static ConcurrentHashMap<Integer, CollectorState> COLLECTOR_STATE_MAP = new ConcurrentHashMap<>();
-
     public static String OS_NAME = System.getProperty("os.name");
 
     public static String filter = "tcp";
@@ -26,7 +23,7 @@ public class TsharkCommon {
 
     public static String s7comm_filter = null;
 
-    public static String sessionReset = "10000";
+    public static String sessionReset = "100000";
 
     public static Thread.UncaughtExceptionHandler uncaughtExceptionHandler
             = (t, e) -> System.out.println("thread " + t.getName() + " caught an exception " + e);

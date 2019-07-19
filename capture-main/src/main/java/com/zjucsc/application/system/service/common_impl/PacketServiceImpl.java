@@ -23,7 +23,6 @@ public class PacketServiceImpl implements IPacketService {
         try {
             TsharkUtil.analyzeHistoryPacket(customPacket, (rawData1, content) -> {
                 analyzeResultQueue.add(content);
-                System.out.println(content);
             });
         } catch (PcapNativeException | NotOpenException e) {
             e.printStackTrace();

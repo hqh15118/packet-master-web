@@ -1,7 +1,9 @@
 package com.zjucsc.attack.analyze.analyzer_util;
 
 import com.zjucsc.attack.bean.AttackConfig;
+import com.zjucsc.attack.bean.AttackConfigByDevice;
 import com.zjucsc.attack.bean.MultisiteFvDimensionAttackWrapper;
+import com.zjucsc.attack.util.AttackCacheUtil;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 
 import java.util.LinkedHashSet;
@@ -29,14 +31,19 @@ public class MultisiteDOSAttackAnalyzeList extends TcpAttackAnalyzeList {
         hashSet.clear();
         long timeStamp;
         for (int i = index - 1; i >= 0 ; i--) {
-            timeStamp = fvDimensionLayers.get(i).timeStampInLong;
-            while ((timeStamp - fvDimensionLayers.getLast().timeStampInLong) > AttackConfig.getMultiSiteTimeGap()){
+            FvDimensionLayer targetLayer = fvDimensionLayers.get(i);
+            timeStamp = targetLayer.timeStampInLong;
+            AttackConfigByDevice attackConfigByDevice = AttackCacheUtil.getAttackConfigByDevice(targetLayer.ip_dst[0]);
+            if (attackConfigByDevice == null){
+                return null;
+            }
+            while ((timeStamp - fvDimensionLayers.getLast().timeStampInLong) > attackConfigByDevice.getMulsiteTime()){
                 fvDimensionLayers.removeLast();
             }
             for (FvDimensionLayer fvDimensionLayer : fvDimensionLayers) {
                 hashSet.add(new MultisiteFvDimensionAttackWrapper(fvDimensionLayer));
             }
-            if ((hashSet.size() - i) >= AttackConfig.getMultiSiteNum()){
+            if ((hashSet.size() - i) >= attackConfigByDevice.getMulsiteNum()){
                 if (AttackConfig.debug) {
                     System.out.println("-------------");
                     System.out.println("multi attack");

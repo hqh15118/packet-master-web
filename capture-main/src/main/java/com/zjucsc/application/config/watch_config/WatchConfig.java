@@ -45,7 +45,6 @@ public class WatchConfig {
             clientStrings.add(client.getRemoteAddress().toString());
         }
         map.put("SOCKET-IO-CLIENT", clientStrings);
-        map.put("ALL_ART_CONFIG", ArtDecodeCommon.getAllArtConfigs());
         map.put("ART_DATA",AppCommonUtil.getGlobalArtMap());
         map.put("TSHARK-FILTER-S7COMM",tsharkConfig.getS7comm_filter());
         map.put("TSHARK-FILTER-MODBUS",tsharkConfig.getModbus_filter());

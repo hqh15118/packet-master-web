@@ -30,7 +30,7 @@ public class HessianConfig {
     private String attack_config;
     private String white_protocol;
     private String opt_attack;
-
+    private String device_max_flow;
 
     @Bean
     public ArtHistoryDataMapper artHistoryHessianBean() throws MalformedURLException {
@@ -100,5 +100,10 @@ public class HessianConfig {
     @Bean
     public OptAttackMapper optAttackMapperBean() throws MalformedURLException {
         return (OptAttackMapper) new HessianProxyFactory().create(OptAttackMapper.class, opt_attack);
+    }
+
+    @Bean
+    public DeviceMaxFlowMapper deviceMaxFlowMapperBean() throws MalformedURLException {
+        return (DeviceMaxFlowMapper) new HessianProxyFactory().create(DeviceMaxFlowMapper.class,device_max_flow);
     }
 }

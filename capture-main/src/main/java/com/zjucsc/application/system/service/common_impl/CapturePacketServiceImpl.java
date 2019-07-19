@@ -1,5 +1,6 @@
 package com.zjucsc.application.system.service.common_impl;
 
+import com.corundumstudio.socketio.SocketIOServer;
 import com.zjucsc.application.config.*;
 import com.zjucsc.application.domain.bean.Device;
 import com.zjucsc.application.system.service.PacketAnalyzeService;
@@ -9,11 +10,13 @@ import com.zjucsc.application.tshark.capture.NewFvDimensionCallback;
 import com.zjucsc.application.tshark.capture.ProcessCallback;
 import com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler;
 import com.zjucsc.application.tshark.pre_processor.*;
+import com.zjucsc.application.util.AppCommonUtil;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.CommonConfigUtil;
 import com.zjucsc.application.util.PacketDecodeUtil;
+import com.zjucsc.art_decode.ArtDecodeCommon;
 import com.zjucsc.attack.bean.AttackBean;
-import com.zjucsc.attack.common.AttackCommon;
+import com.zjucsc.attack.AttackCommon;
 import com.zjucsc.common.common_util.ByteUtil;
 import com.zjucsc.common.common_util.DBUtil;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
@@ -39,6 +42,7 @@ import java.util.concurrent.*;
 
 import static com.zjucsc.application.config.Common.COMMON_THREAD_EXCEPTION_HANDLER;
 import static com.zjucsc.application.config.PACKET_PROTOCOL.*;
+import static com.zjucsc.socket_io.SocketIoEvent.REAL_TIME_PACKET_FILTER;
 
 @Slf4j
 @Service
@@ -96,7 +100,6 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     }
 
     private void setUnknownAttackDevice(AttackBean attackBean, int i) {
-        System.out.println(attackBean);
         if (i == 0){
             if (!attackBean.getDstIp().equals("--")){
                 attackBean.setDstDevice(attackBean.getDstIp());
@@ -183,8 +186,6 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             fvDimensionLayer.delay = collectorDelayInfo(payload,collectorId);     //解析时延信息
             fvDimensionLayer.collectorId = collectorId;                           //设置报文采集器ID
             FV_D_SENDER.sendMsg(fvDimensionLayer);                                //发送消息到数据库服务器
-            AttackCommon.appendFvDimension(fvDimensionLayer);                     //将五元组添加到攻击分析模块中分析
-            AttackCommon.appendCommonAttackAnalyze(fvDimensionLayer);
             return fvDimensionLayer;                                              //将五元组发送给BadPacketHandler
         }
     };
@@ -381,6 +382,8 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         //fv_dimension_handler --> bad_packet_analyze_handler
         pipeLine.addLast(fvDimensionHandler);
         pipeLine.addLast(deviceHandler);
+        pipeLine.addLast(attackAnalyzeHandler);
+        pipeLine.addLast(packetDetectHandler);
         pipeLine.addLast(badPacketAnalyzeHandler);
         basePreProcessor.setPipeLine(pipeLine);
         Thread processThread = new Thread(() -> {
@@ -448,6 +451,9 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         if (!simulateThread.hasStart){
             DefaultPipeLine pipeLine = new DefaultPipeLine("simulate");
             pipeLine.addLast(fvDimensionLayerAbstractAsyncHandler);
+            pipeLine.addLast(deviceHandler);
+            pipeLine.addLast(attackAnalyzeHandler);
+            pipeLine.addLast(packetDetectHandler);
             pipeLine.addLast(badPacketAnalyzeHandler);
             simulateThread.pipeLine = pipeLine;
             simulateThread.start();
@@ -580,23 +586,13 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                     //新设备统计
                     FvDimensionLayer layer = ((FvDimensionLayer) t);
                     Device device = CommonCacheUtil.autoAddDevice(layer);      //检测到新设备，推送新设备信息
-//                    if (device[0]!=null){
-//                        //come new device
-//                        SocketServiceCenter.updateAllClient(SocketIoEvent.NEW_DEVICE,device[0]);
-//                        //save device async
-//                        iDeviceService.saveOrUpdateDevice(device[0]);
-//                    }
-//                    if (device[1]!=null){
-//                        //come new device
-//                        SocketServiceCenter.updateAllClient(SocketIoEvent.NEW_DEVICE,device[1]);
-//                        //save device async
-//                        iDeviceService.saveOrUpdateDevice(device[1]);
-//                    }
                     if (device!=null){
                         //come new device
                         SocketServiceCenter.updateAllClient(SocketIoEvent.NEW_DEVICE,device);
                         //save device async
-                        iDeviceService.saveOrUpdateDevice(device);
+                        if (device.getDeviceType() > 0) {
+                            iDeviceService.saveOrUpdateDevice(device);
+                        }
                     }
                     //设备流量统计
                     CommonCacheUtil.addTargetDevicePacket(layer);
@@ -604,4 +600,63 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                 }
             };
 
+    private final AbstractAsyncHandler<FvDimensionLayer> attackAnalyzeHandler = new AbstractAsyncHandler<FvDimensionLayer>
+            (Executors.newFixedThreadPool(1,
+                    r -> {
+                        Thread thread = new Thread(r);
+                        thread.setName("-attack-analyze-");
+                        thread.setUncaughtExceptionHandler(Common.COMMON_THREAD_EXCEPTION_HANDLER);
+                        return thread;
+                    })) {
+        @Override
+        public FvDimensionLayer handle(Object t) {
+            FvDimensionLayer layer = ((FvDimensionLayer) t);
+            //工艺参数分析
+            byte[] tcpPayload = PacketDecodeUtil.hexStringToByteArray(layer.tcp_payload[0]);
+            Map<String,Float> res = AppCommonUtil.getGlobalArtMap();
+            String protocol = layer.protocol;
+            if (protocol.startsWith("s7comm")){
+                if (!layer.tcp_flags_ack[0].equals("") || Common.systemRunType == 0){
+                    res =  ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,"s7comm",1);
+                }else{
+                    res =  ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),layer.rawData,"s7comm",0);
+                }
+            }else if (protocol.equals(PACKET_PROTOCOL.MODBUS)){
+                res = ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.protocol);
+            }else if (protocol.equals(PACKET_PROTOCOL.PN_IO)){
+                res = ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),layer.rawData,layer.protocol);
+            }else if (protocol.equals(PACKET_PROTOCOL.IEC104_ASDU)){
+                res = ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.protocol);
+            }else if (protocol.equals(PACKET_PROTOCOL.OPC_UA)){
+                res = ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.protocol,layer);
+            }else if (protocol.equals("dnp3")){
+                res = ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.protocol);
+            }
+            //分析结果
+            //数据发送
+            StatisticsData.addArtMapData(res);
+            AttackCommon.appendFvDimension(layer);                     //将五元组添加到攻击分析模块中分析
+            AttackCommon.appendArtAnalyze(res,layer);
+            AttackCommon.appendOptAnalyze(res,layer);
+            return layer;
+        }
+    };
+
+    private final AbstractAsyncHandler<FvDimensionLayer> packetDetectHandler =
+            new AbstractAsyncHandler<FvDimensionLayer>(Executors.newFixedThreadPool(1,
+                    r -> {
+                        Thread thread = new Thread(r);
+                        thread.setName("-attack-analyze-");
+                        thread.setUncaughtExceptionHandler(Common.COMMON_THREAD_EXCEPTION_HANDLER);
+                        return thread;
+                    })) {
+                @Override
+                public FvDimensionLayer handle(Object t) {
+                    FvDimensionLayer layer = ((FvDimensionLayer) t);
+                    if (CommonCacheUtil.realTimeFvDimensionFilter(layer)){
+                        SocketServiceCenter.updateAllClient(REAL_TIME_PACKET_FILTER,layer);
+                    }
+                    return layer;
+                }
+            };
 }

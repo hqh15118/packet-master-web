@@ -30,28 +30,28 @@ public class KafkaThread<V> extends Thread implements IKafka<V> {
         kafkaProducer = KafkaProducerCreator.getProducer(service,String.class,String.class);
         this.topic = bindTopic;
         this.bindService = service;
-        setName("kafka-sender-" + service + "-" + bindTopic);
+        setName("-kafka-sender-" + service + "-" + bindTopic);
     }
 
     @Override
     public void run() {
-        for (;;){
-            try {
-                V v = TASK_QUEUE.take(); //poll msg from queue
+        try {
+            for (; ;) {
+                V v = TASK_QUEUE.take(); //FIXME poll msg from queue
                 String msg = convertObjectToString(v);
                 //valid msg
-                ProducerRecord<String,String> kvProducerRecord;
+                ProducerRecord<String, String> kvProducerRecord;
                 if (partition >= 0)
                     kvProducerRecord = new ProducerRecord<>(topic, partition, null, msg);
                 else
-                    kvProducerRecord = new ProducerRecord<>(topic,msg);
+                    kvProducerRecord = new ProducerRecord<>(topic, msg);
                 kafkaProducer.send(kvProducerRecord);
-                if (!running){
+                if (!running) {
                     break;
                 }
-            } catch (InterruptedException e) {
-                //time out just ignore
             }
+        }catch(InterruptedException e){
+            //time out just ignore
         }
     }
 

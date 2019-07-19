@@ -7,32 +7,31 @@ import com.zjucsc.common.common_util.ByteUtil;
 import com.zjucsc.common.common_util.Bytecut;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 
-import java.util.List;
 import java.util.Map;
 
-public class modbusoptdecode extends BaseOptAnalyzer<modbusOpconfig> {
+public class ModbusOptAnalyzer extends BaseOptAnalyzer<ModbusOptConfig> {
 
-    public AttackBean attackdecode(FvDimensionLayer layer, Map<String,Float> techmap, modbusOpconfig modbusOpconfig)
+    public AttackBean attackdecode(FvDimensionLayer layer, Map<String,Float> techmap, ModbusOptConfig ModbusOptConfig)
     {
-        if(ArtAttackAnalyzeTask.attackDecode(modbusOpconfig.getExpression(),techmap,"1")==null)
+        if(ArtAttackAnalyzeTask.attackDecode(ModbusOptConfig.getExpression(),techmap,"1")==null)
         {
             return null;
         }
-        else if(ArtAttackAnalyzeTask.attackDecode(modbusOpconfig.getExpression(),techmap,"1").equals("配置错误"))
+        else if(ArtAttackAnalyzeTask.attackDecode(ModbusOptConfig.getExpression(),techmap,"1").equals("配置错误"))
         {
             return new AttackBean.Builder().attackType("配置错误").fvDimension(layer).attackInfo("").build();
         }
-        else if(ArtAttackAnalyzeTask.attackDecode(modbusOpconfig.getExpression(),techmap,"1").equals("1"))
+        else if(ArtAttackAnalyzeTask.attackDecode(ModbusOptConfig.getExpression(),techmap,"1").equals("1"))
         {
-            if(operationdecode(layer,modbusOpconfig))
+            if(operationdecode(layer, ModbusOptConfig))
             {
-                return new AttackBean.Builder().attackType("工艺操作异常").fvDimension(layer).attackInfo(modbusOpconfig.getComment()).build();
+                return new AttackBean.Builder().attackType("工艺操作异常").fvDimension(layer).attackInfo(ModbusOptConfig.getComment()).build();
             }
         }
         return null;
     }
 
-    private boolean operationdecode(FvDimensionLayer layer, modbusOpconfig modbusopconfig)
+    private boolean operationdecode(FvDimensionLayer layer, ModbusOptConfig modbusopconfig)
     {
         if(layer==null || modbusopconfig==null)
         {
@@ -139,7 +138,7 @@ public class modbusoptdecode extends BaseOptAnalyzer<modbusOpconfig> {
 
 
     @Override
-    public AttackBean doAnalyze(FvDimensionLayer layer, Map<String,Float> techmap,modbusOpconfig modbusOpconfig, Object... objs) {
-        return attackdecode(layer,techmap,modbusOpconfig);
+    public AttackBean doAnalyze(FvDimensionLayer layer, Map<String,Float> techmap, ModbusOptConfig ModbusOptConfig, Object... objs) {
+        return attackdecode(layer,techmap, ModbusOptConfig);
     }
 }

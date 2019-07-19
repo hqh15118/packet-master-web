@@ -4,22 +4,12 @@ import com.zjucsc.attack.base.BaseOptConfig;
 
 import java.util.List;
 
-public class pnioOpconfig extends BaseOptConfig {
-    private String techname;
+public class PnioOptConfig extends BaseOptConfig {
     private byte[] macaddress;
     private int byteoffset;
     private int bitoffset;
     private boolean result;
-    private List<String> expression;
     private String comment;
-
-    public void setExpression(List<String> expression) {
-        this.expression = expression;
-    }
-
-    public List<String> getExpression() {
-        return expression;
-    }
 
     public boolean isResult() {
         return result;
@@ -51,14 +41,6 @@ public class pnioOpconfig extends BaseOptConfig {
 
     public void setByteoffset(int byteoffset) {
         this.byteoffset = byteoffset;
-    }
-
-    public void setTechname(String techname) {
-        this.techname = techname;
-    }
-
-    public String getTechname() {
-        return techname;
     }
 
     public void setMacaddress(byte[] macaddress) {

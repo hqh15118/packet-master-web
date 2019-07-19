@@ -36,6 +36,10 @@ public class Common {
      */
     public static List<String> hasStartedHost = new ArrayList<>();
     /**
+     * wireshark 存储pcap文件的临时目录
+     */
+    public static final String WIRESHARK_TEMP_FILE = "C:\\temp";
+    /**
      * cache5
      * DEVICE_TAG 五元组过滤器
      */

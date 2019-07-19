@@ -55,6 +55,7 @@ public class StatisticsData {
     public static DeviceMaxFlow getDeviceMaxFlow(String deviceNumber){
         return DEVICE_MAX_FLOW.get(deviceNumber);
     }
+
     public static void addDeviceMaxFlowConfig(DeviceMaxFlow deviceMaxFlow){
         DEVICE_MAX_FLOW.put(deviceMaxFlow.getDeviceNumber(),deviceMaxFlow);
     }

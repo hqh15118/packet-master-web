@@ -24,7 +24,7 @@ public class ArtAttackAnalyzeTask implements Runnable{
         this.layer = layer;
     }
 
-    Runnable setCallback(AttackCallback attackCallback){
+    public Runnable setCallback(AttackCallback attackCallback){
         this.attackCallback = attackCallback;
         return this;
     }

@@ -1,6 +1,8 @@
 package com.zjucsc.attack.analyze.analyzer_util;
 
 import com.zjucsc.attack.bean.AttackConfig;
+import com.zjucsc.attack.bean.AttackConfigByDevice;
+import com.zjucsc.attack.util.AttackCacheUtil;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 
 import java.util.LinkedList;
@@ -60,17 +62,17 @@ public class CositeDOSAttackAnalyzeList extends TcpAttackAnalyzeList {
     private String doAnalyze(LinkedList<FvDimensionLayer> fvDimensionLayers,int index){
         long timeStamp;
         for (int i = index - 1; i >= 0 ; i--) {
-            timeStamp = fvDimensionLayers.get(i).timeStampInLong;
-            while ((timeStamp - fvDimensionLayers.getLast().timeStampInLong) > AttackConfig.getCoSiteTimeGap()){
+            FvDimensionLayer targetLayer = fvDimensionLayers.get(i);
+            timeStamp = targetLayer.timeStampInLong;
+            AttackConfigByDevice attackConfigByDevice = AttackCacheUtil.getAttackConfigByDevice(targetLayer.ip_dst[0]);
+            //没有配置，直接返回，没有攻击
+            if (attackConfigByDevice == null){
+                return null;
+            }
+            while ((timeStamp - fvDimensionLayers.getLast().timeStampInLong) > attackConfigByDevice.getCositeTime()){
                 fvDimensionLayers.removeLast();
             }
-            //debug log
-//            if (AttackConfig.debug){
-//                for (FvDimensionLayer fvDimensionLayer : fvDimensionLayers) {
-//                    System.out.println(fvDimensionLayer.timeStampInLong);
-//                }
-//            }
-            if ((fvDimensionLayers.size() - i) >= AttackConfig.getCoSiteNum()){
+            if ((fvDimensionLayers.size() - i) >= attackConfigByDevice.getCositeNum()){
                 //debug log
                 if (AttackConfig.debug){
                     System.out.println("-------------");
@@ -82,5 +84,4 @@ public class CositeDOSAttackAnalyzeList extends TcpAttackAnalyzeList {
         }
         return null;
     }
-
 }

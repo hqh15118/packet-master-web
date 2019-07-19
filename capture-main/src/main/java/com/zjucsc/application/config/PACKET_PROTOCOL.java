@@ -74,11 +74,11 @@ public interface PACKET_PROTOCOL {
     int IPV6_ID = 9;
     int DNS_ID = 10;
     int ETHERNET_ID = 11;
-    int OPCA_UA_ID = 12;
+    int OPC_UA_ID = 12;
     int IEC104_ASDU_ID = 13;
     int IEC104_APCI_ID = 25;
-    int DNP3_0_PRI_ID = 14;
-    int DMP3_0_SET_ID = 26;
+    int DNP3_0_PRI_ID = 14;//DNP3_0_PRI
+    int DMP3_0_SET_ID = 26;//DNP3_0_SET   DNP3_0_SET_ID
     int NBNS_ID = 15;
     int GOOSE_ID = 16;
     int STP_ID = 17;
