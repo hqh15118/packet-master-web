@@ -109,9 +109,10 @@ public abstract class BasePreProcessor implements PreProcessor {
             commandBuilder.append(" ").append(extConfig());
         }
         commandBuilder.append(" -Y ").append("\"");
-        for (String s : protocolFilterField()) {
-            commandBuilder.append(s).append(" ");
+        for (int i = 0; i < protocolFilterField().length - 1; i++) {
+            commandBuilder.append(protocolFilterField()[i]).append(" or");
         }
+        commandBuilder.append(" ").append(protocolFilterField()[protocolFilterField().length - 1]);
         commandBuilder.append("\"");   // 最后的部分 + s7comm/...用于过滤
         commandBuilder.append(" -M ").append(TsharkCommon.sessionReset);    //设置n条之后重置回话
         String command = commandBuilder.toString();

@@ -50,15 +50,6 @@ public class StatisticsData {
      */
     public static AtomicInteger attackNumber = new AtomicInteger(0);
 
-    private static final HashMap<String, DeviceMaxFlow> DEVICE_MAX_FLOW = new HashMap<>();
-
-    public static DeviceMaxFlow getDeviceMaxFlow(String deviceNumber){
-        return DEVICE_MAX_FLOW.get(deviceNumber);
-    }
-
-    public static void addDeviceMaxFlowConfig(DeviceMaxFlow deviceMaxFlow){
-        DEVICE_MAX_FLOW.put(deviceMaxFlow.getDeviceNumber(),deviceMaxFlow);
-    }
     /**
      * key 是 设备名 deviceNumber
      */
@@ -210,7 +201,7 @@ public class StatisticsData {
      *
      **********************************/
     public static void statisticAllIpAddress(String ipAddress){
-        if (ALL_IP_ADDRESS.put(ipAddress,"")==null){
+        if (ALL_IP_ADDRESS.put(ipAddress,"") == null){
             SocketServiceCenter.updateAllClient(SocketIoEvent.NEW_IP,ipAddress);
         }
     }
@@ -239,6 +230,5 @@ public class StatisticsData {
         ALL_IP_ADDRESS.clear();
         exceptionNumber.set(0);
         attackNumber.set(0);
-        DEVICE_MAX_FLOW.clear();
     }
 }

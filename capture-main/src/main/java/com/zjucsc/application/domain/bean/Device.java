@@ -26,6 +26,7 @@ public class Device extends BaseResponse implements Serializable {
     private String deviceIp;
     private String deviceMac;
     private boolean isConfig;
+    private String protocol;
 
     @Override
     public boolean equals(Object o) {

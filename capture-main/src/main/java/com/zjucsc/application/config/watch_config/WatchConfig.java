@@ -3,6 +3,8 @@ package com.zjucsc.application.config.watch_config;
 import com.corundumstudio.socketio.SocketIOClient;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.TsharkConfig;
+import com.zjucsc.application.domain.bean.CaptureService;
+import com.zjucsc.application.system.service.common_iservice.CapturePacketService;
 import com.zjucsc.application.util.AppCommonUtil;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.CommonConfigUtil;
@@ -27,6 +29,7 @@ import java.util.Map;
 public class WatchConfig {
 
     @Autowired private TsharkConfig tsharkConfig;
+    @Autowired private CapturePacketService capturePacketService;
 
     @ReadOperation
     public Map<String,Object> getSysConfigCache(){
@@ -49,6 +52,7 @@ public class WatchConfig {
         map.put("TSHARK-FILTER-S7COMM",tsharkConfig.getS7comm_filter());
         map.put("TSHARK-FILTER-MODBUS",tsharkConfig.getModbus_filter());
         map.put("ALL_DROP_PROTOCOL",CommonCacheUtil.getAllDropProtocol());
+        map.put("MAIN_HANDLER_LOAD",capturePacketService.load());
         return map;
     }
 

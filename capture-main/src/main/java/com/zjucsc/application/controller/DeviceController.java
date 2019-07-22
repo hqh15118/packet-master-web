@@ -84,7 +84,6 @@ public class DeviceController {
         ));
     }
 
-
     @ApiOperation("修改设备配置状态")
     @GetMapping("config_state")
     public BaseResponse changeDeviceConfigState(@RequestParam String deviceNumber , @RequestParam boolean isConfig){

@@ -1,5 +1,6 @@
 package com.zjucsc.application.util;
 
+import com.sun.org.apache.bcel.internal.generic.I2F;
 import com.zjucsc.application.domain.bean.FuncodeStatement;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import lombok.extern.slf4j.Slf4j;
@@ -35,8 +36,11 @@ public class CommonConfigUtil {
     public static String getTargetProtocolFuncodeMeaning(String protocol,int funcode) throws ProtocolIdNotValidException {
         String funcodeMeaning;
         HashMap<Integer,String> map = getTargetProtocolAllFuncodeMeaning(protocol);
-        if (map==null|| (funcodeMeaning = map.get(funcode)) == null){
-            funcodeMeaning = "未知功能码操作";
+        if (map==null || (funcodeMeaning = map.get(funcode)) == null){
+            if (funcode == -1){
+                return "--";
+            }
+            funcodeMeaning = "未知功能码操作--" + funcode;
             if (SHOW_LOG) {
                 log.info("can not find protocol {} funcode {} meaning in CONFIGURATION_MAP \n CONFIGURATION_MAP is {}"
                         , protocol, funcode, CONFIGURATION_MAP);

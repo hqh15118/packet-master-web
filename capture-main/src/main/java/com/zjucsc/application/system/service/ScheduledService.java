@@ -3,6 +3,7 @@ package com.zjucsc.application.system.service;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.domain.bean.*;
+import com.zjucsc.application.domain.non_hessian.DeviceMaxFlow;
 import com.zjucsc.application.system.service.common_iservice.CapturePacketService;
 import com.zjucsc.application.system.service.hessian_iservice.IArtHistoryDataService;
 import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
@@ -52,6 +53,7 @@ public class ScheduledService {
     private final HashMap<String,Integer> numberByDeviceOut = new HashMap<>(10);
     private final HashMap<String,GraphInfo> graphInfoInList = new HashMap<>(10);
     private final SenderConsumer SEND_CONSUMER = new SenderConsumer();
+    private final DevicePacketNumConsumer MAX_FLOW_CONSUMER = new DevicePacketNumConsumer();
     private final BiConsumer<String,GraphInfo> GRAPH_INFO_CONSUMER =
             StatisticsData::addDeviceGraphInfo;
 
@@ -118,6 +120,8 @@ public class ScheduledService {
         //将之前的统计信息置0
         CommonCacheUtil.resetSaveBean();
         final HashMap<String,Integer> DELAY_INFO = packetAnalyzeService.getCollectorNumToDelayList();
+        NUMBER_BY_DEVICE_IN.forEach(MAX_FLOW_CONSUMER.setType(1));//download
+        NUMBER_BY_DEVICE_OUT.forEach(MAX_FLOW_CONSUMER.setType(0));//upload
         ATTACK_BY_DEVICE.forEach(SEND_CONSUMER.setMap(attackByDevice , 1));
         EXCEPTION_BY_DEVICE.forEach(SEND_CONSUMER.setMap(exceptionByDevice , 2));
         NUMBER_BY_DEVICE_IN.forEach(SEND_CONSUMER.setMap(numberByDeviceIn , 3));
@@ -144,7 +148,7 @@ public class ScheduledService {
         iDeviceService.saveStatisticInfo(CommonCacheUtil.getStatisticsInfoBean());
     }
 
-    @Scheduled(cron = "0 0 0 * * ? *")
+    @Scheduled(cron = "0 0 0 ? *  MON-FRI")
     public void deletePcapFileScheduled(){
         File file = new File(Common.WIRESHARK_TEMP_FILE);
         File[] files = file.listFiles();
@@ -331,6 +335,31 @@ public class ScheduledService {
 
         public void setTimeStamp(String timeStamp){
             this.timeStamp = timeStamp;
+        }
+    }
+
+    private static class DevicePacketNumConsumer implements BiConsumer<String,AtomicInteger>{
+        private int type;//0 upload 1 download
+        @Override
+        public void accept(String deviceNumber, AtomicInteger atomicInteger) {
+            DeviceMaxFlow deviceMaxFlow = CommonCacheUtil.getDeviceMaxFlow(deviceNumber);
+            switch (type){
+                case 0 : if (atomicInteger.get() > deviceMaxFlow.getMaxFlowOut())
+                {
+                    SocketServiceCenter.updateAllClient(SocketIoEvent.DEVICE_FLOW_ERROR,new DeviceMaxFlow(deviceNumber,deviceMaxFlow.getMaxFlowOut(),-1));
+                }
+                break;
+                case 1 : if (atomicInteger.get() > deviceMaxFlow.getMaxFlowIn())
+                {
+                    SocketServiceCenter.updateAllClient(SocketIoEvent.DEVICE_FLOW_ERROR,new DeviceMaxFlow(deviceNumber,-1,deviceMaxFlow.getMaxFlowIn()));
+                }
+                break;
+            }
+        }
+
+        public DevicePacketNumConsumer setType(int type){
+            this.type = type;
+            return this;
         }
     }
 }

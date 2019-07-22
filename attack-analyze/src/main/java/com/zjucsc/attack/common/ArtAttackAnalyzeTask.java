@@ -37,7 +37,7 @@ public class ArtAttackAnalyzeTask implements Runnable{
                     AttackBean.builder()
                     .attackType(AttackTypePro.ART_EXCEPTION)
                     .fvDimension(layer)
-                    .attackInfo(res).build());
+                    .attackInfo(res).build(),layer);
         }
     }
 

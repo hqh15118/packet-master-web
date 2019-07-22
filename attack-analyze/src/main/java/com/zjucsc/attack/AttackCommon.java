@@ -134,7 +134,7 @@ public class AttackCommon {
                         .attackType(AttackTypePro.DOS_ATTACK)
                         .attackInfo(description)
                         .fvDimension(layer)
-                        .build());
+                        .build(),layer);
             }
         }
     }
@@ -181,8 +181,8 @@ public class AttackCommon {
      * 添加异常，回调
      * @param attackBean
      */
-    public static void appendFvDimensionError(AttackBean attackBean){
-        attackCallback.artCallback(attackBean);
+    public static void appendFvDimensionError(AttackBean attackBean,FvDimensionLayer layer){
+        attackCallback.artCallback(attackBean,layer);
     }
 
     /**
@@ -193,7 +193,7 @@ public class AttackCommon {
         if (iOptAttackEntry!=null){
             AttackBean attackBean = iOptAttackEntry.analyze(layer,techmap);
             if (attackBean!=null){
-                attackCallback.artCallback(attackBean);
+                attackCallback.artCallback(attackBean,layer);
             }
         }
     }

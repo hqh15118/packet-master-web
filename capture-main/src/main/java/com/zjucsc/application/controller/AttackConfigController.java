@@ -67,7 +67,7 @@ public class AttackConfigController {
     @Log
     public BaseResponse configMaxFlowOfDevice(@RequestBody DeviceMaxFlow deviceMaxFlow){
         deviceMaxFlowMapper.insertByDeviceNumber(deviceMaxFlow);
-        StatisticsData.addDeviceMaxFlowConfig(deviceMaxFlow);
+        CommonCacheUtil.addOrUpdateDeviceMaxFlow(deviceMaxFlow);
         return BaseResponse.OK();
     }
 

@@ -52,6 +52,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
         rightPacketInfo.setSrc_mac(layer.eth_src[0]);
         rightPacketInfo.setFunCode(layer.funCode);
         rightPacketInfo.setProtocol(layer.protocol);
+        //判断是否是白名单报文
         if (CommonCacheUtil.isNormalRightPacket(rightPacketInfo)){
             operationAnalyze(layer);
         }else {
@@ -60,37 +61,21 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
                 //eth:llc:data
                 String protocolStack = layer.frame_protocols[0];
                 if (protocolStack.length() >= 8 && protocolStack.charAt(4) == 'l' && protocolStack.charAt(5) == 'l'
-                        && protocolStack.charAt(6) == 'c' && layer.rawData[14]==(byte)0xaa && layer.rawData[15]==(byte)0xaa ){
+                        && protocolStack.charAt(6) == 'c' && layer.rawData[14]==(byte)0xaa && layer.rawData[15]==(byte)0xaa
+                && layer.rawData[20]==(byte) 0x01 && layer.rawData[21]==(byte)0xfd){
                     AttackCommon.appendFvDimensionError(AttackBean.builder().attackType(AttackTypePro.SNIFF_ATTACK)
-                            .fvDimension(layer).build());
+                            .fvDimension(layer).build(),layer);
                 }
                 AttackBean attackBean = ((AttackBean) fiveDimensionAnalyzer.analyze(layer));
                 if (attackBean != null) {
-                    String deviceNumber = CommonCacheUtil.getTargetDeviceNumberByTag(layer.ip_dst[0], layer.eth_dst[0]);
-                    attackBean.setDeviceNumber(deviceNumber);
-                    //恶意报文统计【五秒钟一次的延迟推送】
-                    statisticsBadPacket(deviceNumber);
+                    //statisticsBadPacket(deviceNumber);
                     //回调对恶意报文进行发送和统计【实时推送】
-                    AttackCommon.appendFvDimensionError(attackBean);
+                    AttackCommon.appendFvDimensionError(attackBean,layer);
                 } else {
                     //五元组正常，再进行操作的匹配
                     //功能码分析
                     operationAnalyze(layer);
                 }
-            } else {
-                //忽略广播包
-                //TODO 未知设备
-            /*
-            if (!layer.eth_dst[0].equals("ff:ff:ff:ff:ff:ff")&&!layer.ip_dst[0].equals("255:255:255:255")) {
-                AttackBean attackBean = new AttackBean.Builder()
-                        .attackInfo("未定义该报文对应的设备")
-                        .attackType(AttackTypePro.UN_KNOW_DEVICE)
-                        .fvDimension(layer)
-                        .build();
-                //回调对恶意报文进行发送和统计
-                AttackCommon.appendFvDimensionError(attackBean);
-            }
-            */
             }
         }
     }
@@ -122,20 +107,15 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
             if ((operationAnalyzer = map.get(protocol))!=null){
                 Object attackBean = operationAnalyzer.analyze(funCode,layer,protocol);
                 if (attackBean!=null){
-                    String deviceNumber = CommonCacheUtil.getTargetDeviceNumberByTag(layer.ip_dst[0],layer.eth_dst[0]);
-                    ((AttackBean) attackBean).setDeviceNumber(deviceNumber);
                     ((AttackBean) attackBean).setAttackType("非授权指令");
-                    AttackCommon.appendFvDimensionError(((AttackBean) attackBean));
-                    statisticsBadPacket(deviceNumber);
+                    AttackCommon.appendFvDimensionError(((AttackBean) attackBean),layer);
+                    //statisticsBadPacket(deviceNumber);
                 }
             }
         }
     }
 
-    private void statisticsBadPacket(String deviceNumber){
-        StatisticsData.attackNumber.incrementAndGet();
-        StatisticsData.increaseAttackByDevice(deviceNumber);
-    }
+
 
     private String checkProtocol(FvDimensionLayer layer){
         if (layer.protocol.equals("s7comm")){

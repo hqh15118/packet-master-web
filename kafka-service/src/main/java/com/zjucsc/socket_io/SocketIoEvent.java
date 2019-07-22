@@ -31,4 +31,6 @@ public class SocketIoEvent {
     public static final String DEVICE_2_DEVICE_PACKETS = "d2d_packet";
     //实时五元组过滤推送
     public static final String REAL_TIME_PACKET_FILTER = "filter_packet";
+    //设备流量报警
+    public static final String DEVICE_FLOW_ERROR = "device_flow_error";
 }

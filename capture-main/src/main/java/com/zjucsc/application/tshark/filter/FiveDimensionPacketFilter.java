@@ -201,7 +201,7 @@ public class FiveDimensionPacketFilter {
     }
 
     public AttackBean OK(FvDimensionLayer layer){
-        String deviceNumber = CommonCacheUtil.getTargetDeviceNumberByTag(layer.ip_dst[0],layer.eth_dst[0]);
+        String deviceNumber = layer.deviceNumber;
         if (deviceNumber!=null) {
                 if (CommonCacheUtil.isNormalWhiteProtocol(deviceNumber,layer.protocol))//判断是否在白名单协议之内
             {

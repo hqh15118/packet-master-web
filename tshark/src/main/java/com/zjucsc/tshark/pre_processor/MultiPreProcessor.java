@@ -34,10 +34,6 @@ public abstract class MultiPreProcessor extends BasePreProcessor {
             }
             i++;
         }
-        if (i == packetProtocolStacks.length){
-            //TODO ADD LOG HERE
-            //log.error("报文解析协议栈匹配失败：{} -- {} " , protocolStack , packetProtocolStacks);
-        }
     }
 
     /**

@@ -16,6 +16,7 @@ public class AttackBean {
     private String attackType;
     //攻击说明
     private String attackInfo;
+    //下面的这些都在五元组里面设置了
     private String srcMac;
     private String dstMac;
     private String srcIp;
@@ -30,7 +31,6 @@ public class AttackBean {
     private String srcDevice;
     private String dstDevice;
     private String funCodeMeaning;
-
     private String rawData;
 
     public String getAttackInfo() {
@@ -204,6 +204,7 @@ public class AttackBean {
             attackBean.setLength(layer.rawData.length);
             attackBean.setRawData(layer.custom_ext_raw_data[0]);
             attackBean.setFunCodeMeaning(layer.funCodeMeaning);
+            attackBean.setDeviceNumber(layer.deviceNumber);
             return this;
         }
 

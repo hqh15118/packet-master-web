@@ -48,6 +48,8 @@ public class FvDimensionLayer implements Serializable{
     public int collectorId;
     @JSONField(serialize = false,deserialize = false)
     public byte[] rawData;
+    @JSONField(serialize = false,deserialize = false)
+    public String deviceNumber;     //该条报文对应的设备号
 
     @Override
     public String toString() {

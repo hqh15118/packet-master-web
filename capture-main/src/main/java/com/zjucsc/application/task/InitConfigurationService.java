@@ -5,16 +5,18 @@ import com.zjucsc.IProtocolFuncodeMap;
 import com.zjucsc.application.config.*;
 import com.zjucsc.application.config.auth.Auth;
 import com.zjucsc.application.domain.bean.*;
+import com.zjucsc.application.domain.non_hessian.DeviceMaxFlow;
 import com.zjucsc.application.system.service.common_impl.NetworkInterfaceServiceImpl;
 import com.zjucsc.application.system.service.hessian_iservice.IArtConfigService;
 import com.zjucsc.application.system.service.hessian_iservice.IConfigurationSettingService;
+import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
 import com.zjucsc.application.system.service.hessian_iservice.IProtocolIdService;
+import com.zjucsc.application.system.service.hessian_mapper.DeviceMaxFlowMapper;
 import com.zjucsc.application.system.service.hessian_mapper.PacketInfoMapper;
 import com.zjucsc.application.util.AppCommonUtil;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.art_decode.ArtDecodeCommon;
 import com.zjucsc.art_decode.base.BaseConfig;
-import com.zjucsc.art_decode.dnp.DNP3Config;
 import com.zjucsc.attack.bean.ArtAttackAnalyzeConfig;
 import com.zjucsc.attack.AttackCommon;
 import com.zjucsc.common.exceptions.PacketDetailServiceNotValidException;
@@ -45,8 +47,6 @@ import static com.zjucsc.application.util.TsharkUtil.startHistoryPacketAnalyzeTh
 @Component
 public class InitConfigurationService implements ApplicationRunner {
 
-    private final String str_name = "java.lang.String";
-
     @Autowired private IArtConfigService iArtConfigService;
     @Autowired private IConfigurationSettingService iConfigurationSettingService;
     @Autowired private IProtocolIdService iProtocolIdService;
@@ -54,6 +54,8 @@ public class InitConfigurationService implements ApplicationRunner {
     @Autowired private PacketInfoMapper packetInfoMapper;
     @Autowired private ConstantConfig constantConfig;
     @Autowired private PreProcessor preProcessor;
+    @Autowired private IDeviceService iDeviceService;
+    @Autowired private DeviceMaxFlowMapper deviceMaxFlowMapper;
 
     @Override
     public void run(ApplicationArguments args) throws IllegalAccessException, NoSuchFieldException, ProtocolIdNotValidException, IOException {
@@ -140,6 +142,7 @@ public class InitConfigurationService implements ApplicationRunner {
         //如果数据库中没有条目，就从代码中加载之前配置好的，如果数据库中有条目，
         //就判断是否需要重新加载使用数据库中的条目初始化 PROTOCOL_STR_TO_INT ， 用户协议ID和协议字符串之间的转换
         List<Protocol> protocols = new ArrayList<>();
+        String str_name = "java.lang.String";
         if (iProtocolIdService.selectAll().size() == 0 ){
             Class<PACKET_PROTOCOL> packet_protocolClass = PACKET_PROTOCOL.class;
             Field[] allField = packet_protocolClass.getDeclaredFields();
@@ -160,7 +163,6 @@ public class InitConfigurationService implements ApplicationRunner {
             }
         }
         PROTOCOL_STR_TO_INT.put(2,"s7comm");
-
         if(reload || iConfigurationSettingService.selectAll().size() == 0) {
             if(!reload) {
                 log.info("no configuration in database and ready to load from libs ... ");
@@ -311,6 +313,14 @@ public class InitConfigurationService implements ApplicationRunner {
          * 初始化DOS攻击配置
          **********************************/
 
+
+        /***********************************
+         * 初始化设备最大上行和下行流量
+         **********************************/
+        List<DeviceMaxFlow> deviceMaxFlows = deviceMaxFlowMapper.selectBatch();
+        for (DeviceMaxFlow deviceMaxFlow : deviceMaxFlows) {
+            CommonCacheUtil.addOrUpdateDeviceMaxFlow(deviceMaxFlow);
+        }
     }
 
     private void doStartPacketDetailThread(String virtualLoopback , List<String> ipAddresses) {

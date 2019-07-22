@@ -6,6 +6,7 @@ import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.bean.Device;
 import com.zjucsc.application.domain.bean.StatisticInfoSaveBean;
 import com.zjucsc.application.domain.bean.RightPacketInfo;
+import com.zjucsc.application.domain.non_hessian.DeviceMaxFlow;
 import com.zjucsc.application.domain.non_hessian.FvDimensionFilterCondition;
 import com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
@@ -449,6 +450,7 @@ public class CommonCacheUtil {
             ATTACK_PERCENT.put(attackName,++attackNum);
         }
     }
+
     public static void updateAttackLog(){
         synchronized (LOCK_ATTACK_PERCENT){
             SocketServiceCenter.updateAllClient(SocketIoEvent.ATTACK_STATISTICS,ATTACK_PERCENT);
@@ -571,6 +573,7 @@ public class CommonCacheUtil {
         device.setDeviceTag(deviceTag);
         device.setGPlotId(Common.GPLOT_ID);
         device.setDeviceIp(layer.ip_src[0]);
+        device.setProtocol(layer.protocol);
         return device;
     }
 
@@ -687,5 +690,15 @@ public class CommonCacheUtil {
         }else{
             return matcher.equals(matchor);
         }
+    }
+
+    private static final Map<String,DeviceMaxFlow> DEVICE_MAX_FLOW = new ConcurrentHashMap<>();
+    public static void addOrUpdateDeviceMaxFlow(DeviceMaxFlow deviceMaxFlowError){
+        DEVICE_MAX_FLOW.put(deviceMaxFlowError.getDeviceNumber(),deviceMaxFlowError);
+    }
+    private static final DeviceMaxFlow DEVICE_MAX_FLOW_ERROR = new DeviceMaxFlow();
+    public static DeviceMaxFlow getDeviceMaxFlow(String deviceNumber){
+        DeviceMaxFlow deviceMaxFlowError = DEVICE_MAX_FLOW.get(deviceNumber);
+        return deviceMaxFlowError == null ? DEVICE_MAX_FLOW_ERROR : deviceMaxFlowError;
     }
 }

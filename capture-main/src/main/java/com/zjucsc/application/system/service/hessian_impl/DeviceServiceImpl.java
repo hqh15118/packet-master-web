@@ -110,5 +110,4 @@ public class DeviceServiceImpl extends BaseServiceImpl< Device , DeviceMapper> i
     public Device selectDeviceByDeviceNumber(String deviceNumber) {
         return this.baseMapper.selectDeviceByDeviceNumber(deviceNumber);
     }
-
 }
