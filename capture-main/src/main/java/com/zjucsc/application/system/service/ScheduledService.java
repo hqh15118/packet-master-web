@@ -3,20 +3,24 @@ package com.zjucsc.application.system.service;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.domain.bean.*;
+import com.zjucsc.application.domain.non_hessian.D2DWrapper;
 import com.zjucsc.application.domain.non_hessian.DeviceMaxFlow;
 import com.zjucsc.application.system.service.common_iservice.CapturePacketService;
 import com.zjucsc.application.system.service.hessian_iservice.IArtHistoryDataService;
 import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
 import com.zjucsc.application.util.AppCommonUtil;
 import com.zjucsc.application.util.CommonCacheUtil;
+import com.zjucsc.application.util.SysRunStateUtil;
 import com.zjucsc.socket_io.SocketIoEvent;
 import com.zjucsc.socket_io.SocketServiceCenter;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import lombok.extern.slf4j.Slf4j;
+import org.hyperic.sigar.SigarException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import sun.plugin2.util.SystemUtil;
 
 import java.io.File;
 import java.util.*;
@@ -86,6 +90,22 @@ public class ScheduledService {
         }
     }
 
+    @Scheduled(fixedRate = 2000)
+    public void sysRunState() throws SigarException {
+        SysRunStateUtil.StateWrapper wrapper= SysRunStateUtil.getSysRunState();
+        SocketServiceCenter.updateAllClient(SocketIoEvent.SYS_RUN_STATE,wrapper);
+        int state = CommonCacheUtil.runStateDetect(wrapper);
+        String info = null;
+        switch (state){
+            case 1 : info = "CPU异常";break;
+            case 2 : info = "内存异常";break;
+            case 3 : info = "CPU和内存异常";break;
+        }
+        if (info!=null){
+            SocketServiceCenter.updateAllClient(SocketIoEvent.SYS_RUN_ERROR,info);
+        }
+    }
+
     @Scheduled(fixedRate = 10000)
     @Async("d2d_schedule_service")
     public void device2DevicePacketInfo(){
@@ -94,20 +114,23 @@ public class ScheduledService {
         }
     }
 
-    private final HashMap<String,Map<String,Integer>>
+    private final HashMap<String,Map<String, D2DWrapper>>
         D2DPacketInfoMap = new HashMap<>();
+
     private void sendDevice2DevicePackets() {
         D2DPacketInfoMap.clear();
         CommonCacheUtil.getDeviceToDevicePackets().forEach((dstDevice, deviceAtomicIntegerConcurrentHashMap) -> {
             if (dstDevice.getDeviceType() != 1){
-                Map<String,Integer> map = new HashMap<>();
+                Map<String,D2DWrapper> map = new HashMap<>();
                 deviceAtomicIntegerConcurrentHashMap.forEach((srcDevice, atomicInteger) -> {
-                    map.put(srcDevice.getDeviceNumber(),atomicInteger.get());
+                    map.put(srcDevice.getDeviceNumber(),new D2DWrapper(atomicInteger.get(),CommonCacheUtil.d2DAttackExist(dstDevice.getDeviceNumber(),srcDevice.getDeviceNumber())));
                 });
                 D2DPacketInfoMap.put(dstDevice.getDeviceNumber(),map);
             }
         });
         SocketServiceCenter.updateAllClient(SocketIoEvent.DEVICE_2_DEVICE_PACKETS, D2DPacketInfoMap);
+        //推送后即清除上一次的所有被攻击设备对
+        CommonCacheUtil.clearD2DAttackPair();
     }
 
 

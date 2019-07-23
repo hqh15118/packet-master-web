@@ -54,7 +54,6 @@ public class InitConfigurationService implements ApplicationRunner {
     @Autowired private PacketInfoMapper packetInfoMapper;
     @Autowired private ConstantConfig constantConfig;
     @Autowired private PreProcessor preProcessor;
-    @Autowired private IDeviceService iDeviceService;
     @Autowired private DeviceMaxFlowMapper deviceMaxFlowMapper;
 
     @Override
@@ -321,6 +320,11 @@ public class InitConfigurationService implements ApplicationRunner {
         for (DeviceMaxFlow deviceMaxFlow : deviceMaxFlows) {
             CommonCacheUtil.addOrUpdateDeviceMaxFlow(deviceMaxFlow);
         }
+
+        /************************************
+         * 初始化CPU和内存检测参数
+         ***********************************/
+        CommonCacheUtil.initCpuAndMemState();
     }
 
     private void doStartPacketDetailThread(String virtualLoopback , List<String> ipAddresses) {

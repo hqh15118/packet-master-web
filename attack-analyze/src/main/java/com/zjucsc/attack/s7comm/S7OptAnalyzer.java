@@ -7,6 +7,7 @@ import com.zjucsc.attack.common.ArtAttackAnalyzeTask;
 import com.zjucsc.common.common_util.ByteUtil;
 import com.zjucsc.common.common_util.Bytecut;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
+import com.zjucsc.tshark.packets.OpcUaPacket;
 
 import java.util.ArrayList;
 import java.util.List;

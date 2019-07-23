@@ -77,6 +77,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             //恶意报文统计【五秒钟一次的延迟推送】
             statisticsBadPacket(attackBean.getDeviceNumber());
         });
+
         ArtDecodeCommon.registerPacketValidCallback(new ValidPacketCallback() {
             @Override
             public void callback(String argName, float value, FvDimensionLayer layer) {
@@ -115,6 +116,10 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             }
         }else{
             setUnknownAttackDevice(attackBean,0);
+        }
+        //设置被攻击的对
+        if (srcDeviceNumber!=null && dstDeviceNumber!=null){
+            CommonCacheUtil.addD2DAttackPair(dstDeviceNumber,srcDeviceNumber);
         }
     }
 
@@ -680,7 +685,9 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             StatisticsData.addArtMapData(res);
             AttackCommon.appendFvDimension(layer);                     //将五元组添加到攻击分析模块中分析
             AttackCommon.appendArtAnalyze(res,layer);
-            AttackCommon.appendOptAnalyze(res,layer);
+            try {
+                AttackCommon.appendOptAnalyze(res,layer,CommonCacheUtil.convertNameToId(layer.protocol));
+            } catch (ProtocolIdNotValidException ignored) {}
             return layer;
         }
     };

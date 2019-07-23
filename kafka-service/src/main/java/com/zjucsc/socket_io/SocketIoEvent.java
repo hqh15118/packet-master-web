@@ -33,4 +33,8 @@ public class SocketIoEvent {
     public static final String REAL_TIME_PACKET_FILTER = "filter_packet";
     //设备流量报警
     public static final String DEVICE_FLOW_ERROR = "device_flow_error";
+    //系统运行情况推送
+    public static final String SYS_RUN_STATE = "sys_run_state";
+    //系统运行异常
+    public static final String SYS_RUN_ERROR = "sys_run_error";
 }
