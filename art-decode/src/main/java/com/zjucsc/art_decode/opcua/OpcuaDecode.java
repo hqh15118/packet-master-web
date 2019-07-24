@@ -1,7 +1,9 @@
-package com.tonggong.capture;
+package com.zjucsc.art_decode.opcua;
 
+import com.zjucsc.art_decode.artconfig.OpcuaConfig;
 import com.zjucsc.art_decode.base.BaseArtDecode;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
+import com.zjucsc.tshark.packets.OpcUaPacket;
 //import com.zjucsc.art_decode.other.AttackType;
 
 import java.util.*;
@@ -274,7 +276,7 @@ public class OpcuaDecode extends BaseArtDecode<OpcuaConfig> {
 
             /** Publish **/
             case "829":
-                decode_Publish(opcUaPacket);
+                decode_Publish(opcUaPacket,opcUaPacket);
                 break;
 
             default:
@@ -386,7 +388,7 @@ public class OpcuaDecode extends BaseArtDecode<OpcuaConfig> {
     }
 
     /** Service: Publish **/
-    private void decode_Publish(OpcUaPacket.LayersBean opcUaPacket){
+    private void decode_Publish(OpcUaPacket.LayersBean opcUaPacket,FvDimensionLayer fvDimensionLayer){
         OpcUaValue opcUaValue = new OpcUaValue(opcUaPacket);
         if (opcUaPacket.opcua_clienthandle != null){
             int i = 0;
@@ -463,11 +465,14 @@ public class OpcuaDecode extends BaseArtDecode<OpcuaConfig> {
                             String name = opcuaMap.Handle_Name_Map.get(clienthandle);
                             String Name_and_Handle = name + "@" + clienthandle; //变量名均以 名字@Handle 的形式存在。
                             opcuaMap.Output_Map.put(Name_and_Handle, value);
+							callback(Name_and_Handle, value, fvDimensionLayer); //callback function
                         }
                         else {
                             //TODO:对于这种只有handle和value对应的变量，如何处理比较合适？
                             //System.out.println("警告：监控变量没有对应的变量名");
-                            opcuaMap.Output_Map.put("clienthandle=" + clienthandle, value);
+							String unknown_name = "clienthandle=" + clienthandle;
+                            opcuaMap.Output_Map.put(unknown_name, value);
+							callback(unknown_name, value, fvDimensionLayer); //callback function
                         }
                     }
                     else {
@@ -487,8 +492,6 @@ public class OpcuaDecode extends BaseArtDecode<OpcuaConfig> {
     public Map<String, Float> decode(OpcuaConfig opcuaConfig, Map<String, Float> result_map, byte[] bytes, FvDimensionLayer fvDimensionLayer, Object... objects) {
         OpcUaPacket.LayersBean opcUaPacket = ((OpcUaPacket.LayersBean) objects[0]);
         opcuaMap.Output_Map = result_map;
-        callback("水位1",10.0f,fvDimensionLayer);
-
         switch (opcUaPacket.opcua_transport_type[0]) {
             /** 目前仅关注MSG报文，其余类型的报文暂无需求 **/
             case "MSG":
@@ -520,8 +523,6 @@ public class OpcuaDecode extends BaseArtDecode<OpcuaConfig> {
 
     /**
      * 写需要解析的协议名字，不清楚的可以查看PACKET_PROTOCOL.java
-     * @see com.tonggong.test.PACKET_PROTOCOL
-     * @return 协议名称如s7comm
      */
     @Override
     public String protocol() {
