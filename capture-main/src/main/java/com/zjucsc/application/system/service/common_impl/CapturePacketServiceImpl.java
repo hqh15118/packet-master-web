@@ -188,7 +188,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             //协议比例
             StatisticsData.addProtocolNum(fvDimensionLayer.protocol,1);         //t-s
             //解析原始数据
-            byte[] payload = ByteUtil.hexStringToByteArray(fvDimensionLayer.custom_ext_raw_data[0]);    //t-s
+            byte[] payload = PacketDecodeUtil.hexStringToByteArray2(fvDimensionLayer.custom_ext_raw_data[0]);    //t-s
             fvDimensionLayer.rawData = payload;
             //设置五元组中的功能码以及功能码对应的含义
             if (Common.systemRunType !=0) {

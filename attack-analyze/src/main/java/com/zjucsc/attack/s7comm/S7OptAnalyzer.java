@@ -14,20 +14,22 @@ import java.util.Map;
 
 public class S7OptAnalyzer extends BaseOptAnalyzer<S7OptAttackConfig>{
 
+    private List<DBclass> DBlist = new ArrayList<>();
 
-    private AttackBean Attackdecode(FvDimensionLayer layer, S7OptAttackConfig s7OptAttackConfig, Map<String,Float> techmap)
+
+    private AttackBean Attackdecode(FvDimensionLayer layer, S7OptAttackConfig s7OptAttackConfig, Map<String,Float> techmap,Object payload)
     {
-        if(ArtAttackAnalyzeTask.attackDecode(s7OptAttackConfig.getExpression(),techmap,"1")==null || Writejobdecode(layer)==null)
+        if(ArtAttackAnalyzeTask.attackDecode(s7OptAttackConfig.getExpression(),techmap,"1")==null || Writejobdecode(layer,payload)==null)
         {
             return null;
         }
-        else if(ArtAttackAnalyzeTask.attackDecode(s7OptAttackConfig.getExpression(),techmap,"1").equals("配置错误"))
+        if(ArtAttackAnalyzeTask.attackDecode(s7OptAttackConfig.getExpression(),techmap,"1").equals("配置错误"))
         {
             return new AttackBean.Builder().attackType("配置错误").fvDimension(layer).attackInfo("").build();
         }
         else if(ArtAttackAnalyzeTask.attackDecode(s7OptAttackConfig.getExpression(),techmap,"1").equals("1"))
         {
-            if(OperationDecode(Writejobdecode(layer), s7OptAttackConfig))
+            if(OperationDecode(Writejobdecode(layer,payload), s7OptAttackConfig))
             {
                 return new AttackBean.Builder().attackType("工艺操作异常").fvDimension(layer).attackInfo(s7OptAttackConfig.getComment()).build();
             }
@@ -35,7 +37,7 @@ public class S7OptAnalyzer extends BaseOptAnalyzer<S7OptAttackConfig>{
         return null;
     }
 
-    private List<DBclass> Writejobdecode(FvDimensionLayer S7layer)
+    private List<DBclass> Writejobdecode(FvDimensionLayer S7layer , Object payload)
     {
         if(!S7layer.frame_protocols[0].equals("s7comm"))
         {
@@ -44,7 +46,7 @@ public class S7OptAnalyzer extends BaseOptAnalyzer<S7OptAttackConfig>{
         byte[] S7data;
         if(!S7layer.tcp_payload[0].equals(""))
         {
-            S7data = GetS7load.S7load(ByteUtil.hexStringToByteArray(S7layer.tcp_payload[0]),1);
+            S7data = GetS7load.S7load((byte[])payload,1);
         }
         else
         {
@@ -68,16 +70,16 @@ public class S7OptAnalyzer extends BaseOptAnalyzer<S7OptAttackConfig>{
                     DBifo.setDbnum(ByteUtil.bytesToShort(itemparadata, 6));
                     DBifo.setTransportsize(itemparadata[3]);
                     DBifo.setLength(ByteUtil.bytesToShort(itemparadata, 4));
-                    byte[] DBaddr = new byte[] {0x00,itemparadata[len-3],itemparadata[len-2],itemparadata[len-1]};
+                    byte[] DBaddr = new byte[] {0x00,itemparadata[len-1],itemparadata[len],itemparadata[len+1]};
                     DBifo.setBitoffset((int) DBaddr[3] & 7);
                     DBifo.setByteoffset((ByteUtil.bytesToInt(DBaddr,0)>>3) & 0xffff);
                     DBlist.add(DBifo);
-                    if(data[0]==0x00 && data[1]==itemparadata[3])
+                    if(data[0]==0x00)
                     {
-                        DBifo.setData(Bytecut.Bytecut(data,3,(int)data[2]));
+                        DBifo.setData(Bytecut.Bytecut(data,4,ByteUtil.bytesToShort(data,2)));
                         DBlist.add(DBifo);
                         itemparadata = Bytecut.Bytecut(itemparadata,len +2,-1);
-                        data = Bytecut.Bytecut(data,3+data[2],-1);
+                        data = Bytecut.Bytecut(data,4+ByteUtil.bytesToShort(data,2),-1);
                     }
                 }
             }
@@ -95,7 +97,7 @@ public class S7OptAnalyzer extends BaseOptAnalyzer<S7OptAttackConfig>{
         for(DBclass db:DBlist) {
             if (s7OptAttackConfig.getDBnum()==db.getDbnum())
             {
-                if(s7OptAttackConfig.getByteoffset()==db.getByteoffset() && db.getTransportsize()==3 )////开关量操作
+                if(s7OptAttackConfig.getByteoffset()==db.getByteoffset() && db.getTransportsize()==1 )////开关量操作
                 {
                     if(db.getBitoffset()<= s7OptAttackConfig.getBitoffset() && (db.getBitoffset()+db.getLength()> s7OptAttackConfig.getBitoffset()))
                     {
@@ -118,10 +120,10 @@ public class S7OptAnalyzer extends BaseOptAnalyzer<S7OptAttackConfig>{
 
 //    private Map<Integer, List<DBclass>> DBmap = new HashMap<>();
 
-    private List<DBclass> DBlist = new ArrayList<>();
+
 
     @Override
     public AttackBean doAnalyze(FvDimensionLayer layer, Map<String,Float> techmap, S7OptAttackConfig s7OptAttackConfig, Object... objs) {
-        return Attackdecode(layer, s7OptAttackConfig,techmap);
+        return Attackdecode(layer, s7OptAttackConfig,techmap,objs[0]);
     }
 }
