@@ -35,11 +35,12 @@ public class PnioOptDecode extends BaseOptAnalyzer<PnioOptConfig> {
 
     private boolean operationdecode(FvDimensionLayer layer, PnioOptConfig pnioopconfig)
     {
+
         if(layer==null || pnioopconfig==null)
         {
             return false;
         }
-        if(layer.frame_protocols[0].equals("pn_io") && ByteUtil.byteArrayToHex(pnioopconfig.getMacaddress()).equals(layer.eth_src[0]))
+        if(layer.frame_protocols[0].equals("pn_io") && pnioopconfig.getMacaddress().equals(layer.eth_src[0]))
         {
             byte[] data = Bytecut.Bytecut(layer.rawData,16, layer.rawData.length-paddinglength-20);
             if(data == null)

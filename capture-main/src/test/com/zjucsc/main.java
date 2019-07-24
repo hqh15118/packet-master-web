@@ -60,7 +60,7 @@ public class main {
         setByteoffset(0);
         setComment("!!!");
         setExpression(explist);
-        setMacaddress(new byte[] {(byte)0xe0,(byte)0xdc,(byte)0xa0,0x7b,0x16,0x56});
+        setMacaddress("e0:dc:ab:e0:76:56");
         setResult(true);
     }};
 

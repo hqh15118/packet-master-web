@@ -5,7 +5,7 @@ import com.zjucsc.attack.base.BaseOptConfig;
 import java.util.List;
 
 public class PnioOptConfig extends BaseOptConfig {
-    private byte[] macaddress;
+    private String macaddress;
     private int byteoffset;
     private int bitoffset;
     private boolean result;
@@ -43,11 +43,11 @@ public class PnioOptConfig extends BaseOptConfig {
         this.byteoffset = byteoffset;
     }
 
-    public void setMacaddress(byte[] macaddress) {
+    public void setMacaddress(String macaddress) {
         this.macaddress = macaddress;
     }
 
-    public byte[] getMacaddress() {
+    public String getMacaddress() {
         return macaddress;
     }
 }

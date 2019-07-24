@@ -112,6 +112,39 @@ public class OpcUaPacket {
                     ", src_port=" + Arrays.toString(src_port) +
                     ", dst_port=" + Arrays.toString(dst_port) +
                     '}';
+
+        }
+
+        public String[] getOpcua_nodeid_string() {
+            return opcua_nodeid_string;
+        }
+
+        public void setOpcua_nodeid_string(String[] opcua_nodeid_string) {
+            this.opcua_nodeid_string = opcua_nodeid_string;
+        }
+
+        public String[] getOpcua_servicenodeid_numeric() {
+            return opcua_servicenodeid_numeric;
+        }
+
+        public void setOpcua_servicenodeid_numeric(String[] opcua_servicenodeid_numeric) {
+            this.opcua_servicenodeid_numeric = opcua_servicenodeid_numeric;
+        }
+
+        public String[] getOpcua_datavalue_mask() {
+            return opcua_datavalue_mask;
+        }
+
+        public void setOpcua_datavalue_mask(String[] opcua_datavalue_mask) {
+            this.opcua_datavalue_mask = opcua_datavalue_mask;
+        }
+
+        public String[] getOpcua_variant_has_value() {
+            return opcua_variant_has_value;
+        }
+
+        public void setOpcua_variant_has_value(String[] opcua_variant_has_value) {
+            this.opcua_variant_has_value = opcua_variant_has_value;
         }
     }
 }
