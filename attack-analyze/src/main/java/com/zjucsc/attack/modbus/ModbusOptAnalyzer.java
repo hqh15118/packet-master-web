@@ -40,7 +40,7 @@ public class ModbusOptAnalyzer extends BaseOptAnalyzer<ModbusOptConfig> {
         else if(layer.frame_protocols[0].equals("modbus")) {
             byte[] payload = ByteUtil.hexStringToByteArray(layer.tcp_payload[0]);
             int len = ByteUtil.bytesToShort(payload,4);
-            byte[] modbusload = Bytecut.Bytecut(payload,5,len-1);
+            byte[] modbusload = Bytecut.Bytecut(payload,7,len-1);
             if (modbusopconfig.getReg() == 0 && modbusload!=null) {
                 if (modbusload[0]==5)                                     ////写单个线圈
                 {
@@ -110,17 +110,17 @@ public class ModbusOptAnalyzer extends BaseOptAnalyzer<ModbusOptConfig> {
                 {
                     if(modbusload[0]==23)
                     {
-                        modbusload = Bytecut.Bytecut(modbusload,4,-1);
+                        modbusload = Bytecut.Bytecut(modbusload,5,-1);
                     }
                     if(modbusload==null)
                     {
                         return false;
                     }
-                    int addresshead = ByteUtil.bytesToShort(modbusload,1);
-                    int length = ByteUtil.bytesToShort(modbusload,3);
+                    int addresshead = ByteUtil.bytesToShort(modbusload,0);
+                    int length = ByteUtil.bytesToShort(modbusload,2);
                     if(addresshead<=modbusopconfig.getAddress() && (addresshead + length)>modbusopconfig.getAddress())
                     {
-                        int i = 6 + (modbusopconfig.getAddress()-addresshead)*2 + (1-modbusopconfig.getBitoffset()/8);
+                        int i = 5 + (modbusopconfig.getAddress()-addresshead)*2 + (1-modbusopconfig.getBitoffset()/8);
                         if((modbusload[i]>>(modbusopconfig.getBitoffset()%8) & 1)==1 && modbusopconfig.isResult())
                         {
                             return true;

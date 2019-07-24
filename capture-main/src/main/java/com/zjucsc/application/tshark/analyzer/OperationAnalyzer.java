@@ -58,8 +58,6 @@ public class OperationAnalyzer extends AbstractAnalyzer<OperationPacketFilter<In
                     case 0x28:
                     case 0x29:
                         return "配置篡改攻击!";
-//                    case 0xf0:
-//                        return "嗅探攻击";
                     default:
                         return "非法功能码未知操作";
                 }

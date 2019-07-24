@@ -1,11 +1,11 @@
-package opcua;
+package com.zjucsc.attack.opcua;
 
 
 import com.zjucsc.attack.base.BaseOptConfig;
 
 import java.util.List;
 
-class jOpcuaOptConfig extends BaseOptConfig {
+public class OpcuaOptConfig extends BaseOptConfig {
 
     private String name; //变量的名称
     private float result;
