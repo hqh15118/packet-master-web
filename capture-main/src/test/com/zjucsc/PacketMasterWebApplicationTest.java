@@ -54,7 +54,7 @@ public class PacketMasterWebApplicationTest {
         System.out.println(CommonCacheUtil.isNormalRightPacket(rightPacketInfo1));
         rightPacketInfo1.setProtocol("protocol");
         System.out.println(CommonCacheUtil.isNormalRightPacket(rightPacketInfo1));
-        rightPacketInfo.setFunCode(1);
+        rightPacketInfo.setFunCode("assd");
         System.out.println(CommonCacheUtil.isNormalRightPacket(rightPacketInfo1));
     }
 }
