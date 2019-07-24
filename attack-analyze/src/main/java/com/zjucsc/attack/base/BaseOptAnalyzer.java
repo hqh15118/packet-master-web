@@ -47,6 +47,6 @@ public abstract class BaseOptAnalyzer<T extends BaseOptConfig> implements IOptAt
         return null;
     }
 
-    public abstract AttackBean doAnalyze(FvDimensionLayer layer,Map<String,Float>techmap, T t, Object... objs);
+    public abstract AttackBean doAnalyze(FvDimensionLayer layer,Map<String,Float> techmap, T t, Object... objs);
 
 }

@@ -11,16 +11,6 @@ import java.util.Map;
 
 public class PnioDecode extends BaseArtDecode<PnioConfig> {
 
-    /**
-     * 解析入口方法
-     * @param testConfig 自定义的通用配置
-     * @param map 全局的参数map，key是参数名，value是参数值
-     * @param bytes payload【原始数据/tcp payload】
-     * @param objects 其他数据
-     * @return 返回map即可
-     */
-
-
     @Override
     public Map<String, Float> decode(PnioConfig pnioConfig, Map<String, Float> globalMap, byte[] bytes, FvDimensionLayer layer, Object... obj) {
         if(bytes==null) {

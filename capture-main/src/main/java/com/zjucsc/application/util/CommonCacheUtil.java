@@ -8,6 +8,7 @@ import com.zjucsc.application.domain.bean.StatisticInfoSaveBean;
 import com.zjucsc.application.domain.bean.RightPacketInfo;
 import com.zjucsc.application.domain.non_hessian.DeviceMaxFlow;
 import com.zjucsc.application.domain.non_hessian.FvDimensionFilterCondition;
+import com.zjucsc.application.domain.non_hessian.SysRunArg;
 import com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
 import com.zjucsc.common.common_util.CommonUtil;
@@ -18,6 +19,7 @@ import com.zjucsc.tshark.packets.FvDimensionLayer;
 import io.netty.util.internal.ThreadLocalRandom;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import sun.security.krb5.Config;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -700,5 +702,86 @@ public class CommonCacheUtil {
     public static DeviceMaxFlow getDeviceMaxFlow(String deviceNumber){
         DeviceMaxFlow deviceMaxFlowError = DEVICE_MAX_FLOW.get(deviceNumber);
         return deviceMaxFlowError == null ? DEVICE_MAX_FLOW_ERROR : deviceMaxFlowError;
+    }
+
+    private static double maxCPURate = 75;  //75%
+    private static double maxMemoryRate = 75;   //75%
+    private static int cpuCount = 30;   // 1分钟
+    private static int memCount = 30;   // 1分钟
+    private static int cpuCurCount = 0;
+    private static int memCurCount = 0;
+    private static final byte[] RUN_STATE_LOCK = new byte[1];
+    public static SysRunArg getSysRunConfig(){
+        initCpuAndMemState();
+        SysRunArg sysRunArg = new SysRunArg();
+        sysRunArg.setCpuCount(cpuCount);
+        sysRunArg.setMemCount(memCount);
+        sysRunArg.setCpuRate(maxCPURate);
+        sysRunArg.setMemRate(maxMemoryRate);
+        return sysRunArg;
+    }
+    public static void initCpuAndMemState(){
+        maxCPURate = Double.valueOf(ConfigUtil.getData("cpu_rate","75"));
+        maxMemoryRate = Double.valueOf(ConfigUtil.getData("mem_rate","75"));
+        cpuCount = Integer.valueOf(ConfigUtil.getData("cpu","30"));
+        memCount = Integer.valueOf(ConfigUtil.getData("mem","30"));
+    }
+    public static void updateCpuOrMemoryRate(double cpu,double mem){
+        maxCPURate = cpu;
+        maxMemoryRate = mem;
+        ConfigUtil.setData("cpu_rate",String.valueOf(cpu));
+        ConfigUtil.setData("mem_rate",String.valueOf(mem));
+    }
+    public static void updateCpuOrMemCount(int cpu,int mem){
+        cpuCount = cpu;
+        memCount = mem;
+        ConfigUtil.setData("cpu",String.valueOf(cpu));
+        ConfigUtil.setData("mem",String.valueOf(mem));
+    }
+
+    /**
+     * @param stateWrapper 当前运行状态
+     * @return -1 正常 1 CPU异常 2 内存异常 3 CPU和内存均异常
+     */
+    public static int runStateDetect(SysRunStateUtil.StateWrapper stateWrapper){
+        int state = -1;
+        synchronized (RUN_STATE_LOCK){
+            if (stateWrapper.getCpu() >= maxCPURate){
+                cpuCurCount++;
+                if (cpuCurCount >= cpuCount){
+                    state = 1;
+                }
+            }else{
+                cpuCurCount = 0;
+            }
+            if (stateWrapper.getMemoryWrapper().getPercent() >= maxMemoryRate){
+                memCurCount++;
+                if (memCurCount >= memCount){
+                    if (state == 1){
+                        state = 3;
+                    }else{
+                        state = 2;
+                    }
+                }
+            }else{
+                memCurCount = 0;
+            }
+        }
+        return state;
+    }
+
+    private static ConcurrentHashMap<String,String> D2DAttackPair = new ConcurrentHashMap<>();
+    public static void addD2DAttackPair(String dstDeviceNumber,String srcDeviceNumber){
+        StringBuilder sb = CommonUtil.getGlobalStringBuilder();
+        sb.append(dstDeviceNumber).append("-").append(srcDeviceNumber);
+        D2DAttackPair.putIfAbsent(sb.toString(),"");
+    }
+    public static void clearD2DAttackPair(){
+        D2DAttackPair.clear();
+    }
+    public static boolean d2DAttackExist(String dstDeviceNumber,String srcDeviceNumber){
+        StringBuilder sb = CommonUtil.getGlobalStringBuilder();
+        sb.append(dstDeviceNumber).append("-").append(srcDeviceNumber);
+        return D2DAttackPair.containsKey(sb.toString());
     }
 }

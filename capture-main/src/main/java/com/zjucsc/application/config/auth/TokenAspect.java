@@ -33,11 +33,11 @@ public class TokenAspect {
     @Before(value = "pointcut()&&@annotation(token)")
     public void before(JoinPoint point , Token token) throws TokenNotValidException, AuthNotValidException {
         HttpServletRequest request = HttpContextUtil.getHttpServletRequest();
-        log.info("===============请求内容===============");
-        log.info("request url:" + request.getRequestURL().toString());
-        log.info("request method:" + request.getMethod());
-        log.info("request class method:" + point.getSignature());
-        log.info("request args :" + Arrays.toString(point.getArgs()));
+        //log.info("===============请求内容===============");
+        //log.info("request url:" + request.getRequestURL().toString());
+        //log.info("request method:" + request.getMethod());
+        //log.info("request class method:" + point.getSignature());
+        //log.info("request args :" + Arrays.toString(point.getArgs()));
         String request_token = request.getParameter("token");
         String request_role = userOptService.getTokenRole(request_token);
         if (request_role == null){

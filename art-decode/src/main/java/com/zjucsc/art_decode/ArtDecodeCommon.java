@@ -4,6 +4,10 @@ import com.zjucsc.art_decode.base.BaseConfig;
 import com.zjucsc.art_decode.base.ValidPacketCallback;
 import com.zjucsc.art_decode.base.BaseArtDecode;
 import com.zjucsc.art_decode.base.IArtEntry;
+import com.zjucsc.art_decode.modbus.ModbusDecode;
+import com.zjucsc.art_decode.opcua.OpcuaDecode;
+import com.zjucsc.art_decode.pnio.PnioDecode;
+import com.zjucsc.art_decode.s7comm.S7Decode;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 
 import java.util.HashMap;
@@ -18,11 +22,11 @@ public class ArtDecodeCommon {
      * 初始化
      */
     public static void init(){
-//        ART_DECODE_CONCURRENT_HASH_MAP.put("modbus",new ModbusDecode());
-//        ART_DECODE_CONCURRENT_HASH_MAP.put("s7comm",new S7Decode());
-//        ART_DECODE_CONCURRENT_HASH_MAP.put("pn_io",new PnioDecode());
+        ART_DECODE_CONCURRENT_HASH_MAP.put("modbus",new ModbusDecode());
+        ART_DECODE_CONCURRENT_HASH_MAP.put("s7comm",new S7Decode());
+        ART_DECODE_CONCURRENT_HASH_MAP.put("pn_io",new PnioDecode());
 //        ART_DECODE_CONCURRENT_HASH_MAP.put("104asdu",new IEC104Decode());
-//        ART_DECODE_CONCURRENT_HASH_MAP.put("opcua",new OpcuaDecode());
+        ART_DECODE_CONCURRENT_HASH_MAP.put("opcua",new OpcuaDecode());
 //        ART_DECODE_CONCURRENT_HASH_MAP.put("dnp3",new DNP3Decode());
 //        ART_DECODE_CONCURRENT_HASH_MAP.put("mms",new MMSDecode());
     }

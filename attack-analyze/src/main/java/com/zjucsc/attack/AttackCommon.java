@@ -188,8 +188,8 @@ public class AttackCommon {
     /**
      * 操作指令检测识别
      */
-    public static void appendOptAnalyze(Map<String,Float> techmap,FvDimensionLayer layer){
-        IOptAttackEntry iOptAttackEntry = OPT_ATTACK_DECODE_CONCURRENT_HASH_MAP.get(layer.protocol);
+    public static void appendOptAnalyze(Map<String,Float> techmap,FvDimensionLayer layer,int protocolId){
+        IOptAttackEntry iOptAttackEntry = OPT_ATTACK_DECODE_CONCURRENT_HASH_MAP.get(protocolId);
         if (iOptAttackEntry!=null){
             AttackBean attackBean = iOptAttackEntry.analyze(layer,techmap);
             if (attackBean!=null){

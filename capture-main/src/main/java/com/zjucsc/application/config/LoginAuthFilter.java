@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+//跨域解决方案
 @Configuration
 @WebFilter(urlPatterns = { "/*" }, filterName = "loginAuthFilter")
 public class LoginAuthFilter implements Filter {

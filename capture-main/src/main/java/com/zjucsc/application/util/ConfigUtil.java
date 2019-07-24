@@ -2,48 +2,76 @@ package com.zjucsc.application.util;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
+import java.sql.*;
 import java.util.Properties;
 
 @Slf4j
 public class ConfigUtil {
-    private static Properties properties;
-    public synchronized static void init(){
-        if (properties!=null){
-            return;
-        }
-        File configFile = new File("application-ext.properties");
-        if (!configFile.exists()){
-            try {
-                if(configFile.createNewFile()){
-                    log.info("成功创建【application-ext.properties】文件");
-                }
-            } catch (IOException e) {
-                log.error("无法创建【application-ext.properties】");
-            }
-        }
-        properties = new Properties();
+    private static Connection connection;
+    static {
         try {
-            properties.load(new FileInputStream(configFile));
-        } catch (IOException e) {
+            Class.forName("org.sqlite.JDBC");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        try {
+            connection = DriverManager.getConnection("jdbc:sqlite:local.db");
+            Statement statement = connection.createStatement();
+            statement.execute("CREATE TABLE IF NOT EXISTS key_value(\n" +
+                    "  k VARCHAR(64) PRIMARY KEY ,\n" +
+                    "  v VARCHAR(64)\n" +
+                    ")");
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private static Properties getProperties(){
-        if (properties == null){
-            init();
+    private static PreparedStatement preparedStatement;
+    private static PreparedStatement preparedStatement1;
+    private static PreparedStatement preparedStatement2;
+    public synchronized static String getData(String key,String def){
+        if (preparedStatement == null){
+            try {
+                preparedStatement  = connection.prepareStatement("SELECT k,v FROM key_value WHERE key_value.k = ?");
+            } catch (SQLException e) {
+                return def;
+            }
         }
-        return properties;
+        if (preparedStatement!=null){
+            try {
+                preparedStatement.setString(1,key);
+                preparedStatement.execute();
+                ResultSet resultSet = preparedStatement.getResultSet();
+                String res =  resultSet.getString("v");
+                return res == null ? def : res;
+            } catch (SQLException e) {
+                return def;
+            }
+        }
+        return def;
     }
 
-    public static void setData(String key,String value){
-        getProperties().setProperty(key,value);
+    public synchronized static boolean setData(String k,String v){
+        if (preparedStatement1 == null){
+            try {
+                preparedStatement1 = connection.prepareStatement("INSERT INTO key_value VALUES (?,?)");
+                preparedStatement2 = connection.prepareStatement("DELETE FROM key_value WHERE k = ? ");
+            } catch (SQLException ignored) { }
+        }
+        if (preparedStatement1!=null){
+            try {
+                preparedStatement2.setString(1,k);
+                preparedStatement2.execute();
+                preparedStatement1.setString(1,k);
+                preparedStatement1.setString(2,v);
+                preparedStatement1.execute();
+            } catch (SQLException e) {
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 
-    public static Object getData(String key){
-        return getProperties().get(key);
-    }
 }
