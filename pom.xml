@@ -14,6 +14,7 @@
         <module>common</module>
         <module>capture-main</module>
         <module>zuul</module>
+        <module>deploy</module>
     </modules>
 
         <groupId>com.zjucsc</groupId>
