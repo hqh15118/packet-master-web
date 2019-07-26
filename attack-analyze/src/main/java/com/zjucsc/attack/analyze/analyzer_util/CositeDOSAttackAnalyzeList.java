@@ -3,12 +3,13 @@ package com.zjucsc.attack.analyze.analyzer_util;
 import com.zjucsc.attack.bean.AttackConfig;
 import com.zjucsc.attack.bean.AttackConfigByDevice;
 import com.zjucsc.attack.util.AttackCacheUtil;
+import com.zjucsc.tshark.FvDimensionList;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 
 import java.util.LinkedList;
 
 //同源DOS攻击检测
-public class CositeDOSAttackAnalyzeList extends TcpAttackAnalyzeList {
+public class CositeDOSAttackAnalyzeList extends FvDimensionList {
 
     /**
      *

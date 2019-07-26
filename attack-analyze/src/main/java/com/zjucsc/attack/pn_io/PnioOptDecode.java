@@ -21,7 +21,7 @@ public class PnioOptDecode extends BaseOptAnalyzer<PnioOptConfig> {
         }
         else if(ArtAttackAnalyzeTask.attackDecode(pnioopconfig.getExpression(),techmap,"1").equals("配置错误"))
         {
-            return new AttackBean.Builder().attackType("配置错误").fvDimension(layer).attackInfo("").build();
+            return null;
         }
         else if(ArtAttackAnalyzeTask.attackDecode(pnioopconfig.getExpression(),techmap,"1").equals("1"))
         {
@@ -40,7 +40,7 @@ public class PnioOptDecode extends BaseOptAnalyzer<PnioOptConfig> {
         {
             return false;
         }
-        if(layer.frame_protocols[0].equals("pn_io") && pnioopconfig.getMacaddress().equals(layer.eth_src[0]))
+        if( pnioopconfig.getMacaddress().equals(layer.eth_src[0]))
         {
             byte[] data = Bytecut.Bytecut(layer.rawData,16, layer.rawData.length-paddinglength-20);
             if(data == null)

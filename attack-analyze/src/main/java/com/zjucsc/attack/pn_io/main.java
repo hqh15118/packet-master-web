@@ -49,7 +49,6 @@ public class main {
     private static FvDimensionLayer layer = new FvDimensionLayer()
     {
         {
-            setFrame_protocols(new String[] {"pn_io"});
             setRawData(load);
             setEth_src(new String[] {"e0:dc:a0:7b:16:56"});
         }

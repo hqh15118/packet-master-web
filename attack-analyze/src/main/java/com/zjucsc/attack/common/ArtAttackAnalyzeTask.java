@@ -48,7 +48,6 @@ public class ArtAttackAnalyzeTask implements Runnable{
             return null;
         }
         exp.clear();
-
         String logic = null;
         Boolean result= null;
         for(String x:expression)
@@ -57,14 +56,16 @@ public class ArtAttackAnalyzeTask implements Runnable{
             {
                 if(decodebool(exp,techmap)==null)
                 {
-                    return "配置错误";
+//                    return "配置错误";
+                    return null;
                 }
                 else if(logic == null)
                 {
                     result = decodebool(exp,techmap);
                     if(result == null)
                     {
-                        return "配置错误";
+//                        return "配置错误";
+                        return null;
                     }
                 }
                 else if(logic.equals("&&")){

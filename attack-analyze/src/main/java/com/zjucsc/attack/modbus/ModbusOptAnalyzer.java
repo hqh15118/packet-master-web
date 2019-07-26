@@ -19,7 +19,7 @@ public class ModbusOptAnalyzer extends BaseOptAnalyzer<ModbusOptConfig> {
         }
         else if(ArtAttackAnalyzeTask.attackDecode(ModbusOptConfig.getExpression(),techmap,"1").equals("配置错误"))
         {
-            return new AttackBean.Builder().attackType("配置错误").fvDimension(layer).attackInfo("").build();
+            return null;
         }
         else if(ArtAttackAnalyzeTask.attackDecode(ModbusOptConfig.getExpression(),techmap,"1").equals("1"))
         {
@@ -37,8 +37,8 @@ public class ModbusOptAnalyzer extends BaseOptAnalyzer<ModbusOptConfig> {
         {
             return false;
         }
-        else if(layer.frame_protocols[0].equals("modbus")) {
-            byte[] payload = ByteUtil.hexStringToByteArray(layer.tcp_payload[0]);
+        else {
+            byte[] payload =layer.tcpPayload;
             int len = ByteUtil.bytesToShort(payload,4);
             byte[] modbusload = Bytecut.Bytecut(payload,7,len-1);
             if (modbusopconfig.getReg() == 0 && modbusload!=null) {

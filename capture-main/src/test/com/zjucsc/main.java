@@ -82,7 +82,7 @@ public class main {
         }
     };
 
-    public static void main1(String[] args)
+    public static void main(String[] args)
     {
         BasePreProcessor iec104DnpPreProcessor = new S7CommPreProcessor();
         BasePreProcessor.setCaptureDeviceNameAndMacAddress("11:22:33:44:55:66","eth0");
@@ -111,12 +111,12 @@ public class main {
         iec104DnpPreProcessor.execCommand(1,-1);
     }
 
-    public static void main(String[] args) {
-        AttackBean attackBean = s7OptAnalyzer.doAnalyze(layer, techmap, s7OptAttackConfig, load);
-                if(attackBean!=null) {
-                    System.out.println(attackBean.getAttackType());
-                    System.out.println(attackBean.getAttackInfo());
-                }
-    }
+//    public static void main(String[] args) {
+//        AttackBean attackBean = s7OptAnalyzer.doAnalyze(layer, techmap, s7OptAttackConfig, load);
+//                if(attackBean!=null) {
+//                    System.out.println(attackBean.getAttackType());
+//                    System.out.println(attackBean.getAttackInfo());
+//                }
+//    }
 
 }

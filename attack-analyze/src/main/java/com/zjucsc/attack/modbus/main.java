@@ -49,17 +49,12 @@ public class main {
     {
         {
             setFrame_protocols(new String[]{"modbus"});
-            setTcp_payload(new String[]{"aaaa"});
             setTcp_payload(payload);
             setRawData(ByteUtil.hexStringToByteArray(payload[0]));
         }
     };
     private static ModbusOptAnalyzer modbusOptAnalyzer = new ModbusOptAnalyzer();
     public static void main(String[] args) {
-        AttackBean attackBean = modbusOptAnalyzer.doAnalyze(layer, techmap,modbusOptConfig);
-        if(attackBean!=null) {
-            System.out.println(attackBean.getAttackType());
-            System.out.println(attackBean.getAttackInfo());
+
         }
-    }
 }

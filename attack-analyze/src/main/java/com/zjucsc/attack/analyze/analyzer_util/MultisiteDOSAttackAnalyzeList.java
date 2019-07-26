@@ -4,12 +4,13 @@ import com.zjucsc.attack.bean.AttackConfig;
 import com.zjucsc.attack.bean.AttackConfigByDevice;
 import com.zjucsc.attack.bean.MultisiteFvDimensionAttackWrapper;
 import com.zjucsc.attack.util.AttackCacheUtil;
+import com.zjucsc.tshark.FvDimensionList;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
-public class MultisiteDOSAttackAnalyzeList extends TcpAttackAnalyzeList {
+public class MultisiteDOSAttackAnalyzeList extends FvDimensionList {
 
     private LinkedHashSet<MultisiteFvDimensionAttackWrapper> hashSet = new LinkedHashSet<>();
 

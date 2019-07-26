@@ -3,8 +3,6 @@ package com.zjucsc.attack.opcua;
 import com.zjucsc.attack.base.BaseOptAnalyzer;
 import com.zjucsc.attack.bean.AttackBean;
 import com.zjucsc.attack.common.ArtAttackAnalyzeTask;
-import com.zjucsc.common.common_util.ByteUtil;
-import com.zjucsc.common.common_util.Bytecut;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import com.zjucsc.tshark.packets.OpcUaPacket;
 
@@ -22,7 +20,13 @@ public class OpcuaOptAnalyzer extends BaseOptAnalyzer<OpcuaOptConfig> {
         }
         else if(ArtAttackAnalyzeTask.attackDecode(OpcuaOptConfig.getExpression(),techmap,"1").equals("配置错误"))
         {
-            return new AttackBean.Builder().attackType("配置错误").fvDimension(layer).attackInfo("").build();
+//            String error = "";
+//            for (String x:OpcuaOptConfig.getExpression())
+//            {
+//                error = error.concat(x);
+//            }
+//            return new AttackBean.Builder().attackType("配置错误:".concat(error) ).fvDimension(layer).attackInfo("").build();
+            return null;
         }
         else if(ArtAttackAnalyzeTask.attackDecode(OpcuaOptConfig.getExpression(),techmap,"1").equals("1"))
         {
@@ -53,19 +57,7 @@ public class OpcuaOptAnalyzer extends BaseOptAnalyzer<OpcuaOptConfig> {
                 /* 不检查Write Request操作对应的Response（676）*/
                 case "673":
                     for(String name: layer.opcua_nodeid_string) {
-                        /* 在工艺参数解析时OPCUA的变量名后面都有@，这里是把最后的@字符之后的内容去掉，以令变量名符合规则 */
-                        String name_tmp = opcuaOptConfig.getName();
-                        int t = name_tmp.lastIndexOf("@");
-                        String name_target;
-                        if(t != -1) {
-                            name_target = name_tmp.substring(0, t);
-                        }
-                        else {
-                            /* TODO:正常来讲不会跑到这里，因为本程序中OPCUA的变量名称的末尾都有@ */
-                            /* 但这里还是加了一句处理，以防某些情况，如配置规则中已经将@去掉了 */
-                            name_target = name_tmp;
-                        }
-
+                        String name_target = opcuaOptConfig.getName();
                         /* 检查encoding mask，只有末位bit为1时才继续提取数据 */
                         mask = Integer.valueOf((layer.opcua_datavalue_mask[i]).substring(2), 16);
                         has_data = mask & 0x01;

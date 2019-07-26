@@ -18,19 +18,19 @@ public class S7OptAnalyzer extends BaseOptAnalyzer<S7OptAttackConfig>{
     private List<DBclass> DBlist = new ArrayList<>();
 
 
-    private AttackBean Attackdecode(FvDimensionLayer layer, S7OptAttackConfig s7OptAttackConfig, Map<String,Float> techmap,Object payload)
+    private AttackBean Attackdecode(FvDimensionLayer layer, S7OptAttackConfig s7OptAttackConfig, Map<String,Float> techmap)
     {
-        if(ArtAttackAnalyzeTask.attackDecode(s7OptAttackConfig.getExpression(),techmap,"1")==null || Writejobdecode(layer,payload)==null)
+        if(ArtAttackAnalyzeTask.attackDecode(s7OptAttackConfig.getExpression(),techmap,"1")==null || Writejobdecode(layer)==null)
         {
             return null;
         }
         if(ArtAttackAnalyzeTask.attackDecode(s7OptAttackConfig.getExpression(),techmap,"1").equals("配置错误"))
         {
-            return new AttackBean.Builder().attackType("配置错误").fvDimension(layer).attackInfo("").build();
+            return null;
         }
         else if(ArtAttackAnalyzeTask.attackDecode(s7OptAttackConfig.getExpression(),techmap,"1").equals("1"))
         {
-            if(OperationDecode(Writejobdecode(layer,payload), s7OptAttackConfig))
+            if(OperationDecode(Writejobdecode(layer), s7OptAttackConfig))
             {
                 return new AttackBean.Builder().attackType("工艺操作异常").fvDimension(layer).attackInfo(s7OptAttackConfig.getComment()).build();
             }
@@ -38,16 +38,12 @@ public class S7OptAnalyzer extends BaseOptAnalyzer<S7OptAttackConfig>{
         return null;
     }
 
-    private List<DBclass> Writejobdecode(FvDimensionLayer S7layer , Object payload)
+    private List<DBclass> Writejobdecode(FvDimensionLayer S7layer )
     {
-        if(!S7layer.frame_protocols[0].equals("s7comm"))
-        {
-            return null;
-        }
         byte[] S7data;
         if(!S7layer.tcp_payload[0].equals(""))
         {
-            S7data = GetS7load.S7load((byte[])payload,1);
+            S7data = GetS7load.S7load(S7layer.tcpPayload,1);
         }
         else
         {
@@ -121,10 +117,8 @@ public class S7OptAnalyzer extends BaseOptAnalyzer<S7OptAttackConfig>{
 
 //    private Map<Integer, List<DBclass>> DBmap = new HashMap<>();
 
-
-
     @Override
     public AttackBean doAnalyze(FvDimensionLayer layer, Map<String,Float> techmap, S7OptAttackConfig s7OptAttackConfig, Object... objs) {
-        return Attackdecode(layer, s7OptAttackConfig,techmap,objs[0]);
+        return Attackdecode(layer, s7OptAttackConfig,techmap);
     }
 }
