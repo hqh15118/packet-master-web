@@ -57,35 +57,36 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     @Autowired private ConstantConfig constantConfig;
     @Autowired private PreProcessor preProcessor;
     @Autowired private IDeviceService iDeviceService;
-    @Autowired private IArtPacketService iArtPacketService;
-
+    //@Autowired private IArtPacketService iArtPacketService;
+    public static List<BasePreProcessor> basePreProcessors = new LinkedList<>();
     //五元kafka发送线程
     private final KafkaThread<FvDimensionLayer> FV_D_SENDER = KafkaThread.createNewKafkaThread("fv_dimension", KafkaTopic.SEND_ALL_PACKET_FV_DIMENSION);
     private final KafkaThread<AttackBean> ATTACK_SENDER = KafkaThread.createNewKafkaThread("packet_attack", KafkaTopic.SEND_PACKET_ATTACK);
+    private final KafkaThread<ArtPacketDetail> ART_PACKET = KafkaThread.createNewKafkaThread("art_packet",KafkaTopic.ART_PACKET);
 
     public CapturePacketServiceImpl(PacketAnalyzeService packetAnalyzeService) {
         this.packetAnalyzeService = packetAnalyzeService;
         //所有攻击报文的入口
         AttackCommon.registerAttackCallback((attackBean,layer) -> {
+            //设置攻击设备和被攻击设备
             setDeviceInfo(attackBean);
             //通知攻击到达
             SocketServiceCenter.updateAllClient(SocketIoEvent.ATTACK_INFO, attackBean);
-            //发送攻击信息保存
+            //发送攻击信息保存到数据库
             ATTACK_SENDER.sendMsg(attackBean);
-            //统计攻击类型
-            CommonCacheUtil.addNewAttackLog(attackBean.getAttackType());
+            //统计攻击TOP5
+            CommonCacheUtil.addNewAttackBean(attackBean);
             //恶意报文统计【五秒钟一次的延迟推送】
             statisticsBadPacket(attackBean.getDeviceNumber());
         });
 
-        ArtDecodeCommon.registerPacketValidCallback(new ValidPacketCallback() {
-            @Override
-            public void callback(String argName, float value, FvDimensionLayer layer) {
-                //
-                ArtPacketDetail artPacketDetail = ArtPacketDetail.newOne(layer);
-                artPacketDetail.setValue(value);
-                iArtPacketService.insertArtPacket(argName,artPacketDetail);
-            }
+        ArtDecodeCommon.registerPacketValidCallback((argName, value, layer) -> {
+            //
+            ArtPacketDetail artPacketDetail = ArtPacketDetail.newOne(layer);
+            artPacketDetail.setValue(value);
+            artPacketDetail.setArtName(argName);
+            ART_PACKET.sendMsg(artPacketDetail);
+            //iArtPacketService.insertArtPacket(argName,artPacketDetail);
         });
     }
 
@@ -142,15 +143,16 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     private void startAllKafkaThread(){
         FV_D_SENDER.startService();
         ATTACK_SENDER.startService();
+        ART_PACKET.startService();
     }
     private void stopAllKafkaThread(){
         FV_D_SENDER.stopService();
         ATTACK_SENDER.stopService();
+        ART_PACKET.stopService();
     }
 
     private NewFvDimensionCallback newFvDimensionCallback;
 
-    private List<BasePreProcessor> processorList = new ArrayList<>();
     private ProcessCallback<String,String> callback;
 
     //恶意报文handler
@@ -172,8 +174,8 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         thread.setName("-fv-dimension-handler-thread-");
         thread.setUncaughtExceptionHandler(COMMON_THREAD_EXCEPTION_HANDLER);
         return thread;
-    })) {
-
+    }
+    )) {
         /**
          * 所有报文的入口方法
          * @param t 五元组
@@ -184,6 +186,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             FvDimensionLayer fvDimensionLayer = ((FvDimensionLayer) t);
             //设置协议栈
             fvDimensionLayer.protocol = PacketDecodeUtil.discernPacket(fvDimensionLayer);   //t-s
+            preProcess(fvDimensionLayer);
             fvDimensionLayer.deviceNumber = CommonCacheUtil.getTargetDeviceNumberByTag(fvDimensionLayer.ip_dst[0],fvDimensionLayer.eth_dst[0]);
             //统计所有的IP地址
             if (fvDimensionLayer.ip_dst[0].length() > 0){
@@ -196,7 +199,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             byte[] payload = PacketDecodeUtil.hexStringToByteArray2(fvDimensionLayer.custom_ext_raw_data[0]);    //t-s
             fvDimensionLayer.rawData = payload;
             //设置五元组中的功能码以及功能码对应的含义
-            if (Common.systemRunType !=0) {
+            if (Common.systemRunType !=0 ) {
                 try {
                     setFuncode(fvDimensionLayer);                                           //t-s
                 } catch (ProtocolIdNotValidException e) {
@@ -214,6 +217,15 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             return fvDimensionLayer;                                              //将五元组发送给BadPacketHandler
         }
     };
+
+    private void preProcess(FvDimensionLayer fvDimensionLayer) {
+        if (fvDimensionLayer.protocol.equals("tcp") && !fvDimensionLayer.tcp_payload[0].equals("")){
+            byte[] tcpPayload = PacketDecodeUtil.hexStringToByteArray(fvDimensionLayer.tcp_payload[0]);
+            //set iec101 protocol 单字节的101怎么设置？
+
+            //set dnp3.0 protocol
+        }
+    }
 
     public void setFuncode(FvDimensionLayer layer) throws ProtocolIdNotValidException {
         if (!(layer instanceof UndefinedPacket.LayersBean)) {
@@ -326,7 +338,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     public CompletableFuture<Exception> start(ProcessCallback<String,String> callback) {
         startAllKafkaThread();
         this.callback = callback;
-        List<BasePreProcessor> basePreProcessors = new LinkedList<>();
+        basePreProcessors = new LinkedList<>();
         boolean cipMms = false;
         boolean iec104Dnp = false;
         for (String preProcessorName : preProcessor.getList()) {
@@ -388,11 +400,11 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     @Async
     @Override
     public CompletableFuture<Exception> stop() {
-        for (BasePreProcessor basePreProcessor : processorList) {
+        for (BasePreProcessor basePreProcessor : basePreProcessors) {
             basePreProcessor.stopProcess();
             callback.end("end " + basePreProcessor.getClass().getName());
         }
-        processorList.clear();
+        basePreProcessors.clear();
         stopAllKafkaThread();
         return CompletableFuture.completedFuture(null);
     }
@@ -414,7 +426,6 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     private void doNow(BasePreProcessor basePreProcessor , AbstractAsyncHandler<FvDimensionLayer> fvDimensionHandler,
                        CountDownLatch downLatch , StringBuilder sb){
         String processName = basePreProcessor.getClass().getName();
-        processorList.add(basePreProcessor);
         DefaultPipeLine pipeLine = new DefaultPipeLine(processName);
         //fv_dimension_handler --> bad_packet_analyze_handler
         pipeLine.addLast(fvDimensionHandler);
@@ -686,7 +697,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             AttackCommon.appendFvDimension(layer);                     //将五元组添加到攻击分析模块中分析
             AttackCommon.appendArtAnalyze(res,layer);
             try {
-                AttackCommon.appendOptAnalyze(res,layer,CommonCacheUtil.convertNameToId(layer.protocol));
+                AttackCommon.appendOptAnalyze(res,layer,CommonCacheUtil.convertNameToId(layer.protocol), tcpPayload);
             } catch (ProtocolIdNotValidException ignored) {}
             return layer;
         }

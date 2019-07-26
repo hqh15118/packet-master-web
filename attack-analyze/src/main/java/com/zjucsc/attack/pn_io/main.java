@@ -1,6 +1,7 @@
 package com.zjucsc.attack.pn_io;
 
 import com.zjucsc.attack.bean.AttackBean;
+import com.zjucsc.attack.config.PnioOptConfig;
 import com.zjucsc.common.common_util.ByteUtil;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 

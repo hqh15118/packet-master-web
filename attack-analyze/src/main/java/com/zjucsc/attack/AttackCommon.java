@@ -2,8 +2,8 @@ package com.zjucsc.attack;
 
 import com.zjucsc.attack.analyze.analyzer_util.CositeDOSAttackAnalyzeList;
 import com.zjucsc.attack.analyze.analyzer_util.MultisiteDOSAttackAnalyzeList;
-import com.zjucsc.attack.base.BaseOptAnalyzer;
-import com.zjucsc.attack.base.BaseOptConfig;
+import com.zjucsc.attack.bean.BaseOptAnalyzer;
+import com.zjucsc.attack.bean.BaseOptConfig;
 import com.zjucsc.attack.base.IOptAttackEntry;
 import com.zjucsc.attack.bean.ArtAttackAnalyzeConfig;
 import com.zjucsc.attack.bean.AttackBean;
@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -188,7 +187,7 @@ public class AttackCommon {
     /**
      * 操作指令检测识别
      */
-    public static void appendOptAnalyze(Map<String,Float> techmap,FvDimensionLayer layer,int protocolId){
+    public static void appendOptAnalyze(Map<String,Float> techmap,FvDimensionLayer layer,int protocolId,Object...objs){
         IOptAttackEntry iOptAttackEntry = OPT_ATTACK_DECODE_CONCURRENT_HASH_MAP.get(protocolId);
         if (iOptAttackEntry!=null){
             AttackBean attackBean = iOptAttackEntry.analyze(layer,techmap);

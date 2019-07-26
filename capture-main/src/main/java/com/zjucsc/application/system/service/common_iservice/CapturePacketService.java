@@ -3,7 +3,9 @@ package com.zjucsc.application.system.service.common_iservice;
 import com.zjucsc.application.tshark.capture.NewFvDimensionCallback;
 import com.zjucsc.application.tshark.capture.ProcessCallback;
 import com.zjucsc.tshark.handler.AbstractAsyncHandler;
+import com.zjucsc.tshark.pre_processor.BasePreProcessor;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -25,4 +27,5 @@ public interface CapturePacketService<S,E> {
     CompletableFuture<Exception> stopSimulate();
 
     Map<AbstractAsyncHandler,Integer> load();
+
 }

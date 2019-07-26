@@ -9,8 +9,10 @@ import com.zjucsc.application.domain.bean.RightPacketInfo;
 import com.zjucsc.application.domain.non_hessian.DeviceMaxFlow;
 import com.zjucsc.application.domain.non_hessian.FvDimensionFilterCondition;
 import com.zjucsc.application.domain.non_hessian.SysRunArg;
+import com.zjucsc.application.domain.non_hessian.Top5Statistic;
 import com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
+import com.zjucsc.attack.bean.AttackBean;
 import com.zjucsc.common.common_util.CommonUtil;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.socket_io.SocketIoEvent;
@@ -442,21 +444,78 @@ public class CommonCacheUtil {
     /************************************
      *
      * 攻击占比统计 key : 攻击类型  value 攻击数目
+     * 攻击IP地址TOP5 key : 攻击IP地址 value 攻击数目
+     * 被攻击IP地址TOP5 key : 被攻击IP地址 value 被攻击数目
+     * 攻击利用协议TOP5 key : 攻击利用协议 value 攻击数目
      *
      ***********************************/
-    private static final HashMap<String,Integer> ATTACK_PERCENT = new HashMap<>();
-    private static final byte[] LOCK_ATTACK_PERCENT = new byte[1];
-    public static void addNewAttackLog(String attackName){
-        synchronized (LOCK_ATTACK_PERCENT){
-            int attackNum = ATTACK_PERCENT.computeIfAbsent(attackName,k -> 0);
-            ATTACK_PERCENT.put(attackName,++attackNum);
+    private static final ConcurrentHashMap<String,Integer> ATTACK_TYPE = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String,Integer> ATTACK_IPS = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String,Integer> ATTACKED_IPS = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String,Integer> ATTACK_PROTOCOL = new ConcurrentHashMap<>();
+    public static void addNewAttackBean(AttackBean attackBean){
+        newAttackCome(ATTACK_TYPE,attackBean.getAttackType());
+        if (!attackBean.getSrcIp().equals("--")) {
+            newAttackCome(ATTACK_IPS, attackBean.getSrcIp());
+        }
+        if (!attackBean.getDstIp().equals("--")){
+            newAttackCome(ATTACKED_IPS,attackBean.getDstIp());
+        }
+        newAttackCome(ATTACK_PROTOCOL,attackBean.getProtocolName());
+    }
+    private static void newAttackCome(Map<String,Integer> map,String key){
+        int attackNum = map.computeIfAbsent(key,k -> 0);
+        ATTACK_TYPE.put(key,++attackNum);
+    }
+    //FIRST 最大，LAST最小
+    private static final LinkedList<Top5Statistic.Top5Wrapper> ATTACK_TYPE_LIST = new LinkedList<>();
+    private static final LinkedList<Top5Statistic.Top5Wrapper> ATTACK_IPS_LIST = new LinkedList<>();
+    private static final LinkedList<Top5Statistic.Top5Wrapper> ATTACKED_IPS_LIST = new LinkedList<>();
+    private static final LinkedList<Top5Statistic.Top5Wrapper> ATTACK_PROTOCOL_LIST = new LinkedList<>();
+    private static Top5Statistic top5Statistic = new Top5Statistic();
+
+    //单线程统计
+    public static Top5Statistic getTop5StatisticsData(){
+        ATTACK_TYPE.forEach((type, count) -> {
+            getTop5List(ATTACK_TYPE_LIST,type,count);
+        });
+        ATTACK_IPS.forEach((type, count) -> {
+            getTop5List(ATTACK_IPS_LIST,type,count);
+        });
+        ATTACKED_IPS.forEach((type, count) -> {
+            getTop5List(ATTACKED_IPS_LIST,type,count);
+        });
+        ATTACK_PROTOCOL.forEach((type, count) -> {
+            getTop5List(ATTACK_PROTOCOL_LIST,type,count);
+        });
+        top5Statistic.setAttackType(ATTACK_TYPE_LIST);
+        top5Statistic.setAttackIps(ATTACK_IPS_LIST);
+        top5Statistic.setAttackedIps(ATTACKED_IPS_LIST);
+        top5Statistic.setAttackProtocol(ATTACK_PROTOCOL_LIST);
+        return top5Statistic;
+    }
+
+    private static void getTop5List(LinkedList<Top5Statistic.Top5Wrapper> list , String type , int count){
+        if (list.size() == 0){
+            list.add(new Top5Statistic.Top5Wrapper(type,count));
+        }else{
+            if (list.getLast().getCount() < count){
+                //从first开始
+                if (list.size() == 5) {
+                    list.removeLast();
+                }
+                for (int i = 0; i < list.size(); i++) {
+                    if (list.get(i).getCount() < count){
+                        list.add(i,new Top5Statistic.Top5Wrapper(type,count));
+                        break;
+                    }
+                }
+            }
         }
     }
 
     public static void updateAttackLog(){
-        synchronized (LOCK_ATTACK_PERCENT){
-            SocketServiceCenter.updateAllClient(SocketIoEvent.ATTACK_STATISTICS,ATTACK_PERCENT);
-        }
+        SocketServiceCenter.updateAllClient(SocketIoEvent.ATTACK_STATISTICS,ATTACK_TYPE);
     }
 
     /*************************************

@@ -12,10 +12,7 @@ import com.zjucsc.application.system.service.hessian_iservice.IArtConfigService;
 import com.zjucsc.application.util.AppCommonUtil;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.art_decode.ArtDecodeCommon;
-import com.zjucsc.art_decode.artconfig.IEC104Config;
-import com.zjucsc.art_decode.artconfig.ModBusConfig;
-import com.zjucsc.art_decode.artconfig.PnioConfig;
-import com.zjucsc.art_decode.artconfig.S7Config;
+import com.zjucsc.art_decode.artconfig.*;
 import com.zjucsc.art_decode.base.BaseConfig;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import io.swagger.annotations.ApiOperation;
@@ -84,7 +81,9 @@ public class ArtConfigController {
             iec104Config.setProtocol(PACKET_PROTOCOL.IEC104_ASDU);
             ArtDecodeCommon.addArtDecodeConfig(iec104Config);
         }else if (baseConfig.getProtocolId() == PACKET_PROTOCOL.DNP3_0_PRI_ID){
-
+            DNP3Config dnp3Config = JSON.parseObject(jsonData, DNP3Config.class);
+            dnp3Config.setProtocol("dnp3");     //这个协议是和工艺参数解析的模块对应起来的
+            ArtDecodeCommon.addArtDecodeConfig(dnp3Config);
         }else if (baseConfig.getProtocolId() == PACKET_PROTOCOL.PN_IO_ID){
             PnioConfig pnioConfig = JSON.parseObject(jsonData,PnioConfig.class);
             pnioConfig.setProtocol(PACKET_PROTOCOL.PN_IO);

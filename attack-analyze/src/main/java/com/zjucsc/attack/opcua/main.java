@@ -1,7 +1,7 @@
 package com.zjucsc.attack.opcua;
 
 import com.zjucsc.attack.bean.AttackBean;
-import com.zjucsc.tshark.packets.FvDimensionLayer;
+import com.zjucsc.attack.config.OpcuaOptConfig;
 import com.zjucsc.tshark.packets.OpcUaPacket;
 
 import java.util.ArrayList;

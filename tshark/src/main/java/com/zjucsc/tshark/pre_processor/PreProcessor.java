@@ -18,13 +18,14 @@ public interface PreProcessor {
 
     void stopProcess();
     /**
-     * 只捕获该协议的报文
+     * 只使用该协议的报文 -Y
      * @return
      */
     String[] protocolFilterField();
 
     /**
      * 除了五元组之外，该报文需要过滤出来的字段，不可以为null，可以为空 ""
+     * -e tcp.port ...
      * @return
      */
     List<String> filterFields();
@@ -35,4 +36,8 @@ public interface PreProcessor {
     void decodeJSONString(String packetJSON);
 
     String extConfig();
+
+    void doExecCommand(String command);
+
+    void restartCapture();
 }

@@ -2,6 +2,8 @@ package com.zjucsc.tshark.pre_processor;
 
 import com.zjucsc.tshark.TsharkCommon;
 import com.zjucsc.tshark.CommonTsharkUtil;
+import com.zjucsc.tshark.bean.ProcessWrapper;
+import com.zjucsc.tshark.exception.TsharkProcessNotOpenException;
 import com.zjucsc.tshark.handler.PipeLine;
 
 import java.io.BufferedReader;
@@ -41,6 +43,8 @@ public abstract class BasePreProcessor implements PreProcessor {
     private volatile boolean processRunning = false;
     private static final Semaphore semaphore = new Semaphore(1);
     PipeLine pipeLine;
+    private String bindCommand;
+    private TsharkProcessFinishCallback tsharkProcessFinishCallback;
     //用于每个tshark进程解析
     ExecutorService decodeThreadPool = Executors.newSingleThreadExecutor(r -> {
         Thread thread = new Thread(r);
@@ -48,6 +52,7 @@ public abstract class BasePreProcessor implements PreProcessor {
         thread.setUncaughtExceptionHandler(TsharkCommon.uncaughtExceptionHandler);
         return thread;
     });
+    private ProcessWrapper oldProcessWrapper;
 
     static{
         Thread thread = new Thread(() -> {
@@ -116,89 +121,9 @@ public abstract class BasePreProcessor implements PreProcessor {
         commandBuilder.append("\"");   // 最后的部分 + s7comm/...用于过滤
         commandBuilder.append(" -M ").append(TsharkCommon.sessionReset);    //设置n条之后重置回话
         String command = commandBuilder.toString();
-        try {
-            /**
-             * 这里必须要保证一次只能有一个线程运行tshark程序
-             * 【如果有多个tshark文件，那么可以同时开多个不同的tshark】
-             */
-            semaphore.acquire();
-        } catch (InterruptedException e) {
-            return;
-        }
-        Process process = null;
-        try {
-            System.out.println(String.format("***************** %s ==> run command :%s ",this.getClass().getName() , command));
-            //process = Runtime.getRuntime().exec(new String[]{"bash","-c",command});
-            process = Runtime.getRuntime().exec(command);
-            CommonTsharkUtil.addTsharkProcess(process);
-            if (type != 0) {
-                //本地离线不需要设置error stream
-                doWithErrorStream(process.getErrorStream(), command);
-            }
-            if (commandBuildFinishCallback!=null){
-                commandBuildFinishCallback.commandBuildFinish();
-            }
-            //log.info("start running --------------------> now ");//TODO LOG HERE
-            processRunning = true;
-            try (BufferedReader bfReader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-                for (;processRunning;) {
-                    String packetInJSON = bfReader.readLine();
-                    if (packetInJSON != null) {
-                        if (packetInJSON.length() > 85) {
-                            decodeJSONString(packetInJSON);
-                        }
-                    }else{
-                        if (processRunning) {
-                            //TODO LOG HERE
-                            //log.info("{} exit by end finishing reading ..", this.getClass().getName());
-                        }else {
-                            //log.info("{} exit by end quiting capture service..", this.getClass().getName());
-                        }
-                        break;
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (IOException e) {
-            //log.error("can not run command {} " , commandBuilder.toString()); //LOG HERE
-            e.printStackTrace();
-        }finally {
-            if (process!=null){
-                CommonTsharkUtil.removeTsharkProcess(process);
-                process.destroy();
-                /*
-                  Returns the exit value for the subprocess.
 
-                  @return the exit value of the subprocess represented by this
-                 *         {@code Process} object.  By convention, the value
-                 *         {@code 0} indicates normal termination.
-                 * @throws IllegalThreadStateException if the subprocess represented
-                 *         by this {@code Process} object has not yet terminated
-                 */
-                //TODO LOG HERE
-                //log.info("{} exit with exit value : {} " , this.getClass().getName()  , process.exitValue());
-            }
-        }
-    }
-
-    private void doWithErrorStream(InputStream errorStream , String command) {
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(errorStream));
-        String str;
-        try {
-            if ((str = bufferedReader.readLine()) != null) {
-                System.out.println("error stream : [如果是capture xxx表示正常运行] >> " + str);
-                /*
-                 * 当接收到capture on xxx的时候，就表示该tshark进程已经开启完毕了，那么就可以释放
-                 * 信号量，让下一个线程打开tshark
-                 */
-                semaphore.release();
-                //统一设置错误流
-                TsharkCommon.handleTsharkErrorStream(command.split("-Y")[1],bufferedReader);
-            }
-        } catch (IOException e) {
-            //log.error("" , e);//TODO LOG HERE
-        }
+        ////////////////////////////////////////////
+        doExecCommand(command);
     }
 
 
@@ -303,5 +228,112 @@ public abstract class BasePreProcessor implements PreProcessor {
     @Override
     public String extConfig() {
         return null;
+    }
+
+    @Override
+    public void doExecCommand(String command) {
+        bindCommand = command;
+        try {
+            /**
+             * 这里必须要保证一次只能有一个线程运行tshark程序
+             * 【如果有多个tshark文件，那么可以同时开多个不同的tshark】
+             */
+            semaphore.acquire();
+        } catch (InterruptedException e) {
+            return;
+        }
+        Process process = null;
+        try {
+            //System.out.println(String.format("***************** %s ==> run command :%s ",this.getClass().getName() , command));
+            //process = Runtime.getRuntime().exec(new String[]{"bash","-c",command});
+            process = Runtime.getRuntime().exec(command);
+            oldProcessWrapper = new ProcessWrapper(process,command);
+            CommonTsharkUtil.addTsharkProcess(oldProcessWrapper);
+            //本地离线不需要设置error stream
+            doWithErrorStream(process.getErrorStream(), command);
+            if (commandBuildFinishCallback!=null){
+                commandBuildFinishCallback.commandBuildFinish();
+            }
+            //log.info("start running --------------------> now ");//TODO LOG HERE
+            processRunning = true;
+            try (BufferedReader bfReader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                for (;processRunning;) {
+                    String packetInJSON = bfReader.readLine();
+                    if (packetInJSON != null) {
+                        if (packetInJSON.length() > 85) {
+                            decodeJSONString(packetInJSON);
+                        }
+                    }else{
+                        if (processRunning) {
+                            //TODO LOG HERE
+                            //System.out.println("tshark process out by finishing read data");
+                            //log.info("{} exit by end finishing reading ..", this.getClass().getName());
+                        }else {
+                            //System.out.println("tshark process out by stop capture");
+                            //log.info("{} exit by end quiting capture service..", this.getClass().getName());
+                        }
+                        if (tsharkProcessFinishCallback!=null){
+                            tsharkProcessFinishCallback.finish();
+                        }
+                        break;
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (IOException e) {
+            //log.error("can not run command {} " , commandBuilder.toString()); //LOG HERE
+            e.printStackTrace();
+        }finally {
+            if (process!=null){
+                CommonTsharkUtil.removeTsharkProcess(oldProcessWrapper);
+                process.destroy();
+                /*
+                  Returns the exit value for the subprocess.
+
+                  @return the exit value of the subprocess represented by this
+                 *         {@code Process} object.  By convention, the value
+                 *         {@code 0} indicates normal termination.
+                 * @throws IllegalThreadStateException if the subprocess represented
+                 *         by this {@code Process} object has not yet terminated
+                 */
+                //TODO LOG HERE
+                //log.info("{} exit with exit value : {} " , this.getClass().getName()  , process.exitValue());
+            }
+        }
+    }
+
+    private void doWithErrorStream(InputStream errorStream , String command) {
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(errorStream));
+        String str;
+        try {
+            if ((str = bufferedReader.readLine()) != null) {
+                System.out.println(">>>>>>>>>>>>>" + str);
+                /*
+                 * 当接收到capture on xxx的时候，就表示该tshark进程已经开启完毕了，那么就可以释放
+                 * 信号量，让下一个线程打开tshark
+                 */
+                semaphore.release();
+                //统一设置错误流
+                TsharkCommon.handleTsharkErrorStream(command.split("-Y")[1],bufferedReader);
+            }
+        } catch (IOException e) {
+            //log.error("" , e);//TODO LOG HERE
+        }
+    }
+
+    @Override
+    public void restartCapture() {
+        CommonTsharkUtil.removeTsharkProcess(oldProcessWrapper);
+        oldProcessWrapper.getProcess().destroyForcibly();
+        doExecCommand(bindCommand);
+    }
+
+    public String getBindCommand(){
+        return bindCommand;
+    }
+
+    private interface TsharkProcessFinishCallback{
+        void finish();
     }
 }

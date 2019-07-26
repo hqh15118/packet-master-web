@@ -487,10 +487,11 @@ public class OpcuaDecode extends BaseArtDecode<OpcuaConfig> {
         }
     }
 
+    private OpcuaArtNameCallback opcuaArtNameCallback;
 
     @Override
     public Map<String, Float> decode(OpcuaConfig opcuaConfig, Map<String, Float> result_map, byte[] bytes, FvDimensionLayer fvDimensionLayer, Object... objects) {
-        OpcUaPacket.LayersBean opcUaPacket = ((OpcUaPacket.LayersBean) objects[0]);
+        OpcUaPacket.LayersBean opcUaPacket = ((OpcUaPacket.LayersBean) fvDimensionLayer);
         opcuaMap.Output_Map = result_map;
         switch (opcUaPacket.opcua_transport_type[0]) {
             /** 目前仅关注MSG报文，其余类型的报文暂无需求 **/
@@ -512,8 +513,8 @@ public class OpcuaDecode extends BaseArtDecode<OpcuaConfig> {
                     System.out.println(key);
                     System.out.println(opcuaMap.Output_Map.get(key));
                 }
-
 */
+
                 return opcuaMap.Output_Map;
             default:
                 break;
@@ -533,4 +534,11 @@ public class OpcuaDecode extends BaseArtDecode<OpcuaConfig> {
 //    public List<AttackType> attackDecode(List<AttackType> list, byte[] bytes, Object... objects) {
 //        return null;
 //    }
+    public interface OpcuaArtNameCallback{
+        void call(String name);
+    }
+
+    public void setOpcuaArtNameCallback(OpcuaArtNameCallback opcuaArtNameCallback){
+        this.opcuaArtNameCallback = opcuaArtNameCallback;
+    }
 }

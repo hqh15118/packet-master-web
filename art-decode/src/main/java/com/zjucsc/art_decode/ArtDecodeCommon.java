@@ -4,6 +4,8 @@ import com.zjucsc.art_decode.base.BaseConfig;
 import com.zjucsc.art_decode.base.ValidPacketCallback;
 import com.zjucsc.art_decode.base.BaseArtDecode;
 import com.zjucsc.art_decode.base.IArtEntry;
+import com.zjucsc.art_decode.dnp3.DNP3Decode;
+import com.zjucsc.art_decode.iec104.IEC104Decode;
 import com.zjucsc.art_decode.modbus.ModbusDecode;
 import com.zjucsc.art_decode.opcua.OpcuaDecode;
 import com.zjucsc.art_decode.pnio.PnioDecode;
@@ -25,9 +27,10 @@ public class ArtDecodeCommon {
         ART_DECODE_CONCURRENT_HASH_MAP.put("modbus",new ModbusDecode());
         ART_DECODE_CONCURRENT_HASH_MAP.put("s7comm",new S7Decode());
         ART_DECODE_CONCURRENT_HASH_MAP.put("pn_io",new PnioDecode());
-//        ART_DECODE_CONCURRENT_HASH_MAP.put("104asdu",new IEC104Decode());
+        ART_DECODE_CONCURRENT_HASH_MAP.put("104asdu",new IEC104Decode());
         ART_DECODE_CONCURRENT_HASH_MAP.put("opcua",new OpcuaDecode());
-//        ART_DECODE_CONCURRENT_HASH_MAP.put("dnp3",new DNP3Decode());
+        ART_DECODE_CONCURRENT_HASH_MAP.put("dnp3",new DNP3Decode());
+        ART_DECODE_CONCURRENT_HASH_MAP.put("iec101",new IEC104Decode());
 //        ART_DECODE_CONCURRENT_HASH_MAP.put("mms",new MMSDecode());
     }
 
