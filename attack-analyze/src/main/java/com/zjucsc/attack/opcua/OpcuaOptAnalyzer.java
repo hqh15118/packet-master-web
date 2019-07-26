@@ -3,10 +3,7 @@ package com.zjucsc.attack.opcua;
 import com.zjucsc.attack.bean.BaseOptAnalyzer;
 import com.zjucsc.attack.bean.AttackBean;
 import com.zjucsc.attack.common.ArtAttackAnalyzeTask;
-<<<<<<< HEAD
-=======
 import com.zjucsc.attack.config.OpcuaOptConfig;
->>>>>>> 34e966802296a0ab102185b90c825e77c32ecf06
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import com.zjucsc.tshark.packets.OpcUaPacket;
 

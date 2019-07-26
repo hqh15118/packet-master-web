@@ -1,28 +1,27 @@
 package com.zjucsc.attack.iec104;
 
-import com.zjucsc.attack.base.BaseOptAnalyzer;
 import com.zjucsc.attack.bean.AttackBean;
+import com.zjucsc.attack.bean.BaseOptAnalyzer;
 import com.zjucsc.attack.common.ArtAttackAnalyzeTask;
-import com.zjucsc.attack.modbus.ModbusOptConfig;
-import com.zjucsc.common.common_util.ByteUtil;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 
-import java.util.List;
 import java.util.Map;
+
+import static com.zjucsc.attack.common.ArtAttackAnalyzeTask.*;
 
 public class iec104optdecode extends BaseOptAnalyzer<iec104Opconfig> {
 
     public AttackBean attackdecode(FvDimensionLayer layer, iec104Opconfig iec104Opconfig, Map<String,Float> techmap)
     {
-        if(ArtAttackAnalyzeTask.attackDecode(iec104Opconfig.getExpression(),techmap,"1")==null)
+        if(attackDecode(iec104Opconfig.getExpression(),techmap,"1")==null)
         {
             return null;
         }
-        else if(ArtAttackAnalyzeTask.attackDecode(iec104Opconfig.getExpression(),techmap,"1").equals("配置错误"))
+        else if(attackDecode(iec104Opconfig.getExpression(),techmap,"1").equals("配置错误"))
         {
             return null;
         }
-        else if(ArtAttackAnalyzeTask.attackDecode(iec104Opconfig.getExpression(),techmap,"1").equals("1"))
+        else if(attackDecode(iec104Opconfig.getExpression(),techmap,"1").equals("1"))
         {
             if(operationdecode(layer,iec104Opconfig))
             {
@@ -49,19 +48,19 @@ public class iec104optdecode extends BaseOptAnalyzer<iec104Opconfig> {
                     packetIOA = Byte.toUnsignedInt(payload[12]) + (Byte.toUnsignedInt(payload[13]) << 8) + (Byte.toUnsignedInt(payload[14]) << 16);
                     if(packetIOA==iec104opconfig.getSetIOAAddress())
                     {
-                        if (iec104opconfig.getResult() && !iec104opconfig.getOpType() && (payload[15] & 0x81) == 1)
+                        if (iec104opconfig.isResult() && !iec104opconfig.isOptype() && (payload[15] & 0x81) == 1)
                         {
                             return true;
                         }
-                        else if (iec104opconfig.getResult() && iec104opconfig.getOpType() && (payload[15] & 0x81) == 0x81)
+                        else if (iec104opconfig.isResult() && iec104opconfig.isOptype() && (payload[15] & 0x81) == 0x81)
                         {
                             return true;
                         }
-                        else if (!iec104opconfig.getResult() && !iec104opconfig.getOpType() && (payload[15] & 0x81) == 0)
+                        else if (!iec104opconfig.isResult() && !iec104opconfig.isOptype() && (payload[15] & 0x81) == 0)
                         {
                             return true;
                         }
-                        else if (!iec104opconfig.getResult() && iec104opconfig.getOpType() && (payload[15] & 0x81) == 0x80)
+                        else if (!iec104opconfig.isResult() && iec104opconfig.isOptype() && (payload[15] & 0x81) == 0x80)
                         {
                             return true;
                         }

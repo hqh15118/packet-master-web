@@ -1,27 +1,26 @@
 package com.zjucsc.attack.dnp3;
 
-import com.zjucsc.attack.base.BaseOptAnalyzer;
 import com.zjucsc.attack.bean.AttackBean;
-import com.zjucsc.attack.common.ArtAttackAnalyzeTask;
-import com.zjucsc.common.common_util.ByteUtil;
+import com.zjucsc.attack.bean.BaseOptAnalyzer;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 
-import java.util.List;
 import java.util.Map;
+
+import static com.zjucsc.attack.common.ArtAttackAnalyzeTask.attackDecode;
 
 public class dnp3optdecode extends BaseOptAnalyzer<dnp3Opconfig> {
 
     public AttackBean attackdecode(FvDimensionLayer layer, dnp3Opconfig dnp3Opconfig, Map<String,Float> techmap)
     {
-        if(ArtAttackAnalyzeTask.attackDecode(dnp3Opconfig.getExpression(),techmap,"1")==null)
+        if(attackDecode(dnp3Opconfig.getExpression(),techmap,"1")==null)
         {
             return null;
         }
-        else if(ArtAttackAnalyzeTask.attackDecode(dnp3Opconfig.getExpression(),techmap,"1").equals("配置错误"))
+        else if(attackDecode(dnp3Opconfig.getExpression(),techmap,"1").equals("配置错误"))
         {
             return null;
         }
-        else if(ArtAttackAnalyzeTask.attackDecode(dnp3Opconfig.getExpression(),techmap,"1").equals("1"))
+        else if(attackDecode(dnp3Opconfig.getExpression(),techmap,"1").equals("1"))
         {
             if(operationdecode(layer,dnp3Opconfig))
             {
@@ -49,11 +48,11 @@ public class dnp3optdecode extends BaseOptAnalyzer<dnp3Opconfig> {
                     packetindex = Byte.toUnsignedInt(payload[17]);
                     if(packetindex==dnp3opconfig.getSetindex() && packetobjGroup==dnp3opconfig.getSetobjGroup())
                     {
-                        if (dnp3opconfig.getResult() && payload[18] == (byte)0x81)
+                        if (dnp3opconfig.isResult() && payload[18] == (byte)0x81)
                         {
                             return true;
                         }
-                        else if (!dnp3opconfig.getResult() && payload[18] == 0x03)
+                        else if (!dnp3opconfig.isResult() && payload[18] == 0x03)
                         {
                             return true;
                         }
