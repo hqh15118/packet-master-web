@@ -35,4 +35,9 @@ public class ServiceConfig {
     public Executor d2dScheduleService(){
         return Executors.newScheduledThreadPool(1);
     }
+
+    @Bean("top5_schedule_service")
+    public Executor top5ScheduleService(){
+        return Executors.newScheduledThreadPool(1);
+    }
 }

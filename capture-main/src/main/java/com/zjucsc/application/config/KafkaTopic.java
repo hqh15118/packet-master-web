@@ -11,5 +11,6 @@ public class KafkaTopic {
     public static final String SEND_ALL_PACKET_FV_DIMENSION = "fv_dimension";
     //攻击事件
     public static final String SEND_PACKET_ATTACK = "packet_attack";
-    //
+    //与工艺参数解析有关的报文
+    public static final String ART_PACKET = "art_packet";
 }

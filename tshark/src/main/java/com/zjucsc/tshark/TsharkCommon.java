@@ -1,16 +1,13 @@
 package com.zjucsc.tshark;
 
-import com.zjucsc.tshark.bean.CollectorState;
+import com.zjucsc.tshark.bean.ProcessWrapper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -26,11 +23,15 @@ public class TsharkCommon {
     public static String sessionReset = "100000";
 
     public static Thread.UncaughtExceptionHandler uncaughtExceptionHandler
-            = (t, e) -> System.out.println("thread " + t.getName() + " caught an exception " + e);
+            = (t, e) ->
+    {
+        System.out.println("thread " + t.getName() + " caught an exception " + e);
+        e.printStackTrace();
+    };
 
     public static final Set<String> CAPTURE_PROTOCOL = new HashSet<>();
 
-    public static final List<Process> TSHARK_RUNNING_PROCESS = new ArrayList<>();
+    public static final List<ProcessWrapper> TSHARK_RUNNING_PROCESS = new ArrayList<>();
 
     public static int getErrorProcessThreadNumber(){
         return CACHED_ERROR_STREAM_POOL.getActiveCount();

@@ -2,7 +2,7 @@ package com.zjucsc.attack.s7comm;
 
 //import com.zjucsc.art_decode.base.BaseConfig;
 
-import com.zjucsc.attack.base.BaseConfig;
+import com.zjucsc.attack.bean.BaseConfig;
 
 public class S7Config extends BaseConfig {
     private String type;

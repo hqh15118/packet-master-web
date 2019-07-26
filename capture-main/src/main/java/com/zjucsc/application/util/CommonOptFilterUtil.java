@@ -35,15 +35,11 @@ public class CommonOptFilterUtil {
      */
     public static void addOrUpdateAnalyzer(String deviceTag , OptFilterForFront optFilterForFront , String filterName) throws ProtocolIdNotValidException {
         ConcurrentHashMap<String, OperationAnalyzer> analyzerMap;
-        int type = 0;
         if ((analyzerMap = OPERATION_FILTER_PRO.get(deviceTag)) == null){
             //新建设备
             analyzerMap = new ConcurrentHashMap<>();
             OPERATION_FILTER_PRO.put(deviceTag, analyzerMap);
-        }else{
-            type = 1;
         }
-
         for (Integer funCode : optFilterForFront.getFunCodes()) {
             String protocolName = CommonCacheUtil.convertIdToName(optFilterForFront.getProtocolId());
             analyzerMap.putIfAbsent(protocolName,new OperationAnalyzer(new OperationPacketFilter<>(filterName)));
@@ -61,12 +57,6 @@ public class CommonOptFilterUtil {
                     CommonConfigUtil.getTargetProtocolFuncodeMeaning(protocolName,funCode));
         }
 
-        if (type == 0){
-            //new analyze map
-            log.info("新建设备：【{}】 的【功能码】过滤规则MAP , 新的规律规则为 \n 【{}】 ",deviceTag , analyzerMap);
-        }else{
-            log.info("更新设备：【{}】 【功能码】过滤规则MAP, 新的规律规则为 \n 【{}】 " , deviceTag, analyzerMap);
-        }
     }
 
 
@@ -121,7 +111,7 @@ public class CommonOptFilterUtil {
 
     /**
      * 删除某个设备 -> 某协议 -> 对应的功能码过滤项
-     * @param deviceIp
+     * @param deviceTag
      * @param funcode
      * @param protocolId
      * @throws ProtocolIdNotValidException

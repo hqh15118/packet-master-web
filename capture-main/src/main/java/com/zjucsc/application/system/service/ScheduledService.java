@@ -5,6 +5,7 @@ import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.domain.bean.*;
 import com.zjucsc.application.domain.non_hessian.D2DWrapper;
 import com.zjucsc.application.domain.non_hessian.DeviceMaxFlow;
+import com.zjucsc.application.system.service.common_impl.CapturePacketServiceImpl;
 import com.zjucsc.application.system.service.common_iservice.CapturePacketService;
 import com.zjucsc.application.system.service.hessian_iservice.IArtHistoryDataService;
 import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
@@ -14,6 +15,7 @@ import com.zjucsc.application.util.SysRunStateUtil;
 import com.zjucsc.socket_io.SocketIoEvent;
 import com.zjucsc.socket_io.SocketServiceCenter;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
+import com.zjucsc.tshark.pre_processor.BasePreProcessor;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperic.sigar.SigarException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import sun.plugin2.util.SystemUtil;
+import sun.util.locale.provider.CalendarProviderImpl;
 
 import java.io.File;
 import java.util.*;
@@ -41,6 +44,8 @@ public class ScheduledService {
 
     @Autowired private IArtHistoryDataService iArtHistoryDataService;
 
+    @Autowired private CapturePacketService capturePacketService;
+    
     private LinkedBlockingQueue<FvDimensionLayer> fvDimensionLayers = new LinkedBlockingQueue<>(5);
 
     @Autowired
@@ -87,6 +92,14 @@ public class ScheduledService {
     public void deviceStatisticsInfo(){
         if (CommonCacheUtil.getScheduleServiceRunningState()) {
             sendPacketStatisticsMsg();
+        }
+    }
+
+    @Scheduled(fixedRate = 5000)
+    @Async("top5_schedule_service")
+    public void top5UpdateService(){
+        if (CommonCacheUtil.getScheduleServiceRunningState()){
+            SocketServiceCenter.updateAllClient(SocketIoEvent.TOP_5,CommonCacheUtil.getTop5StatisticsData());
         }
     }
 
@@ -158,7 +171,7 @@ public class ScheduledService {
                 .setExceptionByDevice(exceptionByDevice)    //分设备的异常数
                 .setAttackCount(attackNumber.get())         //攻击总数
                 .setExceptionCount(exceptionNumber.get())   //异常总数
-                .setNumber(recvPacketNumber.get())          //捕获的总报文数
+                .setNumber(recvPacketNumber.getAndSet(0))          //捕获的总报文数
                 .setNumberByDeviceIn(numberByDeviceIn)      //分设备的接收报文数
                 .setNumberByDeviceOut(numberByDeviceOut)    //分设备的发送报文数
                 .build()
@@ -171,7 +184,21 @@ public class ScheduledService {
         iDeviceService.saveStatisticInfo(CommonCacheUtil.getStatisticsInfoBean());
     }
 
-    @Scheduled(cron = "0 0 0 ? *  MON-FRI")
+//    @Scheduled(fixedRate = 60 * 1000)
+//    public void reCapturePacket(){
+//        deletePcapFileScheduled();
+//    }
+
+    @Scheduled(cron = "0 0 0 ? * MON-FRI")
+    public void restartTsharkProcess(){
+        for (BasePreProcessor basePreProcessor : CapturePacketServiceImpl.basePreProcessors) {
+            Thread thread = new Thread(basePreProcessor::restartCapture);
+            thread.setName(basePreProcessor.getClass().getName());
+            thread.start();
+        }
+    }
+
+    @Scheduled(cron = "0 5 0 ? * MON-FRI")
     public void deletePcapFileScheduled(){
         File file = new File(Common.WIRESHARK_TEMP_FILE);
         File[] files = file.listFiles();

@@ -1,7 +1,7 @@
 package com.zjucsc.application.system.service.hessian_mapper;
 
 
-import com.zjucsc.attack.base.BaseOptConfig;
+import com.zjucsc.attack.bean.BaseOptConfig;
 
 import java.util.List;
 

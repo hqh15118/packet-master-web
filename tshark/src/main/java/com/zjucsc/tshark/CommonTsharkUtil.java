@@ -1,5 +1,7 @@
 package com.zjucsc.tshark;
 
+import com.zjucsc.tshark.bean.ProcessWrapper;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -26,29 +28,28 @@ public class CommonTsharkUtil {
 
     public static final byte[] LOCK = new byte[1];
 
-    public static void removeTsharkProcess(Process process){
+    public static void removeTsharkProcess(ProcessWrapper processWrapper){
         synchronized (LOCK){
-            TsharkCommon.TSHARK_RUNNING_PROCESS.remove(process);
+            TsharkCommon.TSHARK_RUNNING_PROCESS.remove(processWrapper);
         }
     }
 
-    public static void addTsharkProcess(Process process){
+    public static void addTsharkProcess(ProcessWrapper processWrapper){
         synchronized (LOCK){
-            TsharkCommon.TSHARK_RUNNING_PROCESS.add(process);
+            TsharkCommon.TSHARK_RUNNING_PROCESS.add(processWrapper);
         }
     }
 
-    public static List<Process> findAllRunningTsharkProcess(){
+    public static List<ProcessWrapper> findAllRunningTsharkProcess(){
         return TsharkCommon.TSHARK_RUNNING_PROCESS;
     }
 
     public static void shotDownAllRunningTsharkProcess(){
         synchronized (LOCK){
-            for (Process tsharkRunningProcess : TsharkCommon.TSHARK_RUNNING_PROCESS) {
-                tsharkRunningProcess.destroyForcibly();
+            for (ProcessWrapper tsharkRunningProcess : TsharkCommon.TSHARK_RUNNING_PROCESS) {
+                tsharkRunningProcess.getProcess().destroyForcibly();
             }
             TsharkCommon.TSHARK_RUNNING_PROCESS.clear();
-            System.out.println("exit " + TsharkCommon.TSHARK_RUNNING_PROCESS.size() + " tshark process");
         }
     }
 

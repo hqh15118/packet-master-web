@@ -17,6 +17,7 @@ public class IEC104Decode extends BaseArtDecode<IEC104Config> {
         int packetSQ = 0;
         int data_num = 0;
         int index = 0;
+        float actualfullscale=32768.0f;
 
         //一条报文中只有一个APDU的情况
         if (iec104load != null && iec104load.length == Byte.toUnsignedInt(iec104load[1]) + 2) {
@@ -37,10 +38,11 @@ public class IEC104Decode extends BaseArtDecode<IEC104Config> {
                         }
                     }
                 }
+
                 //单位遥信
                 else if (iec104load[6] == 0x01) {
                     packetSQ = (Byte.toUnsignedInt(iec104load[7]) & 0x80) >> 7;
-                    //传送原因：突发
+                    //突发
                     if ((iec104load[8] & 0x3f) == 3  && packetSQ == 0) {
                         data_num = Byte.toUnsignedInt(iec104load[7]);
                         for (index = 0; index < data_num; index++){
@@ -57,7 +59,7 @@ public class IEC104Decode extends BaseArtDecode<IEC104Config> {
                             }
                         }
                     }
-                    //传送原因：站召唤响应或突发
+                    //站召唤响应或突发
                     else if ((iec104load[8] & 0x3f) == 20 || (iec104load[8] & 0x3f) == 3 && packetSQ == 1) {
                         packetIOA = Byte.toUnsignedInt(iec104load[12]) + (Byte.toUnsignedInt(iec104load[13]) << 8) + (Byte.toUnsignedInt(iec104load[14]) << 16);
                         packetIOA = packetIOA - 1;
@@ -77,16 +79,23 @@ public class IEC104Decode extends BaseArtDecode<IEC104Config> {
                         }
                     }
                 }
+
                 //归一化遥测
                 else if (iec104load[6] == 0x09) {
                     packetSQ = (Byte.toUnsignedInt(iec104load[7]) & 0x80) >> 7;
-                    //传送原因：突发
+                    //突发
                     if ((iec104load[8] & 0x3f) == 3 && packetSQ == 0) {
                         data_num = Byte.toUnsignedInt(iec104load[7]);
                         for (index = 0; index < data_num; index++) {
                             IOA[index] = Byte.toUnsignedInt(iec104load[12 + 6 * index]) + (Byte.toUnsignedInt(iec104load[13 + 6 * index]) << 8) + (Byte.toUnsignedInt(iec104load[14 + 6 * index]) << 16);
                             if ((iec104load[16 + 6 * index] & 0x0080) == 0) {
-                                data[index] = (float) (Byte.toUnsignedInt(iec104load[15 + 6 * index]) + (Byte.toUnsignedInt(iec104load[16 + 6 * index]) << 8)) * 32768.0f / (float) Math.pow(2, 15);
+                                if (IEC104tech.getFullScale() == 0.0) {
+                                    actualfullscale = 32768.0f;
+                                }
+                                else {
+                                    actualfullscale = IEC104tech.getFullScale();
+                                }
+                                data[index] = (float) (Byte.toUnsignedInt(iec104load[15 + 6 * index]) + (Byte.toUnsignedInt(iec104load[16 + 6 * index]) << 8)) * actualfullscale / (float) Math.pow(2, 15);
                             }
                             if (IEC104tech.getMVIOAAddress() == IOA[index]) {
                                 tech_map.put(IEC104tech.getTag(), data[index]);
@@ -94,7 +103,7 @@ public class IEC104Decode extends BaseArtDecode<IEC104Config> {
                             }
                         }
                     }
-                    //传送原因：站召唤响应或突发
+                    //站召唤响应或突发
                     else if ((iec104load[8] & 0x3f) == 20 || (iec104load[8] & 0x3f) == 3 && packetSQ == 1) {
                         data_num = Byte.toUnsignedInt(iec104load[7]) - 128;
                         packetIOA = Byte.toUnsignedInt(iec104load[12]) + (Byte.toUnsignedInt(iec104load[13]) << 8) + (Byte.toUnsignedInt(iec104load[14]) << 16);
@@ -102,17 +111,24 @@ public class IEC104Decode extends BaseArtDecode<IEC104Config> {
                         for (index = 0; index < data_num; index++) {
                             packetIOA = packetIOA + 1;
                             if ((iec104load[16+3*index]&0x0080)==0 && IEC104tech.getMVIOAAddress()==packetIOA) {
-                                data[index] = (float)(Byte.toUnsignedInt(iec104load[15+3*index]) + (Byte.toUnsignedInt(iec104load[16+3*index])<<8)) * 32768.0f / (float)Math.pow(2,15) ;
+                                if (IEC104tech.getFullScale() == 0.0) {
+                                    actualfullscale = 32768.0f;
+                                }
+                                else {
+                                    actualfullscale = IEC104tech.getFullScale();
+                                }
+                                data[index] = (float)(Byte.toUnsignedInt(iec104load[15+3*index]) + (Byte.toUnsignedInt(iec104load[16+3*index])<<8)) * actualfullscale / (float)Math.pow(2,15) ;
                                 tech_map.put(IEC104tech.getTag(), data[index]);
                                 callback(IEC104tech.getTag(),data[index],fvdim);
                             }
                         }
                     }
                 }
+
                 //短浮点遥测
                 else if (iec104load[6] == 0x0d) {
                     packetSQ = (Byte.toUnsignedInt(iec104load[7]) & 0x80) >> 7;
-                    //传送原因：突发
+                    //突发
                     if ((iec104load[8] & 0x3f) == 3 && packetSQ == 0) {
                         data_num = Byte.toUnsignedInt(iec104load[7]);
                         for (index = 0; index < data_num; index++) {
@@ -124,7 +140,7 @@ public class IEC104Decode extends BaseArtDecode<IEC104Config> {
                             }
                         }
                     }
-                    //传送原因：站召唤响应或突发
+                    //站召唤响应或突发
                     else if ((iec104load[8] & 0x3f) == 20 || (iec104load[8] & 0x3f) == 3 && packetSQ == 1) {
                         data_num = Byte.toUnsignedInt(iec104load[7]) - 128;
                         packetIOA = Byte.toUnsignedInt(iec104load[12]) + (Byte.toUnsignedInt(iec104load[13]) << 8) + (Byte.toUnsignedInt(iec104load[14]) << 16);
@@ -141,6 +157,7 @@ public class IEC104Decode extends BaseArtDecode<IEC104Config> {
                 }
             }
         }
+
         //一条报文中含有多个APDU的情况
         else if (iec104load != null && iec104load.length > Byte.toUnsignedInt(iec104load[1]) + 2) {
             int APDUstart = 0;
@@ -153,8 +170,7 @@ public class IEC104Decode extends BaseArtDecode<IEC104Config> {
                         data_num = Byte.toUnsignedInt(thisAPDU[7]) - 128;
                         packetIOA = Byte.toUnsignedInt(thisAPDU[12]) + (Byte.toUnsignedInt(thisAPDU[13]) << 8) + (Byte.toUnsignedInt(thisAPDU[14]) << 16);
                         packetIOA = packetIOA - 1;
-                        //单位遥信
-                        //传送原因：站召唤响应
+                        //单位遥信-站召唤响应
                         if (thisAPDU[6] == 0x01 && (thisAPDU[8] & 0x3f) == 20) {
                             for (index = 0; index < data_num; index++) {
                                 packetIOA = packetIOA + 1;
@@ -170,20 +186,26 @@ public class IEC104Decode extends BaseArtDecode<IEC104Config> {
                                 }
                             }
                         }
-                        //归一化遥测
-                        //传送原因：站召唤响应
+
+                        //归一化遥测-站召唤响应
                         else if (thisAPDU[6] == 0x09 && (thisAPDU[8] & 0x3f) == 20) {
                             for (index = 0; index < data_num; index++) {
                                 packetIOA = packetIOA + 1;
                                 if ((thisAPDU[16+3*index]&0x0080)==0 && IEC104tech.getMVIOAAddress()==packetIOA) {
-                                    data[index] = (float)(Byte.toUnsignedInt(thisAPDU[15+3*index]) + (Byte.toUnsignedInt(thisAPDU[16+3*index])<<8)) * 32768.0f / (float)Math.pow(2,15) ;
+                                    if (IEC104tech.getFullScale() == 0.0) {
+                                        actualfullscale = 32768.0f;
+                                    }
+                                    else {
+                                        actualfullscale = IEC104tech.getFullScale();
+                                    }
+                                    data[index] = (float)(Byte.toUnsignedInt(thisAPDU[15+3*index]) + (Byte.toUnsignedInt(thisAPDU[16+3*index])<<8)) * actualfullscale / (float)Math.pow(2,15) ;
                                     tech_map.put(IEC104tech.getTag(), data[index]);
                                     callback(IEC104tech.getTag(),data[index],fvdim);
                                 }
                             }
                         }
-                        //短浮点遥测
-                        //传送原因：站召唤响应
+
+                        //短浮点遥测-站召唤响应
                         else if (thisAPDU[6] == 0x0d && (thisAPDU[8] & 0x3f) == 20) {
                             for (index = 0; index < data_num; index++) {
                                 packetIOA = packetIOA + 1;

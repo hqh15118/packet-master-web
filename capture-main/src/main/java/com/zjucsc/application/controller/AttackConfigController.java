@@ -4,7 +4,6 @@ package com.zjucsc.application.controller;
 import com.alibaba.fastjson.JSON;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.PACKET_PROTOCOL;
-import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.config.auth.Log;
 import com.zjucsc.application.domain.bean.*;
 import com.zjucsc.application.domain.non_hessian.DeviceMaxFlow;
@@ -14,14 +13,14 @@ import com.zjucsc.application.system.service.hessian_mapper.OptAttackMapper;
 import com.zjucsc.application.system.service.hessian_mapper.PacketInfoMapper;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.ConfigUtil;
-import com.zjucsc.attack.base.BaseOptConfig;
+import com.zjucsc.attack.bean.BaseOptConfig;
 import com.zjucsc.attack.bean.ArtAttackAnalyzeConfig;
+import com.zjucsc.attack.bean.ArtOptWrapper;
 import com.zjucsc.attack.bean.AttackConfig;
 import com.zjucsc.attack.AttackCommon;
-import com.zjucsc.attack.modbus.ModbusOptConfig;
-import com.zjucsc.attack.pn_io.PnioOptConfig;
-import com.zjucsc.attack.s7comm.S7OptAttackConfig;
-import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
+import com.zjucsc.attack.config.ModbusOptConfig;
+import com.zjucsc.attack.config.PnioOptConfig;
+import com.zjucsc.attack.config.S7OptAttackConfig;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -181,15 +180,21 @@ public class AttackConfigController {
         BaseOptConfig baseConfig = JSON.parseObject(jsonData,BaseOptConfig.class);
         int protocolId = baseConfig.getProtocolId();
         optAttackMapper.addOrUpdateAllOptAttackConfigByProtocolAndId(baseConfig.getProtocolId(),baseConfig.getId(),jsonData);
+        BaseOptConfig resConfig = null;
         if (protocolId == PACKET_PROTOCOL.S7_ID){
-            S7OptAttackConfig s7OptAttackConfig = JSON.parseObject(jsonData,S7OptAttackConfig.class);
-            AttackCommon.addOptAttackConfig(s7OptAttackConfig);
+            resConfig = JSON.parseObject(jsonData,S7OptAttackConfig.class);
         }else if (protocolId == PACKET_PROTOCOL.MODBUS_ID){
-            ModbusOptConfig modbusOptConfig = JSON.parseObject(jsonData,ModbusOptConfig.class);
-            AttackCommon.addOptAttackConfig(modbusOptConfig);
+            resConfig = JSON.parseObject(jsonData,ModbusOptConfig.class);
         }else if (protocolId == PACKET_PROTOCOL.PN_IO_ID){
-            PnioOptConfig pnioOptConfig = JSON.parseObject(jsonData,PnioOptConfig.class);
-            AttackCommon.addOptAttackConfig(pnioOptConfig);
+            resConfig = JSON.parseObject(jsonData,PnioOptConfig.class);
+        }
+        if (resConfig!=null) {
+            List<String> expression = new ArrayList<>();
+            for (ArtOptWrapper artOptWrapper : baseConfig.getRule()) {
+                expression.add(artOptWrapper.getValue());
+            }
+            resConfig.setExpression(expression);
+            AttackCommon.addOptAttackConfig(resConfig);
         }
         return BaseResponse.OK();
     }
@@ -206,7 +211,7 @@ public class AttackConfigController {
     @ApiOperation("查询协议操作攻击配置")
     @PostMapping("opt_configs")
     public BaseResponse getAllOptAttackConfigsByProtocol(@RequestBody OptAttackPage optAttackPage) {
-        List configs = optAttackMapper.selectAllOptAttackConfigByProtocol(optAttackPage.getProtocolId() , optAttackPage.getPage() ,
+        List<BaseOptConfig> configs = optAttackMapper.selectAllOptAttackConfigByProtocol(optAttackPage.getProtocolId() , optAttackPage.getPage() ,
                 optAttackPage.getLimit());
         return BaseResponse.OK(configs);
     }

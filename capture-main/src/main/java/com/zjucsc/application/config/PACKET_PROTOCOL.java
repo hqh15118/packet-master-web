@@ -61,6 +61,7 @@ public interface PACKET_PROTOCOL {
     String PN_IO = "pn_io";
     String CIP_IP = "cip";
     String MMS = "mms";
+    String IEC101 = "iec101";
 
     int MODBUS_ID = 1;
     int S7_ID = 2;
@@ -93,4 +94,5 @@ public interface PACKET_PROTOCOL {
     int S7_User_data_ID = 24;
     int CIP_ID = 27;
     int MMS_ID = 28;
+    int IEC101_ID = 29;
 }
