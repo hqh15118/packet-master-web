@@ -40,17 +40,6 @@ public class FvDimensionFilterServiceImpl extends BaseServiceImpl<Rule,FvDimensi
         String deviceNumber = rules.get(0).getFvDimensionFilter().getDeviceNumber();
         //删除数据库中的所有旧规则
         deleteAllFilterByDeviceNumberAndGplotId(deviceNumber,Common.GPLOT_ID);
-        if (Common.FV_DIMENSION_FILTER_PRO.get(deviceNumber) == null){
-            //未添加过该设备，缓存中没有该分析器，需要新加一个
-            FiveDimensionPacketFilter filter =
-                    new FiveDimensionPacketFilter(deviceNumber + " : " + FV_DIMENSION);
-            filter.setFilterList(rules);
-            FiveDimensionAnalyzer analyzer = new FiveDimensionAnalyzer(filter);
-            Common.FV_DIMENSION_FILTER_PRO.put(deviceNumber,analyzer);
-        }else{
-            //已经添加过该设备，缓存中有分析器，需要替换掉该分析器中的过滤器
-            Common.FV_DIMENSION_FILTER_PRO.get(deviceNumber).getAnalyzer().setFilterList(rules);
-        }
         //更新数据库
         /*
         List<FvDimensionFilter> list = new ArrayList<>();
@@ -62,19 +51,23 @@ public class FvDimensionFilterServiceImpl extends BaseServiceImpl<Rule,FvDimensi
         this.baseMapper.saveOrUpdateBatchRules(rules,Common.GPLOT_ID);//保存五元组
         //保存功能码
         for (Rule rule : rules) {
-            OptFilterForFront optFilterForFront = new OptFilterForFront();
-            List<Integer> funCodes = rule.getFunCodes();
-            optFilterForFront.setDeviceNumber(rule.getFvDimensionFilter().getDeviceNumber());
-            optFilterForFront.setFvId(rule.getFvDimensionFilter().getFvId());
-            optFilterForFront.setProtocolId(rule.getFvDimensionFilter().getProtocolId());
-            optFilterForFront.setFunCodes(funCodes);
             try {
-                iOptFilterService.addOperationFilter(optFilterForFront);
+                iOptFilterService.addOperationFilter(createOptFilterForFront(rule));
             } catch (ProtocolIdNotValidException | DeviceNotValidException | OptFilterNotValidException e) {
                 return CompletableFuture.completedFuture(e);
             }
         }
         return CompletableFuture.completedFuture(null);
+    }
+
+    private OptFilterForFront createOptFilterForFront(Rule rule){
+        OptFilterForFront optFilterForFront = new OptFilterForFront();
+        List<Integer> funCodes = rule.getFunCodes();
+        optFilterForFront.setDeviceNumber(rule.getFvDimensionFilter().getDeviceNumber());
+        optFilterForFront.setFvId(rule.getFvDimensionFilter().getFvId());
+        optFilterForFront.setProtocolId(rule.getFvDimensionFilter().getProtocolId());
+        optFilterForFront.setFunCodes(funCodes);
+        return optFilterForFront;
     }
 
     @Async

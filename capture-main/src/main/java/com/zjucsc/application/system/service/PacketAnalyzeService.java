@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 
 import static com.zjucsc.application.config.StatisticsData.COLLECTOR_DELAY_MAP;
 
@@ -24,27 +25,23 @@ public class PacketAnalyzeService {
     @Autowired private IDeviceService iDeviceService;
 
     public void setCollectorDelay(int collectorId , int delay){
-        Integer delayInit;
-        if ((delayInit = COLLECTOR_DELAY_MAP.get(collectorId))!=null){
-            if (delayInit < delay){
-                COLLECTOR_DELAY_MAP.put(collectorId , delay);
-                //log.debug("update collector id {} delay {}" , collectorId , delay);
+        COLLECTOR_DELAY_MAP.compute(collectorId, (collectorId1, lastDelay) -> {
+            if (lastDelay == null){
+                return delay;
+            }else{
+                return delay + lastDelay;
             }
-        }else{
-            COLLECTOR_DELAY_MAP.put(collectorId,delay);
-        }
+        });
     }
 
     private HashMap<String,Integer> collectorNumToDelayMap = new HashMap<>(20);
 
     public synchronized HashMap<String,Integer> getCollectorNumToDelayList(){
         collectorNumToDelayMap.clear();
-        COLLECTOR_DELAY_MAP.forEach((integer, delay) -> {
-            String deviceNumber = iDeviceService.selectDeviceNumberByCollectorTag(String.valueOf(integer) , Common.GPLOT_ID);
+        COLLECTOR_DELAY_MAP.forEach((collectorId, delay) -> {
+            String deviceNumber = iDeviceService.selectDeviceNumberByCollectorTag(String.valueOf(collectorId) , Common.GPLOT_ID);
             if (deviceNumber!=null){
                 collectorNumToDelayMap.put(deviceNumber,delay);
-            }else{
-                log.debug("********************* 无法找到采集器ID为 {} 组态图ID为 {} 的设备号(device_number)" , integer , Common.GPLOT_ID);
             }
         });
         clearCollectorDelay();                      //清除旧的时延数据

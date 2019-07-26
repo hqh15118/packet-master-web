@@ -10,6 +10,7 @@ public class StatisticsDataWrapper {
     private long packetCount;
     private long attackCount;
     private long exceptionCount;
+    private int currentPacketCount;
     private Map<String, Integer> packetIn;
     private Map<String, Integer> packetOut;
     private Map<String, Integer> attackByDevice;
@@ -60,6 +61,11 @@ public class StatisticsDataWrapper {
 
         public Builder setCollectorDelay(Map<String,Integer> collectorDelays){
             statisticsDataWrapper.collectorDelays = collectorDelays;
+            return this;
+        }
+
+        public Builder setCurrentPacketCount(int count){
+            statisticsDataWrapper.currentPacketCount = count;
             return this;
         }
 

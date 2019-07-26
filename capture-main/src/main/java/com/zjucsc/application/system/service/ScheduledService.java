@@ -31,6 +31,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 
 import static com.zjucsc.application.config.StatisticsData.*;
 
@@ -44,8 +45,6 @@ public class ScheduledService {
 
     @Autowired private IArtHistoryDataService iArtHistoryDataService;
 
-    @Autowired private CapturePacketService capturePacketService;
-    
     private LinkedBlockingQueue<FvDimensionLayer> fvDimensionLayers = new LinkedBlockingQueue<>(5);
 
     @Autowired
@@ -57,7 +56,7 @@ public class ScheduledService {
     }
 
     private final HashMap<String,Integer> attackByDevice = new HashMap<>(10);
-    private final HashMap<String,Integer> exceptionByDevice = new HashMap<>(10);
+    //private final HashMap<String,Integer> exceptionByDevice = new HashMap<>(10);
     private final HashMap<String,Integer> numberByDeviceIn = new HashMap<>(10);
     private final HashMap<String,Integer> numberByDeviceOut = new HashMap<>(10);
     private final HashMap<String,GraphInfo> graphInfoInList = new HashMap<>(10);
@@ -151,15 +150,26 @@ public class ScheduledService {
      * 5秒钟发送一次统计信息
      */
     //@Scheduled(fixedRate = 5000)
+    private int lastReceivePacket = 0;
+
     private void sendPacketStatisticsMsg(){
         SEND_CONSUMER.setTimeStamp(new Date().toString());
         //将之前的统计信息置0
         CommonCacheUtil.resetSaveBean();
         final HashMap<String,Integer> DELAY_INFO = packetAnalyzeService.getCollectorNumToDelayList();
+        int receivePacket;
+        int allReceivePacket = recvPacketNumber.get();
+        if (lastReceivePacket == 0) {
+            receivePacket = lastReceivePacket = allReceivePacket;
+        }else{
+            receivePacket = allReceivePacket - lastReceivePacket;
+            lastReceivePacket = allReceivePacket;
+        }
+        DELAY_INFO.replaceAll((collectorId, allDelay) -> allDelay / receivePacket);
         NUMBER_BY_DEVICE_IN.forEach(MAX_FLOW_CONSUMER.setType(1));//download
         NUMBER_BY_DEVICE_OUT.forEach(MAX_FLOW_CONSUMER.setType(0));//upload
         ATTACK_BY_DEVICE.forEach(SEND_CONSUMER.setMap(attackByDevice , 1));
-        EXCEPTION_BY_DEVICE.forEach(SEND_CONSUMER.setMap(exceptionByDevice , 2));
+        //EXCEPTION_BY_DEVICE.forEach(SEND_CONSUMER.setMap(exceptionByDevice , 2));
         NUMBER_BY_DEVICE_IN.forEach(SEND_CONSUMER.setMap(numberByDeviceIn , 3));
         NUMBER_BY_DEVICE_OUT.forEach(SEND_CONSUMER.setMap(numberByDeviceOut , 4));
         DELAY_INFO.forEach(SEND_CONSUMER.setMap(null,5));
@@ -168,10 +178,11 @@ public class ScheduledService {
                 new StatisticsDataWrapper.Builder()
                 .setCollectorDelay(DELAY_INFO)
                 .setAttackByDevice(attackByDevice)          //分设备的攻击数
-                .setExceptionByDevice(exceptionByDevice)    //分设备的异常数
+                //.setExceptionByDevice(exceptionByDevice)    //分设备的异常数
                 .setAttackCount(attackNumber.get())         //攻击总数
-                .setExceptionCount(exceptionNumber.get())   //异常总数
-                .setNumber(recvPacketNumber.getAndSet(0))          //捕获的总报文数
+                //.setExceptionCount(exceptionNumber.get())   //异常总数
+                .setCurrentPacketCount(receivePacket)
+                .setNumber(allReceivePacket)                //捕获的总报文数
                 .setNumberByDeviceIn(numberByDeviceIn)      //分设备的接收报文数
                 .setNumberByDeviceOut(numberByDeviceOut)    //分设备的发送报文数
                 .build()

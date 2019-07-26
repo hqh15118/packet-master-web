@@ -7,6 +7,7 @@ import com.zjucsc.common.exceptions.OptFilterNotValidException;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.zjucsc.application.config.Common.GPLOT_ID;
@@ -60,20 +61,18 @@ public class CommonOptFilterUtil {
     }
 
 
-    public static void addOrUpdateAnalyzer(String deviceIp, String protocolName, OperationAnalyzer analyzer) throws OptFilterNotValidException {
+    public static void addOrUpdateAnalyzer(String deviceTag, String protocolName, OperationAnalyzer analyzer) throws OptFilterNotValidException {
         if (analyzer == null || analyzer.getAnalyzer() == null){
             throw new OptFilterNotValidException("OperationAnalyzer为空");
         }
-        if (OPERATION_FILTER_PRO.get(deviceIp) == null){
+        if (OPERATION_FILTER_PRO.get(deviceTag) == null){
             //不存在该设备ID对应的报文分析器
             ConcurrentHashMap<String, OperationAnalyzer> map = new ConcurrentHashMap<>();
             map.put(protocolName,analyzer);
-            OPERATION_FILTER_PRO.put(deviceIp,map);
-            log.info("[ANALYZER] ADD new operation filter [device_ip] {} [analyzer] {} " , deviceIp , map);
+            OPERATION_FILTER_PRO.put(deviceTag,map);
         }else{
             //存在该设备对应的报文分析器，就加入新的分析器，覆盖旧的
-            OPERATION_FILTER_PRO.get(deviceIp).put(protocolName,analyzer);
-            log.info("[ANALYZER] UPDATE operation filter [device_ip] {} [analyzer] {} " , deviceIp , analyzer);
+            OPERATION_FILTER_PRO.get(deviceTag).put(protocolName,analyzer);
         }
     }
 
@@ -82,30 +81,19 @@ public class CommonOptFilterUtil {
      * @param deviceIp
      */
     public static void removeTargetDeviceAnalyzer(String deviceIp){
-        ConcurrentHashMap<String,OperationAnalyzer> removedMap = OPERATION_FILTER_PRO.remove(deviceIp);
-        if (removedMap != null){
-            log.info("[ANALYZER] REMOVE SUCCESSFULLY ==> device_ip {} 's operation analyzer :  {} \n " , deviceIp , removedMap);
-        }else{
-            log.info("[ANALYZER] **************REMOVE WARNING ! ==> device_ip {} 's operation analyzer \n cause device_id is not exist in the map " +
-                    "OPERATION_FILTER : {}" , deviceIp , OPERATION_FILTER_PRO.get(deviceIp));
-        }
+        OPERATION_FILTER_PRO.remove(deviceIp);
     }
 
     /**
      * 删除某个设备下某个协议对应的分析器
-     * @param deviceIp
+     * @param deviceTag
      * @param protocolId
      * @throws ProtocolIdNotValidException
      */
-    public static void removeTargetDeviceAnalyzerProtocol(String deviceIp , int protocolId) throws ProtocolIdNotValidException {
-        ConcurrentHashMap<String,OperationAnalyzer> removedMap = OPERATION_FILTER_PRO.get(deviceIp);
-        if (removedMap == null){
-            log.info("[ANALYZER] **************remove WARNING BY PROTOCOL ==>device id : [ {} ] protocol id : [ {} ] , protocol name : [ {} ] , cause can not find the target device id in OPERATION_FILTER MAP : {} " ,
-                    deviceIp , protocolId , convertIdToName(protocolId) , OPERATION_FILTER_PRO.get(deviceIp));
-        }else{
+    public static void removeTargetDeviceAnalyzerProtocol(String deviceTag , int protocolId) throws ProtocolIdNotValidException {
+        ConcurrentHashMap<String,OperationAnalyzer> removedMap = OPERATION_FILTER_PRO.get(deviceTag);
+        if (removedMap != null){
             removedMap.remove(convertIdToName(protocolId));
-            log.info("[ANALYZER] **************remove SUCCESSFULLY BY DEVICE ID ==> device id : [ {} ] protocol id : [ {} ] , protocol name : [ {} ] by protocol id , and now  OPERATION_FILTER MAP is : {} " ,
-                    deviceIp , protocolId , convertIdToName(protocolId) , OPERATION_FILTER_PRO.get(deviceIp));
         }
     }
 
@@ -118,16 +106,19 @@ public class CommonOptFilterUtil {
      */
     public static void removeTargetDeviceAnalyzerFuncode(String deviceTag , int funcode , int protocolId) throws ProtocolIdNotValidException, ProtocolIdNotValidException {
         ConcurrentHashMap<String,OperationAnalyzer> removedMap = OPERATION_FILTER_PRO.get(deviceTag);
-        if (removedMap == null){
-            log.error("[ANALYZER]\n**************\nremove WARNING BY FUNCODE ==> device id: [ {} ] protocol id : [ {} ] , protocol name : [ {} ] , cause can not find the target device id in OPERATION_FILTER MAP : {} \n" +
-                            "**************" ,
-                    deviceTag , protocolId , convertIdToName(protocolId) , OPERATION_FILTER_PRO);
-        }else{
+        if (removedMap != null) {
             OperationAnalyzer analyzer = removedMap.get(convertIdToName(protocolId));
             analyzer.getAnalyzer().getBlackMap().remove(funcode);
             analyzer.getAnalyzer().getWhiteMap().remove(funcode);
-            log.info("**************\nremove device id : [ {} ] protocol id : [ {} ] , protocol name : [ {} ]  , funcode : [ {} ], and now  OPERATION_FILTER MAP is : {} \n**************" ,
-                    deviceTag , protocolId , convertIdToName(protocolId) , funcode , OPERATION_FILTER_PRO.get(deviceTag));
+        }
+    }
+
+    public static void removeTargetDeviceAnalyzeFuncode(OptFilterForFront optFilterForFront) throws ProtocolIdNotValidException {
+        String deviceTag = CommonCacheUtil.getTargetDeviceTagByNumber(optFilterForFront.getDeviceNumber());
+        String protocolName = CommonCacheUtil.convertIdToName(optFilterForFront.getProtocolId());
+        List<Integer> funCodes = optFilterForFront.getFunCodes();
+        for (Integer funCode : funCodes) {
+            OPERATION_FILTER_PRO.get(deviceTag).get(protocolName).getAnalyzer().
         }
     }
 

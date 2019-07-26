@@ -38,16 +38,6 @@ public class OptFilterServiceImpl extends BaseServiceImpl<OptFilter,OptFilterMap
      */
     @Override
     public CompletableFuture<Exception> addOperationFilter(OptFilterForFront optFilterForFront) throws DeviceNotValidException {
-        String deviceTag = CommonCacheUtil.getTargetDeviceTagByNumber(optFilterForFront.getDeviceNumber());
-        if (deviceTag == null){
-            throw new DeviceNotValidException("ERROR : 未发现设备号为["+optFilterForFront.getDeviceNumber() +"]的设备");
-        }
-        try {
-            //更新缓存
-            CommonOptFilterUtil.addOrUpdateAnalyzer(deviceTag,optFilterForFront,optFilterForFront.toString());
-        } catch (ProtocolIdNotValidException e) {
-            return CompletableFuture.completedFuture(e);
-        }
         //更新数据库
         this.baseMapper.saveOrUpdateBatch(optFilterForFront,Common.GPLOT_ID);
         return CompletableFuture.completedFuture(null);
