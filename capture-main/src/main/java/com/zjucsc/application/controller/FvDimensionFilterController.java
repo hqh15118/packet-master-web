@@ -5,10 +5,12 @@ import com.zjucsc.application.domain.bean.BaseResponse;
 import com.zjucsc.application.domain.bean.DeviceProtocol;
 import com.zjucsc.application.domain.bean.Rule;
 import com.zjucsc.application.domain.non_hessian.FvDimensionFilterCondition;
+import com.zjucsc.application.domain.non_hessian.RuleEnable;
 import com.zjucsc.application.system.service.hessian_iservice.IFvDimensionFilterService;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.ConfigUtil;
 import com.zjucsc.common.exceptions.DeviceNotValidException;
+import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -87,5 +89,22 @@ public class FvDimensionFilterController {
         ConfigUtil.setData("filter_funcode",fvDimensionFilterCondition.getFunCode());
         CommonCacheUtil.addOrUpdateFvDimensionFilterCondition(fvDimensionFilterCondition);
         return BaseResponse.OK();
+    }
+
+    @ApiOperation("修改五元组状态")
+    @PostMapping("change_rule_state")
+    public BaseResponse changeRuleState(@RequestBody RuleEnable ruleEnable){
+        Rule rule = null;
+        try {
+            rule = iFvDimensionFilterService.changeRuleStateByDeviceNumberAndFvId(ruleEnable.getDeviceNumber(),ruleEnable.getFvId(),
+                    ruleEnable.isEnable());
+        } catch (ProtocolIdNotValidException e) {
+            e.printStackTrace();
+        }
+        if (rule == null){
+            return BaseResponse.OK(false);
+        }else {
+            return BaseResponse.OK(true);
+        }
     }
 }

@@ -118,22 +118,12 @@ public class CommonOptFilterUtil {
         String protocolName = CommonCacheUtil.convertIdToName(optFilterForFront.getProtocolId());
         List<Integer> funCodes = optFilterForFront.getFunCodes();
         for (Integer funCode : funCodes) {
-            OPERATION_FILTER_PRO.get(deviceTag).get(protocolName).getAnalyzer().
+            OPERATION_FILTER_PRO.get(deviceTag).get(protocolName).getAnalyzer().getWhiteMap()
+                    .remove(funCode);
         }
-    }
-
-    /**
-     * 获取指定设备、协议下对应的报文分析器
-     * @param deviceIp
-     * @param protocol
-     * @return
-     */
-    public static OperationAnalyzer getTargetDeviceProtocolOptAnalyzer(String deviceIp , String protocol){
-        return OPERATION_FILTER_PRO.get(deviceIp).get(protocol);
     }
 
     public static void removeAllOptFilter(){
         OPERATION_FILTER_PRO.clear();
-        log.info("change gplot so -> clear all opt dimension filter of gplot_id : [{}] " , GPLOT_ID);
     }
 }
