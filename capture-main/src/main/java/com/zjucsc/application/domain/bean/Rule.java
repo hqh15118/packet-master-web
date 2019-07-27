@@ -12,4 +12,5 @@ public class Rule extends BaseResponse{
     private FvDimensionFilter fvDimensionFilter;
     private List<Integer> funCodes;
     private List<String> dstPorts;
+    private boolean enable;
 }
