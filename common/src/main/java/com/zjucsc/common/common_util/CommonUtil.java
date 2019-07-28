@@ -1,6 +1,10 @@
 package com.zjucsc.common.common_util;
 
+import com.zjucsc.common.bean.ThreadPoolInfoWrapper;
+
 import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.concurrent.*;
 
 public class CommonUtil {
     private static final ThreadLocal<StringBuilder> GLOBAL_THREAD_LOCAL_STRING_BUILDER =
@@ -31,5 +35,32 @@ public class CommonUtil {
             = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyyMMddHHmmssSS"));
     public static SimpleDateFormat getDateFormat2(){
         return SIMPLE_DATE_FORMAT_THREAD_LOCAL2.get();
+    }
+
+    private static RejectedExecutionHandler REJECT_EXECUTION_HANDLER;
+    public static ThreadPoolExecutor getFixThreadPoolSizeThreadPool(int poolSize , ThreadFactory threadFactory,RejectedExecutionHandler executionHandler){
+        return new ThreadPoolExecutor(1, 1, Integer.MAX_VALUE, TimeUnit.SECONDS, new LinkedBlockingQueue<>(poolSize),
+                threadFactory ,
+                executionHandler);
+    }
+
+    public static ThreadPoolExecutor getSingleThreadPoolSizeThreadPool(int poolSize , ThreadFactory threadFactory){
+        if (REJECT_EXECUTION_HANDLER == null){
+            return new ThreadPoolExecutor(1, 1, Integer.MAX_VALUE, TimeUnit.SECONDS, new LinkedBlockingQueue<>(poolSize),
+                    threadFactory,
+                    (r, executor) -> {
+
+                    });
+        }else{
+            return new ThreadPoolExecutor(1, 1, Integer.MAX_VALUE, TimeUnit.SECONDS, new LinkedBlockingQueue<>(poolSize),
+                    threadFactory,
+                    REJECT_EXECUTION_HANDLER);
+        }
+    }
+
+    public static synchronized void registerExceptionHandler(RejectedExecutionHandler executionHandler){
+        if (REJECT_EXECUTION_HANDLER == null){
+            REJECT_EXECUTION_HANDLER = executionHandler;
+        }
     }
 }

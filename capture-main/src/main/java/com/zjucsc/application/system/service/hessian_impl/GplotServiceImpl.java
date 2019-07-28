@@ -39,16 +39,16 @@ public class GplotServiceImpl extends BaseServiceImpl<Gplot,GplotMapper> impleme
     public BaseResponse changeGplot(int gplotId) throws ProtocolIdNotValidException {
         StringBuilder sb = new StringBuilder();
         //移除旧组态图上的所有规则
-        CommonOptFilterUtil.removeAllOptFilter();
-        CommonFvFilterUtil.removeAllFvFilter();
+        //CommonOptFilterUtil.removeAllOptFilter();
+        //CommonFvFilterUtil.removeAllFvFilter();
         //移除旧组态图上的所有DEVICE_NUMBER和DEVICE_IP之间的对应关系
         //同时删除该组态图对应的所有DEVICE_NUMBER保存的StatisticInfoSaveBean【设备upload、download等报文信息】
-        CommonCacheUtil.removeAllCachedDeviceNumber();
-        CommonCacheUtil.removeAllDeviceNumberToName();
+        //CommonCacheUtil.removeAllCachedDeviceNumber();
+        //CommonCacheUtil.removeAllDeviceNumberToName();
         //CommonCacheUtil.removeAllDevices();
         //reload filters
-        List<Device> deviceNumbers = iDeviceService.selectByGplotId(gplotId);   //load all device
-        for (Device device : deviceNumbers) {
+        List<Device> devices = iDeviceService.selectByGplotId(gplotId);   //load all device
+        for (Device device : devices) {
             sb.delete(0 , sb.length());
             //load all fv dimension rule from fv_dimension table by device_number + gplot_id
             List<Rule> rules = iDeviceService.
@@ -78,6 +78,8 @@ public class GplotServiceImpl extends BaseServiceImpl<Gplot,GplotMapper> impleme
             DeviceProtocol deviceProtocol = iWhiteProtocolService.selectByDeviceNumber(device.getDevice_id());
             CommonCacheUtil.addWhiteProtocolToCache(deviceProtocol.getDeviceNumber(),deviceProtocol.getProtocolName());
         }
+
+
         //更新缓存中的组态图ID
         Common.GPLOT_ID = gplotId;
 

@@ -518,13 +518,13 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     }
 
     @Override
-    public Map<AbstractAsyncHandler, Integer> load() {
-        HashMap<AbstractAsyncHandler,Integer> loadMap = new HashMap<>();
-        loadMap.put(fvDimensionLayerAbstractAsyncHandler, ((ThreadPoolExecutor) fvDimensionLayerAbstractAsyncHandler.getExecutor()).getQueue().size());
-        loadMap.put(deviceHandler, ((ThreadPoolExecutor) deviceHandler.getExecutor()).getQueue().size());
-        loadMap.put(attackAnalyzeHandler, ((ThreadPoolExecutor) attackAnalyzeHandler.getExecutor()).getQueue().size());
-        loadMap.put(packetDetectHandler, ((ThreadPoolExecutor) packetDetectHandler.getExecutor()).getQueue().size());
-        loadMap.put(badPacketAnalyzeHandler, ((ThreadPoolExecutor) badPacketAnalyzeHandler.getExecutor()).getQueue().size());
+    public Map<String, Integer> load() {
+        Map<String,Integer> loadMap = new HashMap<>();
+        loadMap.put(fvDimensionLayerAbstractAsyncHandler.getClass().getName(), ((ThreadPoolExecutor) fvDimensionLayerAbstractAsyncHandler.getExecutor()).getQueue().size());
+        loadMap.put(deviceHandler.getClass().getName(), ((ThreadPoolExecutor) deviceHandler.getExecutor()).getQueue().size());
+        loadMap.put(attackAnalyzeHandler.getClass().getName(), ((ThreadPoolExecutor) attackAnalyzeHandler.getExecutor()).getQueue().size());
+        loadMap.put(packetDetectHandler.getClass().getName(), ((ThreadPoolExecutor) packetDetectHandler.getExecutor()).getQueue().size());
+        loadMap.put(badPacketAnalyzeHandler.getClass().getName(), ((ThreadPoolExecutor) badPacketAnalyzeHandler.getExecutor()).getQueue().size());
         return loadMap;
     }
 
@@ -694,7 +694,9 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             //分析结果
             //数据发送
             StatisticsData.addArtMapData(res);
-            AttackCommon.appendFvDimension(layer);                     //将五元组添加到攻击分析模块中分析
+
+            //FIXME ====
+//            AttackCommon.appendFvDimension(layer);                     //将五元组添加到攻击分析模块中分析
             AttackCommon.appendArtAnalyze(res,layer);
             try {
                 AttackCommon.appendOptAnalyze(res,layer,CommonCacheUtil.convertNameToId(layer.protocol), tcpPayload);
@@ -721,6 +723,5 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                     return layer;
                 }
             };
-
 
 }

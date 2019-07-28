@@ -10,6 +10,7 @@ import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.CommonConfigUtil;
 import com.zjucsc.application.util.CommonOptFilterUtil;
 import com.zjucsc.art_decode.ArtDecodeCommon;
+import com.zjucsc.attack.AttackCommon;
 import com.zjucsc.kafka.KafkaCommon;
 import com.zjucsc.socket_io.SocketServiceCenter;
 import com.zjucsc.tshark.TsharkCommon;
@@ -42,7 +43,7 @@ public class WatchConfig {
         map.put("GPLOT_ID" , Common.GPLOT_ID);
         map.put("SHOW_GRAPH_SET",CommonCacheUtil.SHOW_GRAPH_SET);
         map.put("KAFKA_SERVICE", KafkaCommon.getKafkaServiceState());
-        map.put("TSHARK_ERROR_STREAM_THREAD_NUMBER", TsharkCommon.getErrorProcessThreadNumber());
+        //map.put("TSHARK_ERROR_STREAM_THREAD_NUMBER", TsharkCommon.getErrorProcessThreadNumber());
         List<String> clientStrings = new ArrayList<>();
         for (SocketIOClient client : SocketServiceCenter.getAllClients()) {
             clientStrings.add(client.getRemoteAddress().toString());
@@ -53,6 +54,7 @@ public class WatchConfig {
         map.put("TSHARK-FILTER-MODBUS",tsharkConfig.getModbus_filter());
         map.put("ALL_DROP_PROTOCOL",CommonCacheUtil.getAllDropProtocol());
         map.put("MAIN_HANDLER_LOAD",capturePacketService.load());
+        map.put("ATTACK_MAIN_SERVICE_SIZE", AttackCommon.getAttackMainServiceTaskSize());
         return map;
     }
 

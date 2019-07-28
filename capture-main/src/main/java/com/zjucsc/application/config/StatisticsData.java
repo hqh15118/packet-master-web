@@ -41,11 +41,6 @@ public class StatisticsData {
     private static final ConcurrentHashMap<String,String> ALL_IP_ADDRESS = new ConcurrentHashMap<>();
 
     /**
-     * 异常【既不在黑名单也不在白名单】
-     */
-    public static AtomicInteger exceptionNumber = new AtomicInteger(0);
-
-    /**
      * 攻击数【黑名单里面】
      */
     public static AtomicInteger attackNumber = new AtomicInteger(0);
@@ -228,7 +223,6 @@ public class StatisticsData {
         COLLECTOR_DELAY_MAP.clear();
         FLOW.set(0);
         ALL_IP_ADDRESS.clear();
-        exceptionNumber.set(0);
         attackNumber.set(0);
     }
 }

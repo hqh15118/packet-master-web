@@ -1,13 +1,14 @@
 package com.zjucsc.attack.pn_io;
 
-import com.zjucsc.attack.bean.BaseOptAnalyzer;
 import com.zjucsc.attack.bean.AttackBean;
-import com.zjucsc.attack.common.ArtAttackAnalyzeTask;
+import com.zjucsc.attack.bean.BaseOptAnalyzer;
 import com.zjucsc.attack.config.PnioOptConfig;
 import com.zjucsc.common.common_util.Bytecut;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 
 import java.util.Map;
+
+import static com.zjucsc.attack.common.ArtAttackAnalyzeUtil.attackDecode;
 
 public class PnioOptDecode extends BaseOptAnalyzer<PnioOptConfig> {
 
@@ -15,15 +16,15 @@ public class PnioOptDecode extends BaseOptAnalyzer<PnioOptConfig> {
 
     public AttackBean attackdecode(FvDimensionLayer layer, Map<String,Float> techmap, PnioOptConfig pnioopconfig)
     {
-        if(ArtAttackAnalyzeTask.attackDecode(pnioopconfig.getExpression(),techmap,"1")==null)
+        if(attackDecode(pnioopconfig.getExpression(),techmap,"1")==null)
         {
             return null;
         }
-        else if(ArtAttackAnalyzeTask.attackDecode(pnioopconfig.getExpression(),techmap,"1").equals("配置错误"))
+        else if(attackDecode(pnioopconfig.getExpression(),techmap,"1").equals("配置错误"))
         {
             return null;
         }
-        else if(ArtAttackAnalyzeTask.attackDecode(pnioopconfig.getExpression(),techmap,"1").equals("1"))
+        else if(attackDecode(pnioopconfig.getExpression(),techmap,"1").equals("1"))
         {
             if(operationdecode(layer,pnioopconfig))
             {

@@ -465,7 +465,7 @@ public class CommonCacheUtil {
     }
     private static void newAttackCome(Map<String,Integer> map,String key){
         int attackNum = map.computeIfAbsent(key,k -> 0);
-        ATTACK_TYPE.put(key,++attackNum);
+        map.put(key,++attackNum);
     }
     //FIRST 最大，LAST最小
     private static final LinkedList<Top5Statistic.Top5Wrapper> ATTACK_TYPE_LIST = new LinkedList<>();
@@ -476,6 +476,12 @@ public class CommonCacheUtil {
 
     //单线程统计
     public static Top5Statistic getTop5StatisticsData(){
+        ATTACK_TYPE_LIST.clear();
+        ATTACK_PROTOCOL.clear();
+        ATTACK_IPS_LIST.clear();
+        ATTACKED_IPS_LIST.clear();
+        ATTACK_PROTOCOL_LIST.clear();
+
         ATTACK_TYPE.forEach((type, count) -> {
             getTop5List(ATTACK_TYPE_LIST,type,count);
         });
@@ -559,6 +565,10 @@ public class CommonCacheUtil {
         ALL_DEVICES.remove(deviceTag);
     }
 
+    public static int getAllDeviceCount(){
+        return ALL_DEVICES.size();
+    }
+
     /**
      *
      * @param layer 五元组
@@ -584,9 +594,6 @@ public class CommonCacheUtil {
                     Device srcDevice;
                     srcDevice = createDeviceInverse(layer, deviceTag);
                     ALL_DEVICES.put(srcDevice.getDeviceTag(), srcDevice);
-                    //new device
-                    CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(srcDevice.getDeviceNumber(), srcDevice.getDeviceTag());
-                    CommonCacheUtil.addDeviceNumberToName(srcDevice.getDeviceNumber(), srcDevice.getDeviceInfo());
                     return srcDevice;
             }
         }
@@ -842,5 +849,8 @@ public class CommonCacheUtil {
         StringBuilder sb = CommonUtil.getGlobalStringBuilder();
         sb.append(dstDeviceNumber).append("-").append(srcDeviceNumber);
         return D2DAttackPair.containsKey(sb.toString());
+    }
+    public static int getAttackedDeviceCount(){
+        return D2DAttackPair.size();
     }
 }

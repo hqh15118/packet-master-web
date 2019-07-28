@@ -2,12 +2,11 @@ package com.zjucsc.attack.iec104;
 
 import com.zjucsc.attack.bean.AttackBean;
 import com.zjucsc.attack.bean.BaseOptAnalyzer;
-import com.zjucsc.attack.common.ArtAttackAnalyzeTask;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 
 import java.util.Map;
 
-import static com.zjucsc.attack.common.ArtAttackAnalyzeTask.*;
+import static com.zjucsc.attack.common.ArtAttackAnalyzeUtil.attackDecode;
 
 public class iec104optdecode extends BaseOptAnalyzer<iec104Opconfig> {
 

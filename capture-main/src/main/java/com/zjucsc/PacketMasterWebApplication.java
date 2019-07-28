@@ -3,6 +3,9 @@ package com.zjucsc;
 import com.zjucsc.application.config.ConstantConfig;
 import com.zjucsc.application.config.PreProcessor;
 import com.zjucsc.application.util.TsharkUtil;
+import com.zjucsc.common.common_util.CommonUtil;
+import com.zjucsc.socket_io.SocketIoEvent;
+import com.zjucsc.socket_io.SocketServiceCenter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,6 +16,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.io.IOException;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ThreadPoolExecutor;
 
 @SpringBootApplication
 @EnableScheduling
@@ -23,6 +28,10 @@ import java.io.IOException;
 public class PacketMasterWebApplication{
 
     public static void main(String[] args) {
+        CommonUtil.registerExceptionHandler((r, executor) -> {
+            //SocketServiceCenter.updateAllClient(SocketIoEvent.TASK_QUEUE_OVER_FLOW,executor.);
+            System.err.println("任务栈溢出，请检查");
+        });
         String attention = "**************************\n\n运行该程序前请运行一遍脚本文件，并检查用户环境变量【TEMP】\n\n**************************";
         System.out.println(attention);
         String str = TsharkUtil.checkTsharkValid();

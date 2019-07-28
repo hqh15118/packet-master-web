@@ -3,6 +3,7 @@ package com.zjucsc.attack.modbus;
 import com.zjucsc.attack.bean.BaseOptAnalyzer;
 import com.zjucsc.attack.bean.AttackBean;
 import com.zjucsc.attack.common.ArtAttackAnalyzeTask;
+import com.zjucsc.attack.common.ArtAttackAnalyzeUtil;
 import com.zjucsc.attack.config.ModbusOptConfig;
 import com.zjucsc.common.common_util.ByteUtil;
 import com.zjucsc.common.common_util.Bytecut;
@@ -14,15 +15,15 @@ public class ModbusOptAnalyzer extends BaseOptAnalyzer<ModbusOptConfig> {
 
     public AttackBean attackdecode(FvDimensionLayer layer, Map<String,Float> techmap, ModbusOptConfig ModbusOptConfig)
     {
-        if(ArtAttackAnalyzeTask.attackDecode(ModbusOptConfig.getExpression(),techmap,"1")==null)
+        if(ArtAttackAnalyzeUtil.attackDecode(ModbusOptConfig.getExpression(),techmap,"1")==null)
         {
             return null;
         }
-        else if(ArtAttackAnalyzeTask.attackDecode(ModbusOptConfig.getExpression(),techmap,"1").equals("配置错误"))
+        else if(ArtAttackAnalyzeUtil.attackDecode(ModbusOptConfig.getExpression(),techmap,"1").equals("配置错误"))
         {
             return null;
         }
-        else if(ArtAttackAnalyzeTask.attackDecode(ModbusOptConfig.getExpression(),techmap,"1").equals("1"))
+        else if(ArtAttackAnalyzeUtil.attackDecode(ModbusOptConfig.getExpression(),techmap,"1").equals("1"))
         {
             if(operationdecode(layer, ModbusOptConfig))
             {

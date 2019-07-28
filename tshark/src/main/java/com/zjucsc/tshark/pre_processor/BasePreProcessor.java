@@ -44,7 +44,6 @@ public abstract class BasePreProcessor implements PreProcessor {
     private static final Semaphore semaphore = new Semaphore(1);
     PipeLine pipeLine;
     private String bindCommand;
-    private TsharkProcessFinishCallback tsharkProcessFinishCallback;
     //用于每个tshark进程解析
     ExecutorService decodeThreadPool = Executors.newSingleThreadExecutor(r -> {
         Thread thread = new Thread(r);
@@ -272,9 +271,6 @@ public abstract class BasePreProcessor implements PreProcessor {
                             //System.out.println("tshark process out by stop capture");
                             //log.info("{} exit by end quiting capture service..", this.getClass().getName());
                         }
-                        if (tsharkProcessFinishCallback!=null){
-                            tsharkProcessFinishCallback.finish();
-                        }
                         break;
                     }
                 }
@@ -315,7 +311,7 @@ public abstract class BasePreProcessor implements PreProcessor {
                  */
                 semaphore.release();
                 //统一设置错误流
-                TsharkCommon.handleTsharkErrorStream(command.split("-Y")[1],bufferedReader);
+                //TsharkCommon.handleTsharkErrorStream(command.split("-Y")[1],bufferedReader);
             }
         } catch (IOException e) {
             //log.error("" , e);//TODO LOG HERE

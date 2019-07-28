@@ -1,9 +1,8 @@
 package com.zjucsc.attack.s7comm;
 
 
-import com.zjucsc.attack.bean.BaseOptAnalyzer;
 import com.zjucsc.attack.bean.AttackBean;
-import com.zjucsc.attack.common.ArtAttackAnalyzeTask;
+import com.zjucsc.attack.bean.BaseOptAnalyzer;
 import com.zjucsc.attack.config.S7OptAttackConfig;
 import com.zjucsc.common.common_util.ByteUtil;
 import com.zjucsc.common.common_util.Bytecut;
@@ -13,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.zjucsc.attack.common.ArtAttackAnalyzeUtil.attackDecode;
+
 public class S7OptAnalyzer extends BaseOptAnalyzer<S7OptAttackConfig>{
 
     private List<DBclass> DBlist = new ArrayList<>();
@@ -20,15 +21,15 @@ public class S7OptAnalyzer extends BaseOptAnalyzer<S7OptAttackConfig>{
 
     private AttackBean Attackdecode(FvDimensionLayer layer, S7OptAttackConfig s7OptAttackConfig, Map<String,Float> techmap)
     {
-        if(ArtAttackAnalyzeTask.attackDecode(s7OptAttackConfig.getExpression(),techmap,"1")==null || Writejobdecode(layer)==null)
+        if(attackDecode(s7OptAttackConfig.getExpression(),techmap,"1")==null || Writejobdecode(layer)==null)
         {
             return null;
         }
-        if(ArtAttackAnalyzeTask.attackDecode(s7OptAttackConfig.getExpression(),techmap,"1").equals("配置错误"))
+        if(attackDecode(s7OptAttackConfig.getExpression(),techmap,"1").equals("配置错误"))
         {
             return null;
         }
-        else if(ArtAttackAnalyzeTask.attackDecode(s7OptAttackConfig.getExpression(),techmap,"1").equals("1"))
+        else if(attackDecode(s7OptAttackConfig.getExpression(),techmap,"1").equals("1"))
         {
             if(OperationDecode(Writejobdecode(layer), s7OptAttackConfig))
             {

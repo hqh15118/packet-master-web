@@ -33,48 +33,48 @@ public class TsharkCommon {
 
     public static final List<ProcessWrapper> TSHARK_RUNNING_PROCESS = new ArrayList<>();
 
-    public static int getErrorProcessThreadNumber(){
-        return CACHED_ERROR_STREAM_POOL.getActiveCount();
-    }
+//    public static int getErrorProcessThreadNumber(){
+//        return CACHED_ERROR_STREAM_POOL.getActiveCount();
+//    }
 
-    private static final TsharkErrorThreadPool CACHED_ERROR_STREAM_POOL =
-            new TsharkErrorThreadPool(6, 12, 10, TimeUnit.SECONDS,
-                    new SynchronousQueue<>(), (r, executor) -> System.err.println("task over flow in tshark error thread pool!"));
+//    private static final TsharkErrorThreadPool CACHED_ERROR_STREAM_POOL =
+//            new TsharkErrorThreadPool(6, 12, 10, TimeUnit.SECONDS,
+//                    new SynchronousQueue<>(), (r, executor) -> System.err.println("task over flow in tshark error thread pool!"));
 
     private static ErrorCallback errorCallback;
 
     private static final byte[] LOCK1 = new byte[1];
 
-    public static void handleTsharkErrorStream(String comment,final BufferedReader bfr){
-        assert errorCallback!=null;
-        CACHED_ERROR_STREAM_POOL.setName(comment).execute(() -> {
-            try{
-                String errorMsg;
-                StringBuilder sb = new StringBuilder(100);
-                for (;;){
-                    errorMsg = bfr.readLine();
-                    if (errorMsg==null){
-                        break;
-                    }else{
-                        synchronized (LOCK1){
-                            errorCallback.errorCallback(sb.append(comment).append(":").append(errorMsg).toString());
-                            sb.delete(0,sb.length());
-                        }
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (bfr!=null){
-                    try {
-                        bfr.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-    }
+//    public static void handleTsharkErrorStream(String comment,final BufferedReader bfr){
+//        assert errorCallback!=null;
+//        CACHED_ERROR_STREAM_POOL.setName(comment).execute(() -> {
+//            try{
+//                String errorMsg;
+//                StringBuilder sb = new StringBuilder(100);
+//                for (;;){
+//                    errorMsg = bfr.readLine();
+//                    if (errorMsg==null){
+//                        break;
+//                    }else{
+//                        synchronized (LOCK1){
+//                            errorCallback.errorCallback(sb.append(comment).append(":").append(errorMsg).toString());
+//                            sb.delete(0,sb.length());
+//                        }
+//                    }
+//                }
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            } finally {
+//                if (bfr!=null){
+//                    try {
+//                        bfr.close();
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//        });
+//    }
 
     public static void setErrorCallback(ErrorCallback errorCallback){
         TsharkCommon.errorCallback = errorCallback;

@@ -2,24 +2,19 @@ package com.zjucsc.tshark;
 
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 
-import java.util.LinkedList;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
 /**
  * 注意，大的在前面，小的在后面
  */
 public class FvDimensionList implements Entry {
-    private volatile int cap = -1;
-    private LinkedList<FvDimensionLayer> fvDimensionLayers;
-    private long centerCount = 0;
-    private long allCount = 0;
-    private int  first = 0;
-    private int index;
+    //时间大的（越新的）在尾（tail）上，时间小的（旧的）在头上（head）
+    //Queue的remove方法移除的是头部，也就是说移除的是最旧的五元组
+    private PriorityQueue<FvDimensionLayer> fvDimensionLayers;
+    protected FvDimensionLayer tailLayer;   //时间戳最新的五元组，也就是队列的尾部
     public FvDimensionList(){
-        fvDimensionLayers = new LinkedList<>();
-    }
-    public FvDimensionList(int cap){
-        fvDimensionLayers = new LinkedList<>();
-        this.cap = cap;
+        fvDimensionLayers = new PriorityQueue<>(1000);
     }
 
     /**
@@ -28,61 +23,25 @@ public class FvDimensionList implements Entry {
      */
     @Override
     public synchronized String append(FvDimensionLayer layer){
-        index = 0;
-        if (fvDimensionLayers.size() == 0){
-            fvDimensionLayers.addLast(layer);
-            return null;
-        }
-        if (fvDimensionLayers.getLast().timeStampInLong < layer.timeStampInLong){
-            fvDimensionLayers.addFirst(layer);
+        fvDimensionLayers.offer(layer);
+        if (tailLayer == null){
+            tailLayer = layer;
         }else{
-            index = appendCenter(layer);
-            centerCount += 1;
-            if (first < 100 && allCount > 1000 && (centerCount / (double)allCount) > 0.1){
-                first++;
-                System.err.println("***************************\nappend center too much in FvDimensionList!\n***************************");
+            //如果新到的五元组时间戳大于之前的
+            if (layer.timeStampInLong > tailLayer.timeStampInLong){
+                tailLayer = layer;
             }
         }
-        allCount += 1;
-        cutList();
-        return analyze(index,fvDimensionLayers,layer);
+        return analyze(fvDimensionLayers,layer);
     }
 
-    private void cutList(){
-        if (cap > 0 && fvDimensionLayers.size() > cap){
-            fvDimensionLayers.removeLast();
-        }
-    }
-
-    private int appendCenter(FvDimensionLayer layer){
-        int i = 0;
-        FvDimensionLayer next;
-        while (i < fvDimensionLayers.size()){
-            next = fvDimensionLayers.get(i);
-            if (next.timeStampInLong < layer.timeStampInLong){
-                fvDimensionLayers.add(i,layer);
-                break;
-            }
-            i++;
-        }
-        return i;
-    }
-
-    public FvDimensionLayer getLayer(int index){
-        return fvDimensionLayers.get(index);
-    }
-
-    public void setCap(int cap){
-        this.cap = cap;
-    }
 
     /**
      * @param layer 新插入的五元组
-     * @param index 新插入的五元组所在的索引
      * @param fvDimensionLayers 新增加的五元组
      * @return 是否检测到攻击，true表示检测到，false表示没有检测到
      */
-    protected String analyze(int index,LinkedList<FvDimensionLayer> fvDimensionLayers,FvDimensionLayer layer){
+    protected String analyze( Queue<FvDimensionLayer> fvDimensionLayers, FvDimensionLayer layer){
         return null;
     }
 
@@ -90,11 +49,4 @@ public class FvDimensionList implements Entry {
         return fvDimensionLayers.size();
     }
 
-    @Override
-    public String toString() {
-        return "FvDimensionList{" +
-                "cap=" + cap +
-                ", fvDimensionLayers=" + fvDimensionLayers +
-                '}';
-    }
 }

@@ -86,6 +86,9 @@ public class DeviceServiceImpl extends BaseServiceImpl< Device , DeviceMapper> i
     @Override
     public void saveOrUpdateDevice(Device device) {
         this.baseMapper.saveOrUpdateDevice(device);
+        //new device
+        //CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(srcDevice.getDeviceNumber(), srcDevice.getDeviceTag());
+        //CommonCacheUtil.addDeviceNumberToName(srcDevice.getDeviceNumber(), srcDevice.getDeviceInfo());
         CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(device.getDeviceNumber(), device.getDeviceTag());
         CommonCacheUtil.addDeviceNumberToName(device.getDeviceNumber(),device.getDeviceInfo());
         CommonCacheUtil.addOrUpdateDeviceManually(device);

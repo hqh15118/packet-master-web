@@ -94,13 +94,6 @@ public class ScheduledService {
         }
     }
 
-    @Scheduled(fixedRate = 5000)
-    @Async("top5_schedule_service")
-    public void top5UpdateService(){
-        if (CommonCacheUtil.getScheduleServiceRunningState()){
-            SocketServiceCenter.updateAllClient(SocketIoEvent.TOP_5,CommonCacheUtil.getTop5StatisticsData());
-        }
-    }
 
     @Scheduled(fixedRate = 2000)
     public void sysRunState() throws SigarException {
@@ -185,8 +178,10 @@ public class ScheduledService {
                 .setNumber(allReceivePacket)                //捕获的总报文数
                 .setNumberByDeviceIn(numberByDeviceIn)      //分设备的接收报文数
                 .setNumberByDeviceOut(numberByDeviceOut)    //分设备的发送报文数
-                .build()
-                );
+                .setTop5Statistic(CommonCacheUtil.getTop5StatisticsData())
+                .setDeviceCount(CommonCacheUtil.getAllDeviceCount())
+                .setAttackedDeviceCount(CommonCacheUtil.getAttackedDeviceCount())
+                .build());
 
         graphInfoInList.forEach(GRAPH_INFO_CONSUMER);
         SocketServiceCenter.updateAllClient(SocketIoEvent.GRAPH_INFO,StatisticsData.GRAPH_BY_DEVICE);
