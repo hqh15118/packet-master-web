@@ -1,12 +1,9 @@
 package com.zjucsc.attack.analyze;
 
-import com.zjucsc.attack.analyze.analyzer_util.CositeDOSAttackAnalyzeList;
-import com.zjucsc.attack.analyze.analyzer_util.MultisiteDOSAttackAnalyzeList;
+import com.zjucsc.attack.analyze.analyzer_util.CositeDosAttackAnalyzeList;
+import com.zjucsc.attack.analyze.analyzer_util.MultisiteDosAttackAnalyzeList;
 import com.zjucsc.attack.bean.AttackConfig;
-import com.zjucsc.tshark.TsharkCommon;
-import com.zjucsc.tshark.handler.DefaultPipeLine;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
-import com.zjucsc.tshark.pre_processor.BasePreProcessor;
 import org.junit.Test;
 
 import java.util.LinkedList;
@@ -22,7 +19,7 @@ public class DOSAttackAnalyzeListTest {
 
     @Test
     public void cositeDOSAttackTest(){
-        CositeDOSAttackAnalyzeList cositeDOSAttackAnalyzeList = new CositeDOSAttackAnalyzeList();
+        CositeDosAttackAnalyzeList cositeDOSAttackAnalyzeList = new CositeDosAttackAnalyzeList();
         long time1 = System.currentTimeMillis();
         //[0,5,10,15,20,25,...,495]
         //false true true true
@@ -56,7 +53,7 @@ public class DOSAttackAnalyzeListTest {
 
     @Test
     public void mulsiteDOSAttackTest(){
-        MultisiteDOSAttackAnalyzeList multisiteDOSAttackAnalyzeList = new MultisiteDOSAttackAnalyzeList();
+        MultisiteDosAttackAnalyzeList multisiteDOSAttackAnalyzeList = new MultisiteDosAttackAnalyzeList();
         AttackConfig.setMultiSiteNum(3);
         AttackConfig.setMultiSiteTimeGap(10);
         List<FvDimensionLayer> fvDimensionLayers = createMulDimensionList(100);

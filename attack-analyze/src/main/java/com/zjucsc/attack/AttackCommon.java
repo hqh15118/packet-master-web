@@ -1,7 +1,7 @@
 package com.zjucsc.attack;
 
-import com.zjucsc.attack.analyze.analyzer_util.CositeDOSAttackAnalyzeList;
-import com.zjucsc.attack.analyze.analyzer_util.MultisiteDOSAttackAnalyzeList;
+import com.zjucsc.attack.analyze.analyzer_util.CositeDosAttackAnalyzeList;
+import com.zjucsc.attack.analyze.analyzer_util.MultisiteDosAttackAnalyzeList;
 import com.zjucsc.attack.bean.BaseOptAnalyzer;
 import com.zjucsc.attack.bean.BaseOptConfig;
 import com.zjucsc.attack.base.IOptAttackEntry;
@@ -11,7 +11,6 @@ import com.zjucsc.attack.bean.RedisConfigNotFoundException;
 import com.zjucsc.attack.common.ArtAttackAnalyzeTask;
 import com.zjucsc.attack.common.AttackCallback;
 import com.zjucsc.attack.common.AttackTypePro;
-import com.zjucsc.attack.common.CommonAnalyzeTask;
 import com.zjucsc.attack.modbus.ModbusOptAnalyzer;
 import com.zjucsc.attack.pn_io.PnioOptDecode;
 import com.zjucsc.attack.s7comm.S7OptAnalyzer;
@@ -56,8 +55,8 @@ public class AttackCommon {
 
     private final static List<Entry> ATTACK_ENTRY = new ArrayList<Entry>(){
         {
-            add(new CositeDOSAttackAnalyzeList());
-            add(new MultisiteDOSAttackAnalyzeList());
+            add(new CositeDosAttackAnalyzeList());
+            add(new MultisiteDosAttackAnalyzeList());
         }
     };
 

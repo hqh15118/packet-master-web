@@ -15,6 +15,6 @@ public interface IAttack {
      * @param layer
      * @return
      */
-    String analyze(FvDimensionLayer layer);
+    String analyze(FvDimensionLayer layer) throws IllegalAccessException, InstantiationException;
 
 }
