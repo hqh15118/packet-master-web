@@ -9,14 +9,12 @@ import com.zjucsc.application.domain.bean.*;
 import com.zjucsc.application.domain.non_hessian.DeviceMaxFlow;
 import com.zjucsc.application.domain.bean.RightPacketInfo;
 import com.zjucsc.application.system.service.hessian_mapper.DeviceMaxFlowMapper;
+import com.zjucsc.application.system.service.hessian_mapper.DosConfigMapper;
 import com.zjucsc.application.system.service.hessian_mapper.OptAttackMapper;
 import com.zjucsc.application.system.service.hessian_mapper.PacketInfoMapper;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.ConfigUtil;
-import com.zjucsc.attack.bean.BaseOptConfig;
-import com.zjucsc.attack.bean.ArtAttackAnalyzeConfig;
-import com.zjucsc.attack.bean.ArtOptWrapper;
-import com.zjucsc.attack.bean.AttackConfig;
+import com.zjucsc.attack.bean.*;
 import com.zjucsc.attack.AttackCommon;
 import com.zjucsc.attack.config.ModbusOptConfig;
 import com.zjucsc.attack.config.PnioOptConfig;
@@ -41,6 +39,8 @@ public class AttackConfigController {
     @Autowired private PacketInfoMapper packetInfoMapper;
     @Autowired private OptAttackMapper optAttackMapper;
     @Autowired private DeviceMaxFlowMapper deviceMaxFlowMapper;
+    @Autowired private DosConfigMapper dosConfigMapper;
+
     /**
      * 配置一定时间内的最大流量，超过报警
      * @param flowInByte
@@ -73,26 +73,22 @@ public class AttackConfigController {
     @ApiOperation("DOS攻击配置")
     @PostMapping("new_dos_config")
     public BaseResponse dosConfig(@RequestBody DosConfig dosConfig) {
-        AttackConfig.setCoSiteTimeGap(dosConfig.getCoSiteTime());
-        AttackConfig.setCoSiteNum(dosConfig.getCoSiteNum());
-        AttackConfig.setMultiSiteNum(dosConfig.getMulSiteNum());
-        AttackConfig.setMultiSiteTimeGap(dosConfig.getMulSiteTime());
-        ConfigUtil.setData("cosite_timegap",String.valueOf(dosConfig.getCoSiteTime()));
-        ConfigUtil.setData("cosite_num",String.valueOf(dosConfig.getCoSiteNum()));
-        ConfigUtil.setData("multisite_timegap",String.valueOf(dosConfig.getMulSiteTime()));
-        ConfigUtil.setData("multisite_num",String.valueOf(dosConfig.getMulSiteNum()));
-        return BaseResponse.OK();
+        dosConfigMapper.addOrUpdateDosConfig(dosConfig);
+        return BaseResponse.OK(AttackCommon.addOrUpdateDosAnalyzePoolEntry(CommonCacheUtil.getTargetDeviceTagByNumber(dosConfig.getDeviceNumber()),dosConfig));
     }
 
     @ApiOperation("获取Dos攻击配置")
     @GetMapping("get_dos_config")
-    public BaseResponse getDosConfigs(){
-        DosConfig dosConfig = new DosConfig();
-        dosConfig.setCoSiteNum(AttackConfig.getCoSiteNum());
-        dosConfig.setCoSiteTime(AttackConfig.getCoSiteTimeGap());
-        dosConfig.setMulSiteTime(AttackConfig.getMultiSiteTimeGap());
-        dosConfig.setMulSiteNum(AttackConfig.getMultiSiteNum());
-        return BaseResponse.OK(dosConfig);
+    public BaseResponse getDosConfigs(@RequestParam String deviceNumber){
+        return BaseResponse.OK(dosConfigMapper.selectDosConfigByDeviceNumber(deviceNumber));
+    }
+
+    @ApiOperation("删除Dos攻击配置")
+    @PostMapping("remove_dos_config")
+    public BaseResponse removeDosConfig(@RequestBody DosConfig dosConfig){
+        DosConfig removedConfig = dosConfigMapper.removeDosConfig(dosConfig);
+        AttackCommon.removeDosAnalyzePoolEntry(removedConfig.getDeviceNumber(),removedConfig.getProtocol());
+        return BaseResponse.OK();
     }
 
     @ApiOperation("获取设备配置的最大流量")

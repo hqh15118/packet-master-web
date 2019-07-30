@@ -548,6 +548,8 @@ public class CommonCacheUtil {
      *
      ************************************/
     private static final ConcurrentHashMap<String, Device> ALL_DEVICES = new ConcurrentHashMap<>();
+    //存储所有的mac地址，防止设备重复
+    private static final ConcurrentHashMap<String,String> ALL_MAC_ADDRESS = new ConcurrentHashMap<>();
 
     public static void addOrUpdateDeviceManually(Device device){
         ALL_DEVICES.put(device.getDeviceTag(),device);
@@ -590,11 +592,10 @@ public class CommonCacheUtil {
 //        }
         if (/*CommonCacheUtil.iProtocolExist(layer.protocol) && */DeviceOptUtil.validPacketInfo(layer)){
             String deviceTag = DeviceOptUtil.getSrcDeviceTag(layer);
-            if (!ALL_DEVICES.containsKey(deviceTag)) {
-                    Device srcDevice;
-                    srcDevice = createDeviceInverse(layer, deviceTag);
-                    ALL_DEVICES.put(srcDevice.getDeviceTag(), srcDevice);
-                    return srcDevice;
+            if (/*!ALL_DEVICES.containsKey(deviceTag) && */ALL_MAC_ADDRESS.putIfAbsent(layer.eth_src[0],"") == null/*未存过该MAC地址*/) {
+                Device srcDevice = createDeviceInverse(layer, deviceTag);
+                ALL_DEVICES.put(srcDevice.getDeviceTag(), srcDevice);
+                return srcDevice;
             }
         }
         /*

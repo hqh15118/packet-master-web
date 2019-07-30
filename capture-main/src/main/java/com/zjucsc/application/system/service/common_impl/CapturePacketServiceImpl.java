@@ -11,10 +11,7 @@ import com.zjucsc.application.tshark.capture.NewFvDimensionCallback;
 import com.zjucsc.application.tshark.capture.ProcessCallback;
 import com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler;
 import com.zjucsc.application.tshark.pre_processor.*;
-import com.zjucsc.application.util.AppCommonUtil;
-import com.zjucsc.application.util.CommonCacheUtil;
-import com.zjucsc.application.util.CommonConfigUtil;
-import com.zjucsc.application.util.PacketDecodeUtil;
+import com.zjucsc.application.util.*;
 import com.zjucsc.art_decode.ArtDecodeCommon;
 import com.zjucsc.art_decode.base.ValidPacketCallback;
 import com.zjucsc.attack.bean.AttackBean;
@@ -60,9 +57,15 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     //@Autowired private IArtPacketService iArtPacketService;
     public static List<BasePreProcessor> basePreProcessors = new LinkedList<>();
     //五元kafka发送线程
-    private final KafkaThread<FvDimensionLayer> FV_D_SENDER = KafkaThread.createNewKafkaThread("fv_dimension", KafkaTopic.SEND_ALL_PACKET_FV_DIMENSION);
-    private final KafkaThread<AttackBean> ATTACK_SENDER = KafkaThread.createNewKafkaThread("packet_attack", KafkaTopic.SEND_PACKET_ATTACK);
-    private final KafkaThread<ArtPacketDetail> ART_PACKET = KafkaThread.createNewKafkaThread("art_packet",KafkaTopic.ART_PACKET);
+    private final KafkaThread.SendErrorCallback sendErrorCallback = (threadName, o) -> {
+        //log.error("kafka thread : [{}] msg OVERFLOW",threadName);
+    };
+    @SuppressWarnings("unchecked")
+    private final KafkaThread<FvDimensionLayer> FV_D_SENDER = KafkaThread.createNewKafkaThread("fv_dimension", KafkaTopic.SEND_ALL_PACKET_FV_DIMENSION,sendErrorCallback);
+    @SuppressWarnings("unchecked")
+    private final KafkaThread<AttackBean> ATTACK_SENDER = KafkaThread.createNewKafkaThread("packet_attack", KafkaTopic.SEND_PACKET_ATTACK,sendErrorCallback);
+    @SuppressWarnings("unchecked")
+    private final KafkaThread<ArtPacketDetail> ART_PACKET = KafkaThread.createNewKafkaThread("art_packet",KafkaTopic.ART_PACKET,sendErrorCallback);
 
     public CapturePacketServiceImpl(PacketAnalyzeService packetAnalyzeService) {
         this.packetAnalyzeService = packetAnalyzeService;
@@ -333,7 +336,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         return funCode;
     }
 
-    @Async
+    @Async("common_async")
     @Override
     public CompletableFuture<Exception> start(ProcessCallback<String,String> callback) {
         startAllKafkaThread();
@@ -397,7 +400,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         return -1;
     }
 
-    @Async
+    @Async("common_async")
     @Override
     public CompletableFuture<Exception> stop() {
         for (BasePreProcessor basePreProcessor : basePreProcessors) {
@@ -487,7 +490,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         this.newFvDimensionCallback = newFvDimensionCallback;
     }
 
-    @Async
+    @Async("common_async")
     @Override
     public CompletableFuture<Exception> startSimulate() {
         startAllKafkaThread();
@@ -509,7 +512,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         return CompletableFuture.completedFuture(null);
     }
 
-    @Async
+    @Async("common_async")
     @Override
     public CompletableFuture<Exception> stopSimulate() {
         stopAllKafkaThread();
@@ -695,8 +698,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             //数据发送
             StatisticsData.addArtMapData(res);
 
-            //FIXME ====
-//            AttackCommon.appendFvDimension(layer);                     //将五元组添加到攻击分析模块中分析
+            AttackCommon.appendDOSAnalyze(layer, DeviceOptUtil.getDstDeviceTag(layer));                     //将五元组添加到攻击分析模块中分析
             AttackCommon.appendArtAnalyze(res,layer);
             try {
                 AttackCommon.appendOptAnalyze(res,layer,CommonCacheUtil.convertNameToId(layer.protocol), tcpPayload);

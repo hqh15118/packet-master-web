@@ -1,5 +1,6 @@
 package com.zjucsc.art_decode.iec104;
 
+import com.zjucsc.art_decode.artconfig.IEC104Config;
 import com.zjucsc.art_decode.base.BaseArtDecode;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 

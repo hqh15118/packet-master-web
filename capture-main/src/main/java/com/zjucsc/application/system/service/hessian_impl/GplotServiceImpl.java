@@ -69,7 +69,7 @@ public class GplotServiceImpl extends BaseServiceImpl<Gplot,GplotMapper> impleme
             }
             //更新DEVICE_NUMBER和DEVICE_IP之间的对应关系
             //更新DEVICE_NUMBER和StatisticInfoSaveBean【设备upload、download等报文信息】
-            CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(device.getDeviceNumber() , device.getDeviceIp());
+            CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(device.getDeviceNumber() , device.getDeviceTag());
             CommonCacheUtil.addDeviceNumberToName(device.getDeviceNumber(),device.getDeviceInfo());
             CommonCacheUtil.addOrUpdateDeviceManually(device);
             /*************************

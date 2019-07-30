@@ -1,18 +1,14 @@
 package com.zjucsc.attack.analyze.analyzer_util;
 
 import com.zjucsc.attack.bean.AttackConfig;
-import com.zjucsc.attack.bean.AttackConfigByDevice;
+import com.zjucsc.attack.bean.DosConfig;
 import com.zjucsc.attack.util.AttackCacheUtil;
-import com.zjucsc.tshark.FvDimensionList;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.PriorityQueue;
 import java.util.Queue;
 
 //同源DOS攻击检测
-public class CositeDosAttackAnalyzeList extends TcpAttackAnalyzeList {
+public class CositeDosAttackAnalyzeList extends AbstractDosList {
 
     /**
      * @param fvDimensionLayers 新增加的五元组
@@ -28,14 +24,12 @@ public class CositeDosAttackAnalyzeList extends TcpAttackAnalyzeList {
     @Override
     protected String analyze(Queue<FvDimensionLayer> fvDimensionLayers,
                              FvDimensionLayer newAppendLayer) {
-        //如果总数量小于配置数量，那么一定返回false
-        AttackConfigByDevice attackConfigByDevice = AttackCacheUtil.getAttackConfigByDevice(newAppendLayer.ip_dst[0]);
         //没有配置，直接返回，没有攻击
-        if (attackConfigByDevice == null || attackConfigByDevice.getCositeNum() == 0 || attackConfigByDevice.getCositeTime() == 0){
+        if (getDosConfig() == null || getDosConfig().getCoSiteNum() == 0 || getDosConfig().getCoSiteTime() == 0){
             return null;
         }
-        long cositeTimeStamp = attackConfigByDevice.getCositeTime();
-        int cositeNum = attackConfigByDevice.getCositeNum();
+        long cositeTimeStamp = getDosConfig().getCoSiteTime();
+        int cositeNum = getDosConfig().getCoSiteNum();
         if (fvDimensionLayers.size() < cositeTimeStamp){
             return null;
         }

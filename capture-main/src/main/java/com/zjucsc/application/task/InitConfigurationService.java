@@ -7,10 +7,7 @@ import com.zjucsc.application.config.auth.Auth;
 import com.zjucsc.application.domain.bean.*;
 import com.zjucsc.application.domain.non_hessian.DeviceMaxFlow;
 import com.zjucsc.application.system.service.common_impl.NetworkInterfaceServiceImpl;
-import com.zjucsc.application.system.service.hessian_iservice.IArtConfigService;
-import com.zjucsc.application.system.service.hessian_iservice.IConfigurationSettingService;
-import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
-import com.zjucsc.application.system.service.hessian_iservice.IProtocolIdService;
+import com.zjucsc.application.system.service.hessian_iservice.*;
 import com.zjucsc.application.system.service.hessian_mapper.DeviceMaxFlowMapper;
 import com.zjucsc.application.system.service.hessian_mapper.PacketInfoMapper;
 import com.zjucsc.application.util.AppCommonUtil;
@@ -55,6 +52,7 @@ public class InitConfigurationService implements ApplicationRunner {
     @Autowired private ConstantConfig constantConfig;
     @Autowired private PreProcessor preProcessor;
     @Autowired private DeviceMaxFlowMapper deviceMaxFlowMapper;
+    @Autowired private IGplotService iGplotService;
 
     @Override
     public void run(ApplicationArguments args) throws IllegalAccessException, NoSuchFieldException, ProtocolIdNotValidException, IOException {
@@ -220,8 +218,11 @@ public class InitConfigurationService implements ApplicationRunner {
         pagedArtConfig.setPage(1);
         pagedArtConfig.setLimit(999);
         pagedArtConfig.setTag("");
+        //PACKET_PROTOCOL.OPC_UA_ID,,
+        //
         List<Integer> protocolIds = Arrays.asList(PACKET_PROTOCOL.MODBUS_ID,PACKET_PROTOCOL.S7_ID,
-                PACKET_PROTOCOL.IEC104_ASDU_ID);
+                PACKET_PROTOCOL.IEC104_ASDU_ID,PACKET_PROTOCOL.OPC_UA_ID,
+                PACKET_PROTOCOL.DNP3_0_PRI_ID,PACKET_PROTOCOL.MMS_ID,PACKET_PROTOCOL.PN_IO_ID);
         for (Integer protocolId : protocolIds) {
             pagedArtConfig.setProtocolId(protocolId);
             BaseResponse baseResponse = iArtConfigService.getConfigPaged(pagedArtConfig);
@@ -325,6 +326,11 @@ public class InitConfigurationService implements ApplicationRunner {
          * 初始化CPU和内存检测参数
          ***********************************/
         CommonCacheUtil.initCpuAndMemState();
+
+        /************************************
+         * 设置图的ID，初始化一些设置
+         ***********************************/
+        iGplotService.changeGplot(Common.GPLOT_ID);
     }
 
     private void doStartPacketDetailThread(String virtualLoopback , List<String> ipAddresses) {

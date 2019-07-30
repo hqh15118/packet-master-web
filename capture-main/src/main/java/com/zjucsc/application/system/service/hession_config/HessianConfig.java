@@ -32,6 +32,7 @@ public class HessianConfig {
     private String opt_attack;
     private String device_max_flow;
     private String art_packet;
+    private String dos_config;
 
     @Bean
     public ArtHistoryDataMapper artHistoryHessianBean() throws MalformedURLException {
@@ -111,5 +112,10 @@ public class HessianConfig {
     @Bean
     public ArtPacketMapper artPacketMapperBean() throws MalformedURLException {
         return (ArtPacketMapper) new HessianProxyFactory().create(ArtPacketMapper.class,art_packet);
+    }
+
+    @Bean
+    public DosConfigMapper dosConfigMapper() throws MalformedURLException {
+        return (DosConfigMapper) new HessianProxyFactory().create(ArtPacketMapper.class,dos_config);
     }
 }

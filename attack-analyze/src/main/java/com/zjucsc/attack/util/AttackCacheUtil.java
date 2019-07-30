@@ -1,7 +1,5 @@
 package com.zjucsc.attack.util;
 
-import com.zjucsc.attack.bean.AttackConfigByDevice;
-
 import java.util.concurrent.ConcurrentHashMap;
 
 public class AttackCacheUtil {

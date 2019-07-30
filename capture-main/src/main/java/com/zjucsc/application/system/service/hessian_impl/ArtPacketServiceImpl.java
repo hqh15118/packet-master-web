@@ -15,7 +15,7 @@ public class ArtPacketServiceImpl implements IArtPacketService {
 
     @Autowired private ArtPacketMapper artPacketMapper;
 
-    @Async
+    @Async("common_async")
     @Override
     public void insertArtPacket(String artName, ArtPacketDetail layer) {
         artPacketMapper.insertArtPacket(artName, layer);

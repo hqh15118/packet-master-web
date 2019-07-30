@@ -79,4 +79,12 @@ public class DOSAttackAnalyzeListTest {
         return fvDimensionLayers;
     }
 
+
+    @Test
+    public void test(){
+        byte[] bytes = new byte[]{
+                0x01, (byte) 0xFF,-1, 0b0111111,
+        };
+    }
+
 }

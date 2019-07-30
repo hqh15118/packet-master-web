@@ -65,6 +65,7 @@ hessian-config:
   opt_attack : http://${hessian-config.hessian-url}/OptAttackMapper.hessian
   device_max_flow : http://${hessian-config.hessian-url}/DeviceMaxFlowMapper.hessian
   art_packet : http://${hessian-config.hessian-url}/ArtPacketMapper.hessian
+  dos_config : http://${hessian-config.hessian-url}/DosConfigMapper.hessian
 
 server:
   port: ${myconfig.packet_master_web_port}

@@ -68,18 +68,18 @@ public class ScheduledService {
     private int count = 0;
 
     @Scheduled(fixedDelay = 1000)
-    @Async(value = "common")
+    @Async(value = "common_schedule")
     public void commonScheduleService(){
         if (CommonCacheUtil.getScheduleServiceRunningState()){
             count ++;
             if (count >= 5){
-                sendGraphInfo();
-                statisticFlow();
-                CommonCacheUtil.updateAttackLog();
+                sendGraphInfo();        //工艺参数
+                statisticFlow();        //统计总流量，超过限制报错
+                CommonCacheUtil.updateAttackLog();  //统计攻击类型，及所占比例
                 count = 0;
             }
             try {
-                sendAllFvDimensionPacket2();
+                sendAllFvDimensionPacket2();    //每秒钟发送一次五元组
             } catch (InterruptedException e) {
                 System.err.println("五元组发送异常");
             }
@@ -90,11 +90,12 @@ public class ScheduledService {
     @Async("device_schedule_service")
     public void deviceStatisticsInfo(){
         if (CommonCacheUtil.getScheduleServiceRunningState()) {
-            sendPacketStatisticsMsg();
+            sendPacketStatisticsMsg();      //报文统计信息，包括...
         }
     }
 
 
+    //判断系统运行状态
     @Scheduled(fixedRate = 2000)
     public void sysRunState() throws SigarException {
         SysRunStateUtil.StateWrapper wrapper= SysRunStateUtil.getSysRunState();
@@ -113,6 +114,7 @@ public class ScheduledService {
 
     @Scheduled(fixedRate = 10000)
     @Async("d2d_schedule_service")
+    //设备到设备之间的流量信息
     public void device2DevicePacketInfo(){
         if (CommonCacheUtil.getScheduleServiceRunningState()) {
             sendDevice2DevicePackets();
@@ -195,6 +197,7 @@ public class ScheduledService {
 //        deletePcapFileScheduled();
 //    }
 
+    //定时重启tshark全部进程
     @Scheduled(cron = "0 0 0 ? * MON-FRI")
     public void restartTsharkProcess(){
         for (BasePreProcessor basePreProcessor : CapturePacketServiceImpl.basePreProcessors) {
@@ -204,6 +207,7 @@ public class ScheduledService {
         }
     }
 
+    //定时删除临时的wireshark报文
     @Scheduled(cron = "0 5 0 ? * MON-FRI")
     public void deletePcapFileScheduled(){
         File file = new File(Common.WIRESHARK_TEMP_FILE);
@@ -271,7 +275,7 @@ public class ScheduledService {
                     if (artValueList.size() > 0)
                         ART_INFO_SEND_SINGLE.put(artName,artValueList.getLast());
                 }
-                if (artValueList.size() > 0){
+                if (artValueList.size() > 0 && !artName.equals("timestamp")){
                     iArtHistoryDataService.saveArtData(artName,artValueList.getLast(),null);
                 }
             });

@@ -18,10 +18,19 @@ public class KafkaThread<V> extends Thread implements IKafka<V> {
     private volatile boolean running = true;
     private String bindService;
     private boolean hasStart = false;
+    private SendErrorCallback<V> sendErrorCallback;
 
     @SuppressWarnings("unchecked")
     public static <V> KafkaThread<V> createNewKafkaThread(String service,String bindTopic){
         KafkaThread kafkaThread = new KafkaThread<>(service, bindTopic);
+        KafkaCommon.register(kafkaThread);
+        return kafkaThread;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <V> KafkaThread<V> createNewKafkaThread(String service,String bindTopic,SendErrorCallback<V> sendErrorCallback){
+        KafkaThread kafkaThread = new KafkaThread<>(service, bindTopic);
+        kafkaThread.registerErrorCallback(sendErrorCallback);
         KafkaCommon.register(kafkaThread);
         return kafkaThread;
     }
@@ -62,7 +71,13 @@ public class KafkaThread<V> extends Thread implements IKafka<V> {
 
     @Override
     public void sendMsg(V v) {
-        TASK_QUEUE.offer(v);
+        if(!TASK_QUEUE.offer(v) && sendErrorCallback!=null){
+            sendErrorCallback.fail(getName(),v);
+        }
+    }
+
+    public void registerErrorCallback(SendErrorCallback<V> sendErrorCallback){
+        this.sendErrorCallback = sendErrorCallback;
     }
 
     @Override
@@ -105,5 +120,9 @@ public class KafkaThread<V> extends Thread implements IKafka<V> {
                 ", running=" + running + "\n" +
                 ", bindService='" + bindService + '\'' + "\n" +
                 '}';
+    }
+
+    public interface SendErrorCallback<V>{
+        void fail(String threadName , V v);
     }
 }

@@ -21,9 +21,14 @@ import java.util.concurrent.ThreadPoolExecutor;
 @EnableAsync
 public class ServiceConfig {
 
-    @Bean("common")
+    @Bean("common_schedule")
     public Executor taskExecutor() {
         return new SimpleAsyncTaskExecutor();
+    }
+
+    @Bean("common_async")
+    public Executor commonAsync() {
+        return Executors.newFixedThreadPool(5);
     }
 
     @Bean("device_schedule_service")

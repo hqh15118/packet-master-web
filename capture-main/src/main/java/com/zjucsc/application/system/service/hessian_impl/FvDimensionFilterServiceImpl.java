@@ -31,7 +31,7 @@ public class FvDimensionFilterServiceImpl extends BaseServiceImpl<Rule,FvDimensi
     @Autowired
     private IOptFilterService iOptFilterService;
 
-    @Async
+    @Async("common_async")
     @Override
     public CompletableFuture<Exception> addFvDimensionFilter(List<Rule> rules) {
         //更新缓存
@@ -60,7 +60,7 @@ public class FvDimensionFilterServiceImpl extends BaseServiceImpl<Rule,FvDimensi
         return optFilterForFront;
     }
 
-    @Async
+    @Async("common_async")
     @Override
     public CompletableFuture<List<Rule>> getTargetExistIdFilter(String deviceNumber , boolean cached) {
         if (cached){

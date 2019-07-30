@@ -8,7 +8,6 @@ import java.util.Map;
 
 public class TcpDosAttackAnalyzer<T extends FvDimensionList> extends BaseAttackAnalyzer<T> {
 
-
     public TcpDosAttackAnalyzer(Map<String, T> stringTMap, Class<T> clazz) {
         super(stringTMap, clazz);
     }
@@ -18,10 +17,7 @@ public class TcpDosAttackAnalyzer<T extends FvDimensionList> extends BaseAttackA
         /*
          * 保证是TCP请求，且是连接请求
          */
-        return layer.frame_protocols[0].endsWith("tcp") &&
-                layer.tcp_flags_ack[0].equals("0") &&
+        return layer.tcp_flags_ack[0].equals("0") &&
                 layer.tcp_flags_syn[0].equals("1");
     }
-
-
 }

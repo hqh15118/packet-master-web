@@ -16,7 +16,6 @@ public class FvDimensionList implements Entry {
     public FvDimensionList(){
         fvDimensionLayers = new PriorityQueue<>(1000);
     }
-
     /**
      * @param layer 五元组
      * @return 针对新增的五元组是否检测到攻击

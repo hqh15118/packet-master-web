@@ -2,12 +2,10 @@ package com.zjucsc.attack;
 
 import com.zjucsc.attack.analyze.analyzer_util.CositeDosAttackAnalyzeList;
 import com.zjucsc.attack.analyze.analyzer_util.MultisiteDosAttackAnalyzeList;
-import com.zjucsc.attack.bean.BaseOptAnalyzer;
-import com.zjucsc.attack.bean.BaseOptConfig;
+import com.zjucsc.attack.base.AnalyzePoolEntry;
+import com.zjucsc.attack.base.AnalyzePoolEntryImpl;
+import com.zjucsc.attack.bean.*;
 import com.zjucsc.attack.base.IOptAttackEntry;
-import com.zjucsc.attack.bean.ArtAttackAnalyzeConfig;
-import com.zjucsc.attack.bean.AttackBean;
-import com.zjucsc.attack.bean.RedisConfigNotFoundException;
 import com.zjucsc.attack.common.ArtAttackAnalyzeTask;
 import com.zjucsc.attack.common.AttackCallback;
 import com.zjucsc.attack.common.AttackTypePro;
@@ -27,6 +25,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.Function;
 
 /**
  * #project packet-master-web
@@ -80,15 +79,26 @@ public class AttackCommon {
         return thread;
     });
 
-//    private static ExecutorService DOS_ATTACK_ANALYZE_SERVICE = Executors.newFixedThreadPool(1,
-//            r -> {
-//                Thread thread = new Thread(r);
-//                thread.setName("-attack-art-analyze-service-");
-//                thread.setUncaughtExceptionHandler((t, e) -> {
-//                    System.err.println("error in attack-service-thread " + e);
-//                });
-//                return thread;
-//            });
+    private static final ConcurrentHashMap<String, AnalyzePoolEntry> ANALYZE_POOL_ENTRY_CONCURRENT_HASH_MAP =
+            new ConcurrentHashMap<>();
+    public static boolean addOrUpdateDosAnalyzePoolEntry(String deviceTag, DosConfig dosConfig){
+        AnalyzePoolEntry analyzePoolEntry = ANALYZE_POOL_ENTRY_CONCURRENT_HASH_MAP.computeIfAbsent(deviceTag, s -> new AnalyzePoolEntryImpl());
+        return analyzePoolEntry.addDosAnalyzer(dosConfig);
+    }
+    public static void removeDosAnalyzePoolEntry(String deviceTag,String protocol){
+        AnalyzePoolEntry analyzePoolEntry = ANALYZE_POOL_ENTRY_CONCURRENT_HASH_MAP.get(deviceTag);
+        analyzePoolEntry.removeDosAnalyzer(protocol);
+    }
+
+    private static ExecutorService DOS_ATTACK_ANALYZE_SERVICE = Executors.newFixedThreadPool(1,
+            r -> {
+                Thread thread = new Thread(r);
+                thread.setName("-attack-art-analyze-service-");
+                thread.setUncaughtExceptionHandler((t, e) -> {
+                    System.err.println("error in attack-service-thread " + e);
+                });
+                return thread;
+            });
 
     private static ExecutorService ART_OPT_ANALYZE_SERVICE = CommonUtil.getSingleThreadPoolSizeThreadPool(10000,
             r -> {
@@ -149,9 +159,18 @@ public class AttackCommon {
      * DOS 2019/6/28
      * @param layer 五元组
      */
-//    public static void appendDOSAnalyze(final FvDimensionLayer layer){
-//        DOS_ATTACK_ANALYZE_SERVICE.execute(new CommonAnalyzeTask(layer));
-//    }
+    public static void appendDOSAnalyze(final FvDimensionLayer layer , String deviceTag){
+        final AnalyzePoolEntry analyzePoolEntry = ANALYZE_POOL_ENTRY_CONCURRENT_HASH_MAP.get(deviceTag);
+        if (analyzePoolEntry!=null){
+            DOS_ATTACK_ANALYZE_SERVICE.execute(() -> {
+                try {
+                    analyzePoolEntry.append(layer);
+                } catch (InstantiationException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+    }
 
     //五元组分析，给CommonAttackTask用的
     public static void doAnalyzeFvDimension(FvDimensionLayer layer){

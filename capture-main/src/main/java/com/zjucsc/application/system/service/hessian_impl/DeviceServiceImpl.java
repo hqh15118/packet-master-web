@@ -77,12 +77,11 @@ public class DeviceServiceImpl extends BaseServiceImpl< Device , DeviceMapper> i
     }
 
     @Override
-    @Async
+    @Async("common_async")
     public void saveStatisticInfo(Map<String,StatisticInfoSaveBean> map) {
         this.baseMapper.saveStatisticInfo(map, Common.GPLOT_ID);
     }
 
-    @Async
     @Override
     public void saveOrUpdateDevice(Device device) {
         this.baseMapper.saveOrUpdateDevice(device);

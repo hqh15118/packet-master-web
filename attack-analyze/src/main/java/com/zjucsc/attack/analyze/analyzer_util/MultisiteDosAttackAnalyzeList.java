@@ -1,7 +1,6 @@
 package com.zjucsc.attack.analyze.analyzer_util;
 
 import com.zjucsc.attack.bean.AttackConfig;
-import com.zjucsc.attack.bean.AttackConfigByDevice;
 import com.zjucsc.attack.bean.MultisiteFvDimensionAttackWrapper;
 import com.zjucsc.attack.util.AttackCacheUtil;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
@@ -9,7 +8,7 @@ import com.zjucsc.tshark.packets.FvDimensionLayer;
 import java.util.LinkedHashSet;
 import java.util.Queue;
 
-public class MultisiteDosAttackAnalyzeList extends TcpAttackAnalyzeList {
+public class MultisiteDosAttackAnalyzeList extends AbstractDosList {
 
     private LinkedHashSet<MultisiteFvDimensionAttackWrapper> hashSet = new LinkedHashSet<>();
 
@@ -28,18 +27,16 @@ public class MultisiteDosAttackAnalyzeList extends TcpAttackAnalyzeList {
     protected String analyze(Queue<FvDimensionLayer> fvDimensionLayers,
                                     FvDimensionLayer newAppendLayer) {
         hashSet.clear();
-        //如果总数量小于配置数量，那么一定返回false
-        AttackConfigByDevice attackConfigByDevice = AttackCacheUtil.getAttackConfigByDevice(newAppendLayer.ip_dst[0]);
         //没有配置，直接返回，没有攻击
-        if (attackConfigByDevice == null || attackConfigByDevice.getMulsiteTime() == 0 || attackConfigByDevice.getMulsiteNum() == 0){
+        if ( getDosConfig() == null || getDosConfig().getMulSiteNum() == 0 || getDosConfig().getMulSiteTime() == 0){
             return null;
         }
-        long cositeTimeStamp = attackConfigByDevice.getCositeTime();
-        int cositeNum = attackConfigByDevice.getCositeNum();
-        if (fvDimensionLayers.size() < cositeTimeStamp){
+        long mulSiteTime = getDosConfig().getMulSiteTime();
+        int mulSiteNum =  getDosConfig().getMulSiteNum();
+        if (fvDimensionLayers.size() < mulSiteNum){
             return null;
         }
-        return doAnalyze(fvDimensionLayers,cositeTimeStamp,cositeNum);
+        return doAnalyze(fvDimensionLayers,mulSiteTime,mulSiteNum);
     }
 
     private String doAnalyze(Queue<FvDimensionLayer> fvDimensionLayers, long multiSiteTimeStamp, int multiSiteNum) {

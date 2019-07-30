@@ -51,7 +51,7 @@ public class OptFilterServiceImpl extends BaseServiceImpl<OptFilter,OptFilterMap
      * @return
      * @throws ProtocolIdNotValidException
      */
-    @Async
+    @Async("common_async")
     @Override
     public CompletableFuture<List<Integer>> getTargetExistIdFilter(String deviceNumber, boolean cached , int protocolId) throws ProtocolIdNotValidException {
         if (cached){

@@ -58,7 +58,7 @@ public class ArtHistoryDataServiceImpl extends BaseServiceImpl<ArtHistoryData,Ar
         TIME_LIST.put(1,timeList);
     }
 
-    @Async
+    @Async("common_async")
     @Override
     public CompletableFuture<ArtHistoryForFront> getArtData(String startTime, String endTime, List<String> artNames) throws Exception {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh");
