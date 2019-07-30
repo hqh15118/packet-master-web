@@ -1,5 +1,6 @@
 package com.zjucsc.attack.analyze.analyzer;
 
+import com.zjucsc.attack.analyze.analyzer_util.AbstractDosList;
 import com.zjucsc.attack.util.BaseAttackAnalyzer;
 import com.zjucsc.common.common_util.ByteUtil;
 import com.zjucsc.tshark.FvDimensionList;
@@ -8,7 +9,7 @@ import com.zjucsc.tshark.packets.FvDimensionLayer;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ModbusDosAttackAnalyzer<T extends FvDimensionList> extends BaseAttackAnalyzer<T> {
+public class ModbusDosAttackAnalyzer<T extends AbstractDosList> extends BaseAttackAnalyzer<T> {
     /**
      * 通过构造函数注入分析结构
      *

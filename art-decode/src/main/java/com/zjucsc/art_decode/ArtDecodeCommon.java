@@ -6,6 +6,7 @@ import com.zjucsc.art_decode.base.BaseArtDecode;
 import com.zjucsc.art_decode.base.IArtEntry;
 import com.zjucsc.art_decode.dnp3.DNP3Decode;
 import com.zjucsc.art_decode.iec104.IEC104Decode;
+import com.zjucsc.art_decode.mms.MMSDecode;
 import com.zjucsc.art_decode.modbus.ModbusDecode;
 import com.zjucsc.art_decode.opcua.OpcuaDecode;
 import com.zjucsc.art_decode.pnio.PnioDecode;
@@ -51,7 +52,7 @@ public class ArtDecodeCommon {
         ART_DECODE_CONCURRENT_HASH_MAP.put("opcua",new OpcuaDecode());
         ART_DECODE_CONCURRENT_HASH_MAP.put("dnp3",new DNP3Decode());
         ART_DECODE_CONCURRENT_HASH_MAP.put("iec101",new IEC104Decode());
-//        ART_DECODE_CONCURRENT_HASH_MAP.put("mms",new MMSDecode());
+        ART_DECODE_CONCURRENT_HASH_MAP.put("mms",new MMSDecode());
     }
 
     public static Map<String,Float> artDecodeEntry(Map<String,Float> artMap, byte[] payload,

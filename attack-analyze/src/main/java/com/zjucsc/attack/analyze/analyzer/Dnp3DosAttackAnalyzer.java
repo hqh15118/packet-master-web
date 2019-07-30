@@ -1,12 +1,13 @@
 package com.zjucsc.attack.analyze.analyzer;
 
+import com.zjucsc.attack.analyze.analyzer_util.AbstractDosList;
 import com.zjucsc.attack.util.BaseAttackAnalyzer;
 import com.zjucsc.tshark.FvDimensionList;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 
 import java.util.Map;
 
-public class Dnp3DosAttackAnalyzer<T extends FvDimensionList> extends BaseAttackAnalyzer<T> {
+public class Dnp3DosAttackAnalyzer<T extends AbstractDosList> extends BaseAttackAnalyzer<T> {
     /**
      * 通过构造函数注入分析结构
      *

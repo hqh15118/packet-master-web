@@ -1,8 +1,6 @@
 package com.zjucsc.attack.analyze.analyzer_util;
 
 import com.zjucsc.attack.bean.AttackConfig;
-import com.zjucsc.attack.bean.DosConfig;
-import com.zjucsc.attack.util.AttackCacheUtil;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 
 import java.util.Queue;

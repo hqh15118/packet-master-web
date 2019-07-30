@@ -48,7 +48,6 @@ public class IEC101DecodeMain {
         int SQ = tcpPayload[SQ_NUMBER_OFFSET] & 0x80;  //地址连续性，等于0表示地址不连续
         int num = tcpPayload[SQ_NUMBER_OFFSET] & 0x7F; //信息元素个数
         String transferReason = decodeTransferReason(tcpPayload[TRANSFER_REASON_OFFSET]);
-        System.out.println(transferReason);//TODO
         decode101ArtData(tcpPayload,SQ,num,ti);
     }
 

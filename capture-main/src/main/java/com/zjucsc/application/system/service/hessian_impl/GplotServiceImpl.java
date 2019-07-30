@@ -6,16 +6,21 @@ import com.zjucsc.application.system.mapper.base.BaseServiceImpl;
 import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
 import com.zjucsc.application.system.service.hessian_iservice.IGplotService;
 import com.zjucsc.application.system.service.hessian_iservice.IWhiteProtocolService;
+import com.zjucsc.application.system.service.hessian_mapper.DosConfigMapper;
 import com.zjucsc.application.system.service.hessian_mapper.GplotMapper;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.CommonFvFilterUtil;
 import com.zjucsc.application.util.CommonOptFilterUtil;
+import com.zjucsc.attack.AttackCommon;
+import com.zjucsc.attack.bean.DosConfig;
+import com.zjucsc.common.common_util.PrinterUtil;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +33,7 @@ public class GplotServiceImpl extends BaseServiceImpl<Gplot,GplotMapper> impleme
 
     @Autowired private IDeviceService iDeviceService;
     @Autowired private IWhiteProtocolService iWhiteProtocolService;
+    @Autowired private DosConfigMapper dosConfigMapper;
 
     @Override
     public BaseResponse addNewGplot(Gplot gplot) {
@@ -49,34 +55,42 @@ public class GplotServiceImpl extends BaseServiceImpl<Gplot,GplotMapper> impleme
         //reload filters
         List<Device> devices = iDeviceService.selectByGplotId(gplotId);   //load all device
         for (Device device : devices) {
+            String deviceNumber = device.getDeviceNumber();
             sb.delete(0 , sb.length());
             //load all fv dimension rule from fv_dimension table by device_number + gplot_id
             List<Rule> rules = iDeviceService.
-                    loadAllFvDimensionFilterByDeviceNumberAndGplotId(device.getDeviceNumber(),gplotId);
+                    loadAllFvDimensionFilterByDeviceNumberAndGplotId(deviceNumber,gplotId);
             //add all fv filters to cache
             if (rules.size() > 0) {
-                CommonFvFilterUtil.addOrUpdateFvFilter(device.getDeviceIp(), rules,
-                        sb.append("device_name-").append(device.getDeviceNumber()).
+                CommonFvFilterUtil.addOrUpdateFvFilter(device.getDeviceTag(), rules,
+                        sb.append("device_name-").append(deviceNumber).
                                 append(" gplot_id-").append(gplotId).toString());
             }
             //load all opt dimension rule from opt filter table by device_number + gplot_id
-            List<OptFilterForFront> optFilters = iDeviceService.loadAllOptFilterByDeviceNumberAndGplotId(device.getDeviceNumber(),gplotId);
+            List<OptFilterForFront> optFilters = iDeviceService.loadAllOptFilterByDeviceNumberAndGplotId(deviceNumber,gplotId);
             //add all opt filters to cache
             if (optFilters.size() > 0) {
                 for (OptFilterForFront optFilter : optFilters) {
-                    CommonOptFilterUtil.addOrUpdateAnalyzer(device.getDeviceIp(), optFilter, optFilter.toString());
+                    CommonOptFilterUtil.addOrUpdateAnalyzer(device.getDeviceTag(), optFilter, optFilter.toString());
                 }
             }
             //更新DEVICE_NUMBER和DEVICE_IP之间的对应关系
             //更新DEVICE_NUMBER和StatisticInfoSaveBean【设备upload、download等报文信息】
-            CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(device.getDeviceNumber() , device.getDeviceTag());
-            CommonCacheUtil.addDeviceNumberToName(device.getDeviceNumber(),device.getDeviceInfo());
+            CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(deviceNumber , device.getDeviceTag());
+            CommonCacheUtil.addDeviceNumberToName(deviceNumber,device.getDeviceInfo());
             CommonCacheUtil.addOrUpdateDeviceManually(device);
             /*************************
              * INIT WHITE PROTOCOL
              *************************/
             DeviceProtocol deviceProtocol = iWhiteProtocolService.selectByDeviceNumber(device.getDevice_id());
             CommonCacheUtil.addWhiteProtocolToCache(deviceProtocol.getDeviceNumber(),deviceProtocol.getProtocolName());
+            /**********************************
+             * 初始化DOS攻击配置
+             **********************************/
+            List<DosConfig> dosConfigs = dosConfigMapper.selectDosConfigByDeviceNumber(deviceNumber);
+            for (DosConfig dosConfig : dosConfigs) {
+                AttackCommon.addOrUpdateDosAnalyzePoolEntry(device.getDeviceTag(),dosConfig);
+            }
         }
 
 

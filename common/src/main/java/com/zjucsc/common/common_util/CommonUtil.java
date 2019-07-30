@@ -36,6 +36,11 @@ public class CommonUtil {
     public static SimpleDateFormat getDateFormat2(){
         return SIMPLE_DATE_FORMAT_THREAD_LOCAL2.get();
     }
+    private static final ThreadLocal<SimpleDateFormat> SIMPLE_DATE_FORMAT_THREAD_LOCAL3
+            = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SS"));
+    public static SimpleDateFormat getDateFormat3(){
+        return SIMPLE_DATE_FORMAT_THREAD_LOCAL3.get();
+    }
 
     private static RejectedExecutionHandler REJECT_EXECUTION_HANDLER;
     public static ThreadPoolExecutor getFixThreadPoolSizeThreadPool(int poolSize , ThreadFactory threadFactory,RejectedExecutionHandler executionHandler){

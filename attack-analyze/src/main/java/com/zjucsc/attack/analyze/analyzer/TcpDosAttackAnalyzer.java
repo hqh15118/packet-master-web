@@ -1,12 +1,13 @@
 package com.zjucsc.attack.analyze.analyzer;
 
+import com.zjucsc.attack.analyze.analyzer_util.AbstractDosList;
 import com.zjucsc.attack.util.BaseAttackAnalyzer;
 import com.zjucsc.tshark.FvDimensionList;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 
 import java.util.Map;
 
-public class TcpDosAttackAnalyzer<T extends FvDimensionList> extends BaseAttackAnalyzer<T> {
+public class TcpDosAttackAnalyzer<T extends AbstractDosList> extends BaseAttackAnalyzer<T> {
 
     public TcpDosAttackAnalyzer(Map<String, T> stringTMap, Class<T> clazz) {
         super(stringTMap, clazz);

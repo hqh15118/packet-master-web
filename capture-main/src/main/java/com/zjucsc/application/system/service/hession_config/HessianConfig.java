@@ -116,6 +116,6 @@ public class HessianConfig {
 
     @Bean
     public DosConfigMapper dosConfigMapper() throws MalformedURLException {
-        return (DosConfigMapper) new HessianProxyFactory().create(ArtPacketMapper.class,dos_config);
+        return (DosConfigMapper) new HessianProxyFactory().create(DosConfigMapper.class,dos_config);
     }
 }

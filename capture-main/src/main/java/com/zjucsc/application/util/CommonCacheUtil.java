@@ -633,7 +633,8 @@ public class CommonCacheUtil {
         StringBuilder sb = CommonUtil.getGlobalStringBuilder();
         long timeNow = System.nanoTime();                       //防止太快重复设备
         Device device = new Device();
-        sb.append("设备").append(CommonUtil.getDateFormat2().format(new Date()))
+        Date date = new Date();
+        sb.append("设备").append(CommonUtil.getDateFormat2().format(date))
                 .append("_").append(threadLocalRandom.nextInt(10000));
         device.setDeviceInfo(sb.toString());
         device.setDeviceNumber(String.valueOf(timeNow));
@@ -643,6 +644,7 @@ public class CommonCacheUtil {
         device.setGPlotId(Common.GPLOT_ID);
         device.setDeviceIp(layer.ip_src[0]);
         device.setProtocol(layer.protocol);
+        device.setCreateTime(CommonUtil.getDateFormat3().format(date));
         return device;
     }
 

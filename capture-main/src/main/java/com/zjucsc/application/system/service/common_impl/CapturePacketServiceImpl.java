@@ -90,6 +90,11 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             artPacketDetail.setArtName(argName);
             ART_PACKET.sendMsg(artPacketDetail);
             //iArtPacketService.insertArtPacket(argName,artPacketDetail);
+            Map<String,Float> res = AppCommonUtil.getGlobalArtMap();
+            AttackCommon.appendArtAnalyze(res,layer);
+            try {
+                AttackCommon.appendOptAnalyze(res,layer,CommonCacheUtil.convertNameToId(layer.protocol));
+            } catch (ProtocolIdNotValidException ignored) {}
         });
     }
 
@@ -699,10 +704,6 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             StatisticsData.addArtMapData(res);
 
             AttackCommon.appendDOSAnalyze(layer, DeviceOptUtil.getDstDeviceTag(layer));                     //将五元组添加到攻击分析模块中分析
-            AttackCommon.appendArtAnalyze(res,layer);
-            try {
-                AttackCommon.appendOptAnalyze(res,layer,CommonCacheUtil.convertNameToId(layer.protocol), tcpPayload);
-            } catch (ProtocolIdNotValidException ignored) {}
             return layer;
         }
     };
