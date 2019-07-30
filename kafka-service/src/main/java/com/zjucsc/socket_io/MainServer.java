@@ -9,6 +9,14 @@ public class MainServer {
 
     private static boolean hasStartedService = false;
     private static SocketIOServer server = null;
+
+    public static void initSocketIoServer(String ip,int port){
+        Configuration config = new Configuration();
+        config.setHostname(ip);
+        config.setPort(port);
+        server = new SocketIOServer(config);
+    }
+
     public static boolean openWebSocketService(String ip , int port, ConnectListener connectListener,
                                             DisconnectListener disconnectListener){
         if (hasStartedService){
@@ -20,10 +28,12 @@ public class MainServer {
             }else{
                 hasStartedService = true;
                 Thread thread = new Thread(() -> {
-                    Configuration config = new Configuration();
-                    config.setHostname(ip);
-                    config.setPort(port);
-                    server = new SocketIOServer(config);
+                    if (server == null) {
+                        Configuration config = new Configuration();
+                        config.setHostname(ip);
+                        config.setPort(port);
+                        server = new SocketIOServer(config);
+                    }
                     server.addConnectListener(connectListener);
                     server.addDisconnectListener(disconnectListener);
                     server.start();
@@ -59,5 +69,9 @@ public class MainServer {
 
     public static boolean getWebSocketServiceState(){
         return hasStartedService;
+    }
+
+    public static SocketIOServer getServer(){
+        return server;
     }
 }

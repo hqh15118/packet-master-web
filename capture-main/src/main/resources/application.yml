@@ -47,7 +47,7 @@ tshark-config:
   s7comm_filter : tcp
 
 hessian-config:
-  hessian-url: 10.15.191.100:36955/hessian
+  hessian-url: 192.168.0.133:36955/hessian
   art_history_data: http://${hessian-config.hessian-url}/ArtHistoryDataMapper.hessian
   art_config: http://${hessian-config.hessian-url}/ArtConfigMapper.hessian
   configuration_setting: http://${hessian-config.hessian-url}/ConfigurationSettingMapper.hessian

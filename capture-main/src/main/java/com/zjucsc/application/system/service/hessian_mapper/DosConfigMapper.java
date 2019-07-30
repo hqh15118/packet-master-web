@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface DosConfigMapper {
     void addOrUpdateDosConfig(DosConfig dosConfig);
-    DosConfig removeDosConfig(DosConfig dosConfig);
+    void removeDosConfig(DosConfig dosConfig);
     List<DosConfig> selectDosConfigByDeviceNumber(String deviceNumber);
 }

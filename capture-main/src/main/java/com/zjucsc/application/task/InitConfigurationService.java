@@ -1,6 +1,7 @@
 package com.zjucsc.application.task;
 
 import com.alibaba.fastjson.JSON;
+import com.corundumstudio.socketio.listener.DataListener;
 import com.zjucsc.IProtocolFuncodeMap;
 import com.zjucsc.application.config.*;
 import com.zjucsc.application.config.auth.Auth;
@@ -17,8 +18,11 @@ import com.zjucsc.art_decode.ArtDecodeCommon;
 import com.zjucsc.art_decode.base.BaseConfig;
 import com.zjucsc.attack.bean.ArtAttackAnalyzeConfig;
 import com.zjucsc.attack.AttackCommon;
+import com.zjucsc.base.util.SpringContextUtil;
+import com.zjucsc.common.common_util.PrinterUtil;
 import com.zjucsc.common.exceptions.PacketDetailServiceNotValidException;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
+import com.zjucsc.socket_io.*;
 import com.zjucsc.tshark.TsharkCommon;
 import lombok.extern.slf4j.Slf4j;
 import org.pcap4j.core.PcapNativeException;
@@ -29,6 +33,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.SocketException;
 import java.util.*;
 
@@ -43,6 +49,7 @@ import static com.zjucsc.application.util.TsharkUtil.startHistoryPacketAnalyzeTh
  */
 @Slf4j
 @Component
+@DataSourceClass({SocketIoConfig.class})
 public class InitConfigurationService implements ApplicationRunner {
 
     @Autowired private IArtConfigService iArtConfigService;
@@ -54,7 +61,6 @@ public class InitConfigurationService implements ApplicationRunner {
     @Autowired private PreProcessor preProcessor;
     @Autowired private DeviceMaxFlowMapper deviceMaxFlowMapper;
     @Autowired private IGplotService iGplotService;
-    @Autowired private DosConfigMapper dosConfigMapper;
 
     @Override
     public void run(ApplicationArguments args) throws IllegalAccessException, NoSuchFieldException, ProtocolIdNotValidException, IOException {
@@ -76,13 +82,13 @@ public class InitConfigurationService implements ApplicationRunner {
          * RELOAD FROM JAR
          ***************************/
         List<String> virReload = args.getOptionValues("reload");
-        System.out.println("*******************\n" + "program args [reload<--reload>]: " + virReload);
+        PrinterUtil.printStarter();
+        PrinterUtil.printMsg("program args [reload <--reload>]: " + virReload);
         boolean reload = false;
         if (virReload!=null && virReload.size() > 0){
             if ("true".equals(virReload.get(0))){
                 //重新到jar包中加载功能码含义
                 reload = true;
-                log.info("force reload [funCode Meaning]from jar file");
             }
         }
 
@@ -90,7 +96,7 @@ public class InitConfigurationService implements ApplicationRunner {
          * IP OR MAC_ADDRESS
          ***************************/
         List<String> virFilterStatement = args.getOptionValues("statement");
-        System.out.println("program args : [filterStatement<--statement>]" + virFilterStatement + "\n*******************");
+        PrinterUtil.printMsg("program args : [filterStatement <--statement>]" + virFilterStatement);
         if (virFilterStatement!=null && virFilterStatement.size() > 0){
             Common.filterStatement = Integer.parseInt(virFilterStatement.get(0));
             if (Common.filterStatement == 0){
@@ -103,7 +109,7 @@ public class InitConfigurationService implements ApplicationRunner {
          * TSHARK PRE_PROCESSOR
          ***************************/
         List<String> virPreProcessor = args.getOptionValues("processor");
-        System.out.println("program args [pre_processor<--processor>]: " + virPreProcessor + "\n*******************");
+        PrinterUtil.printMsg("program args [pre_processor<--processor>]: " + virPreProcessor);
         if (virPreProcessor!=null && virPreProcessor.size() > 0){
             Common.TSHARK_PRE_PROCESSOR_PROTOCOLS.addAll(virPreProcessor);
         }
@@ -112,7 +118,7 @@ public class InitConfigurationService implements ApplicationRunner {
          * 演示/真实场景
          ***************************/
         List<String> virType = args.getOptionValues("type");
-        System.out.println("program args [type--type]: " + virType + "\n*******************");
+        PrinterUtil.printMsg("program args [type--type]: " + virType);
         if (virType!=null && virType.size() > 0){
             Common.systemRunType = Integer.valueOf(virType.get(0));
         }
@@ -121,7 +127,7 @@ public class InitConfigurationService implements ApplicationRunner {
          * INIT FILTER
          ***************************/
         List<String> virFilter = args.getOptionValues("filter");
-        System.out.println("program args : [filter<--filter>]" + virFilter + "\n*******************");
+        PrinterUtil.printMsg("program args : [filter<--filter>]" + virFilter);
         if (virFilter!=null && virFilter.size() > 0){
             //通用filter，特殊的filter如S7Common-Filter/Modbus-Filter会覆盖这个通用的Filter
             TsharkCommon.filter = virFilter.get(0);
@@ -130,10 +136,11 @@ public class InitConfigurationService implements ApplicationRunner {
          * INIT -M <Tshark Session Reset>
          ***************************/
         List<String> virSessionReset = args.getOptionValues("session");
-        System.out.println("program args : [session reset<--session>]" + virSessionReset + "\n*******************");
+        PrinterUtil.printMsg("program args : [session reset<--session>]" + virSessionReset);
         if (virSessionReset!=null && virSessionReset.size() > 0){
             TsharkCommon.sessionReset = virSessionReset.get(0);
         }
+        PrinterUtil.printEnder();
 
         /***************************
          * INIT PROTOCOL STR TO INT
@@ -321,10 +328,49 @@ public class InitConfigurationService implements ApplicationRunner {
          ***********************************/
         CommonCacheUtil.initCpuAndMemState();
 
+        MainServer.initSocketIoServer(constantConfig.getGlobal_address(), Common.SOCKET_IO_PORT);
         /************************************
          * 设置图的ID，初始化一些设置
          ***********************************/
         iGplotService.changeGplot(Common.GPLOT_ID);
+
+        /*************************************
+         * 扫描注册SocketIo事件
+         ************************************/
+        DataSourceClass dataSourceClass = getClass().getAnnotation(DataSourceClass.class);
+        Class<?>[] dataSourceClasses = dataSourceClass.value();
+        for (Class<?> sourceClass : dataSourceClasses) {
+            handleDataSourceClass(sourceClass, SpringContextUtil.getBean(sourceClass));
+        }
+        /************************************
+         * 启动结束
+         ***********************************/
+        PrinterUtil.printMsg(1,"程序启动完成");
+    }
+
+    private void handleDataSourceClass(Class<?> clazz,Object obj){
+        Method[] method = clazz.getDeclaredMethods();
+        for (Method declaredMethod : method) {
+            EventHandler eventHandler = declaredMethod.getAnnotation(EventHandler.class);
+            if (eventHandler!=null){
+                handleEventHandlerMethod(declaredMethod,obj);
+            }
+        }
+    }
+
+    private void handleEventHandlerMethod(Method declaredMethod,Object obj) {
+        try {
+            Object res = declaredMethod.invoke(obj);
+            List dataListeners = (List) res;
+            for (Object dataListener : dataListeners) {
+                Event event = dataListener.getClass().getAnnotation(Event.class);
+                String eventMsg = event.event();
+                Class<?> eventType = event.eventType();
+                SocketServiceCenter.registerSocketIoDataListenter(eventMsg,eventType, ((DataListener) dataListener));
+            }
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
     }
 
     private void doStartPacketDetailThread(String virtualLoopback , List<String> ipAddresses) {
@@ -337,10 +383,10 @@ public class InitConfigurationService implements ApplicationRunner {
                 break;
             }
         }
-        assert ipV4 != null;
-        System.out.println("*******************");
-        System.out.println("【回环IP地址】：" + ipV4);
-        System.out.println("*******************");
+        //assert ipV4 != null;
+        PrinterUtil.printStarter();
+        PrinterUtil.printMsg("【回环IP地址】：" + ipV4);
+        PrinterUtil.printEnder();
         //tshark -i "{device_name}" -T ek -Y "ip.src!=192.168.123.232"
         commandBuilder.append("tshark -i \"").append(virtualLoopback).append("\"")
                 .append(" -T ek").append(" -Y \"ip.src!=")

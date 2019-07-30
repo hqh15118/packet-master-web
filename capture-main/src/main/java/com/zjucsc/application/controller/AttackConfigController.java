@@ -86,8 +86,8 @@ public class AttackConfigController {
     @ApiOperation("删除Dos攻击配置")
     @PostMapping("remove_dos_config")
     public BaseResponse removeDosConfig(@RequestBody DosConfig dosConfig){
-        DosConfig removedConfig = dosConfigMapper.removeDosConfig(dosConfig);
-        AttackCommon.removeDosAnalyzePoolEntry(removedConfig.getDeviceNumber(),removedConfig.getProtocol());
+        dosConfigMapper.removeDosConfig(dosConfig);
+        AttackCommon.removeDosAnalyzePoolEntry(dosConfig.getDeviceNumber(),dosConfig.getProtocol());
         return BaseResponse.OK();
     }
 
