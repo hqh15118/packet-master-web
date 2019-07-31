@@ -60,6 +60,16 @@ public class CommonOptFilterUtil {
 
     }
 
+    public static void removeTargetDeviceAnalyzeFuncode(OptFilterForFront optFilterForFront) throws ProtocolIdNotValidException {
+        String deviceTag = CommonCacheUtil.getTargetDeviceTagByNumber(optFilterForFront.getDeviceNumber());
+        String protocolName = CommonCacheUtil.convertIdToName(optFilterForFront.getProtocolId());
+        List<Integer> funCodes = optFilterForFront.getFunCodes();
+        for (Integer funCode : funCodes) {
+            OPERATION_FILTER_PRO.get(deviceTag).get(protocolName).getAnalyzer().getWhiteMap()
+                    .remove(funCode);
+        }
+    }
+
 
     public static void addOrUpdateAnalyzer(String deviceTag, String protocolName, OperationAnalyzer analyzer) throws OptFilterNotValidException {
         if (analyzer == null || analyzer.getAnalyzer() == null){
@@ -78,10 +88,10 @@ public class CommonOptFilterUtil {
 
     /**
      * 删除某个设备对应的所有分析器
-     * @param deviceIp
+     * @param deviceTag
      */
-    public static void removeTargetDeviceAnalyzer(String deviceIp){
-        OPERATION_FILTER_PRO.remove(deviceIp);
+    public static void disableTargetDeviceAnalyzer(String deviceTag){
+        OPERATION_FILTER_PRO.remove(deviceTag);
     }
 
     /**
@@ -110,16 +120,6 @@ public class CommonOptFilterUtil {
             OperationAnalyzer analyzer = removedMap.get(convertIdToName(protocolId));
             analyzer.getAnalyzer().getBlackMap().remove(funcode);
             analyzer.getAnalyzer().getWhiteMap().remove(funcode);
-        }
-    }
-
-    public static void removeTargetDeviceAnalyzeFuncode(OptFilterForFront optFilterForFront) throws ProtocolIdNotValidException {
-        String deviceTag = CommonCacheUtil.getTargetDeviceTagByNumber(optFilterForFront.getDeviceNumber());
-        String protocolName = CommonCacheUtil.convertIdToName(optFilterForFront.getProtocolId());
-        List<Integer> funCodes = optFilterForFront.getFunCodes();
-        for (Integer funCode : funCodes) {
-            OPERATION_FILTER_PRO.get(deviceTag).get(protocolName).getAnalyzer().getWhiteMap()
-                    .remove(funCode);
         }
     }
 

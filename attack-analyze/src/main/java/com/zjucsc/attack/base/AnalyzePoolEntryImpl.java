@@ -52,6 +52,14 @@ public class AnalyzePoolEntryImpl implements AnalyzePoolEntry {
         }
     }
 
+    @Override
+    public void enableDosAnalyzer(boolean enableConfig,String protocol) {
+        List<BaseAttackAnalyzer> baseAttackAnalyzers = analyzerHashMap.get(protocol);
+        for (BaseAttackAnalyzer baseAttackAnalyzer : baseAttackAnalyzers) {
+            baseAttackAnalyzer.getDosConfig().setEnable(enableConfig);
+        }
+    }
+
     private List<BaseAttackAnalyzer> getBaseAttackAnalyzer(DosConfig dosConfig){
         switch (dosConfig.getProtocol()){
             case "tcp" :

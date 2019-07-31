@@ -6,10 +6,7 @@ import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.*;
 
 /**
  * #project packet-master-web
@@ -23,26 +20,59 @@ public class ServiceConfig {
 
     @Bean("common_schedule")
     public Executor taskExecutor() {
-        return new SimpleAsyncTaskExecutor();
+        return Executors.newFixedThreadPool(1, r -> {
+            Thread thread = new Thread(r);
+            thread.setName("-common-schedule-service-");
+            thread.setUncaughtExceptionHandler((t, e) -> {
+                System.err.println("error of common schedule service " + e);
+            });
+            return thread;
+        });
     }
 
     @Bean("common_async")
     public Executor commonAsync() {
-        return Executors.newFixedThreadPool(5);
+        return Executors.newFixedThreadPool(5, r -> {
+            Thread thread = new Thread(r);
+            thread.setName("-common-async-service-");
+            thread.setUncaughtExceptionHandler((t, e) -> System.err.println("error of common async service " + e));
+            return thread;
+        });
     }
 
     @Bean("device_schedule_service")
     public Executor deviceScheduleService(){
-        return Executors.newScheduledThreadPool(1);
+        return Executors.newScheduledThreadPool(1, r -> {
+            Thread thread = new Thread(r);
+            thread.setName("-device-schedule-service-");
+            thread.setUncaughtExceptionHandler((t, e) -> System.err.println("error of device schedule service " + e));
+            return thread;
+        });
     }
 
     @Bean("d2d_schedule_service")
     public Executor d2dScheduleService(){
-        return Executors.newScheduledThreadPool(1);
+        return Executors.newScheduledThreadPool(1, new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread thread = new Thread(r);
+                thread.setName("-d2d-schedule-service-");
+                thread.setUncaughtExceptionHandler((t, e) -> System.err.println("error of d2d schedule service " + e));
+                return thread;
+            }
+        });
     }
 
     @Bean("top5_schedule_service")
     public Executor top5ScheduleService(){
-        return Executors.newScheduledThreadPool(1);
+        return Executors.newScheduledThreadPool(1, new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread thread = new Thread(r);
+                thread.setName("-top5-schedule-service-");
+                thread.setUncaughtExceptionHandler((t, e) -> System.err.println("error of top5 schedule service " + e));
+                return thread;
+            }
+        });
     }
 }

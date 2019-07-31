@@ -3,19 +3,18 @@ package com.zjucsc.art_decode.artconfig;
 import com.zjucsc.art_decode.base.BaseConfig;
 
 public class PnioConfig extends BaseConfig {
-
-    private byte[] macaddress;
+    private String macaddress;
     private int byteoffset;
     private int bitoffset;
     private int length;
     private String type;
     private float[] range;
 
-    public byte[] getMacaddress() {
+    public String getMacaddress() {
         return macaddress;
     }
 
-    public void setMacaddress(byte[] macaddress) {
+    public void setMacaddress(String macaddress) {
         this.macaddress = macaddress;
     }
 

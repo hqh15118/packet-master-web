@@ -592,7 +592,7 @@ public class CommonCacheUtil {
 //        }
         if (/*CommonCacheUtil.iProtocolExist(layer.protocol) && */DeviceOptUtil.validPacketInfo(layer)){
             String deviceTag = DeviceOptUtil.getSrcDeviceTag(layer);
-            if (/*!ALL_DEVICES.containsKey(deviceTag) && */ALL_MAC_ADDRESS.putIfAbsent(layer.eth_src[0],"") == null/*未存过该MAC地址*/) {
+            if (!ALL_DEVICES.containsKey(deviceTag) && ALL_MAC_ADDRESS.putIfAbsent(layer.eth_src[0],"") == null/*未存过该MAC地址*/) {
                 Device srcDevice = createDeviceInverse(layer, deviceTag);
                 ALL_DEVICES.put(srcDevice.getDeviceTag(), srcDevice);
                 return srcDevice;

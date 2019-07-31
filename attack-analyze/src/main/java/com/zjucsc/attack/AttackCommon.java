@@ -77,7 +77,7 @@ public class AttackCommon {
             System.err.println("error in -attack-art-analyze-service- " + e);
         });
         return thread;
-    });
+    },"ART_ATTACK_ANALYZE_SERVICE");
 
     private static final ConcurrentHashMap<String, AnalyzePoolEntry> ANALYZE_POOL_ENTRY_CONCURRENT_HASH_MAP =
             new ConcurrentHashMap<>();
@@ -89,7 +89,10 @@ public class AttackCommon {
         AnalyzePoolEntry analyzePoolEntry = ANALYZE_POOL_ENTRY_CONCURRENT_HASH_MAP.get(deviceTag);
         analyzePoolEntry.removeDosAnalyzer(protocol);
     }
-
+    public static void changeDosConfig(String deviceTag,String protocol,boolean enable){
+        AnalyzePoolEntry analyzePoolEntry = ANALYZE_POOL_ENTRY_CONCURRENT_HASH_MAP.get(deviceTag);
+        analyzePoolEntry.enableDosAnalyzer(enable,protocol);
+    }
     private static ExecutorService DOS_ATTACK_ANALYZE_SERVICE = Executors.newFixedThreadPool(1,
             r -> {
                 Thread thread = new Thread(r);
@@ -108,7 +111,7 @@ public class AttackCommon {
                     System.err.println("-attack-art-opt-analyze-service-" + e);
                 });
                 return thread;
-            });
+            },"ART_OPT_ANALYZE_SERVICE");
 
     public static void registerAttackCallback(AttackCallback attackCallback){
         AttackCommon.attackCallback = attackCallback;

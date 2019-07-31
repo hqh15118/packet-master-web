@@ -18,6 +18,7 @@ import sun.security.krb5.Config;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -75,7 +76,6 @@ public class FvDimensionFilterController {
         return BaseResponse.OK(future.get());
     }
 
-
     @ApiOperation("实时五元组过滤规则")
     @PostMapping("filter_rule")
     public BaseResponse addRealTimeFilterRule(@RequestBody FvDimensionFilterCondition fvDimensionFilterCondition){
@@ -106,5 +106,12 @@ public class FvDimensionFilterController {
         }else {
             return BaseResponse.OK(true);
         }
+    }
+
+    @ApiOperation("删除五元组报文")
+    @PostMapping("del_rule")
+    public BaseResponse removeRule(@RequestBody ArrayList<String> fvId){
+        iFvDimensionFilterService.removeRuleByFvIds(fvId);
+        return BaseResponse.OK();
     }
 }

@@ -38,6 +38,9 @@ public class AppCommonUtil {
      * @param artArg
      */
     public static void initArtMap(String artArg){
+        if (artArg == null){
+            return;
+        }
         StatisticsData.initArtArgs(artArg);
         map.put(artArg,0F);
     }

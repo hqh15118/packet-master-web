@@ -8,4 +8,5 @@ public interface DosConfigMapper {
     void addOrUpdateDosConfig(DosConfig dosConfig);
     void removeDosConfig(DosConfig dosConfig);
     List<DosConfig> selectDosConfigByDeviceNumber(String deviceNumber);
+    DosConfig changeDosConfigState(int id,boolean enable);
 }

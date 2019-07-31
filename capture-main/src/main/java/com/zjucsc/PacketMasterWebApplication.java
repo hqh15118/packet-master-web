@@ -3,6 +3,7 @@ package com.zjucsc;
 import com.zjucsc.application.config.ConstantConfig;
 import com.zjucsc.application.config.PreProcessor;
 import com.zjucsc.application.util.TsharkUtil;
+import com.zjucsc.common.bean.CustomThreadPoolExecutor;
 import com.zjucsc.common.common_util.CommonUtil;
 import com.zjucsc.common.common_util.PrinterUtil;
 import com.zjucsc.socket_io.SocketIoEvent;
@@ -29,10 +30,10 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class PacketMasterWebApplication{
 
     public static void main(String[] args) {
-        CommonUtil.registerExceptionHandler((r, executor) -> {
-            //SocketServiceCenter.updateAllClient(SocketIoEvent.TASK_QUEUE_OVER_FLOW,executor.);
-            System.err.println("任务栈溢出，请检查");
-        });
+//        CommonUtil.registerExceptionHandler((r, executor) -> {
+//            //SocketServiceCenter.updateAllClient(SocketIoEvent.TASK_QUEUE_OVER_FLOW,executor.);
+//            System.err.println(((CustomThreadPoolExecutor) executor).getTag());
+//        });
         String attention = "运行该程序前请运行一遍脚本文件，并检查用户环境变量【TEMP】";
         PrinterUtil.printMsg(2,attention);
         String str = TsharkUtil.checkTsharkValid();

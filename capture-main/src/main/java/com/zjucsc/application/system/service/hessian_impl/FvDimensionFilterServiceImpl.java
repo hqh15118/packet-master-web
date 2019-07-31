@@ -89,4 +89,19 @@ public class FvDimensionFilterServiceImpl extends BaseServiceImpl<Rule,FvDimensi
         }
         return rule;
     }
+
+    @Override
+    public void removeRuleByFvIds(List<String> fvIds) {
+        List<Rule> rules = this.baseMapper.deleteRuleByFvId(fvIds);
+        String deviceNumber = rules.get(0).getFvDimensionFilter().getDeviceNumber();
+        String deviceTag = CommonCacheUtil.getTargetDeviceTagByNumber(deviceNumber);
+        for (Rule rule : rules) {
+            CommonFvFilterUtil.removeFvFilter(deviceTag,rule);
+            try {
+                CommonOptFilterUtil.removeTargetDeviceAnalyzeFuncode(createOptFilterForFront(rule));
+            } catch (ProtocolIdNotValidException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

@@ -1,12 +1,14 @@
 package com.zjucsc.attack.bean;
 
 public class DosConfig {
+    private int id;
     private String deviceNumber;
     private int coSiteTime;
     private int coSiteNum;
     private int mulSiteTime;
     private int mulSiteNum;
     private String protocol;
+    private boolean enable;
 
     public String getDeviceNumber() {
         return deviceNumber;
@@ -54,5 +56,21 @@ public class DosConfig {
 
     public void setProtocol(String protocol) {
         this.protocol = protocol;
+    }
+
+    public boolean isEnable() {
+        return enable;
+    }
+
+    public void setEnable(boolean enable) {
+        this.enable = enable;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

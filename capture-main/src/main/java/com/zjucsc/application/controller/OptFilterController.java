@@ -55,14 +55,14 @@ public class OptFilterController {
         String deviceTag = CommonCacheUtil.getTargetDeviceTagByNumber(deviceId);
 
         if (funcode > 0 ){
-            CommonOptFilterUtil.removeTargetDeviceAnalyzerFuncode(deviceTag , funcode , protocolId);
             iOptFilterService.deleteByDeviceNumberAndProtocolIdAndFuncode(deviceId, funcode, protocolId);
+            CommonOptFilterUtil.removeTargetDeviceAnalyzerFuncode(deviceTag , funcode , protocolId);
         }else if(protocolId > 0){
-            CommonOptFilterUtil.removeTargetDeviceAnalyzerProtocol(deviceTag  , protocolId);
             iOptFilterService.deleteByDeviceNumberAndProtocolId(deviceId,protocolId);
+            CommonOptFilterUtil.removeTargetDeviceAnalyzerProtocol(deviceTag  , protocolId);
         }else{
-            CommonOptFilterUtil.removeTargetDeviceAnalyzer(deviceTag);
             iOptFilterService.deleteByDeviceNumber(deviceId);
+            CommonOptFilterUtil.disableTargetDeviceAnalyzer(deviceTag);
         }
         return BaseResponse.OK();
     }

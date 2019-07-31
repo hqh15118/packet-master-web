@@ -33,5 +33,4 @@ public interface IDeviceService {
     List<Device> selectAllConfiguredDevices();
 
     Device selectDeviceByDeviceNumber(String deviceNumber);
-
 }

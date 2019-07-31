@@ -12,6 +12,8 @@ import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
 import com.zjucsc.application.util.AppCommonUtil;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.SysRunStateUtil;
+import com.zjucsc.art_decode.ArtDecodeCommon;
+import com.zjucsc.attack.AttackCommon;
 import com.zjucsc.socket_io.SocketIoEvent;
 import com.zjucsc.socket_io.SocketServiceCenter;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
@@ -77,6 +79,7 @@ public class ScheduledService {
                 statisticFlow();        //统计总流量，超过限制报错
                 CommonCacheUtil.updateAttackLog();  //统计攻击类型，及所占比例
                 count = 0;
+                detectDecodeMethodDelay();
             }
             try {
                 sendAllFvDimensionPacket2();    //每秒钟发送一次五元组
@@ -84,6 +87,13 @@ public class ScheduledService {
                 System.err.println("五元组发送异常");
             }
         }
+    }
+
+    private void detectDecodeMethodDelay() {
+//        Map<String,Long> map = ArtDecodeCommon.getDecodeDelayMapInfo();
+//        map.forEach((s, aLong) -> {
+//            System.out.println(s + " time - " + aLong);
+//        });
     }
 
     @Scheduled(fixedRate = 5000)
@@ -264,7 +274,7 @@ public class ScheduledService {
      */
     //@Scheduled(fixedRate = 5000)
     private void sendGraphInfo(){
-        StatisticsData.ART_INFO_SEND.clear();
+        StatisticsData.ART_INFO_SEND_SINGLE.clear();
         synchronized (StatisticsData.LINKED_LIST_LOCK){
 //            for (String artName : Common.SHOW_GRAPH_SET) {
 //                StatisticsData.ART_INFO_SEND.put(artName, StatisticsData.ART_INFO.get(artName));

@@ -11,9 +11,9 @@
         <encoder>
             <pattern>${log.colorPattern}</pattern>
         </encoder>
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>ERROR</level>
-        </filter>
+        <!--<filter class="ch.qos.logback.classic.filter.ThresholdFilter">-->
+            <!--<level>ERROR</level>-->
+        <!--</filter>-->
     </appender>
 
     <!--输出到文件-->

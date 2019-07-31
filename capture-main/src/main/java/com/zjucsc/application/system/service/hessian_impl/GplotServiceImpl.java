@@ -62,9 +62,7 @@ public class GplotServiceImpl extends BaseServiceImpl<Gplot,GplotMapper> impleme
                     loadAllFvDimensionFilterByDeviceNumberAndGplotId(deviceNumber,gplotId);
             //add all fv filters to cache
             if (rules.size() > 0) {
-                CommonFvFilterUtil.addOrUpdateFvFilter(device.getDeviceTag(), rules,
-                        sb.append("device_name-").append(deviceNumber).
-                                append(" gplot_id-").append(gplotId).toString());
+                CommonFvFilterUtil.addOrUpdateFvFilter(device.getDeviceTag(), rules, "");
             }
             //load all opt dimension rule from opt filter table by device_number + gplot_id
             List<OptFilterForFront> optFilters = iDeviceService.loadAllOptFilterByDeviceNumberAndGplotId(deviceNumber,gplotId);
@@ -74,11 +72,11 @@ public class GplotServiceImpl extends BaseServiceImpl<Gplot,GplotMapper> impleme
                     CommonOptFilterUtil.addOrUpdateAnalyzer(device.getDeviceTag(), optFilter, optFilter.toString());
                 }
             }
-            //更新DEVICE_NUMBER和DEVICE_IP之间的对应关系
+            //更新DEVICE_NUMBER和DEVICE_TAG之间的对应关系
             //更新DEVICE_NUMBER和StatisticInfoSaveBean【设备upload、download等报文信息】
             CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(deviceNumber , device.getDeviceTag());
             CommonCacheUtil.addDeviceNumberToName(deviceNumber,device.getDeviceInfo());
-            CommonCacheUtil.addOrUpdateDeviceManually(device);
+            CommonCacheUtil.addOrUpdateDeviceManually(device);  //手动将设备添加到缓存
             /*************************
              * INIT WHITE PROTOCOL
              *************************/

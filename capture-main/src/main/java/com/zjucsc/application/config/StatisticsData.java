@@ -59,7 +59,7 @@ public class StatisticsData {
      * key 是工艺参数的名字
      */
     public static final ConcurrentHashMap<String, LinkedList<String>> ART_INFO = new ConcurrentHashMap<>();
-    public static final ConcurrentHashMap<String, LinkedList<String>> ART_INFO_SEND = new ConcurrentHashMap<>();//只发送需要显示的个工艺参数
+    //public static final ConcurrentHashMap<String, LinkedList<String>> ART_INFO_SEND = new ConcurrentHashMap<>();//只发送需要显示的个工艺参数
     public static final ConcurrentHashMap<String,String> ART_INFO_SEND_SINGLE = new ConcurrentHashMap<>();
 
     public static void increaseNumberByDeviceIn(String deviceNumber,int delta){

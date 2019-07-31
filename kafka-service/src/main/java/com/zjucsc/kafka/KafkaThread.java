@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 public class KafkaThread<V> extends Thread implements IKafka<V> {
 
     private final LinkedBlockingQueue<V> TASK_QUEUE =
-            new LinkedBlockingQueue<>();
+            new LinkedBlockingQueue<>(10000);
     private KafkaProducer<String,String> kafkaProducer;
     private String topic;
     private int partition = -1;

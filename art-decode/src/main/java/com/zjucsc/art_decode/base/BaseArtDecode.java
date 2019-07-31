@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
  */
 public abstract class BaseArtDecode<T extends BaseConfig> implements IArtDecode<T> , IArtEntry{
 
-    private final ConcurrentSkipListSet<T> configs =
+    private ConcurrentSkipListSet<T> configs =
             new ConcurrentSkipListSet<>();
 
     protected void callback(String artName,float value,FvDimensionLayer layer){
@@ -42,6 +42,10 @@ public abstract class BaseArtDecode<T extends BaseConfig> implements IArtDecode<
      */
     public void deleteArtConfig(T t){
         configs.remove(t);
+    }
+
+    public void removeAllArtConfig(){
+        configs = new ConcurrentSkipListSet<>();
     }
 
     @Override

@@ -58,7 +58,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     public static List<BasePreProcessor> basePreProcessors = new LinkedList<>();
     //五元kafka发送线程
     private final KafkaThread.SendErrorCallback sendErrorCallback = (threadName, o) -> {
-        //log.error("kafka thread : [{}] msg OVERFLOW",threadName);
+        log.error("kafka thread : [{}] msg OVERFLOW",threadName);
     };
     @SuppressWarnings("unchecked")
     private final KafkaThread<FvDimensionLayer> FV_D_SENDER = KafkaThread.createNewKafkaThread("fv_dimension", KafkaTopic.SEND_ALL_PACKET_FV_DIMENSION,sendErrorCallback);
@@ -205,6 +205,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             StatisticsData.addProtocolNum(fvDimensionLayer.protocol,1);         //t-s
             //解析原始数据
             byte[] payload = PacketDecodeUtil.hexStringToByteArray2(fvDimensionLayer.custom_ext_raw_data[0]);    //t-s
+            fvDimensionLayer.tcpPayload = PacketDecodeUtil.hexStringToByteArray(fvDimensionLayer.tcp_payload[0]);
             fvDimensionLayer.rawData = payload;
             //设置五元组中的功能码以及功能码对应的含义
             if (Common.systemRunType !=0 ) {
@@ -677,7 +678,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         public FvDimensionLayer handle(Object t) {
             FvDimensionLayer layer = ((FvDimensionLayer) t);
             //工艺参数分析
-            byte[] tcpPayload = PacketDecodeUtil.hexStringToByteArray(layer.tcp_payload[0]);
+            byte[] tcpPayload = layer.tcpPayload;
             Map<String,Float> res = AppCommonUtil.getGlobalArtMap();
             String protocol = layer.protocol;
             if (protocol.startsWith("s7comm")){
@@ -695,14 +696,13 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             }else if (protocol.equals(PACKET_PROTOCOL.OPC_UA)){
                 res = ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.protocol,layer);
             }else if (protocol.equals("dnp3")){
-                //res = ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.protocol);
+                res = ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.protocol,layer);
             }else if (protocol.equals(PACKET_PROTOCOL.MMS)){
-                //res = ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.protocol);
+                res = ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.protocol,layer);
             }
             //分析结果
             //数据发送
             StatisticsData.addArtMapData(res);
-
             AttackCommon.appendDOSAnalyze(layer, DeviceOptUtil.getDstDeviceTag(layer));                     //将五元组添加到攻击分析模块中分析
             return layer;
         }

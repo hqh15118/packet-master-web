@@ -13,7 +13,6 @@ import java.util.List;
 public interface IGplotService extends IService<Gplot> {
     BaseResponse addNewGplot(Gplot gplot);
 
-
     BaseResponse changeGplot(int gplotId) throws ProtocolIdNotValidException;
 
     List<Gplot> selectAll();

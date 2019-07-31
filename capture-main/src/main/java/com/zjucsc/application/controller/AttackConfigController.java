@@ -87,7 +87,19 @@ public class AttackConfigController {
     @PostMapping("remove_dos_config")
     public BaseResponse removeDosConfig(@RequestBody DosConfig dosConfig){
         dosConfigMapper.removeDosConfig(dosConfig);
-        AttackCommon.removeDosAnalyzePoolEntry(dosConfig.getDeviceNumber(),dosConfig.getProtocol());
+        String deviceTag = CommonCacheUtil.getTargetDeviceTagByNumber(dosConfig.getDeviceNumber());
+        AttackCommon.removeDosAnalyzePoolEntry(deviceTag,dosConfig.getProtocol());
+        return BaseResponse.OK();
+    }
+
+    @ApiOperation("使能某个DOS配置")
+    @PostMapping("enable_dos_config")
+    public BaseResponse enableDosConfig(@RequestBody EnableDos enableDos){
+        int id = enableDos.getId();
+        boolean enable = enableDos.isEnable();
+        DosConfig dosConfig = dosConfigMapper.changeDosConfigState(id,enable);
+        String deviceTag = CommonCacheUtil.getTargetDeviceTagByNumber(dosConfig.getDeviceNumber());
+        AttackCommon.changeDosConfig(deviceTag,dosConfig.getProtocol(),enable);
         return BaseResponse.OK();
     }
 

@@ -1,5 +1,6 @@
 package com.zjucsc.common.common_util;
 
+import com.zjucsc.common.bean.CustomThreadPoolExecutor;
 import com.zjucsc.common.bean.ThreadPoolInfoWrapper;
 
 import java.text.SimpleDateFormat;
@@ -43,23 +44,23 @@ public class CommonUtil {
     }
 
     private static RejectedExecutionHandler REJECT_EXECUTION_HANDLER;
-    public static ThreadPoolExecutor getFixThreadPoolSizeThreadPool(int poolSize , ThreadFactory threadFactory,RejectedExecutionHandler executionHandler){
-        return new ThreadPoolExecutor(1, 1, Integer.MAX_VALUE, TimeUnit.SECONDS, new LinkedBlockingQueue<>(poolSize),
+    public static ThreadPoolExecutor getFixThreadPoolSizeThreadPool(int poolSize , ThreadFactory threadFactory,String tag , RejectedExecutionHandler executionHandler){
+        return new CustomThreadPoolExecutor(1, 1, Integer.MAX_VALUE, TimeUnit.SECONDS, new LinkedBlockingQueue<>(poolSize),
                 threadFactory ,
-                executionHandler);
+                executionHandler).setTag(tag);
     }
 
-    public static ThreadPoolExecutor getSingleThreadPoolSizeThreadPool(int poolSize , ThreadFactory threadFactory){
+    public static ThreadPoolExecutor getSingleThreadPoolSizeThreadPool(int poolSize , ThreadFactory threadFactory,String tag){
         if (REJECT_EXECUTION_HANDLER == null){
-            return new ThreadPoolExecutor(1, 1, Integer.MAX_VALUE, TimeUnit.SECONDS, new LinkedBlockingQueue<>(poolSize),
+            return new CustomThreadPoolExecutor(1, 1, Integer.MAX_VALUE, TimeUnit.SECONDS, new LinkedBlockingQueue<>(poolSize),
                     threadFactory,
                     (r, executor) -> {
 
-                    });
+                    }).setTag(tag);
         }else{
-            return new ThreadPoolExecutor(1, 1, Integer.MAX_VALUE, TimeUnit.SECONDS, new LinkedBlockingQueue<>(poolSize),
+            return new CustomThreadPoolExecutor(1, 1, Integer.MAX_VALUE, TimeUnit.SECONDS, new LinkedBlockingQueue<>(poolSize),
                     threadFactory,
-                    REJECT_EXECUTION_HANDLER);
+                    REJECT_EXECUTION_HANDLER).setTag(tag);
         }
     }
 

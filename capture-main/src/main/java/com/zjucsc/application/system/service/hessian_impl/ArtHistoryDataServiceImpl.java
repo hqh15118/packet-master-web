@@ -78,7 +78,7 @@ public class ArtHistoryDataServiceImpl extends BaseServiceImpl<ArtHistoryData,Ar
         }
         String start , end;
 
-        for (int i = 0 , len = dates.size(); i < len - 1; i++) {
+        for (int i = 0 , len = dates.size(); i < len; i++) {
             start = dates.get(i).toString();
             end = dates.get(i + 1).toString();
             //该时间节点下的所有工艺参数

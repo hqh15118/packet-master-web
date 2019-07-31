@@ -1,5 +1,6 @@
 package com.zjucsc.art_decode;
 
+import com.oracle.webservices.internal.api.databinding.DatabindingMode;
 import com.zjucsc.art_decode.base.BaseConfig;
 import com.zjucsc.art_decode.base.ValidPacketCallback;
 import com.zjucsc.art_decode.base.BaseArtDecode;
@@ -20,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
+import java.util.function.BiFunction;
 
 public class ArtDecodeCommon {
 
@@ -28,7 +30,7 @@ public class ArtDecodeCommon {
                 Thread thread = new Thread(r);
                 thread.setName("-art-decode-service-thread-");
                 return thread;
-            });
+            },"ART_DECODE_SERVICE");
 
     public static List<ThreadPoolInfoWrapper> getArtDecodeServiceInfo(){
         return new ArrayList<ThreadPoolInfoWrapper>(){
@@ -55,11 +57,32 @@ public class ArtDecodeCommon {
         ART_DECODE_CONCURRENT_HASH_MAP.put("mms",new MMSDecode());
     }
 
+    private static HashMap<String,Long> DECODE_DELAY_WRAPPER = new HashMap<String,Long>(){
+        {
+            put("modbus",0L);put("s7comm",0L);put("pn_io",0L);put("104asdu",0L);
+            put("opcua",0L);put("dnp3",0L);put("iec101",0L);put("mms",0L);
+        }
+    };
+
+    public static Map<String,Long> getDecodeDelayMapInfo(){
+        return DECODE_DELAY_WRAPPER;
+    }
+
     public static Map<String,Float> artDecodeEntry(Map<String,Float> artMap, byte[] payload,
                                                    String protocol, FvDimensionLayer layer , Object...objs){
         IArtEntry entry = ART_DECODE_CONCURRENT_HASH_MAP.get(protocol);
+
         if (entry != null){
-            return entry.doDecode(artMap,payload,layer,objs);
+            long timeStart = System.currentTimeMillis();
+            artMap =  entry.doDecode(artMap,payload,layer,objs);
+            long timeDiff = System.currentTimeMillis() - timeStart;
+            DECODE_DELAY_WRAPPER.computeIfPresent(protocol, (s, aLong) -> {
+                if (aLong < timeDiff) {
+                    return timeDiff;
+                }else{
+                    return aLong;
+                }
+            });
         }
         return artMap;
     }
@@ -73,6 +96,9 @@ public class ArtDecodeCommon {
     public static void addArtDecodeConfig(BaseConfig config){
         BaseArtDecode baseArtDecode = ART_DECODE_CONCURRENT_HASH_MAP.get(config.getProtocol());
         if (baseArtDecode!=null){
+            if (config.getProtocolId() == 12){//UA要先移除原来的所有配置
+                baseArtDecode.removeAllArtConfig();
+            }
             baseArtDecode.addArtConfig(config);
         }
     }

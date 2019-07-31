@@ -23,7 +23,7 @@ public class CositeDosAttackAnalyzeList extends AbstractDosList {
     protected String analyze(Queue<FvDimensionLayer> fvDimensionLayers,
                              FvDimensionLayer newAppendLayer) {
         //没有配置，直接返回，没有攻击
-        if (getDosConfig() == null || getDosConfig().getCoSiteNum() == 0 || getDosConfig().getCoSiteTime() == 0){
+        if (getDosConfig() == null || !getDosConfig().isEnable() || getDosConfig().getCoSiteNum() == 0 || getDosConfig().getCoSiteTime() == 0){
             return null;
         }
         long cositeTimeStamp = getDosConfig().getCoSiteTime();

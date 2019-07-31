@@ -35,4 +35,6 @@ public interface FvDimensionFilterMapper extends BaseMapper<Rule> {
      * @return 被修改的规则
      */
     Rule changeRuleStateByDeviceNumberAndFvId(String deviceNumber,String fvId,boolean enable);
+
+    List<Rule> deleteRuleByFvId(List<String> fvId);
 }

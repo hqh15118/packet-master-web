@@ -5,6 +5,8 @@ import com.zjucsc.application.system.mapper.base.BaseServiceImpl;
 import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
 import com.zjucsc.application.system.service.hessian_mapper.DeviceMapper;
 import com.zjucsc.application.util.CommonCacheUtil;
+import com.zjucsc.application.util.CommonFvFilterUtil;
+import com.zjucsc.application.util.CommonOptFilterUtil;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -101,6 +103,9 @@ public class DeviceServiceImpl extends BaseServiceImpl< Device , DeviceMapper> i
     @Override
     public void changeDeviceConfigState(String deviceNumber , boolean isConfig) {
         this.baseMapper.changeDeviceConfigState(deviceNumber , isConfig);
+        String deviceTag = CommonCacheUtil.getTargetDeviceTagByNumber(deviceNumber);
+        CommonFvFilterUtil.disableDeviceAllConfig(deviceTag);
+        CommonOptFilterUtil.disableTargetDeviceAnalyzer(deviceTag);
     }
 
     @Override

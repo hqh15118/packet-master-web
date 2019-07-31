@@ -87,17 +87,19 @@ public class FiveDimensionPacketFilter {
         }
     }
     public void addRule(Rule rule){
-        FvDimensionFilter fvDimensionFilter = rule.getFvDimensionFilter();
-        dstIpWhiteMap = checkMap(dstIpWhiteMap,fvDimensionFilter.getDstIp());
-        dstMacAddressWhite = checkMap(dstMacAddressWhite,fvDimensionFilter.getDstMac());
-        dstPortWhiteMap = checkMap(dstPortWhiteMap,fvDimensionFilter.getDstPort());
-        srcIpWhiteMap = checkMap(srcIpWhiteMap,fvDimensionFilter.getSrcIp());
-        srcMacAddressWhite = checkMap(srcMacAddressWhite,fvDimensionFilter.getSrcMac());
-        srcPortWhiteMap = checkMap(srcPortWhiteMap,fvDimensionFilter.getSrcPort());
-        try {
-            protocolWhiteMap = checkMap(protocolWhiteMap,CommonCacheUtil.convertIdToName(fvDimensionFilter.getProtocolId()));
-        } catch (ProtocolIdNotValidException e) {
-            e.printStackTrace();
+        if (rule.isEnable()){
+            FvDimensionFilter fvDimensionFilter = rule.getFvDimensionFilter();
+            dstIpWhiteMap = checkMap(dstIpWhiteMap,fvDimensionFilter.getDstIp());
+            dstMacAddressWhite = checkMap(dstMacAddressWhite,fvDimensionFilter.getDstMac());
+            dstPortWhiteMap = checkMap(dstPortWhiteMap,fvDimensionFilter.getDstPort());
+            srcIpWhiteMap = checkMap(srcIpWhiteMap,fvDimensionFilter.getSrcIp());
+            srcMacAddressWhite = checkMap(srcMacAddressWhite,fvDimensionFilter.getSrcMac());
+            srcPortWhiteMap = checkMap(srcPortWhiteMap,fvDimensionFilter.getSrcPort());
+            try {
+                protocolWhiteMap = checkMap(protocolWhiteMap,CommonCacheUtil.convertIdToName(fvDimensionFilter.getProtocolId()));
+            } catch (ProtocolIdNotValidException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -148,7 +150,9 @@ public class FiveDimensionPacketFilter {
 //                //黑名单
 //                setFilterMap(allMap, fiveDimensionFilter, DST_IP_BLACK, SRC_IP_BLACK, DST_PORT_BLACK, SRC_PORT_BLACK, DST_MAC_ADDRESS_BLACK, SRC_MAC_ADDRESS_BLACK, PROTOCOL_BLACK);
 //            }
-            setFilterMap(allMap, rule.getFvDimensionFilter(),rule.getDstPorts());
+            if (rule.isEnable()) {
+                setFilterMap(allMap, rule.getFvDimensionFilter(), rule.getDstPorts());
+            }
         }
 
         Set<String> stringSet = allMap.keySet();
