@@ -1,6 +1,7 @@
 package com.zjucsc.application.system.service.hessian_iservice;
 
 import com.zjucsc.application.domain.bean.*;
+import com.zjucsc.application.domain.non_hessian.PacketRealTimeBean;
 
 import java.util.List;
 
@@ -23,4 +24,6 @@ public interface IPacketInfoService {
     PacketHistoryWrapper selectPacketHistoryList(int type);
 
     String selectPacketRawDataByTimeStamp(String timeStamp);
+
+    List<SavedPacket> selectRealTimePacketList(PacketRealTimeBean packetRealTimeBean);
 }

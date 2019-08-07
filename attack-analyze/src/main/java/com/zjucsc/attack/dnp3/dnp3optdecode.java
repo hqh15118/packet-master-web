@@ -2,6 +2,7 @@ package com.zjucsc.attack.dnp3;
 
 import com.zjucsc.attack.bean.AttackBean;
 import com.zjucsc.attack.bean.BaseOptAnalyzer;
+import com.zjucsc.attack.config.dnp3Opconfig;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 
 import java.util.Map;

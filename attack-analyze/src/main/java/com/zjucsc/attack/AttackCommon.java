@@ -17,6 +17,8 @@ import com.zjucsc.common.common_util.CommonUtil;
 import com.zjucsc.tshark.Entry;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
@@ -35,7 +37,7 @@ import java.util.function.Function;
  */
 
 public class AttackCommon {
-
+    private static Logger logger = LoggerFactory.getLogger(AttackCommon.class);
     /**
      * 获取Attack-Analyze服务的线程池任务信息
      * @return 线程池任务信息
@@ -74,7 +76,7 @@ public class AttackCommon {
         Thread thread = new Thread(r);
         thread.setName("-attack-art-analyze-service-");
         thread.setUncaughtExceptionHandler((t, e) -> {
-            System.err.println("error in -attack-art-analyze-service- " + e);
+            logger.error("error in -attack-art-analyze-service-",e);
         });
         return thread;
     },"ART_ATTACK_ANALYZE_SERVICE");
@@ -89,6 +91,9 @@ public class AttackCommon {
         AnalyzePoolEntry analyzePoolEntry = ANALYZE_POOL_ENTRY_CONCURRENT_HASH_MAP.get(deviceTag);
         analyzePoolEntry.removeDosAnalyzer(protocol);
     }
+    public static void disableDeviceDosAnalyzePoolEntry(String deviceTag){
+        ANALYZE_POOL_ENTRY_CONCURRENT_HASH_MAP.get(deviceTag);
+    }
     public static void changeDosConfig(String deviceTag,String protocol,boolean enable){
         AnalyzePoolEntry analyzePoolEntry = ANALYZE_POOL_ENTRY_CONCURRENT_HASH_MAP.get(deviceTag);
         analyzePoolEntry.enableDosAnalyzer(enable,protocol);
@@ -98,7 +103,7 @@ public class AttackCommon {
                 Thread thread = new Thread(r);
                 thread.setName("-attack-art-analyze-service-");
                 thread.setUncaughtExceptionHandler((t, e) -> {
-                    System.err.println("error in attack-service-thread " + e);
+                    logger.error("error in attack-service-thread ",e);
                 });
                 return thread;
             });
@@ -108,7 +113,7 @@ public class AttackCommon {
                 Thread thread = new Thread(r);
                 thread.setName("-attack-art-opt-analyze-service-");
                 thread.setUncaughtExceptionHandler((t, e) -> {
-                    System.err.println("-attack-art-opt-analyze-service-" + e);
+                    logger.error("-attack-art-opt-analyze-service-",e);
                 });
                 return thread;
             },"ART_OPT_ANALYZE_SERVICE");
@@ -198,14 +203,23 @@ public class AttackCommon {
         ART_ATTACK_ANALYZE_CONFIGS.remove(artAttackAnalyzeConfig);
     }
 
+    /**
+     * 工艺参数异常
+     * @param id
+     * @param enable
+     */
     public static void changeArtAttackAnalyzeConfigState(int id,boolean enable){
         for (ArtAttackAnalyzeConfig artAttackAnalyzeConfig : ART_ATTACK_ANALYZE_CONFIGS) {
             if (artAttackAnalyzeConfig.getId() == id){
                 artAttackAnalyzeConfig.setEnable(enable);
-                System.out.println(String.format("成功修改工艺参数ID:[%s]状态state:[%s]",String.valueOf(id),String.valueOf(enable)));
                 break;
             }
         }
+    }
+
+    public static boolean changeArtOptAttackAnalyzeConfigState(int protocolId,boolean enable,String opName){
+        BaseOptAnalyzer baseOptAnalyzer = OPT_ATTACK_DECODE_CONCURRENT_HASH_MAP.get(protocolId);
+        return baseOptAnalyzer.changeOptAnalyzeConfigState(opName, enable);
     }
 
     /**
@@ -260,6 +274,7 @@ public class AttackCommon {
             baseOptAnalyzer.addOptAnalyzeConfig(baseOptConfig);
         }
     }
+
     @SuppressWarnings("unchecked")
     public static void updateOptAttackConfig(BaseOptConfig baseOptConfig){
         BaseOptAnalyzer baseOptAnalyzer = OPT_ATTACK_DECODE_CONCURRENT_HASH_MAP.get(baseOptConfig.getProtocolId());

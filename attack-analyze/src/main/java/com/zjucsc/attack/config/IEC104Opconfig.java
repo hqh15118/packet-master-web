@@ -1,24 +1,13 @@
-package com.zjucsc.attack.iec104;
+package com.zjucsc.attack.config;
 
 import com.zjucsc.attack.bean.BaseOptConfig;
 
-public class iec104Opconfig extends BaseOptConfig {
-    private String Opname;
+public class IEC104Opconfig extends BaseOptConfig {
     private int category;
     private int setIOAAddress;
     private boolean result;
     private boolean optype;
     private String comment;
-
-    @Override
-    public String getOpname() {
-        return Opname;
-    }
-
-    @Override
-    public void setOpname(String opname) {
-        Opname = opname;
-    }
 
     public int getCategory() {
         return category;

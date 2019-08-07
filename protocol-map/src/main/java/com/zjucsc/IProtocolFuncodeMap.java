@@ -15,5 +15,5 @@ public interface IProtocolFuncodeMap {
      */
     String protocolAnalyzerName();
 
-    Map<Integer,String> initProtocol();
+    Map<String,String> initProtocol();
 }

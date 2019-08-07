@@ -8,7 +8,6 @@ import java.util.Map;
  * @author hongqianhui
  */
 public interface IDeviceService {
-    void updateDeviceInfo(Device device);
     Device selectDeviceByIdAndGplot(String deviceId, int plotId);
     String selectDeviceNumberByCollectorTag(String collectorId, int gplotId);
     List<DeviceNumberAndIp> loadAllDevicesByGplotId(int gplotId);

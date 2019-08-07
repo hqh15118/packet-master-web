@@ -37,11 +37,13 @@ public abstract class BaseOptAnalyzer<T extends BaseOptConfig> implements IOptAt
 
     @Override
     public AttackBean analyze(FvDimensionLayer layer, Map<String,Float> techmap , Object... objs) {
-        AttackBean attackBean = null;
+        AttackBean attackBean;
         for (T config : configs) {
-            attackBean = doAnalyze(layer,techmap,config,objs);
-            if (attackBean!=null){
-                return attackBean;
+            if (config.isEnable()) {        //只有当配置enable时候才进行分析
+                attackBean = doAnalyze(layer, techmap, config, objs);
+                if (attackBean != null) {
+                    return attackBean;
+                }
             }
         }
         return null;
@@ -49,4 +51,13 @@ public abstract class BaseOptAnalyzer<T extends BaseOptConfig> implements IOptAt
 
     public abstract AttackBean doAnalyze(FvDimensionLayer layer,Map<String,Float> techmap, T t, Object... objs);
 
+    public boolean changeOptAnalyzeConfigState(String opName,boolean enable){
+        for (T config : configs) {
+            if (opName.equals(config.getOpname())){
+                config.setEnable(enable);
+                return true;
+            }
+        }
+        return false;
+    }
 }

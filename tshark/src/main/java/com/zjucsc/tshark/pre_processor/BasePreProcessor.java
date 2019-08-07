@@ -45,12 +45,12 @@ public abstract class BasePreProcessor implements PreProcessor {
     PipeLine pipeLine;
     private String bindCommand;
     //用于每个tshark进程解析
-    ExecutorService decodeThreadPool = Executors.newSingleThreadExecutor(r -> {
-        Thread thread = new Thread(r);
-        thread.setName(BasePreProcessor.this.getClass().getName() + " -pre_process_thread");
-        thread.setUncaughtExceptionHandler(TsharkCommon.uncaughtExceptionHandler);
-        return thread;
-    });
+//    ExecutorService decodeThreadPool = Executors.newSingleThreadExecutor(r -> {
+//        Thread thread = new Thread(r);
+//        thread.setName(BasePreProcessor.this.getClass().getName() + " -pre_process_thread");
+//        thread.setUncaughtExceptionHandler(TsharkCommon.uncaughtExceptionHandler);
+//        return thread;
+//    });
     private ProcessWrapper oldProcessWrapper;
 
     static{
@@ -144,7 +144,7 @@ public abstract class BasePreProcessor implements PreProcessor {
     public void stopProcess() {
         CommonTsharkUtil.shotDownAllRunningTsharkProcess(); //退出所有的tshark进程
         processRunning = false; //停止读取数据流
-        decodeThreadPool.shutdown();
+//        decodeThreadPool.shutdown();
     }
 
     public void setPipeLine(PipeLine pipeLine) {
@@ -329,7 +329,4 @@ public abstract class BasePreProcessor implements PreProcessor {
         return bindCommand;
     }
 
-    private interface TsharkProcessFinishCallback{
-        void finish();
-    }
 }

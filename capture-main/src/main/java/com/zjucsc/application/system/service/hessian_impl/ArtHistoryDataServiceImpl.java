@@ -1,8 +1,10 @@
 package com.zjucsc.application.system.service.hessian_impl;
 
 import com.zjucsc.application.config.Common;
+import com.zjucsc.application.domain.bean.ArtBeanF;
 import com.zjucsc.application.domain.bean.ArtHistoryData;
 import com.zjucsc.application.domain.bean.ArtHistoryForFront;
+import com.zjucsc.application.domain.non_hessian.ArtBean;
 import com.zjucsc.application.system.mapper.base.BaseServiceImpl;
 import com.zjucsc.application.system.service.hessian_iservice.IArtConfigService;
 import com.zjucsc.application.system.service.hessian_iservice.IArtHistoryDataService;
@@ -58,39 +60,47 @@ public class ArtHistoryDataServiceImpl extends BaseServiceImpl<ArtHistoryData,Ar
         TIME_LIST.put(1,timeList);
     }
 
-    @Async("common_async")
+    @Async
     @Override
     public CompletableFuture<ArtHistoryForFront> getArtData(String startTime, String endTime, List<String> artNames) throws Exception {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh");
+        SimpleDateFormat simpleDateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         ArtHistoryForFront artHistoryForFront = new ArtHistoryForFront();
         List<String> timeList = new ArrayList<>();
         artHistoryForFront.setNameList(timeList);
         Map<String, Map<String,List<Float>>> map = new HashMap<>();
         artHistoryForFront.setDataOrz(map);
-        List<String> nameList = iArtConfigService.selectAllShowArt();
-        artHistoryForFront.setNameList(nameList);
-        List<String> checkArtNameList = artNames == null ? nameList : artNames;
+        List<String> checkArtNameList = (artNames == null ? iArtConfigService.selectAllShowArt() : artNames);
+        artHistoryForFront.setNameList(checkArtNameList);
         Date startDate = new Date(Long.parseLong(startTime));
         Date endDate = new Date(Long.parseLong(endTime));
         List<Date> dates = DateUtil.getBetweenDates(startDate,endDate,Calendar.HOUR_OF_DAY);
+        //timeList.add(simpleDateFormat.format(startDate));
         for (Date date : dates) {
             timeList.add(simpleDateFormat.format(date));
         }
         String start , end;
 
-        for (int i = 0 , len = dates.size(); i < len; i++) {
-            start = dates.get(i).toString();
-            end = dates.get(i + 1).toString();
+        for (int i = 0 , len = dates.size(); i < len - 1; i++) {
+            if ((i + 1) == len){
+                break;
+            }
+            start = simpleDateFormat1.format(dates.get(i));
+            end = simpleDateFormat1.format(dates.get(i + 1));
             //该时间节点下的所有工艺参数
             for (String artName : checkArtNameList) {
-                Map<String,List<Float>> var = map.putIfAbsent(start,new HashMap<>());//[2019-05-25,{var:list<value>}]
+                Map<String,List<Float>> var = map.computeIfAbsent(start,k->new HashMap<>());//[2019-05-25,{var:list<value>}]
                 List<Float> artHistoryData = this.baseMapper.getArtData(start,end,artName, Common.GPLOT_ID);
-                assert var!=null && artHistoryData!=null;
                 var.put(artName,artHistoryData);
             }
-
         }
         return CompletableFuture.completedFuture(artHistoryForFront);
+    }
+
+    @Override
+    public CompletableFuture<List<ArtBeanF>> getAllArtData(ArtBean artBean) {
+        List<ArtBeanF> artBeanFS = this.baseMapper.selectArtPacketByTimeStamp(artBean);
+        return CompletableFuture.completedFuture(artBeanFS);
     }
 
 

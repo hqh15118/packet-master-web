@@ -146,9 +146,9 @@ public class PacketDecodeUtil {
      * @param protocol 协议
      * @return 功能码int
      */
-    public static int decodeFuncode(String protocol , String str_fun_code ){
+    public static String decodeFuncode(String protocol , String str_fun_code ){
         if (StringUtils.isBlank(str_fun_code)){
-            return -1;
+            return "--";
         }
         //System.out.println(str_fun_code);
         int fun_code = -1;
@@ -157,7 +157,7 @@ public class PacketDecodeUtil {
         }catch (NumberFormatException e){
             log.error("exception when decode protocol {} fun_code {}" , protocol , str_fun_code , e);
         }
-        return fun_code;
+        return String.valueOf(fun_code);
     }
 
 

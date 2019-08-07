@@ -1,6 +1,8 @@
 package com.zjucsc.application.system.service.hessian_mapper;
 
+import com.zjucsc.application.domain.bean.ArtBeanF;
 import com.zjucsc.application.domain.bean.ArtHistoryData;
+import com.zjucsc.application.domain.non_hessian.ArtBean;
 import com.zjucsc.application.system.mapper.base.BaseMapper;
 
 import java.util.List;
@@ -22,4 +24,6 @@ public interface ArtHistoryDataMapper extends BaseMapper<ArtHistoryData> {
      * @return
      */
     List<Float> getArtData(String startTime, String endTime, String artName, int gplotId);
+
+    List<ArtBeanF> selectArtPacketByTimeStamp(ArtBean artBean);
 }

@@ -44,7 +44,7 @@ public class ConfigurationSettingController {
         if (list.size() > 0) {
             iConfigurationSettingService.saveOrUpdateBatch(list);
             //更新到缓存
-            HashMap<Integer,String> funCodeMeaningMap = new HashMap<>();
+            HashMap<String,String> funCodeMeaningMap = new HashMap<>();
             for (ConfigurationSetting configurationSetting : list) {
                 funCodeMeaningMap.put(configurationSetting.getFunCode(),configurationSetting.getOpt());
             }
@@ -105,7 +105,7 @@ public class ConfigurationSettingController {
     private List<ConfigurationSetting> convertFrontToEntity(List<ConfigurationForDelete> configurationForFronts) throws ProtocolIdNotValidException {
         List<ConfigurationSetting> list = new ArrayList<>();
         for (ConfigurationForDelete configurationForDelete : configurationForFronts) {
-            for (int fun_code : configurationForDelete.getFunCodes()) {
+            for (String fun_code : configurationForDelete.getFunCodes()) {
                 ConfigurationSetting configuration = new ConfigurationSetting();
                 configuration.setFunCode(fun_code);
                 configuration.setProtocolId(configurationForDelete.getProtocolId());
@@ -200,8 +200,8 @@ public class ConfigurationSettingController {
     @DeleteMapping("delete_protocol")
     public BaseResponse deleteProtocol(@RequestParam int protocolId) throws ProtocolIdNotValidException {
         iConfigurationSettingService.deleteByProtocolId(protocolId);
-        deleteCachedProtocolByID(protocolId);
         iProtocolIdService.deleteByProtocolId(protocolId);
+        deleteCachedProtocolByID(protocolId);
         return BaseResponse.OK();
     }
 

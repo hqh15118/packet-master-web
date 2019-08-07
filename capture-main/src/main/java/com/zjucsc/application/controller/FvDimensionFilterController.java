@@ -18,6 +18,7 @@ import sun.security.krb5.Config;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -68,26 +69,26 @@ public class FvDimensionFilterController {
         return BaseResponse.OK(future.get());
     }
 
-    @Log
-    @ApiOperation(value = "查询已经成功挂载的五元组异常报文规则[确认是否已经将规则下载到服务器]")
-    @GetMapping("/get_fv_packet_rule_cached")
-    public BaseResponse loadFvDimensionPacketRuleCached(@RequestParam String deviceNumber) throws DeviceNotValidException, ExecutionException, InterruptedException {
-        CompletableFuture<List<Rule>> future =  iFvDimensionFilterService.getTargetExistIdFilter(deviceNumber , true);
-        return BaseResponse.OK(future.get());
-    }
+//    @Log
+//    @ApiOperation(value = "查询已经成功挂载的五元组异常报文规则[确认是否已经将规则下载到服务器]")
+//    @GetMapping("/get_fv_packet_rule_cached")
+//    public BaseResponse loadFvDimensionPacketRuleCached(@RequestParam String deviceNumber) throws DeviceNotValidException, ExecutionException, InterruptedException {
+//        CompletableFuture<List<Rule>> future =  iFvDimensionFilterService.getTargetExistIdFilter(deviceNumber , true);
+//        return BaseResponse.OK(future.get());
+//    }
 
     @ApiOperation("实时五元组过滤规则")
-    @PostMapping("filter_rule")
+    //@PostMapping("filter_rule")
     public BaseResponse addRealTimeFilterRule(@RequestBody FvDimensionFilterCondition fvDimensionFilterCondition){
-        ConfigUtil.setData("filter_src_mac",fvDimensionFilterCondition.getSrcMac());
-        ConfigUtil.setData("filter_src_ip",fvDimensionFilterCondition.getSrcIp());
-        ConfigUtil.setData("filter_src_port",fvDimensionFilterCondition.getSrcPort());
-        ConfigUtil.setData("filter_dst_mac",fvDimensionFilterCondition.getDstMac());
-        ConfigUtil.setData("filter_dst_ip",fvDimensionFilterCondition.getDstIp());
-        ConfigUtil.setData("filter_dst_port",fvDimensionFilterCondition.getDstPort());
-        ConfigUtil.setData("filter_protocol",fvDimensionFilterCondition.getProtocol());
-        ConfigUtil.setData("filter_funcode",fvDimensionFilterCondition.getFunCode());
-        CommonCacheUtil.addOrUpdateFvDimensionFilterCondition(fvDimensionFilterCondition);
+//        ConfigUtil.setData("filter_src_mac",fvDimensionFilterCondition.getSrcMac());
+//        ConfigUtil.setData("filter_src_ip",fvDimensionFilterCondition.getSrcIp());
+//        ConfigUtil.setData("filter_src_port",fvDimensionFilterCondition.getSrcPort());
+//        ConfigUtil.setData("filter_dst_mac",fvDimensionFilterCondition.getDstMac());
+//        ConfigUtil.setData("filter_dst_ip",fvDimensionFilterCondition.getDstIp());
+//        ConfigUtil.setData("filter_dst_port",fvDimensionFilterCondition.getDstPort());
+//        ConfigUtil.setData("filter_protocol",fvDimensionFilterCondition.getProtocol());
+//        ConfigUtil.setData("filter_funcode",fvDimensionFilterCondition.getFunCode());
+//        CommonCacheUtil.addOrUpdateFvDimensionFilterCondition(fvDimensionFilterCondition);
         return BaseResponse.OK();
     }
 
@@ -111,6 +112,9 @@ public class FvDimensionFilterController {
     @ApiOperation("删除五元组报文")
     @PostMapping("del_rule")
     public BaseResponse removeRule(@RequestBody ArrayList<String> fvId){
+        if (fvId.size() == 0){
+            return BaseResponse.ERROR(500,"fv_id为空");
+        }
         iFvDimensionFilterService.removeRuleByFvIds(fvId);
         return BaseResponse.OK();
     }

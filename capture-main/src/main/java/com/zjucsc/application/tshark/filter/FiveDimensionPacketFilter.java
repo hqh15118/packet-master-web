@@ -63,7 +63,6 @@ public class FiveDimensionPacketFilter {
     //private HashMap<String,String> dstMacAddressBlack = EMPTY_MAP;
 
     private String userName;
-    private List<Rule> filterList;
     private String filterName;
     public FiveDimensionPacketFilter(String filterName){
         this.filterName = filterName;
@@ -75,10 +74,6 @@ public class FiveDimensionPacketFilter {
 
     public void setUserName(String userName) {
         this.userName = userName;
-    }
-
-    public List<Rule> getFilterList(){
-        return this.filterList;
     }
 
     public void addRules(List<Rule> rules){
@@ -138,7 +133,6 @@ public class FiveDimensionPacketFilter {
      * @param filterList 前端配置的针对某个设备的五元组过滤器组
      */
     public void setFilterList(List<Rule> filterList){
-        this.filterList = filterList;
         //key : 类型，【目的IP】【白】名单 value：过滤用的map
         HashMap<String,ConcurrentHashMap<String, String>> allMap = new HashMap<>();
         for (Rule rule : filterList) {
@@ -331,7 +325,6 @@ public class FiveDimensionPacketFilter {
                 ", protocolWhiteMap=" + protocolWhiteMap +
                 ", dstIpWhiteMap=" + dstIpWhiteMap +
                 ", dstPortWhiteMap=" + dstPortWhiteMap +
-                ", filterName='" + filterName + '\'' +
                 '}';
     }
 }

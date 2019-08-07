@@ -5,13 +5,15 @@ import com.alibaba.fastjson.JSON;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class KafkaThread<V> extends Thread implements IKafka<V> {
-
+    private final int maxSize = 100000;
     private final LinkedBlockingQueue<V> TASK_QUEUE =
-            new LinkedBlockingQueue<>(10000);
+            new LinkedBlockingQueue<>(maxSize);
     private KafkaProducer<String,String> kafkaProducer;
     private String topic;
     private int partition = -1;
@@ -46,7 +48,7 @@ public class KafkaThread<V> extends Thread implements IKafka<V> {
     public void run() {
         try {
             for (; ;) {
-                V v = TASK_QUEUE.take(); //FIXME poll msg from queue
+                V v = TASK_QUEUE.take();
                 String msg = convertObjectToString(v);
                 //valid msg
                 ProducerRecord<String, String> kvProducerRecord;
@@ -65,7 +67,6 @@ public class KafkaThread<V> extends Thread implements IKafka<V> {
     }
 
     private String convertObjectToString(V v){
-        //性能瓶颈？
         return JSON.toJSONString(v);
     }
 

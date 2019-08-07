@@ -2,15 +2,16 @@ package com.zjucsc.attack.iec104;
 
 import com.zjucsc.attack.bean.AttackBean;
 import com.zjucsc.attack.bean.BaseOptAnalyzer;
+import com.zjucsc.attack.config.IEC104Opconfig;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 
 import java.util.Map;
 
 import static com.zjucsc.attack.common.ArtAttackAnalyzeUtil.attackDecode;
 
-public class iec104optdecode extends BaseOptAnalyzer<iec104Opconfig> {
+public class IEC104OptDecode extends BaseOptAnalyzer<IEC104Opconfig> {
 
-    public AttackBean attackdecode(FvDimensionLayer layer, iec104Opconfig iec104Opconfig, Map<String,Float> techmap)
+    public AttackBean attackdecode(FvDimensionLayer layer, IEC104Opconfig iec104Opconfig, Map<String,Float> techmap)
     {
         if(attackDecode(iec104Opconfig.getExpression(),techmap,"1")==null)
         {
@@ -30,7 +31,7 @@ public class iec104optdecode extends BaseOptAnalyzer<iec104Opconfig> {
         return null;
     }
 
-    private boolean operationdecode(FvDimensionLayer layer, iec104Opconfig iec104opconfig)
+    private boolean operationdecode(FvDimensionLayer layer, IEC104Opconfig iec104opconfig)
     {
         int packetIOA = 0;
         int packetSQ = 0;
@@ -71,7 +72,7 @@ public class iec104optdecode extends BaseOptAnalyzer<iec104Opconfig> {
     }
 
     @Override
-    public AttackBean doAnalyze(FvDimensionLayer layer, Map<String, Float> techmap, iec104Opconfig iec104Opconfig, Object... objs) {
+    public AttackBean doAnalyze(FvDimensionLayer layer, Map<String, Float> techmap, IEC104Opconfig iec104Opconfig, Object... objs) {
         return attackdecode(layer,iec104Opconfig,techmap);
     }
 }

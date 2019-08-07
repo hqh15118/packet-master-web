@@ -29,6 +29,9 @@ public class CommonFvFilterUtil {
 
     public static void removeFvFilter(String deviceTag , Rule rule){
         FiveDimensionAnalyzer analyzer = Common.FV_DIMENSION_FILTER_PRO.get(deviceTag);
+        if (analyzer == null || analyzer.getAnalyzer() == null){
+            return;
+        }
         analyzer.getAnalyzer().removeRule(rule);
     }
 

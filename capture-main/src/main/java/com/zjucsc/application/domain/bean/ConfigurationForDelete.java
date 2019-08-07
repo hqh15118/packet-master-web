@@ -6,6 +6,6 @@ import java.util.List;
 
 @Data
 public class ConfigurationForDelete {
-    private List<Integer> funCodes;
+    private List<String> funCodes;
     private int protocolId;
 }

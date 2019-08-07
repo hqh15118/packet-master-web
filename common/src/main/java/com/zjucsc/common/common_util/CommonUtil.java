@@ -45,7 +45,11 @@ public class CommonUtil {
 
     private static RejectedExecutionHandler REJECT_EXECUTION_HANDLER;
     public static ThreadPoolExecutor getFixThreadPoolSizeThreadPool(int poolSize , ThreadFactory threadFactory,String tag , RejectedExecutionHandler executionHandler){
-        return new CustomThreadPoolExecutor(1, 1, Integer.MAX_VALUE, TimeUnit.SECONDS, new LinkedBlockingQueue<>(poolSize),
+        return getFixThreadPoolSizeThreadPool(1,poolSize,threadFactory,tag,executionHandler);
+    }
+
+    public static ThreadPoolExecutor getFixThreadPoolSizeThreadPool(int coreSize , int poolSize , ThreadFactory threadFactory,String tag , RejectedExecutionHandler executionHandler){
+        return new CustomThreadPoolExecutor(coreSize, coreSize, Integer.MAX_VALUE, TimeUnit.SECONDS, new LinkedBlockingQueue<>(poolSize),
                 threadFactory ,
                 executionHandler).setTag(tag);
     }

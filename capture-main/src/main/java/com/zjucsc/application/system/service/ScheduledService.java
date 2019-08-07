@@ -79,7 +79,7 @@ public class ScheduledService {
                 statisticFlow();        //统计总流量，超过限制报错
                 CommonCacheUtil.updateAttackLog();  //统计攻击类型，及所占比例
                 count = 0;
-                detectDecodeMethodDelay();
+                //detectDecodeMethodDelay();
             }
             try {
                 sendAllFvDimensionPacket2();    //每秒钟发送一次五元组
@@ -90,10 +90,10 @@ public class ScheduledService {
     }
 
     private void detectDecodeMethodDelay() {
-//        Map<String,Long> map = ArtDecodeCommon.getDecodeDelayMapInfo();
-//        map.forEach((s, aLong) -> {
-//            System.out.println(s + " time - " + aLong);
-//        });
+        Map<String,Long> map = ArtDecodeCommon.getDecodeDelayMapInfo();
+        map.forEach((s, aLong) -> {
+            System.out.println(s + " time - " + aLong);
+        });
     }
 
     @Scheduled(fixedRate = 5000)
@@ -108,7 +108,7 @@ public class ScheduledService {
     //判断系统运行状态
     @Scheduled(fixedRate = 2000)
     public void sysRunState() throws SigarException {
-        SysRunStateUtil.StateWrapper wrapper= SysRunStateUtil.getSysRunState();
+        SysRunStateUtil.StateWrapper wrapper = SysRunStateUtil.getSysRunState();
         SocketServiceCenter.updateAllClient(SocketIoEvent.SYS_RUN_STATE,wrapper);
         int state = CommonCacheUtil.runStateDetect(wrapper);
         String info = null;

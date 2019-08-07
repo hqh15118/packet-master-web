@@ -10,7 +10,7 @@ import java.util.List;
  */
 public interface OptFilterMapper extends BaseMapper<OptFilter> {
 
-        List<Integer> selectTargetOptFilter(String device, int protocolId, int gplotId);
+        List<String> selectTargetOptFilter(String device, int protocolId, int gplotId);
 
         void saveOrUpdateBatch(OptFilterForFront optFilterForFront, int gplotId);
 

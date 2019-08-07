@@ -1,25 +1,15 @@
-package com.zjucsc.attack.dnp3;
+package com.zjucsc.attack.config;
 
 
 import com.zjucsc.attack.bean.BaseOptConfig;
 
 public class dnp3Opconfig extends BaseOptConfig {
-    private String Opname;
     private int category;
     private int setindex;
     private int setobjGroup;
     private boolean result;
     private String comment;
 
-    @Override
-    public String getOpname() {
-        return Opname;
-    }
-
-    @Override
-    public void setOpname(String opname) {
-        Opname = opname;
-    }
 
     public int getCategory() {
         return category;

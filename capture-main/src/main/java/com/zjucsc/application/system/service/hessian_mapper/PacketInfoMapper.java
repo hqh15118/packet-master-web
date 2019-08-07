@@ -2,6 +2,7 @@ package com.zjucsc.application.system.service.hessian_mapper;
 
 import com.zjucsc.application.domain.bean.*;
 import com.zjucsc.application.domain.bean.RightPacketInfo;
+import com.zjucsc.application.domain.non_hessian.PacketRealTimeBean;
 
 import java.util.List;
 
@@ -60,4 +61,6 @@ public interface PacketInfoMapper  {
     String selectPacketRawDataByTimeStamp(String timeStamp);
 
     void addNormalPacket(List<RightPacketInfo> rightPacketInfo , int gplotId);
+
+    List<SavedPacket> selectRealTimePacketList(PacketRealTimeBean packetRealTimeBean);
 }

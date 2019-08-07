@@ -8,6 +8,6 @@ public class MmsPacket {
 
     public static class LayersBean extends FvDimensionLayer {
         @JSONField(name = "mms_confirmedServiceRequest")
-        public String[] mmsFuncode = {"-1"};
+        public String[] mmsFuncode = {"--"};
     }
 }

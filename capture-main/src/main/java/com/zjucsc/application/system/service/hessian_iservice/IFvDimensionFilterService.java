@@ -21,5 +21,4 @@ public interface IFvDimensionFilterService {
     void deleteAllFilterByDeviceNumberAndGplotId(String deviceNumber, int gplotId);
     Rule changeRuleStateByDeviceNumberAndFvId(String deviceNumber,String fvId,boolean enable) throws ProtocolIdNotValidException;
     void removeRuleByFvIds(List<String> fvIds);
-
 }

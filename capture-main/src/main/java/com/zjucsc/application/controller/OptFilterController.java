@@ -35,7 +35,7 @@ public class OptFilterController {
         if (optRulePullForFront.getCached() == 1){
             cache = true;
         }
-        CompletableFuture<List<Integer>> future =  iOptFilterService.getTargetExistIdFilter(
+        CompletableFuture<List<String>> future =  iOptFilterService.getTargetExistIdFilter(
                 optRulePullForFront.getDeviceNumber(),cache,optRulePullForFront.getProtocolId()
         );
         return BaseResponse.OK(future.get());

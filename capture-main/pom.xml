@@ -257,11 +257,11 @@
             <version>2.2.6.RELEASE</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.zjucsc</groupId>
-            <artifactId>lua-engine</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.zjucsc</groupId>-->
+            <!--<artifactId>lua-engine</artifactId>-->
+            <!--<version>0.0.1-SNAPSHOT</version>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>com.zjucsc</groupId>

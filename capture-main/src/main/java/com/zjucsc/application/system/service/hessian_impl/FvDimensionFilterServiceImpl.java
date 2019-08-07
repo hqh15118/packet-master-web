@@ -28,10 +28,8 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class FvDimensionFilterServiceImpl extends BaseServiceImpl<Rule,FvDimensionFilterMapper> implements IFvDimensionFilterService {
 
-    @Autowired
-    private IOptFilterService iOptFilterService;
+    @Autowired private IOptFilterService iOptFilterService;
 
-    @Async("common_async")
     @Override
     public CompletableFuture<Exception> addFvDimensionFilter(List<Rule> rules) {
         //更新缓存
@@ -52,7 +50,7 @@ public class FvDimensionFilterServiceImpl extends BaseServiceImpl<Rule,FvDimensi
 
     private OptFilterForFront createOptFilterForFront(Rule rule){
         OptFilterForFront optFilterForFront = new OptFilterForFront();
-        List<Integer> funCodes = rule.getFunCodes();
+        List<String> funCodes = rule.getFunCodes();
         optFilterForFront.setDeviceNumber(rule.getFvDimensionFilter().getDeviceNumber());
         optFilterForFront.setFvId(rule.getFvDimensionFilter().getFvId());
         optFilterForFront.setProtocolId(rule.getFvDimensionFilter().getProtocolId());
@@ -60,12 +58,8 @@ public class FvDimensionFilterServiceImpl extends BaseServiceImpl<Rule,FvDimensi
         return optFilterForFront;
     }
 
-    @Async("common_async")
     @Override
     public CompletableFuture<List<Rule>> getTargetExistIdFilter(String deviceNumber , boolean cached) {
-        if (cached){
-            return CompletableFuture.completedFuture(Common.FV_DIMENSION_FILTER_PRO.get(deviceNumber).getAnalyzer().getFilterList());
-        }
         List<Rule> list = this.baseMapper.selectByDeviceId(deviceNumber,Common.GPLOT_ID);
         return CompletableFuture.completedFuture(list);
     }

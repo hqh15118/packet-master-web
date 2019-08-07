@@ -32,7 +32,7 @@ public class ConfigurationSettingServiceImpl extends BaseServiceImpl<Configurati
     }
 
     @Override
-    public void updateFuncode(int protocolId, int fun_code, String opt) {
+    public void updateFuncode(int protocolId, String fun_code, String opt) {
         this.baseMapper.updateFuncode(protocolId,fun_code,opt);
     }
 
@@ -47,7 +47,7 @@ public class ConfigurationSettingServiceImpl extends BaseServiceImpl<Configurati
     }
 
     @Override
-    public void deleteByProtocolIdAndFuncode(int protocolId, int funCode) {
+    public void deleteByProtocolIdAndFuncode(int protocolId, String funCode) {
         this.baseMapper.deleteByProtocolIdAndFuncode(protocolId, funCode);
     }
 

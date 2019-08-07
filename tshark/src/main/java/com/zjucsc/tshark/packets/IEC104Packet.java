@@ -21,6 +21,7 @@ import com.alibaba.fastjson.annotation.JSONField;
  * 0x20			测试确认
  */
 public class IEC104Packet {
+
     @JSONField(name = "layers")
     public LayersBean layers;
 

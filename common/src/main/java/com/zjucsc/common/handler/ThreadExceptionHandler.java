@@ -1,5 +1,10 @@
 package com.zjucsc.common.handler;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.ThreadPoolExecutor;
+
 /**
  * #project packet-master-web
  *
@@ -7,11 +12,9 @@ package com.zjucsc.common.handler;
  * #create_time 2019-05-04 - 22:00
  */
 public class ThreadExceptionHandler implements Thread.UncaughtExceptionHandler{
-
+    private static Logger logger = LoggerFactory.getLogger(ThreadPoolExecutor.class);
     @Override
     public void uncaughtException(Thread t, Throwable e) {
-        System.err.println(String.format("thread [%s] catch a unhandle exception : [%s]\n",t.getName(),e.getStackTrace()[0].toString()));
-        //TODO release fix it
-        e.printStackTrace();
+        logger.error("thread [{}] catch a un_handle exception",t.getName(),e);
     }
 }

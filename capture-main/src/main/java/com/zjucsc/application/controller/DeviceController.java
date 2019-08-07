@@ -8,6 +8,10 @@ import com.zjucsc.application.domain.bean.Device;
 import com.zjucsc.application.domain.bean.StatisticSelect;
 import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
 import com.zjucsc.application.util.CommonCacheUtil;
+import com.zjucsc.application.util.CommonFvFilterUtil;
+import com.zjucsc.application.util.CommonOptFilterUtil;
+import com.zjucsc.application.util.DeviceOptUtil;
+import com.zjucsc.attack.AttackCommon;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -59,9 +63,8 @@ public class DeviceController {
     @DeleteMapping("delete_device")
     public BaseResponse deleteDevice(@RequestParam String deviceNumber){
         Device device = iDeviceService.removeDevice(deviceNumber);
-        CommonCacheUtil.removeDeviceNumberToTag(deviceNumber);
-        CommonCacheUtil.removeDeviceNumberToName(deviceNumber);
-        CommonCacheUtil.removeAllDeviceListByMacAddress(device.getDeviceTag());
+        DeviceOptUtil.removeCachedDeviceConfigs(device);
+        DeviceOptUtil.removeDeviceBindStrategy(device.getDeviceTag());
         return BaseResponse.OK();
     }
 
@@ -75,7 +78,7 @@ public class DeviceController {
     @Log
     @ApiOperation("获取设备统计信息")
     @PostMapping("statistic")
-    public BaseResponse getDeviceHistoryRuninfo(@RequestBody StatisticSelect statisticSelect){
+    public BaseResponse getDeviceHistoryRunInfo(@RequestBody StatisticSelect statisticSelect){
         return BaseResponse.OK(iDeviceService.selectHistoryDeviceRunInfo(
                 statisticSelect.getDeviceId(),
                 statisticSelect.getStart(),

@@ -27,7 +27,7 @@ import java.util.Map;
 
 @Endpoint(id = "sysconfig")
 @Configuration
-public class WatchConfig {
+public class SysWatchConfig {
 
     @Autowired private TsharkConfig tsharkConfig;
     @Autowired private CapturePacketService capturePacketService;
@@ -37,8 +37,6 @@ public class WatchConfig {
         HashMap<String,Object> map = new HashMap<>();
         map.put("CONFIGURATION_MAP" , CommonCacheUtil.CONFIGURATION_MAP);
         map.put("PROTOCOL_STR_TO_INT", CommonCacheUtil.PROTOCOL_STR_TO_INT);
-        map.put("OPERATION_FILTER_PRO" , CommonOptFilterUtil.OPERATION_FILTER_PRO);
-        map.put("FV_DIMENSION_FILTER_PRO" , Common.FV_DIMENSION_FILTER_PRO);
         map.put("DEVICE_TAG_TO_NAME" , CommonCacheUtil.DEVICE_NUMBER_TO_TAG);
         map.put("GPLOT_ID" , Common.GPLOT_ID);
         map.put("SHOW_GRAPH_SET",CommonCacheUtil.SHOW_GRAPH_SET);
@@ -55,6 +53,7 @@ public class WatchConfig {
         map.put("ALL_DROP_PROTOCOL",CommonCacheUtil.getAllDropProtocol());
         map.put("MAIN_HANDLER_LOAD",capturePacketService.load());
         map.put("ATTACK_MAIN_SERVICE_SIZE", AttackCommon.getAttackMainServiceTaskSize());
+        map.put("ALL_WHITE_PACKETS", CommonCacheUtil.getNormalPacketInfo());
         return map;
     }
 

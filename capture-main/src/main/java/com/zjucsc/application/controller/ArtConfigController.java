@@ -1,6 +1,7 @@
 package com.zjucsc.application.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.sun.org.apache.bcel.internal.generic.BREAKPOINT;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.PACKET_PROTOCOL;
 import com.zjucsc.application.config.auth.Log;
@@ -101,6 +102,11 @@ public class ArtConfigController {
                 MMSConfig mmsConfig = JSON.parseObject(jsonData,MMSConfig.class);
                 mmsConfig.setProtocol(PACKET_PROTOCOL.MMS);
                 ArtDecodeCommon.addArtDecodeConfig(mmsConfig);
+                break;
+            case PACKET_PROTOCOL.OPC_DA_ID:
+                OpcdaConfig opcdaConfig = JSON.parseObject(jsonData,OpcdaConfig.class);
+                opcdaConfig.setProtocol(PACKET_PROTOCOL.OPC_DA);
+                ArtDecodeCommon.addArtDecodeConfig(opcdaConfig);
                 break;
         }
         return BaseResponse.OK();

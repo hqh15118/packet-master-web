@@ -32,6 +32,7 @@ pre-processors:
      - cip
      - opcua
      - mms
+     - dcerpc
   i_protocols:
     - s7comm
     - modbus

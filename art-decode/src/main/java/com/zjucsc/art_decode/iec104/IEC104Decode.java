@@ -222,7 +222,9 @@ public class IEC104Decode extends BaseArtDecode<IEC104Config> {
                 APDUstart = APDUstart + thisAPDULength + 2;
                 if (APDUstart >= iec104load.length) break;
                 thisAPDULength = Byte.toUnsignedInt(iec104load[APDUstart+1]);
-                System.arraycopy(iec104load, APDUstart, thisAPDU, 0, thisAPDULength+2);
+                if (thisAPDULength <= 252 && iec104load.length >= (thisAPDULength + 2 + APDUstart)) {
+                    System.arraycopy(iec104load, APDUstart, thisAPDU, 0, thisAPDULength + 2);
+                }
             }
             while(thisAPDU != null);
         }

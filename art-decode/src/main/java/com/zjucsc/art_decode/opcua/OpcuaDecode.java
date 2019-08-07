@@ -497,29 +497,11 @@ public class OpcuaDecode extends BaseArtDecode<OpcuaConfig> {
             /** 目前仅关注MSG报文，其余类型的报文暂无需求 **/
             case "MSG":
                 MSG_decode(opcUaPacket);
-/*
-                System.out.println("Id_Handle_map");
-                for(String key: opcuaMap.Id_Handle_Map.keySet()){
-                    System.out.println(key);
-                    System.out.println(opcuaMap.Id_Handle_Map.get(key));
-                }
-                System.out.println("Handle_Name_Map");
-                for(String key: opcuaMap.Handle_Name_Map.keySet()){
-                    System.out.println(key);
-                    System.out.println(opcuaMap.Handle_Name_Map.get(key));
-                }
-                System.out.println("Output_Map");
-                for(String key: opcuaMap.Output_Map.keySet()){
-                    System.out.println(key);
-                    System.out.println(opcuaMap.Output_Map.get(key));
-                }
-*/
-
                 return opcuaMap.Output_Map;
             default:
                 break;
         }
-        return null;
+        return opcuaMap.Output_Map;
     }
 
     /**

@@ -178,11 +178,11 @@ public class InitConfigurationService implements ApplicationRunner {
              */
             ServiceLoader<IProtocolFuncodeMap> serviceLoader = ServiceLoader.load(IProtocolFuncodeMap.class);
             for (IProtocolFuncodeMap iProtocolFuncodeMap : serviceLoader) {
-                HashMap<Integer, String> funcodeStatements = new HashMap<>();
+                HashMap<String, String> funcodeStatements = new HashMap<>();
                 String protocolName = iProtocolFuncodeMap.protocolAnalyzerName();
-                Map<Integer, String> map = iProtocolFuncodeMap.initProtocol();
+                Map<String, String> map = iProtocolFuncodeMap.initProtocol();
                 List<ConfigurationSetting> configurationSettings = new ArrayList<>();
-                for (int fun_code : map.keySet()) {
+                for (String fun_code : map.keySet()) {
                     funcodeStatements.put(fun_code, map.get(fun_code));
                     //添加到protocol_id表
                     ConfigurationSetting configurationSetting = new ConfigurationSetting();
@@ -266,13 +266,16 @@ public class InitConfigurationService implements ApplicationRunner {
         List<ArtAttackConfigDB> configDBS = packetInfoMapper.selectArtAttackConfigPaged(999,1);
 
         for (ArtAttackConfigDB configDB : configDBS) {
-            List<String> strings = new ArrayList<>();
-            List<ArtAttack2Config> artAttack2Configs = JSON.parseArray(configDB.getRuleJson(),ArtAttack2Config.class);
-            for (ArtAttack2Config artAttack2Config : artAttack2Configs) {
-                strings.add(artAttack2Config.getValue());
+            if (configDB.isEnable()){
+                List<String> strings = new ArrayList<>();
+                List<ArtAttack2Config> artAttack2Configs = JSON.parseArray(configDB.getRuleJson(),ArtAttack2Config.class);
+                for (ArtAttack2Config artAttack2Config : artAttack2Configs)
+                {
+                    strings.add(artAttack2Config.getValue());
+                }
+                AttackCommon.addArtAttackAnalyzeConfig(new ArtAttackAnalyzeConfig(strings,configDB.getDetail(),
+                        configDB.isEnable(),configDB.getId()));
             }
-            AttackCommon.addArtAttackAnalyzeConfig(new ArtAttackAnalyzeConfig(strings,configDB.getDetail(),
-                    configDB.isEnable(),configDB.getId()));
         }
 
         CommonCacheUtil.initIProtocol(preProcessor.getI_protocols());

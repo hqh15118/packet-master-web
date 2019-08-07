@@ -19,6 +19,7 @@ import com.zjucsc.attack.AttackCommon;
 import com.zjucsc.attack.config.ModbusOptConfig;
 import com.zjucsc.attack.config.PnioOptConfig;
 import com.zjucsc.attack.config.S7OptAttackConfig;
+import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -222,5 +223,14 @@ public class AttackConfigController {
         List<BaseOptConfig> configs = optAttackMapper.selectAllOptAttackConfigByProtocol(optAttackPage.getProtocolId() , optAttackPage.getPage() ,
                 optAttackPage.getLimit());
         return BaseResponse.OK(configs);
+    }
+
+    @ApiOperation("配置工艺参数操作攻击enable")
+    @PostMapping("enable_opt_config")
+    public BaseResponse enableOptConfig(@RequestBody OptConfigEnable optConfigEnable) throws ProtocolIdNotValidException {
+        String protocol = CommonCacheUtil.convertIdToName(optConfigEnable.getProtocolId());
+        optAttackMapper.changeOptConfigStateByOpName(protocol,optConfigEnable.getOpName(),optConfigEnable.isEnable());
+        boolean isSuccess = AttackCommon.changeArtOptAttackAnalyzeConfigState(optConfigEnable.getProtocolId(),optConfigEnable.isEnable(),optConfigEnable.getOpName());
+        return BaseResponse.OK(isSuccess);
     }
 }

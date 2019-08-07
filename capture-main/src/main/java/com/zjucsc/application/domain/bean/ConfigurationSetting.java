@@ -17,6 +17,6 @@ import java.io.Serializable;
 public class ConfigurationSetting  extends BaseResponse implements Serializable {
     private int id;
     private int protocolId;
-    private int funCode;
+    private String funCode;
     private String opt;
 }

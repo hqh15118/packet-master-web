@@ -6,9 +6,11 @@ import com.zjucsc.art_decode.base.ValidPacketCallback;
 import com.zjucsc.art_decode.base.BaseArtDecode;
 import com.zjucsc.art_decode.base.IArtEntry;
 import com.zjucsc.art_decode.dnp3.DNP3Decode;
+import com.zjucsc.art_decode.iec101.IEC101Decode;
 import com.zjucsc.art_decode.iec104.IEC104Decode;
 import com.zjucsc.art_decode.mms.MMSDecode;
 import com.zjucsc.art_decode.modbus.ModbusDecode;
+import com.zjucsc.art_decode.opcda.OpcdaDecode;
 import com.zjucsc.art_decode.opcua.OpcuaDecode;
 import com.zjucsc.art_decode.pnio.PnioDecode;
 import com.zjucsc.art_decode.s7comm.S7Decode;
@@ -55,6 +57,8 @@ public class ArtDecodeCommon {
         ART_DECODE_CONCURRENT_HASH_MAP.put("dnp3",new DNP3Decode());
         ART_DECODE_CONCURRENT_HASH_MAP.put("iec101",new IEC104Decode());
         ART_DECODE_CONCURRENT_HASH_MAP.put("mms",new MMSDecode());
+        ART_DECODE_CONCURRENT_HASH_MAP.put("iec101",new IEC101Decode());
+        ART_DECODE_CONCURRENT_HASH_MAP.put("dcerpc",new OpcdaDecode());
     }
 
     private static HashMap<String,Long> DECODE_DELAY_WRAPPER = new HashMap<String,Long>(){
@@ -68,13 +72,12 @@ public class ArtDecodeCommon {
         return DECODE_DELAY_WRAPPER;
     }
 
-    public static Map<String,Float> artDecodeEntry(Map<String,Float> artMap, byte[] payload,
+    public static void artDecodeEntry(Map<String,Float> artMap, byte[] payload,
                                                    String protocol, FvDimensionLayer layer , Object...objs){
         IArtEntry entry = ART_DECODE_CONCURRENT_HASH_MAP.get(protocol);
-
         if (entry != null){
             long timeStart = System.currentTimeMillis();
-            artMap =  entry.doDecode(artMap,payload,layer,objs);
+            entry.doDecode(artMap,payload,layer,objs);
             long timeDiff = System.currentTimeMillis() - timeStart;
             DECODE_DELAY_WRAPPER.computeIfPresent(protocol, (s, aLong) -> {
                 if (aLong < timeDiff) {
@@ -84,7 +87,6 @@ public class ArtDecodeCommon {
                 }
             });
         }
-        return artMap;
     }
 
     /**

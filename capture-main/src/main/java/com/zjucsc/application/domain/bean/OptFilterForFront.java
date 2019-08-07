@@ -9,7 +9,7 @@ import java.util.List;
 public class OptFilterForFront {
     private int protocolId;
     private String fvId;
-    private List<Integer> funCodes;
+    private List<String> funCodes;
     private String deviceNumber;
 
     @Override

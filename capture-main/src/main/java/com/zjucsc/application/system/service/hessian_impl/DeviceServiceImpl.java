@@ -7,6 +7,8 @@ import com.zjucsc.application.system.service.hessian_mapper.DeviceMapper;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.CommonFvFilterUtil;
 import com.zjucsc.application.util.CommonOptFilterUtil;
+import com.zjucsc.application.util.DeviceOptUtil;
+import com.zjucsc.attack.AttackCommon;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -19,14 +21,6 @@ import java.util.Map;
 @Service
 public class DeviceServiceImpl extends BaseServiceImpl< Device , DeviceMapper> implements IDeviceService {
 
-    @Override
-    public void updateDeviceInfo(Device device) {
-        this.baseMapper.updateDeviceInfo(device.getDeviceType(),
-                                        device.getDeviceInfo(),
-                                        device.getDeviceTag(),
-                                        device.getDeviceNumber(),
-                                        device.getGPlotId());
-    }
 
     @Override
     public Device selectDeviceByIdAndGplot(String deviceId, int plotId) {
@@ -79,7 +73,6 @@ public class DeviceServiceImpl extends BaseServiceImpl< Device , DeviceMapper> i
     }
 
     @Override
-    @Async("common_async")
     public void saveStatisticInfo(Map<String,StatisticInfoSaveBean> map) {
         this.baseMapper.saveStatisticInfo(map, Common.GPLOT_ID);
     }
@@ -104,8 +97,10 @@ public class DeviceServiceImpl extends BaseServiceImpl< Device , DeviceMapper> i
     public void changeDeviceConfigState(String deviceNumber , boolean isConfig) {
         this.baseMapper.changeDeviceConfigState(deviceNumber , isConfig);
         String deviceTag = CommonCacheUtil.getTargetDeviceTagByNumber(deviceNumber);
-        CommonFvFilterUtil.disableDeviceAllConfig(deviceTag);
-        CommonOptFilterUtil.disableTargetDeviceAnalyzer(deviceTag);
+        //CommonFvFilterUtil.disableDeviceAllConfig(deviceTag);
+        //CommonOptFilterUtil.disableTargetDeviceAnalyzer(deviceTag);
+        //AttackCommon.disableDeviceDosAnalyzePoolEntry(deviceTag);
+        DeviceOptUtil.removeDeviceBindStrategy(deviceTag);
     }
 
     @Override

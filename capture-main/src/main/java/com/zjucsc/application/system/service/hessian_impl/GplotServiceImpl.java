@@ -43,7 +43,6 @@ public class GplotServiceImpl extends BaseServiceImpl<Gplot,GplotMapper> impleme
 
     @Override
     public BaseResponse changeGplot(int gplotId) throws ProtocolIdNotValidException {
-        StringBuilder sb = new StringBuilder();
         //移除旧组态图上的所有规则
         //CommonOptFilterUtil.removeAllOptFilter();
         //CommonFvFilterUtil.removeAllFvFilter();
@@ -56,7 +55,14 @@ public class GplotServiceImpl extends BaseServiceImpl<Gplot,GplotMapper> impleme
         List<Device> devices = iDeviceService.selectByGplotId(gplotId);   //load all device
         for (Device device : devices) {
             String deviceNumber = device.getDeviceNumber();
-            sb.delete(0 , sb.length());
+            //更新DEVICE_NUMBER和DEVICE_TAG之间的对应关系
+            //更新DEVICE_NUMBER和StatisticInfoSaveBean【设备upload、download等报文信息】
+            CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(deviceNumber , device.getDeviceTag());
+            CommonCacheUtil.addDeviceNumberToName(deviceNumber,device.getDeviceInfo());
+            CommonCacheUtil.addOrUpdateDeviceManually(device);  //手动将设备添加到缓存
+            if (!device.isConfig()){
+                continue;
+            }
             //load all fv dimension rule from fv_dimension table by device_number + gplot_id
             List<Rule> rules = iDeviceService.
                     loadAllFvDimensionFilterByDeviceNumberAndGplotId(deviceNumber,gplotId);
@@ -72,16 +78,14 @@ public class GplotServiceImpl extends BaseServiceImpl<Gplot,GplotMapper> impleme
                     CommonOptFilterUtil.addOrUpdateAnalyzer(device.getDeviceTag(), optFilter, optFilter.toString());
                 }
             }
-            //更新DEVICE_NUMBER和DEVICE_TAG之间的对应关系
-            //更新DEVICE_NUMBER和StatisticInfoSaveBean【设备upload、download等报文信息】
-            CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(deviceNumber , device.getDeviceTag());
-            CommonCacheUtil.addDeviceNumberToName(deviceNumber,device.getDeviceInfo());
-            CommonCacheUtil.addOrUpdateDeviceManually(device);  //手动将设备添加到缓存
+
             /*************************
              * INIT WHITE PROTOCOL
              *************************/
             DeviceProtocol deviceProtocol = iWhiteProtocolService.selectByDeviceNumber(device.getDevice_id());
-            CommonCacheUtil.addWhiteProtocolToCache(deviceProtocol.getDeviceNumber(),deviceProtocol.getProtocolName());
+            if (deviceProtocol.getDeviceNumber()!=null) {
+                CommonCacheUtil.addWhiteProtocolToCache(deviceProtocol.getDeviceNumber(), deviceProtocol.getProtocolName());
+            }
             /**********************************
              * 初始化DOS攻击配置
              **********************************/
