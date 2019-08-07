@@ -37,6 +37,6 @@ public class SocketIoEvent {
     public static final String SYS_RUN_STATE = "sys_run_state";
     //系统运行异常
     public static final String SYS_RUN_ERROR = "sys_run_error";
-    //top5
-    public static final String TOP_5 = "top_5";
+    //系统任务栈溢出异常
+    public static final String TASK_QUEUE_OVER_FLOW = "task_over_flow";
 }

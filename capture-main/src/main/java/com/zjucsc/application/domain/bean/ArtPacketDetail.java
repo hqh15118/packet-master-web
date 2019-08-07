@@ -16,7 +16,7 @@ public class ArtPacketDetail {
 //    private String protocol;
 //    private String funCode;
 //    private float value;
-    private FvDimensionLayer layer;
+    private String timeStamp;
     private String artName;
     private float value;
     public static ArtPacketDetail newOne(FvDimensionLayer layer){
@@ -30,7 +30,8 @@ public class ArtPacketDetail {
 //        artPacketDetail.setProtocol(layer.protocol);
 //        artPacketDetail.setFunCode(layer.funCodeMeaning);
 //        artPacketDetail.setTimeStamp(layer.timeStamp);
-        artPacketDetail.setLayer(layer);
+//        artPacketDetail.setLayer(layer);
+        artPacketDetail.setTimeStamp(layer.timeStamp);
         return artPacketDetail;
     }
 }

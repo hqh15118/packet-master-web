@@ -1,23 +1,24 @@
 package com.zjucsc.attack;
 
-import com.zjucsc.attack.analyze.analyzer_util.CositeDOSAttackAnalyzeList;
-import com.zjucsc.attack.analyze.analyzer_util.MultisiteDOSAttackAnalyzeList;
-import com.zjucsc.attack.bean.BaseOptAnalyzer;
-import com.zjucsc.attack.bean.BaseOptConfig;
+import com.zjucsc.attack.analyze.analyzer_util.CositeDosAttackAnalyzeList;
+import com.zjucsc.attack.analyze.analyzer_util.MultisiteDosAttackAnalyzeList;
+import com.zjucsc.attack.base.AnalyzePoolEntry;
+import com.zjucsc.attack.base.AnalyzePoolEntryImpl;
+import com.zjucsc.attack.bean.*;
 import com.zjucsc.attack.base.IOptAttackEntry;
-import com.zjucsc.attack.bean.ArtAttackAnalyzeConfig;
-import com.zjucsc.attack.bean.AttackBean;
-import com.zjucsc.attack.bean.RedisConfigNotFoundException;
 import com.zjucsc.attack.common.ArtAttackAnalyzeTask;
 import com.zjucsc.attack.common.AttackCallback;
 import com.zjucsc.attack.common.AttackTypePro;
-import com.zjucsc.attack.common.CommonAnalyzeTask;
 import com.zjucsc.attack.modbus.ModbusOptAnalyzer;
 import com.zjucsc.attack.pn_io.PnioOptDecode;
 import com.zjucsc.attack.s7comm.S7OptAnalyzer;
+import com.zjucsc.common.bean.ThreadPoolInfoWrapper;
+import com.zjucsc.common.common_util.CommonUtil;
 import com.zjucsc.tshark.Entry;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
@@ -25,9 +26,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
+import java.util.function.Function;
 
 /**
  * #project packet-master-web
@@ -37,17 +37,30 @@ import java.util.concurrent.Executors;
  */
 
 public class AttackCommon {
+    private static Logger logger = LoggerFactory.getLogger(AttackCommon.class);
+    /**
+     * 获取Attack-Analyze服务的线程池任务信息
+     * @return 线程池任务信息
+     */
+    public static List<ThreadPoolInfoWrapper> getAttackMainServiceTaskSize(){
+        List<ThreadPoolInfoWrapper> threadPoolInfoWrappers = new ArrayList<>();
+        threadPoolInfoWrappers.add(new ThreadPoolInfoWrapper("ART_ATTACK_ANALYZE_SERVICE", ((ThreadPoolExecutor) ART_ATTACK_ANALYZE_SERVICE).getQueue().size()));
+        threadPoolInfoWrappers.add(new ThreadPoolInfoWrapper("ART_OPT_ANALYZE_SERVICE", ((ThreadPoolExecutor) ART_OPT_ANALYZE_SERVICE).getQueue().size()));
+        return threadPoolInfoWrappers;
+    }
 
     private static AttackCallback attackCallback;
 
     private final static Set<ArtAttackAnalyzeConfig> ART_ATTACK_ANALYZE_CONFIGS
             = new ConcurrentSkipListSet<>();
+
     private final static List<Entry> ATTACK_ENTRY = new ArrayList<Entry>(){
         {
-            add(new CositeDOSAttackAnalyzeList());
-            add(new MultisiteDOSAttackAnalyzeList());
+            add(new CositeDosAttackAnalyzeList());
+            add(new MultisiteDosAttackAnalyzeList());
         }
     };
+
     private static final HashMap<Integer, BaseOptAnalyzer> OPT_ATTACK_DECODE_CONCURRENT_HASH_MAP
             = new HashMap<>(10);
     /**
@@ -59,17 +72,51 @@ public class AttackCommon {
         OPT_ATTACK_DECODE_CONCURRENT_HASH_MAP.put(23,new PnioOptDecode());
     }
 
-    private static ExecutorService ATTACK_MAIN_SERVICE = Executors.newFixedThreadPool(
-            1,
+    private static ExecutorService ART_ATTACK_ANALYZE_SERVICE = CommonUtil.getSingleThreadPoolSizeThreadPool(10000,r -> {
+        Thread thread = new Thread(r);
+        thread.setName("-attack-art-analyze-service-");
+        thread.setUncaughtExceptionHandler((t, e) -> {
+            logger.error("error in -attack-art-analyze-service-",e);
+        });
+        return thread;
+    },"ART_ATTACK_ANALYZE_SERVICE");
+
+    private static final ConcurrentHashMap<String, AnalyzePoolEntry> ANALYZE_POOL_ENTRY_CONCURRENT_HASH_MAP =
+            new ConcurrentHashMap<>();
+    public static boolean addOrUpdateDosAnalyzePoolEntry(String deviceTag, DosConfig dosConfig){
+        AnalyzePoolEntry analyzePoolEntry = ANALYZE_POOL_ENTRY_CONCURRENT_HASH_MAP.computeIfAbsent(deviceTag, s -> new AnalyzePoolEntryImpl());
+        return analyzePoolEntry.addDosAnalyzer(dosConfig);
+    }
+    public static void removeDosAnalyzePoolEntry(String deviceTag,String protocol){
+        AnalyzePoolEntry analyzePoolEntry = ANALYZE_POOL_ENTRY_CONCURRENT_HASH_MAP.get(deviceTag);
+        analyzePoolEntry.removeDosAnalyzer(protocol);
+    }
+    public static void disableDeviceDosAnalyzePoolEntry(String deviceTag){
+        ANALYZE_POOL_ENTRY_CONCURRENT_HASH_MAP.get(deviceTag);
+    }
+    public static void changeDosConfig(String deviceTag,String protocol,boolean enable){
+        AnalyzePoolEntry analyzePoolEntry = ANALYZE_POOL_ENTRY_CONCURRENT_HASH_MAP.get(deviceTag);
+        analyzePoolEntry.enableDosAnalyzer(enable,protocol);
+    }
+    private static ExecutorService DOS_ATTACK_ANALYZE_SERVICE = Executors.newFixedThreadPool(1,
             r -> {
                 Thread thread = new Thread(r);
-                thread.setName("-attack-service-");
+                thread.setName("-attack-art-analyze-service-");
                 thread.setUncaughtExceptionHandler((t, e) -> {
-                    System.err.println("error in attack-service-thread " + e);
+                    logger.error("error in attack-service-thread ",e);
                 });
                 return thread;
-            }
-    );
+            });
+
+    private static ExecutorService ART_OPT_ANALYZE_SERVICE = CommonUtil.getSingleThreadPoolSizeThreadPool(10000,
+            r -> {
+                Thread thread = new Thread(r);
+                thread.setName("-attack-art-opt-analyze-service-");
+                thread.setUncaughtExceptionHandler((t, e) -> {
+                    logger.error("-attack-art-opt-analyze-service-",e);
+                });
+                return thread;
+            },"ART_OPT_ANALYZE_SERVICE");
 
     public static void registerAttackCallback(AttackCallback attackCallback){
         AttackCommon.attackCallback = attackCallback;
@@ -120,16 +167,25 @@ public class AttackCommon {
      * DOS 2019/6/28
      * @param layer 五元组
      */
-    public static void appendFvDimension(final FvDimensionLayer layer){
-        ATTACK_MAIN_SERVICE.execute(new CommonAnalyzeTask(layer));
+    public static void appendDOSAnalyze(final FvDimensionLayer layer , String deviceTag){
+        final AnalyzePoolEntry analyzePoolEntry = ANALYZE_POOL_ENTRY_CONCURRENT_HASH_MAP.get(deviceTag);
+        if (analyzePoolEntry!=null){
+            DOS_ATTACK_ANALYZE_SERVICE.execute(() -> {
+                try {
+                    analyzePoolEntry.append(layer);
+                } catch (InstantiationException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
     }
 
-    //五元组分析
+    //五元组分析，给CommonAttackTask用的
     public static void doAnalyzeFvDimension(FvDimensionLayer layer){
         for (Entry entry : ATTACK_ENTRY) {
             String description = entry.append(layer);
             if (description!=null){
-                attackCallback.artCallback(AttackBean.builder()
+                AttackCommon.appendFvDimensionError(AttackBean.builder()
                         .attackType(AttackTypePro.DOS_ATTACK)
                         .attackInfo(description)
                         .fvDimension(layer)
@@ -147,14 +203,23 @@ public class AttackCommon {
         ART_ATTACK_ANALYZE_CONFIGS.remove(artAttackAnalyzeConfig);
     }
 
+    /**
+     * 工艺参数异常
+     * @param id
+     * @param enable
+     */
     public static void changeArtAttackAnalyzeConfigState(int id,boolean enable){
         for (ArtAttackAnalyzeConfig artAttackAnalyzeConfig : ART_ATTACK_ANALYZE_CONFIGS) {
             if (artAttackAnalyzeConfig.getId() == id){
                 artAttackAnalyzeConfig.setEnable(enable);
-                System.out.println(String.format("成功修改工艺参数ID:[%s]状态state:[%s]",String.valueOf(id),String.valueOf(enable)));
                 break;
             }
         }
+    }
+
+    public static boolean changeArtOptAttackAnalyzeConfigState(int protocolId,boolean enable,String opName){
+        BaseOptAnalyzer baseOptAnalyzer = OPT_ATTACK_DECODE_CONCURRENT_HASH_MAP.get(protocolId);
+        return baseOptAnalyzer.changeOptAnalyzeConfigState(opName, enable);
     }
 
     /**
@@ -164,16 +229,19 @@ public class AttackCommon {
     public static void appendArtAnalyze( Map<String,Float> techmap,FvDimensionLayer layer){
         for (ArtAttackAnalyzeConfig artAttackAnalyzeConfig : ART_ATTACK_ANALYZE_CONFIGS) {
             if (artAttackAnalyzeConfig.isEnable()) {
-                doAppendArtAnalyze(artAttackAnalyzeConfig.getExpression(), techmap, artAttackAnalyzeConfig.getDescription(),
-                        attackCallback , layer);
+                doAppendArtAnalyze(artAttackAnalyzeConfig.getExpression(),
+                        techmap,
+                        artAttackAnalyzeConfig.getDescription(),
+                        layer);
             }
         }
     }
 
-    private static void doAppendArtAnalyze(List<String> expression , Map<String,Float> techmap , String description,
-                                        AttackCallback attackCallback,FvDimensionLayer layer){
-        ATTACK_MAIN_SERVICE.execute(new ArtAttackAnalyzeTask(expression, techmap, description , layer)
-        .setCallback(attackCallback));
+    private static void doAppendArtAnalyze(List<String> expression ,
+                                           Map<String,Float> techmap ,
+                                           String description,
+                                           FvDimensionLayer layer){
+        ART_ATTACK_ANALYZE_SERVICE.execute(new ArtAttackAnalyzeTask(expression, techmap, description , layer));
     }
 
     /**
@@ -189,12 +257,14 @@ public class AttackCommon {
      */
     public static void appendOptAnalyze(Map<String,Float> techmap,FvDimensionLayer layer,int protocolId,Object...objs){
         IOptAttackEntry iOptAttackEntry = OPT_ATTACK_DECODE_CONCURRENT_HASH_MAP.get(protocolId);
-        if (iOptAttackEntry!=null){
-            AttackBean attackBean = iOptAttackEntry.analyze(layer,techmap);
-            if (attackBean!=null){
-                attackCallback.artCallback(attackBean,layer);
+        ART_OPT_ANALYZE_SERVICE.execute(() -> {
+            if (iOptAttackEntry!=null){
+                AttackBean attackBean = iOptAttackEntry.analyze(layer,techmap);
+                if (attackBean!=null){
+                    AttackCommon.appendFvDimensionError(attackBean,layer);
+                }
             }
-        }
+        });
     }
 
     @SuppressWarnings("unchecked")
@@ -204,6 +274,7 @@ public class AttackCommon {
             baseOptAnalyzer.addOptAnalyzeConfig(baseOptConfig);
         }
     }
+
     @SuppressWarnings("unchecked")
     public static void updateOptAttackConfig(BaseOptConfig baseOptConfig){
         BaseOptAnalyzer baseOptAnalyzer = OPT_ATTACK_DECODE_CONCURRENT_HASH_MAP.get(baseOptConfig.getProtocolId());

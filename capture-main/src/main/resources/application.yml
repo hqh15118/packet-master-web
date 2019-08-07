@@ -2,7 +2,7 @@ myconfig:
   #global_address : 192.168.1.106
   #global_address : 192.168.0.114
   #global_address : 10.180.81.207
-  global_address : localhost
+  global_address : 192.168.0.121
   admin_server_port : 8989
   packet_master_web_port : 8080
   openAOPLog : true   # 是否开启请求日志
@@ -32,6 +32,7 @@ pre-processors:
      - cip
      - opcua
      - mms
+     - dcerpc
   i_protocols:
     - s7comm
     - modbus
@@ -47,7 +48,7 @@ tshark-config:
   s7comm_filter : tcp
 
 hessian-config:
-  hessian-url: 10.15.191.100:36955/hessian
+  hessian-url: 10.15.191.214:36955/hessian
   art_history_data: http://${hessian-config.hessian-url}/ArtHistoryDataMapper.hessian
   art_config: http://${hessian-config.hessian-url}/ArtConfigMapper.hessian
   configuration_setting: http://${hessian-config.hessian-url}/ConfigurationSettingMapper.hessian
@@ -65,6 +66,7 @@ hessian-config:
   opt_attack : http://${hessian-config.hessian-url}/OptAttackMapper.hessian
   device_max_flow : http://${hessian-config.hessian-url}/DeviceMaxFlowMapper.hessian
   art_packet : http://${hessian-config.hessian-url}/ArtPacketMapper.hessian
+  dos_config : http://${hessian-config.hessian-url}/DosConfigMapper.hessian
 
 server:
   port: ${myconfig.packet_master_web_port}

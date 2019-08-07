@@ -1,5 +1,7 @@
 package com.zjucsc.application.util;
 
+import com.zjucsc.application.domain.bean.Device;
+import com.zjucsc.attack.AttackCommon;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 
 import java.util.HashMap;
@@ -51,5 +53,18 @@ public class DeviceOptUtil {
             return true;
         }
         return VIRTUAL_MAC_ADDRESS.containsKey(macAddress.substring(0,8));
+    }
+
+    public static void removeDeviceBindStrategy(String deviceTag){
+        CommonFvFilterUtil.disableDeviceAllConfig(deviceTag);
+        CommonOptFilterUtil.disableTargetDeviceAnalyzer(deviceTag);
+        AttackCommon.disableDeviceDosAnalyzePoolEntry(deviceTag);
+    }
+
+    public static void removeCachedDeviceConfigs(Device device){
+        CommonCacheUtil.removeDeviceNumberToTag(device.getDeviceNumber());
+        CommonCacheUtil.removeDeviceNumberToName(device.getDeviceNumber());
+        CommonCacheUtil.removeAllDeviceListByMacAddress(device.getDeviceTag());
+        CommonCacheUtil.removeDeviceToDevicePacketPair(device);
     }
 }

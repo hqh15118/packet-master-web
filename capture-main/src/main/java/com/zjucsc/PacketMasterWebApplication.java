@@ -3,6 +3,11 @@ package com.zjucsc;
 import com.zjucsc.application.config.ConstantConfig;
 import com.zjucsc.application.config.PreProcessor;
 import com.zjucsc.application.util.TsharkUtil;
+import com.zjucsc.common.bean.CustomThreadPoolExecutor;
+import com.zjucsc.common.common_util.CommonUtil;
+import com.zjucsc.common.common_util.PrinterUtil;
+import com.zjucsc.socket_io.SocketIoEvent;
+import com.zjucsc.socket_io.SocketServiceCenter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,6 +18,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.io.IOException;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ThreadPoolExecutor;
 
 @SpringBootApplication
 @EnableScheduling
@@ -23,24 +30,28 @@ import java.io.IOException;
 public class PacketMasterWebApplication{
 
     public static void main(String[] args) {
-        String attention = "**************************\n\n运行该程序前请运行一遍脚本文件，并检查用户环境变量【TEMP】\n\n**************************";
-        System.out.println(attention);
+//        CommonUtil.registerExceptionHandler((r, executor) -> {
+//            //SocketServiceCenter.updateAllClient(SocketIoEvent.TASK_QUEUE_OVER_FLOW,executor.);
+//            System.err.println(((CustomThreadPoolExecutor) executor).getTag());
+//        });
+        String attention = "运行该程序前请运行一遍脚本文件，并检查用户环境变量【TEMP】";
+        PrinterUtil.printMsg(2,attention);
         String str = TsharkUtil.checkTsharkValid();
         if (str == null) {
             System.err.println("tshark is not in system PATH , application failed to start");
             return;
         }else{
             TsharkUtil.setTsharkPath(str);
-            System.out.println("**************\nfind tshark in: " + str + " \napplication start now >>>\n**************");
+            PrinterUtil.printMsg(0,"find tshark in: " + str);
         }
         checkWiresharkTempPath();
         try {
             if(!TsharkUtil.addTsharkPlugin()){
-                System.err.println("无法自动创建【tshark插件】，请检查权限或者手动添加到wireshark/plugins目录下");
+                PrinterUtil.printError("无法自动创建【tshark插件】，请检查权限或者手动添加到wireshark/plugins目录下");
                 return;
             }
         } catch (IOException e) {
-            System.err.println("无法自动创建【tshark插件】，请检查权限或者手动添加到wireshark/plugins目录下");
+            PrinterUtil.printError("无法自动创建【tshark插件】，请检查权限或者手动添加到wireshark/plugins目录下");
             log.error("创建tshark插件失败***",e);
             return;
         }

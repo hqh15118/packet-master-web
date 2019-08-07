@@ -44,14 +44,13 @@ public abstract class BasePreProcessor implements PreProcessor {
     private static final Semaphore semaphore = new Semaphore(1);
     PipeLine pipeLine;
     private String bindCommand;
-    private TsharkProcessFinishCallback tsharkProcessFinishCallback;
     //用于每个tshark进程解析
-    ExecutorService decodeThreadPool = Executors.newSingleThreadExecutor(r -> {
-        Thread thread = new Thread(r);
-        thread.setName(BasePreProcessor.this.getClass().getName() + " -pre_process_thread");
-        thread.setUncaughtExceptionHandler(TsharkCommon.uncaughtExceptionHandler);
-        return thread;
-    });
+//    ExecutorService decodeThreadPool = Executors.newSingleThreadExecutor(r -> {
+//        Thread thread = new Thread(r);
+//        thread.setName(BasePreProcessor.this.getClass().getName() + " -pre_process_thread");
+//        thread.setUncaughtExceptionHandler(TsharkCommon.uncaughtExceptionHandler);
+//        return thread;
+//    });
     private ProcessWrapper oldProcessWrapper;
 
     static{
@@ -145,7 +144,7 @@ public abstract class BasePreProcessor implements PreProcessor {
     public void stopProcess() {
         CommonTsharkUtil.shotDownAllRunningTsharkProcess(); //退出所有的tshark进程
         processRunning = false; //停止读取数据流
-        decodeThreadPool.shutdown();
+//        decodeThreadPool.shutdown();
     }
 
     public void setPipeLine(PipeLine pipeLine) {
@@ -272,9 +271,6 @@ public abstract class BasePreProcessor implements PreProcessor {
                             //System.out.println("tshark process out by stop capture");
                             //log.info("{} exit by end quiting capture service..", this.getClass().getName());
                         }
-                        if (tsharkProcessFinishCallback!=null){
-                            tsharkProcessFinishCallback.finish();
-                        }
                         break;
                     }
                 }
@@ -315,7 +311,7 @@ public abstract class BasePreProcessor implements PreProcessor {
                  */
                 semaphore.release();
                 //统一设置错误流
-                TsharkCommon.handleTsharkErrorStream(command.split("-Y")[1],bufferedReader);
+                //TsharkCommon.handleTsharkErrorStream(command.split("-Y")[1],bufferedReader);
             }
         } catch (IOException e) {
             //log.error("" , e);//TODO LOG HERE
@@ -333,7 +329,4 @@ public abstract class BasePreProcessor implements PreProcessor {
         return bindCommand;
     }
 
-    private interface TsharkProcessFinishCallback{
-        void finish();
-    }
 }

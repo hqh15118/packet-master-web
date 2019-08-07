@@ -1,6 +1,8 @@
 package com.zjucsc.application.system.service.hessian_iservice;
 
+import com.zjucsc.application.domain.bean.ArtBeanF;
 import com.zjucsc.application.domain.bean.ArtHistoryForFront;
+import com.zjucsc.application.domain.non_hessian.ArtBean;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -21,4 +23,6 @@ public interface IArtHistoryDataService {
      * @return
      */
     CompletableFuture<ArtHistoryForFront> getArtData(String startTime, String endTime, List<String> artNames) throws Exception;
+
+    CompletableFuture<List<ArtBeanF>> getAllArtData(ArtBean artBean);
 }

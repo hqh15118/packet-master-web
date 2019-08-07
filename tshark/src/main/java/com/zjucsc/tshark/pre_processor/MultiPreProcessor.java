@@ -27,9 +27,10 @@ public abstract class MultiPreProcessor extends BasePreProcessor {
         for (String packetProtocolStack : packetProtocolStacks) {
             if (protocolStack.endsWith(packetProtocolStack)){
                 final int j = i;
-                decodeThreadPool.execute(()->{
-                    pipeLine.pushDataAtHead(outPacketIndexInStacks(j,packetJSON));
-                });
+//                decodeThreadPool.execute(()->{
+//                    pipeLine.pushDataAtHead(outPacketIndexInStacks(j,packetJSON));
+//                });
+                pipeLine.pushDataAtHead(outPacketIndexInStacks(j,packetJSON));
                 break;
             }
             i++;

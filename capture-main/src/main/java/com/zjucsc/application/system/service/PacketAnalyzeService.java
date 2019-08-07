@@ -39,10 +39,11 @@ public class PacketAnalyzeService {
     public synchronized HashMap<String,Integer> getCollectorNumToDelayList(){
         collectorNumToDelayMap.clear();
         COLLECTOR_DELAY_MAP.forEach((collectorId, delay) -> {
-            String deviceNumber = iDeviceService.selectDeviceNumberByCollectorTag(String.valueOf(collectorId) , Common.GPLOT_ID);
-            if (deviceNumber!=null){
-                collectorNumToDelayMap.put(deviceNumber,delay);
-            }
+//            String deviceNumber = iDeviceService.selectDeviceNumberByCollectorTag(String.valueOf(collectorId) , Common.GPLOT_ID);
+//            if (deviceNumber!=null){
+//                collectorNumToDelayMap.put(deviceNumber,delay);
+//            }
+            collectorNumToDelayMap.put(String.valueOf(collectorId),delay);
         });
         clearCollectorDelay();                      //清除旧的时延数据
         return collectorNumToDelayMap;

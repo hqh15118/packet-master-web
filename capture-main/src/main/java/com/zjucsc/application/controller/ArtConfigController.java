@@ -1,6 +1,7 @@
 package com.zjucsc.application.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.sun.org.apache.bcel.internal.generic.BREAKPOINT;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.PACKET_PROTOCOL;
 import com.zjucsc.application.config.auth.Log;
@@ -66,30 +67,49 @@ public class ArtConfigController {
             CommonCacheUtil.removeShowGraph(baseConfig.getProtocolId(),baseConfig.getTag());
         }
 
-        if (baseConfig.getProtocolId() == PACKET_PROTOCOL.MODBUS_ID){
-            ModBusConfig modBusConfig = JSON.parseObject(jsonData,ModBusConfig.class);
-            modBusConfig.setProtocol(PACKET_PROTOCOL.MODBUS);
-            ArtDecodeCommon.addArtDecodeConfig(modBusConfig);
-            return BaseResponse.OK(true);
-        }else if (baseConfig.getProtocolId() == PACKET_PROTOCOL.S7_ID){
-            S7Config s7Config = JSON.parseObject(jsonData, S7Config.class);
-            s7Config.setProtocol("s7comm");
-            ArtDecodeCommon.addArtDecodeConfig(s7Config);
-            return BaseResponse.OK(true);
-        }else if (baseConfig.getProtocolId() == PACKET_PROTOCOL.IEC104_ASDU_ID){
-            IEC104Config iec104Config = JSON.parseObject(jsonData,IEC104Config.class);
-            iec104Config.setProtocol(PACKET_PROTOCOL.IEC104_ASDU);
-            ArtDecodeCommon.addArtDecodeConfig(iec104Config);
-        }else if (baseConfig.getProtocolId() == PACKET_PROTOCOL.DNP3_0_PRI_ID){
-            DNP3Config dnp3Config = JSON.parseObject(jsonData, DNP3Config.class);
-            dnp3Config.setProtocol("dnp3");     //这个协议是和工艺参数解析的模块对应起来的
-            ArtDecodeCommon.addArtDecodeConfig(dnp3Config);
-        }else if (baseConfig.getProtocolId() == PACKET_PROTOCOL.PN_IO_ID){
-            PnioConfig pnioConfig = JSON.parseObject(jsonData,PnioConfig.class);
-            pnioConfig.setProtocol(PACKET_PROTOCOL.PN_IO);
-            ArtDecodeCommon.addArtDecodeConfig(pnioConfig);
+        switch (baseConfig.getProtocolId()) {
+            case PACKET_PROTOCOL.MODBUS_ID:
+                ModBusConfig modBusConfig = JSON.parseObject(jsonData, ModBusConfig.class);
+                modBusConfig.setProtocol(PACKET_PROTOCOL.MODBUS);
+                ArtDecodeCommon.addArtDecodeConfig(modBusConfig);
+                return BaseResponse.OK(true);
+            case PACKET_PROTOCOL.S7_ID:
+                S7Config s7Config = JSON.parseObject(jsonData, S7Config.class);
+                s7Config.setProtocol("s7comm");
+                ArtDecodeCommon.addArtDecodeConfig(s7Config);
+                return BaseResponse.OK(true);
+            case PACKET_PROTOCOL.IEC104_ASDU_ID:
+                IEC104Config iec104Config = JSON.parseObject(jsonData, IEC104Config.class);
+                iec104Config.setProtocol(PACKET_PROTOCOL.IEC104_ASDU);
+                ArtDecodeCommon.addArtDecodeConfig(iec104Config);
+                break;
+            case PACKET_PROTOCOL.DNP3_0_PRI_ID:
+                DNP3Config dnp3Config = JSON.parseObject(jsonData, DNP3Config.class);
+                dnp3Config.setProtocol("dnp3");     //这个协议是和工艺参数解析的模块对应起来的
+                ArtDecodeCommon.addArtDecodeConfig(dnp3Config);
+                break;
+            case PACKET_PROTOCOL.PN_IO_ID:
+                PnioConfig pnioConfig = JSON.parseObject(jsonData, PnioConfig.class);
+                pnioConfig.setProtocol(PACKET_PROTOCOL.PN_IO);
+                ArtDecodeCommon.addArtDecodeConfig(pnioConfig);
+                break;
+            case PACKET_PROTOCOL.OPC_UA_ID:
+                OpcuaConfig opcuaConfig = JSON.parseObject(jsonData, OpcuaConfig.class);
+                opcuaConfig.setProtocol(PACKET_PROTOCOL.OPC_UA);
+                ArtDecodeCommon.addArtDecodeConfig(opcuaConfig);
+                break;
+            case PACKET_PROTOCOL.MMS_ID:
+                MMSConfig mmsConfig = JSON.parseObject(jsonData,MMSConfig.class);
+                mmsConfig.setProtocol(PACKET_PROTOCOL.MMS);
+                ArtDecodeCommon.addArtDecodeConfig(mmsConfig);
+                break;
+            case PACKET_PROTOCOL.OPC_DA_ID:
+                OpcdaConfig opcdaConfig = JSON.parseObject(jsonData,OpcdaConfig.class);
+                opcdaConfig.setProtocol(PACKET_PROTOCOL.OPC_DA);
+                ArtDecodeCommon.addArtDecodeConfig(opcdaConfig);
+                break;
         }
-        return BaseResponse.OK(false);
+        return BaseResponse.OK();
     }
 
     @ApiOperation("根据ID删除工艺参数配置")

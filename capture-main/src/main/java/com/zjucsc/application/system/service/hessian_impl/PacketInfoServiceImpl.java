@@ -1,6 +1,7 @@
 package com.zjucsc.application.system.service.hessian_impl;
 
 import com.zjucsc.application.domain.bean.*;
+import com.zjucsc.application.domain.non_hessian.PacketRealTimeBean;
 import com.zjucsc.application.system.service.hessian_iservice.IPacketInfoService;
 import com.zjucsc.application.system.service.hessian_mapper.PacketInfoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,5 +83,10 @@ public class PacketInfoServiceImpl  implements IPacketInfoService {
     @Override
     public String selectPacketRawDataByTimeStamp(String timeStamp) {
         return packetInfoMapper.selectPacketRawDataByTimeStamp(timeStamp); }
+
+    @Override
+    public List<SavedPacket> selectRealTimePacketList(PacketRealTimeBean packetRealTimeBean) {
+        return packetInfoMapper.selectRealTimePacketList(packetRealTimeBean);
+    }
 
 }

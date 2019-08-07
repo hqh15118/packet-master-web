@@ -9,18 +9,17 @@ import com.zjucsc.application.domain.bean.*;
 import com.zjucsc.application.domain.non_hessian.DeviceMaxFlow;
 import com.zjucsc.application.domain.bean.RightPacketInfo;
 import com.zjucsc.application.system.service.hessian_mapper.DeviceMaxFlowMapper;
+import com.zjucsc.application.system.service.hessian_mapper.DosConfigMapper;
 import com.zjucsc.application.system.service.hessian_mapper.OptAttackMapper;
 import com.zjucsc.application.system.service.hessian_mapper.PacketInfoMapper;
 import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.application.util.ConfigUtil;
-import com.zjucsc.attack.bean.BaseOptConfig;
-import com.zjucsc.attack.bean.ArtAttackAnalyzeConfig;
-import com.zjucsc.attack.bean.ArtOptWrapper;
-import com.zjucsc.attack.bean.AttackConfig;
+import com.zjucsc.attack.bean.*;
 import com.zjucsc.attack.AttackCommon;
 import com.zjucsc.attack.config.ModbusOptConfig;
 import com.zjucsc.attack.config.PnioOptConfig;
 import com.zjucsc.attack.config.S7OptAttackConfig;
+import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +40,8 @@ public class AttackConfigController {
     @Autowired private PacketInfoMapper packetInfoMapper;
     @Autowired private OptAttackMapper optAttackMapper;
     @Autowired private DeviceMaxFlowMapper deviceMaxFlowMapper;
+    @Autowired private DosConfigMapper dosConfigMapper;
+
     /**
      * 配置一定时间内的最大流量，超过报警
      * @param flowInByte
@@ -73,26 +74,34 @@ public class AttackConfigController {
     @ApiOperation("DOS攻击配置")
     @PostMapping("new_dos_config")
     public BaseResponse dosConfig(@RequestBody DosConfig dosConfig) {
-        AttackConfig.setCoSiteTimeGap(dosConfig.getCoSiteTime());
-        AttackConfig.setCoSiteNum(dosConfig.getCoSiteNum());
-        AttackConfig.setMultiSiteNum(dosConfig.getMulSiteNum());
-        AttackConfig.setMultiSiteTimeGap(dosConfig.getMulSiteTime());
-        ConfigUtil.setData("cosite_timegap",String.valueOf(dosConfig.getCoSiteTime()));
-        ConfigUtil.setData("cosite_num",String.valueOf(dosConfig.getCoSiteNum()));
-        ConfigUtil.setData("multisite_timegap",String.valueOf(dosConfig.getMulSiteTime()));
-        ConfigUtil.setData("multisite_num",String.valueOf(dosConfig.getMulSiteNum()));
-        return BaseResponse.OK();
+        dosConfigMapper.addOrUpdateDosConfig(dosConfig);
+        return BaseResponse.OK(AttackCommon.addOrUpdateDosAnalyzePoolEntry(CommonCacheUtil.getTargetDeviceTagByNumber(dosConfig.getDeviceNumber()),dosConfig));
     }
 
     @ApiOperation("获取Dos攻击配置")
     @GetMapping("get_dos_config")
-    public BaseResponse getDosConfigs(){
-        DosConfig dosConfig = new DosConfig();
-        dosConfig.setCoSiteNum(AttackConfig.getCoSiteNum());
-        dosConfig.setCoSiteTime(AttackConfig.getCoSiteTimeGap());
-        dosConfig.setMulSiteTime(AttackConfig.getMultiSiteTimeGap());
-        dosConfig.setMulSiteNum(AttackConfig.getMultiSiteNum());
-        return BaseResponse.OK(dosConfig);
+    public BaseResponse getDosConfigs(@RequestParam String deviceNumber){
+        return BaseResponse.OK(dosConfigMapper.selectDosConfigByDeviceNumber(deviceNumber));
+    }
+
+    @ApiOperation("删除Dos攻击配置")
+    @PostMapping("remove_dos_config")
+    public BaseResponse removeDosConfig(@RequestBody DosConfig dosConfig){
+        dosConfigMapper.removeDosConfig(dosConfig);
+        String deviceTag = CommonCacheUtil.getTargetDeviceTagByNumber(dosConfig.getDeviceNumber());
+        AttackCommon.removeDosAnalyzePoolEntry(deviceTag,dosConfig.getProtocol());
+        return BaseResponse.OK();
+    }
+
+    @ApiOperation("使能某个DOS配置")
+    @PostMapping("enable_dos_config")
+    public BaseResponse enableDosConfig(@RequestBody EnableDos enableDos){
+        int id = enableDos.getId();
+        boolean enable = enableDos.isEnable();
+        DosConfig dosConfig = dosConfigMapper.changeDosConfigState(id,enable);
+        String deviceTag = CommonCacheUtil.getTargetDeviceTagByNumber(dosConfig.getDeviceNumber());
+        AttackCommon.changeDosConfig(deviceTag,dosConfig.getProtocol(),enable);
+        return BaseResponse.OK();
     }
 
     @ApiOperation("获取设备配置的最大流量")
@@ -214,5 +223,14 @@ public class AttackConfigController {
         List<BaseOptConfig> configs = optAttackMapper.selectAllOptAttackConfigByProtocol(optAttackPage.getProtocolId() , optAttackPage.getPage() ,
                 optAttackPage.getLimit());
         return BaseResponse.OK(configs);
+    }
+
+    @ApiOperation("配置工艺参数操作攻击enable")
+    @PostMapping("enable_opt_config")
+    public BaseResponse enableOptConfig(@RequestBody OptConfigEnable optConfigEnable) throws ProtocolIdNotValidException {
+        String protocol = CommonCacheUtil.convertIdToName(optConfigEnable.getProtocolId());
+        optAttackMapper.changeOptConfigStateByOpName(protocol,optConfigEnable.getOpName(),optConfigEnable.isEnable());
+        boolean isSuccess = AttackCommon.changeArtOptAttackAnalyzeConfigState(optConfigEnable.getProtocolId(),optConfigEnable.isEnable(),optConfigEnable.getOpName());
+        return BaseResponse.OK(isSuccess);
     }
 }

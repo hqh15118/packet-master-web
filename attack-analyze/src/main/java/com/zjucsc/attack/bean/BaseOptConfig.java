@@ -10,6 +10,7 @@ public class BaseOptConfig implements Comparable<BaseOptConfig>{
     private List<String> expression;
     private String Opname;
     private List<ArtOptWrapper> rule;
+    private boolean enable;
 
     public int getId() {
         return id;
@@ -57,5 +58,13 @@ public class BaseOptConfig implements Comparable<BaseOptConfig>{
 
     public void setRule(List<ArtOptWrapper> rule) {
         this.rule = rule;
+    }
+
+    public boolean isEnable() {
+        return enable;
+    }
+
+    public void setEnable(boolean enable) {
+        this.enable = enable;
     }
 }

@@ -18,5 +18,4 @@ public class IEC101Decode extends BaseArtDecode<IEC101Config> {
         return "iec101";
     }
 
-
 }

@@ -7,20 +7,13 @@ import javax.validation.constraints.NotBlank;
 @Data
 public class FuncodeStatement {
     @NotBlank
-    private int id;
+    private String funCode;
     @NotBlank
     private String label;
 
-    public FuncodeStatement(int id, String label) {
-        this.id = id;
+    public FuncodeStatement(String funCode, String label) {
+        this.funCode = funCode;
         this.label = label;
     }
 
-    @Override
-    public String toString() {
-        return "FuncodeStatement{" +
-                "id=" + id +
-                ", label='" + label + '\'' +
-                '}';
-    }
 }

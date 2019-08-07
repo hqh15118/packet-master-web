@@ -32,25 +32,27 @@ public class PnioDecode extends BaseArtDecode<PnioConfig> {
     }
 
     private static final int paddinglength = 24;//////////modify
+    private static final int NUM = 2^31 - 1;
+    private static byte[] zero =new byte[] {0x00,0x00,0x00,0x00};
 
     private void decodetech(PnioConfig pnioConfig, Map<String, Float> map, byte[] rawload, FvDimensionLayer layer)
     {
         if(rawload[12]==(byte)0x88 && rawload[13]==(byte)0x92 && rawload.length>(paddinglength + 20))
         {
-            byte[] srcmacaddress = Bytecut.Bytecut(rawload,6,6);
+            String srcmacaddress = layer.eth_src[0];
             byte[] status = Bytecut.Bytecut(rawload,rawload.length-paddinglength-4,4);
             byte[] data = Bytecut.Bytecut(rawload,16,rawload.length - paddinglength-20);
-            if(Arrays.equals(srcmacaddress,pnioConfig.getMacaddress()) && rawload[14]==(byte)0x80 && rawload[15]==(byte)0x00 && status[2]==0x35 && status[3]==0x00)
+            if(srcmacaddress.equals(pnioConfig.getMacaddress()) && rawload[14]==(byte)0x80 && rawload[15]==(byte)0x00 && status[2]==0x35 && status[3]==0x00)
             {
                 if(pnioConfig.getLength()==4)
                 {
-                    if(pnioConfig.getType().equals("float")) {
+                    if(pnioConfig.getType().equals("float") && !Arrays.equals(data,zero)) {
                         map.put(pnioConfig.getTag(), Bytecut.BytesTofloat(data, pnioConfig.getByteoffset()));
                         callback(pnioConfig.getTag(),map.get(pnioConfig.getTag()),layer);
                     }
                     if(pnioConfig.getType().equals("int"))
                     {
-                        map.put(pnioConfig.getTag(), (float)ByteUtil.bytesToInt(data,pnioConfig.getByteoffset())/(2^31-1)*pnioConfig.getRange()[1]);
+                        map.put(pnioConfig.getTag(), (float)ByteUtil.bytesToInt(data,pnioConfig.getByteoffset())/NUM*pnioConfig.getRange()[1]);
                         callback(pnioConfig.getTag(),map.get(pnioConfig.getTag()),layer);
                     }
                 }
@@ -58,13 +60,13 @@ public class PnioDecode extends BaseArtDecode<PnioConfig> {
                 {
                     if(pnioConfig.getType().equals("short"))
                     {
-                        map.put(pnioConfig.getTag(),(float) ByteUtil.bytesToShort(data,pnioConfig.getByteoffset())/32767*pnioConfig.getRange()[1]);
+                        map.put(pnioConfig.getTag(),(float) ByteUtil.bytesToShort(data,pnioConfig.getByteoffset())/28686*pnioConfig.getRange()[1]);
                         callback(pnioConfig.getTag(),map.get(pnioConfig.getTag()),layer);
                     }
                 }
                 else if(pnioConfig.getType().equals("bool")) {
                     if (pnioConfig.getByteoffset() < data.length && pnioConfig.getBitoffset() < 8) {
-                        if (((int) data[pnioConfig.getByteoffset()] & 1 << pnioConfig.getBitoffset()) == 0) {
+                        if (((int) data[pnioConfig.getByteoffset()] & (1 << pnioConfig.getBitoffset())) == 0) {
                             map.put(pnioConfig.getTag(), 0f);
                             callback(pnioConfig.getTag(), map.get(pnioConfig.getTag()), layer);
                         } else {

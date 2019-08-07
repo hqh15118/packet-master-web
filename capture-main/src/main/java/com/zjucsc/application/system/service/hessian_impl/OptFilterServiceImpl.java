@@ -51,16 +51,16 @@ public class OptFilterServiceImpl extends BaseServiceImpl<OptFilter,OptFilterMap
      * @return
      * @throws ProtocolIdNotValidException
      */
-    @Async
+    @Async("common_async")
     @Override
-    public CompletableFuture<List<Integer>> getTargetExistIdFilter(String deviceNumber, boolean cached , int protocolId) throws ProtocolIdNotValidException {
+    public CompletableFuture<List<String>> getTargetExistIdFilter(String deviceNumber, boolean cached , int protocolId) throws ProtocolIdNotValidException {
         if (cached){
             String deviceTag = CommonCacheUtil.getTargetDeviceTagByNumber(deviceNumber);
             ConcurrentHashMap<String, OperationAnalyzer> map = CommonOptFilterUtil.getTargetProtocolToOperationAnalyzerByDeviceTag(deviceTag);
             if (map == null){
                 throw new ProtocolIdNotValidException("缓存中不存在ID为 " + deviceNumber + " 的规则");
             }
-            final List<Integer> optFilterList  = new ArrayList<>();
+            final List<String> optFilterList  = new ArrayList<>();
             OperationAnalyzer analyzer = map.get(convertIdToName(protocolId));
 //                if (type == 0) {
 //                    analyzer.getAnalyzer().getWhiteMap().forEach(new BiConsumer<Integer, String>() {
@@ -88,7 +88,7 @@ public class OptFilterServiceImpl extends BaseServiceImpl<OptFilter,OptFilterMap
     }
 
     @Override
-    public List<Integer> selectTargetOptFilter(String device, int protocolId) {
+    public List<String> selectTargetOptFilter(String device, int protocolId) {
         return this.baseMapper.selectTargetOptFilter(device,protocolId,Common.GPLOT_ID);
     }
 

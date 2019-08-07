@@ -63,7 +63,6 @@ public class FiveDimensionPacketFilter {
     //private HashMap<String,String> dstMacAddressBlack = EMPTY_MAP;
 
     private String userName;
-    private List<Rule> filterList;
     private String filterName;
     public FiveDimensionPacketFilter(String filterName){
         this.filterName = filterName;
@@ -77,27 +76,25 @@ public class FiveDimensionPacketFilter {
         this.userName = userName;
     }
 
-    public List<Rule> getFilterList(){
-        return this.filterList;
-    }
-
     public void addRules(List<Rule> rules){
         for (Rule rule : rules) {
             addRule(rule);
         }
     }
     public void addRule(Rule rule){
-        FvDimensionFilter fvDimensionFilter = rule.getFvDimensionFilter();
-        dstIpWhiteMap = checkMap(dstIpWhiteMap,fvDimensionFilter.getDstIp());
-        dstMacAddressWhite = checkMap(dstMacAddressWhite,fvDimensionFilter.getDstMac());
-        dstPortWhiteMap = checkMap(dstPortWhiteMap,fvDimensionFilter.getDstPort());
-        srcIpWhiteMap = checkMap(srcIpWhiteMap,fvDimensionFilter.getSrcIp());
-        srcMacAddressWhite = checkMap(srcMacAddressWhite,fvDimensionFilter.getSrcMac());
-        srcPortWhiteMap = checkMap(srcPortWhiteMap,fvDimensionFilter.getSrcPort());
-        try {
-            protocolWhiteMap = checkMap(protocolWhiteMap,CommonCacheUtil.convertIdToName(fvDimensionFilter.getProtocolId()));
-        } catch (ProtocolIdNotValidException e) {
-            e.printStackTrace();
+        if (rule.isEnable()){
+            FvDimensionFilter fvDimensionFilter = rule.getFvDimensionFilter();
+            dstIpWhiteMap = checkMap(dstIpWhiteMap,fvDimensionFilter.getDstIp());
+            dstMacAddressWhite = checkMap(dstMacAddressWhite,fvDimensionFilter.getDstMac());
+            dstPortWhiteMap = checkMap(dstPortWhiteMap,fvDimensionFilter.getDstPort());
+            srcIpWhiteMap = checkMap(srcIpWhiteMap,fvDimensionFilter.getSrcIp());
+            srcMacAddressWhite = checkMap(srcMacAddressWhite,fvDimensionFilter.getSrcMac());
+            srcPortWhiteMap = checkMap(srcPortWhiteMap,fvDimensionFilter.getSrcPort());
+            try {
+                protocolWhiteMap = checkMap(protocolWhiteMap,CommonCacheUtil.convertIdToName(fvDimensionFilter.getProtocolId()));
+            } catch (ProtocolIdNotValidException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -136,7 +133,6 @@ public class FiveDimensionPacketFilter {
      * @param filterList 前端配置的针对某个设备的五元组过滤器组
      */
     public void setFilterList(List<Rule> filterList){
-        this.filterList = filterList;
         //key : 类型，【目的IP】【白】名单 value：过滤用的map
         HashMap<String,ConcurrentHashMap<String, String>> allMap = new HashMap<>();
         for (Rule rule : filterList) {
@@ -148,7 +144,9 @@ public class FiveDimensionPacketFilter {
 //                //黑名单
 //                setFilterMap(allMap, fiveDimensionFilter, DST_IP_BLACK, SRC_IP_BLACK, DST_PORT_BLACK, SRC_PORT_BLACK, DST_MAC_ADDRESS_BLACK, SRC_MAC_ADDRESS_BLACK, PROTOCOL_BLACK);
 //            }
-            setFilterMap(allMap, rule.getFvDimensionFilter(),rule.getDstPorts());
+            if (rule.isEnable()) {
+                setFilterMap(allMap, rule.getFvDimensionFilter(), rule.getDstPorts());
+            }
         }
 
         Set<String> stringSet = allMap.keySet();
@@ -327,7 +325,6 @@ public class FiveDimensionPacketFilter {
                 ", protocolWhiteMap=" + protocolWhiteMap +
                 ", dstIpWhiteMap=" + dstIpWhiteMap +
                 ", dstPortWhiteMap=" + dstPortWhiteMap +
-                ", filterName='" + filterName + '\'' +
                 '}';
     }
 }

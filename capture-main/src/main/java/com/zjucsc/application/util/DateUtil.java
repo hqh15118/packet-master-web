@@ -20,6 +20,7 @@ public class DateUtil {
             //Calendar.DAY_OF_YEAR
             tempStart.add(type, 1);
         }
+        result.add(end);
         return result;
     }
 }

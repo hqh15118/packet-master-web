@@ -10,11 +10,11 @@
         <module>art-decode</module>
         <module>attack-analyze</module>
         <module>protocol-map</module>
-        <module>lua-engine</module>
+        <!--<module>lua-engine</module>-->
         <module>common</module>
         <module>capture-main</module>
-        <module>zuul</module>
-        <module>deploy</module>
+        <!--<module>zuul</module>-->
+        <!--<module>deploy</module>-->
     </modules>
 
         <groupId>com.zjucsc</groupId>

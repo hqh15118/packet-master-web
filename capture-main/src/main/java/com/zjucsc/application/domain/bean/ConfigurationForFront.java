@@ -12,12 +12,12 @@ public class ConfigurationForFront {
 
     @Data
     public static class ConfigurationWrapper implements Serializable {
-        private int fun_code;
+        private String fun_code;
         private String opt;
 
         public ConfigurationWrapper(){}
 
-        public ConfigurationWrapper(int fun_code, String opt) {
+        public ConfigurationWrapper(String fun_code, String opt) {
             this.fun_code = fun_code;
             this.opt = opt;
         }

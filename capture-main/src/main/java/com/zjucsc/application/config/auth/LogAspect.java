@@ -26,12 +26,12 @@ import java.util.Date;
 @Component
 public class LogAspect {
 
-    private final KafkaThread<LogBean> LOG_BEAN_SEND_KAFKA_THREAD =
-            KafkaThread.createNewKafkaThread("normal_log", KafkaTopic.SEND_NORMAL_LOG);
-
-    {
-        LOG_BEAN_SEND_KAFKA_THREAD.startService();
-    }
+//    private final KafkaThread<LogBean> LOG_BEAN_SEND_KAFKA_THREAD =
+//            KafkaThread.createNewKafkaThread("normal_log", KafkaTopic.SEND_NORMAL_LOG);
+//
+//    {
+//        LOG_BEAN_SEND_KAFKA_THREAD.startService();
+//    }
 
     @Autowired
     private ConstantConfig constantConfig;
@@ -74,7 +74,7 @@ public class LogAspect {
             if (exception!=null){
                 builder.exception(exception.getMessage());
             }
-            LOG_BEAN_SEND_KAFKA_THREAD.sendMsg(builder.build());
+            //LOG_BEAN_SEND_KAFKA_THREAD.sendMsg(builder.build());
         }
         if (constantConfig.isOpenAOPLog()){
             if (constantConfig.isShowErrorOnly()){

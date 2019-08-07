@@ -2,6 +2,7 @@ package com.zjucsc.socket_io;
 
 import com.corundumstudio.socketio.AckCallback;
 import com.corundumstudio.socketio.SocketIOClient;
+import com.corundumstudio.socketio.listener.DataListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,5 +40,10 @@ public class SocketServiceCenter {
 
     public static Set<SocketIOClient> getAllClients(){
         return connectedClient;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void registerSocketIoDataListenter(String eventName, Class<?> eventType, DataListener dataListener){
+        MainServer.getServer().addEventListener(eventName,eventType,dataListener);
     }
 }

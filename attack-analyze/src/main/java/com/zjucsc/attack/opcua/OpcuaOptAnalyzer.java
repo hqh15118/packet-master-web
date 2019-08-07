@@ -11,15 +11,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
+import static com.zjucsc.attack.common.ArtAttackAnalyzeUtil.attackDecode;
+
 public class OpcuaOptAnalyzer extends BaseOptAnalyzer<OpcuaOptConfig> {
 
     public AttackBean attackdecode(OpcUaPacket.LayersBean layer, Map<String,Float> techmap, OpcuaOptConfig OpcuaOptConfig)
     {
-        if(ArtAttackAnalyzeTask.attackDecode(OpcuaOptConfig.getExpression(),techmap,"1")==null)
+        if(attackDecode(OpcuaOptConfig.getExpression(),techmap,"1")==null)
         {
             return null;
         }
-        else if(ArtAttackAnalyzeTask.attackDecode(OpcuaOptConfig.getExpression(),techmap,"1").equals("配置错误"))
+        else if(attackDecode(OpcuaOptConfig.getExpression(),techmap,"1").equals("配置错误"))
         {
 //            String error = "";
 //            for (String x:OpcuaOptConfig.getExpression())
@@ -29,7 +31,7 @@ public class OpcuaOptAnalyzer extends BaseOptAnalyzer<OpcuaOptConfig> {
 //            return new AttackBean.Builder().attackType("配置错误:".concat(error) ).fvDimension(layer).attackInfo("").build();
             return null;
         }
-        else if(ArtAttackAnalyzeTask.attackDecode(OpcuaOptConfig.getExpression(),techmap,"1").equals("1"))
+        else if(attackDecode(OpcuaOptConfig.getExpression(),techmap,"1").equals("1"))
         {
             if(operationdecode(layer, OpcuaOptConfig))
             {

@@ -18,13 +18,13 @@ public interface IConfigurationSettingService {
 
     int selectConfigurationCount(String codeDes, int protocolId);
 
-    void updateFuncode(int protocolId, int fun_code, String opt);
+    void updateFuncode(int protocolId, String fun_code, String opt);
 
     List<ConfigurationSetting> selectAll();
 
     void saveOrUpdateBatch(List<ConfigurationSetting> configurationSettings);
 
-    void deleteByProtocolIdAndFuncode(int protocolId, int funCode);
+    void deleteByProtocolIdAndFuncode(int protocolId, String funCode);
 
     void deleteByProtocolId(int protocolId);
 }

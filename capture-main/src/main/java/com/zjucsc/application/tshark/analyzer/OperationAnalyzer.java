@@ -16,10 +16,10 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 //OperationPacketFilter<Integer,String>   --->    <fun_code , fun_code_meaning>
-public class OperationAnalyzer extends AbstractAnalyzer<OperationPacketFilter<Integer,String>> {
+public class OperationAnalyzer extends AbstractAnalyzer<OperationPacketFilter<String,String>> {
     @Override
     public Object analyze(Object... objs){
-        int fun_code = ((int) objs[0]);
+        String fun_code = ((String) objs[0]);
         FvDimensionLayer layer = ((FvDimensionLayer) objs[1]);
         String protocol = (String)objs[2];
         if (!getAnalyzer().getWhiteMap().containsKey(fun_code)){
@@ -32,16 +32,17 @@ public class OperationAnalyzer extends AbstractAnalyzer<OperationPacketFilter<In
         return null;
     }
 
-    private String attackrec(String protocols , int Fun_code)
+    private String attackrec(String protocols , String Fun_code)
     {
-        if(protocols==null || Fun_code==-1)
+        if(protocols==null || Fun_code.equals("--"))
         {
             return null;
         }
+        int funCode = Integer.decode(Fun_code);
         switch (protocols)
         {
             case "s7comm": {
-                switch (Fun_code) {
+                switch (funCode) {
                     case 0x04:
                         return "数据篡改攻击!";
                     case 0x05:
@@ -64,7 +65,7 @@ public class OperationAnalyzer extends AbstractAnalyzer<OperationPacketFilter<In
             }
             case "s7comm_user_data":
             {
-                switch (Fun_code) {
+                switch (funCode) {
                     case 0xf:
                         return "代码篡改攻击!";
                     case 0x1:
@@ -80,7 +81,7 @@ public class OperationAnalyzer extends AbstractAnalyzer<OperationPacketFilter<In
             }
             case "modbus":
             {
-                switch (Fun_code) {
+                switch (funCode) {
                     case 43:
                         return "嗅探攻击";
                     case 5:
@@ -108,7 +109,7 @@ public class OperationAnalyzer extends AbstractAnalyzer<OperationPacketFilter<In
         }
     }
 
-    public OperationAnalyzer(OperationPacketFilter<Integer, String> integerStringPacketFilter) {
+    public OperationAnalyzer(OperationPacketFilter<String, String> integerStringPacketFilter) {
         super(integerStringPacketFilter);
     }
 

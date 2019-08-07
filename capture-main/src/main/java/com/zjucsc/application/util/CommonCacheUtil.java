@@ -34,51 +34,107 @@ public class CommonCacheUtil {
     /*********************************
      * 清楚当前组态图下所有缓存的配置
      ********************************/
+    /*
     public static void clearAllCacheByGplotId(){
         removeAllDeviceNumberToName();
     }
-
+    */
     public static final BiMap<Integer,String> AUTH_MAP = HashBiMap.create();
-
+    /**************************************
+     * 所有可配置的协议
+     * 协议 --> 功能码 以及 对应的含义
+     *************************************/
+    public static final HashMap<String , HashMap<String,String>> CONFIGURATION_MAP = new HashMap<>();
+    /**************************************
+     * init in
+     * @see com.zjucsc.application.task.InitConfigurationService
+     *************************************/
+    public static final BiMap<Integer,String> PROTOCOL_STR_TO_INT = HashBiMap.create();
+    /**************************************
+     * 设备IP和DEVICE_NUMBER之间互相转换
+     *************************************/
+    public static final BiMap<String,String> DEVICE_NUMBER_TO_TAG = HashBiMap.create();
+    /**************************************
+     * 【key 设备deviceNumber deviceTag设备标识（Ip/Mac）】
+     * 每台设备的统计信息
+     *************************************/
+    private static final ConcurrentHashMap<String, StatisticInfoSaveBean> STATISTICS_INFO_BEAN =
+            new ConcurrentHashMap<>();
+    /*************************************
+     * 要显示的工艺参数集合
+     * 【将这个set里面的工艺参数数据传输到前端，其他的不用传】
+     ************************************/
+    public static final Set<String> SHOW_GRAPH_SET = Collections.synchronizedSet(new HashSet<>());
+    /************************************
+     * 通用正常报文 [协议：报文List]
+     ***********************************/
+    private static final HashMap<String, HashMap<RightPacketInfo,String>> RIGHT_PACKET_INFOS = new HashMap<>();
+    /***********************************
+     * 五元组白名单
+     **********************************/
+    private static final Map<String,Map<String,String>> RIGHT_PROTOCOL_LIST = new ConcurrentHashMap<>();
+    /*************************************
+     * 所有IP地址和MAC地址
+     ************************************/
+    private static final ConcurrentHashMap<String, Device> ALL_DEVICES = new ConcurrentHashMap<>();
+    //存储所有的mac地址，防止设备重复
+    private static final ConcurrentHashMap<String,String> ALL_MAC_ADDRESS = new ConcurrentHashMap<>();
+    /************************************
+     * 所有要识别的工控协议【用于设备识别】
+     ************************************/
+    private static final Map<String,String> ALL_IPROTOCOL = new ConcurrentHashMap<>();
+    /*************************************
+     * [deviceNumber - deviceName]
+     ************************************/
+    private static final Map<String,String> DEVICE_NUMBER_TO_NAME = new ConcurrentHashMap<>();
+    /*************************************
+     * 报文 : 当前设备【srcMacAddress】 --> 目的设备【dstMacAddress】
+     * 源设备发送到其他设备的报文数量 [当前设备，[目的设备，报文流量]]
+     ************************************/
+    private static final ConcurrentHashMap<Device,ConcurrentHashMap<Device, AtomicInteger>> DEVICE_TO_DEVICE_PACKETS
+            = new ConcurrentHashMap<>();
+    /*************************************
+     * 配置设备最大流量
+     ************************************/
+    private static final Map<String,DeviceMaxFlow> DEVICE_MAX_FLOW = new ConcurrentHashMap<>();
+    /*************************************
+     * 设备和设备匹配
+     ************************************/
+    private static ConcurrentHashMap<String,String> D2DAttackPair = new ConcurrentHashMap<>();
+    /*************************************
+     * 所有被丢弃的协议【设备识别】
+     ************************************/
+    private static final HashMap<String,String> ALL_DROP_PROTOCOL = new HashMap<>();
     /*********************************
      *
      *  CONFIGURATION_MAP
      *
      **********************************/
-    /**
-     * cache7
-     * 所有可配置的协议
-     * 协议 --> 功能码 以及 对应的含义 --> 从serviceLoader中加载
-     */
-    public static final HashMap<String , HashMap<Integer,String>> CONFIGURATION_MAP = new HashMap<>();
 
-    public static void deleteCachedProtocolByName(String protocolName) {
-        CONFIGURATION_MAP.remove(protocolName);
-        PROTOCOL_STR_TO_INT.inverse().remove(protocolName);
-    }
-
+//    public static void deleteCachedProtocolByName(String protocolName) {
+//        CONFIGURATION_MAP.remove(protocolName);
+//        PROTOCOL_STR_TO_INT.inverse().remove(protocolName);
+//    }
     public static void deleteCachedProtocolByID(int protocolId) throws ProtocolIdNotValidException {
         String protocolName = convertIdToName(protocolId);
         CONFIGURATION_MAP.remove(protocolName);
         PROTOCOL_STR_TO_INT.inverse().remove(protocolName);
     }
 
-    public static void deleteCachedFuncodeByName(String protocolName,
-                                                 int funcode) throws ProtocolIdNotValidException {
-        HashMap<Integer, String> funcodeMeaningMap;
+    private static void deleteCachedFuncodeByName(String protocolName,
+                                                 String funcode) throws ProtocolIdNotValidException {
+        HashMap<String, String> funcodeMeaningMap;
         if ((funcodeMeaningMap = CONFIGURATION_MAP.get(protocolName)) == null) {
             throw new ProtocolIdNotValidException("deleteCachedFuncodeByName " + protocolName + " protocol name not exist and the CONFIGURATION_MAP is : \n" + CONFIGURATION_MAP);
         } else {
             funcodeMeaningMap.remove(funcode);
         }
-        log.info("delete funcode [{}] of protocol [{}] ", funcode, protocolName);
     }
 
     public static void deleteCachedFuncodeById(int protocolId,
-                                               int funcode) throws ProtocolIdNotValidException {
+                                               String funcode) throws ProtocolIdNotValidException {
         String name = convertIdToName(protocolId);
         deleteCachedFuncodeByName(name, funcode);
-        log.info("【接上】delete funcode [{}] of protocol [{}]", funcode, name);
     }
 
     /**
@@ -92,7 +148,7 @@ public class CommonCacheUtil {
         doAddNewProtocolToCache(protocol, protocolId, null);
     }
 
-    private static void doAddNewProtocolToCache(String protocol, int protocolId, HashMap<Integer, String> funCodeMeaningMap) throws ProtocolIdNotValidException {
+    private static void doAddNewProtocolToCache(String protocol, int protocolId, HashMap<String, String> funCodeMeaningMap) throws ProtocolIdNotValidException {
         if (CONFIGURATION_MAP.get(protocol) != null || PROTOCOL_STR_TO_INT.get(protocolId) != null) {
             throw new ProtocolIdNotValidException("protocol " + protocol + " is not valid , cause it exists in CONFIGURATION_MAP or PROTOCOL_STR_TO_INT \n CONFIGURATION_MAP is" +
                     CONFIGURATION_MAP + " PROTOCOL_STR_TO_INT" + PROTOCOL_STR_TO_INT);
@@ -113,7 +169,7 @@ public class CommonCacheUtil {
      * @param protocolId
      * @param funcodeMeaningMap
      */
-    public static void addNewProtocolAndFuncodeMapToCache(String protocol, int protocolId, HashMap<Integer, String> funcodeMeaningMap) throws ProtocolIdNotValidException {
+    public static void addNewProtocolAndFuncodeMapToCache(String protocol, int protocolId, HashMap<String, String> funcodeMeaningMap) throws ProtocolIdNotValidException {
         doAddNewProtocolToCache(protocol, protocolId, funcodeMeaningMap);
     }
 
@@ -126,9 +182,9 @@ public class CommonCacheUtil {
      * @throws ProtocolIdNotValidException
      */
     public static void updateOldProtocolCacheByName(String protocol,
-                                                    int funcode,
+                                                    String funcode,
                                                     String opt) throws ProtocolIdNotValidException {
-        HashMap<Integer, String> funcodeMeaningMap;
+        HashMap<String, String> funcodeMeaningMap;
 
         if ((funcodeMeaningMap = CONFIGURATION_MAP.get(protocol)) == null) {
             throw new ProtocolIdNotValidException("updateOldProtocolCacheByName " + protocol + " protocol name not exist and the CONFIGURATION_MAP is : \n" + CONFIGURATION_MAP);
@@ -145,13 +201,13 @@ public class CommonCacheUtil {
      * @throws ProtocolIdNotValidException
      */
     public static void updateOldProtocolCacheById(int protocolId,
-                                                  int funcode,
+                                                  String funcode,
                                                   String opt) throws ProtocolIdNotValidException {
         String protocolName;
         if ((protocolName = PROTOCOL_STR_TO_INT.get(protocolId)) == null) {
             throw new ProtocolIdNotValidException(protocolId + " protocol id not exist and the PROTOCOL_STR_TO_INT is : \n" + PROTOCOL_STR_TO_INT);
         } else {
-            HashMap<Integer, String> funcodeMeaningMap;
+            HashMap<String, String> funcodeMeaningMap;
             if ((funcodeMeaningMap = CONFIGURATION_MAP.get(protocolName)) == null) {
                 throw new ProtocolIdNotValidException(protocolName + "protocol name not exist and the CONFIGURATION_MAP is : \n" + CONFIGURATION_MAP);
             } else {
@@ -159,20 +215,12 @@ public class CommonCacheUtil {
             }
         }
     }
-
-
     /*********************************
      *
      *  PROTOCOL_STR_TO_INT
      *
      **********************************/
 
-    /**
-     * cache2
-     *  init in
-     * @see com.zjucsc.application.task.InitConfigurationService
-     */
-    public static final BiMap<Integer,String> PROTOCOL_STR_TO_INT = HashBiMap.create();
     /**
      * @param protocolId 协议ID
      * @return 协议名字
@@ -215,17 +263,6 @@ public class CommonCacheUtil {
      *  DEVICE_IP_TO_NAME
      *
      **********************************/
-    /**
-     * cache1
-     * 设备IP和DEVICE_NUMBER之间互相转换
-     */
-    public static final BiMap<String,String> DEVICE_NUMBER_TO_TAG = HashBiMap.create();
-    /**
-     * 【key 设备deviceNumber deviceTag设备标识（Ip/Mac）】
-     * 每台设备的统计信息
-     */
-    private static final ConcurrentHashMap<String, StatisticInfoSaveBean> STATISTICS_INFO_BEAN =
-            new ConcurrentHashMap<>();
     public static ConcurrentHashMap<String, StatisticInfoSaveBean> getStatisticsInfoBean(){
         return STATISTICS_INFO_BEAN;
     }
@@ -270,10 +307,6 @@ public class CommonCacheUtil {
      *  CACHED SHOW GRAPH ARGS
      *
      **********************************/
-    /**
-     * 要显示的工艺参数集合【将这个set里面的工艺参数数据传输到前端，其他的不用传】
-     */
-    public static final Set<String> SHOW_GRAPH_SET = Collections.synchronizedSet(new HashSet<>());
 
     public static void addShowGraphArg(int protocolId, String artArg) {
         SHOW_GRAPH_SET.add(artArg);
@@ -363,12 +396,8 @@ public class CommonCacheUtil {
         return CommonOptFilterUtil.getTargetProtocolToOperationAnalyzerByDeviceTag(layer.eth_dst[0]);
     }
 
-    /***********************************
-     * 五元组白名单
-     **********************************/
-    private static final byte[] LOCK_RIGHT_PROTOCOL_LIST = new byte[1];
-    private static final Map<String,Map<String,String>> RIGHT_PROTOCOL_LIST = new HashMap<>();
 
+    private static final byte[] LOCK_RIGHT_PROTOCOL_LIST = new byte[1];
     public static void addWhiteProtocolToCache(String deviceNumber , String protocolName[]) {
         synchronized (LOCK_RIGHT_PROTOCOL_LIST) {
             Map<String, String> whiteProtocolMap = RIGHT_PROTOCOL_LIST.computeIfAbsent(deviceNumber, k -> new HashMap<>());
@@ -411,14 +440,8 @@ public class CommonCacheUtil {
         }
     }
 
-    /************************************
-     *
-     * 通用正常报文 [协议：报文List]
-     *
-     ***********************************/
     private static final byte[] NORMAL_LOCK = new byte[1];
-    private static final HashMap<String, HashMap<RightPacketInfo,String>> RIGHT_PACKET_INFOS =
-            new HashMap<>();
+
     public static void addNormalRightPacketInfo(RightPacketInfo rightPacketInfo){
         synchronized (NORMAL_LOCK){
             String protocol = rightPacketInfo.getProtocol();
@@ -465,7 +488,7 @@ public class CommonCacheUtil {
     }
     private static void newAttackCome(Map<String,Integer> map,String key){
         int attackNum = map.computeIfAbsent(key,k -> 0);
-        ATTACK_TYPE.put(key,++attackNum);
+        map.put(key,++attackNum);
     }
     //FIRST 最大，LAST最小
     private static final LinkedList<Top5Statistic.Top5Wrapper> ATTACK_TYPE_LIST = new LinkedList<>();
@@ -476,6 +499,12 @@ public class CommonCacheUtil {
 
     //单线程统计
     public static Top5Statistic getTop5StatisticsData(){
+        ATTACK_TYPE_LIST.clear();
+        ATTACK_PROTOCOL.clear();
+        ATTACK_IPS_LIST.clear();
+        ATTACKED_IPS_LIST.clear();
+        ATTACK_PROTOCOL_LIST.clear();
+
         ATTACK_TYPE.forEach((type, count) -> {
             getTop5List(ATTACK_TYPE_LIST,type,count);
         });
@@ -518,11 +547,6 @@ public class CommonCacheUtil {
         SocketServiceCenter.updateAllClient(SocketIoEvent.ATTACK_STATISTICS,ATTACK_TYPE);
     }
 
-    /*************************************
-     * [deviceNumber - deviceName]
-     ************************************/
-    private static final Map<String,String> DEVICE_NUMBER_TO_NAME =
-            new HashMap<>();
     public static void addDeviceNumberToName(String deviceNumber,String deviceName){
         DEVICE_NUMBER_TO_NAME.put(deviceNumber, deviceName);
     }
@@ -535,13 +559,6 @@ public class CommonCacheUtil {
     public static void removeDeviceNumberToName(String deviceNumber){
         DEVICE_NUMBER_TO_NAME.remove(deviceNumber);
     }
-
-    /*************************************
-     *
-     * 所有IP地址和MAC地址
-     *
-     ************************************/
-    private static final ConcurrentHashMap<String, Device> ALL_DEVICES = new ConcurrentHashMap<>();
 
     public static void addOrUpdateDeviceManually(Device device){
         ALL_DEVICES.put(device.getDeviceTag(),device);
@@ -557,6 +574,10 @@ public class CommonCacheUtil {
 
     public static void removeAllDeviceListByMacAddress(String deviceTag){
         ALL_DEVICES.remove(deviceTag);
+    }
+
+    public static int getAllDeviceCount(){
+        return ALL_DEVICES.size();
     }
 
     /**
@@ -580,14 +601,10 @@ public class CommonCacheUtil {
 //        }
         if (/*CommonCacheUtil.iProtocolExist(layer.protocol) && */DeviceOptUtil.validPacketInfo(layer)){
             String deviceTag = DeviceOptUtil.getSrcDeviceTag(layer);
-            if (!ALL_DEVICES.containsKey(deviceTag)) {
-                    Device srcDevice;
-                    srcDevice = createDeviceInverse(layer, deviceTag);
-                    ALL_DEVICES.put(srcDevice.getDeviceTag(), srcDevice);
-                    //new device
-                    CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(srcDevice.getDeviceNumber(), srcDevice.getDeviceTag());
-                    CommonCacheUtil.addDeviceNumberToName(srcDevice.getDeviceNumber(), srcDevice.getDeviceInfo());
-                    return srcDevice;
+            if (!ALL_DEVICES.containsKey(deviceTag) && ALL_MAC_ADDRESS.putIfAbsent(layer.eth_src[0],"") == null/*未存过该MAC地址*/) {
+                Device srcDevice = createDeviceInverse(layer, deviceTag);
+                ALL_DEVICES.put(srcDevice.getDeviceTag(), srcDevice);
+                return srcDevice;
             }
         }
         /*
@@ -625,7 +642,8 @@ public class CommonCacheUtil {
         StringBuilder sb = CommonUtil.getGlobalStringBuilder();
         long timeNow = System.nanoTime();                       //防止太快重复设备
         Device device = new Device();
-        sb.append("设备").append(CommonUtil.getDateFormat2().format(new Date()))
+        Date date = new Date();
+        sb.append("设备").append(CommonUtil.getDateFormat2().format(date))
                 .append("_").append(threadLocalRandom.nextInt(10000));
         device.setDeviceInfo(sb.toString());
         device.setDeviceNumber(String.valueOf(timeNow));
@@ -635,15 +653,10 @@ public class CommonCacheUtil {
         device.setGPlotId(Common.GPLOT_ID);
         device.setDeviceIp(layer.ip_src[0]);
         device.setProtocol(layer.protocol);
+        device.setCreateTime(CommonUtil.getDateFormat3().format(date));
         return device;
     }
 
-    /*************************************
-     * 报文 : 当前设备【srcMacAddress】 --> 目的设备【dstMacAddress】
-     * 源设备发送到其他设备的报文数量 [当前设备，[目的设备，报文流量]]
-     ************************************/
-    private static final ConcurrentHashMap<Device,ConcurrentHashMap<Device, AtomicInteger>> DEVICE_TO_DEVICE_PACKETS
-            = new ConcurrentHashMap<>();
 
     public static void addTargetDevicePacket(FvDimensionLayer layer){
         String srcTag = DeviceOptUtil.getSrcDeviceTag(layer);
@@ -661,19 +674,21 @@ public class CommonCacheUtil {
                 atomicInteger.incrementAndGet();
             }
         }
+    }
 
+    public static void removeDeviceToDevicePacketPair(Device device){
+        //删除key
+        DEVICE_TO_DEVICE_PACKETS.remove(device);
+        //删除value
+        DEVICE_TO_DEVICE_PACKETS.forEach((srcDevice, deviceAtomicIntegerConcurrentHashMap) -> {
+            deviceAtomicIntegerConcurrentHashMap.remove(device);
+        });
     }
 
     public static ConcurrentHashMap<Device,ConcurrentHashMap<Device, AtomicInteger>> getDeviceToDevicePackets(){
         return DEVICE_TO_DEVICE_PACKETS;
     }
 
-    /************************************
-     *
-     * 所有要识别的工控协议【用于设备识别】
-     *
-     ************************************/
-    private static final HashMap<String,String> ALL_IPROTOCOL = new HashMap<>();
     public static void initIProtocol(List<String> protocols){
         for (String protocol : protocols) {
             ALL_IPROTOCOL.put(protocol,protocol);
@@ -682,7 +697,7 @@ public class CommonCacheUtil {
     public static boolean iProtocolExist(String protocolName){
         return ALL_IPROTOCOL.containsKey(protocolName);
     }
-    private static final HashMap<String,String> ALL_DROP_PROTOCOL = new HashMap<>();
+
     public static void addDropProtocol(String protocolName){
         ALL_DROP_PROTOCOL.put(protocolName,"");
     }
@@ -753,7 +768,6 @@ public class CommonCacheUtil {
         }
     }
 
-    private static final Map<String,DeviceMaxFlow> DEVICE_MAX_FLOW = new ConcurrentHashMap<>();
     public static void addOrUpdateDeviceMaxFlow(DeviceMaxFlow deviceMaxFlowError){
         DEVICE_MAX_FLOW.put(deviceMaxFlowError.getDeviceNumber(),deviceMaxFlowError);
     }
@@ -829,7 +843,6 @@ public class CommonCacheUtil {
         return state;
     }
 
-    private static ConcurrentHashMap<String,String> D2DAttackPair = new ConcurrentHashMap<>();
     public static void addD2DAttackPair(String dstDeviceNumber,String srcDeviceNumber){
         StringBuilder sb = CommonUtil.getGlobalStringBuilder();
         sb.append(dstDeviceNumber).append("-").append(srcDeviceNumber);
@@ -842,5 +855,8 @@ public class CommonCacheUtil {
         StringBuilder sb = CommonUtil.getGlobalStringBuilder();
         sb.append(dstDeviceNumber).append("-").append(srcDeviceNumber);
         return D2DAttackPair.containsKey(sb.toString());
+    }
+    public static int getAttackedDeviceCount(){
+        return D2DAttackPair.size();
     }
 }

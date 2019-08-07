@@ -1,6 +1,11 @@
 package com.zjucsc.common.common_util;
 
+import com.zjucsc.common.bean.CustomThreadPoolExecutor;
+import com.zjucsc.common.bean.ThreadPoolInfoWrapper;
+
 import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.concurrent.*;
 
 public class CommonUtil {
     private static final ThreadLocal<StringBuilder> GLOBAL_THREAD_LOCAL_STRING_BUILDER =
@@ -31,5 +36,41 @@ public class CommonUtil {
             = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyyMMddHHmmssSS"));
     public static SimpleDateFormat getDateFormat2(){
         return SIMPLE_DATE_FORMAT_THREAD_LOCAL2.get();
+    }
+    private static final ThreadLocal<SimpleDateFormat> SIMPLE_DATE_FORMAT_THREAD_LOCAL3
+            = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SS"));
+    public static SimpleDateFormat getDateFormat3(){
+        return SIMPLE_DATE_FORMAT_THREAD_LOCAL3.get();
+    }
+
+    private static RejectedExecutionHandler REJECT_EXECUTION_HANDLER;
+    public static ThreadPoolExecutor getFixThreadPoolSizeThreadPool(int poolSize , ThreadFactory threadFactory,String tag , RejectedExecutionHandler executionHandler){
+        return getFixThreadPoolSizeThreadPool(1,poolSize,threadFactory,tag,executionHandler);
+    }
+
+    public static ThreadPoolExecutor getFixThreadPoolSizeThreadPool(int coreSize , int poolSize , ThreadFactory threadFactory,String tag , RejectedExecutionHandler executionHandler){
+        return new CustomThreadPoolExecutor(coreSize, coreSize, Integer.MAX_VALUE, TimeUnit.SECONDS, new LinkedBlockingQueue<>(poolSize),
+                threadFactory ,
+                executionHandler).setTag(tag);
+    }
+
+    public static ThreadPoolExecutor getSingleThreadPoolSizeThreadPool(int poolSize , ThreadFactory threadFactory,String tag){
+        if (REJECT_EXECUTION_HANDLER == null){
+            return new CustomThreadPoolExecutor(1, 1, Integer.MAX_VALUE, TimeUnit.SECONDS, new LinkedBlockingQueue<>(poolSize),
+                    threadFactory,
+                    (r, executor) -> {
+
+                    }).setTag(tag);
+        }else{
+            return new CustomThreadPoolExecutor(1, 1, Integer.MAX_VALUE, TimeUnit.SECONDS, new LinkedBlockingQueue<>(poolSize),
+                    threadFactory,
+                    REJECT_EXECUTION_HANDLER).setTag(tag);
+        }
+    }
+
+    public static synchronized void registerExceptionHandler(RejectedExecutionHandler executionHandler){
+        if (REJECT_EXECUTION_HANDLER == null){
+            REJECT_EXECUTION_HANDLER = executionHandler;
+        }
     }
 }

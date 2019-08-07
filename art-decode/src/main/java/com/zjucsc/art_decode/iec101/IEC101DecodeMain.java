@@ -2,39 +2,28 @@ package com.zjucsc.art_decode.iec101;
 
 import com.zjucsc.art_decode.artconfig.IEC101Config;
 import com.zjucsc.common.common_util.ByteUtil;
+import com.zjucsc.common.common_util.Bytecut;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class IEC101DecodeMain {
-    /*
-    private static final int REMOTE_CONTROL = 1;    //监视方向的过程信息
-    private static final int WATCH_PROGRESS_INFO = 2;   //遥控
-    private static final int ARG_SETTING = 3;   //参数设置
-    private static final int SYS_END_INIT = 4;  //系统命令，初始化结束
-    private static final int SYS_ALL_CALL = 5;  //系统命令，总召唤
-    private static final int SYS_CLOCK_SYNC = 6; //系统命令，时钟同步
-    private static final int SYS_RESET_PROCESS = 7; //系统命令，复位进程
-    */
-    private static HashMap<String,String> map = new HashMap<>();//工艺参数Map
 
-    public static void iec101DecodeProgram(byte[] tcpPayload, Map<String,Float> globalMap, IEC101Config iec101Config,
-                                           FvDimensionLayer layer){
+    public static void iec101DecodeProgram(byte[] tcpPayload, Map<String, Float> globalMap,IEC101Config iec101Config, FvDimensionLayer layer){
         int length = tcpPayload.length;
         switch (length){
             case 1 : decode1(tcpPayload[0]);break;
             case 5 : decode5(tcpPayload);break;
             default:
                 if (tcpPayload[0] == 0x68) {
-                    decodeN(tcpPayload);
+                    decodeN(tcpPayload,iec101Config,globalMap,layer);
                     break;
                 }
         }
     }
     //类型标识偏移
     private static final int TI_OFFSET = 6;
-    //变结构限定偏移
+    //变结构限定偏移w
     private static final int SQ_NUMBER_OFFSET = 7;
     //传送原因偏移(功能码)
     private static final int TRANSFER_REASON_OFFSET = 8;
@@ -43,37 +32,48 @@ public class IEC101DecodeMain {
     //时标
     private static final int INFO_TIME_OFFSET = 12;
 
-    private static void decodeN(byte[] tcpPayload) {
+    private static void decodeN(byte[] tcpPayload,IEC101Config iec101Config,Map<String,Float> globalMap,FvDimensionLayer layer) {
         int ti = Byte.toUnsignedInt(tcpPayload[TI_OFFSET]);
-        int SQ = tcpPayload[SQ_NUMBER_OFFSET] & 0x80;  //地址连续性，等于0表示地址不连续
+        //System.out.println("TI:" + Integer.toHexString(ti));
+        int SQ = tcpPayload[SQ_NUMBER_OFFSET] & 0x80; //地址连续性，等于0表示地址不连续
         int num = tcpPayload[SQ_NUMBER_OFFSET] & 0x7F; //信息元素个数
-        String transferReason = decodeTransferReason(tcpPayload[TRANSFER_REASON_OFFSET]);
-        System.out.println(transferReason);//TODO
-        decode101ArtData(tcpPayload,SQ,num,ti);
+       // String transferReason = decodeTransferReason(tcpPayload[TRANSFER_REASON_OFFSET]);
+        decode101ArtData(tcpPayload,SQ,num,ti,iec101Config,globalMap,layer);
     }
 
-    private static void decode101ArtData(byte[] tcpPayload,int SQ,int num , int ti) {
+    private static void decode101ArtData(byte[] tcpPayload,int SQ,int num , int ti,
+                                         IEC101Config iec101Config,Map<String,Float> globalMap,FvDimensionLayer layer) {
         //SQ = 0,地址不连续 SQ = 1，地址连续
         int offsetPerInfo = getOffsetOfEveryInfo(ti);//每个信息体所占的字节数
+        //System.out.println("每个信息体所占的字节数:"+offsetPerInfo);
         if (offsetPerInfo > 0) {
             //前三种情况
-            if (SQ == 0) { //[信息体地址(2字节) : 数据(offsetPerInfo个字节)]
+            if (SQ == 0) { //[信息体地址(2字节) : 数据(offsetPerInfo个字节)
                 for (int i = 0; i < num; i++) {
                     int offset = (2 + offsetPerInfo) * i + INFO_START_OFFSET;//2是信息体地址长度
-                    int address = ByteUtil.bytesToShort(tcpPayload, offset); //不唯一的地址
-                    float data = decodeInfoData(tcpPayload,offset + 2,offsetPerInfo,ti);
-                    map.put(String.valueOf(address),String.valueOf(data));
+                    byte[] Payload = {tcpPayload[offset + 1],tcpPayload[offset]};
+                    int address =  Short.toUnsignedInt(ByteUtil.bytesToShort(Payload, 0));//不唯一的地址//
+                    if (address == iec101Config.getAddress()){
+                        globalMap.put(iec101Config.getTag(),decodeInfoData(tcpPayload,offset+2,offsetPerInfo,ti));
+                        break;
+                    }
+                    //System.out.println("工艺参数：address:" + address + " data:" + data );//
                 }
-            } else {
-                //信息体地址(2字节) : [数据(offsetPerInfo个字节)]
-                int address = ByteUtil.bytesToShort(tcpPayload, INFO_START_OFFSET); //唯一的地址
+            } else {//信息体地址(2字节) : [数据(offsetPerInfo个字节)
+                int address = Short.toUnsignedInt((ByteUtil.bytesToShort(tcpPayload, INFO_START_OFFSET))); //唯一的地址//
                 for (int i = 0; i < num; i++) {
                     int offset = 2 + offsetPerInfo * i + INFO_START_OFFSET;//2是信息体地址长度
-                    float data = decodeInfoData(tcpPayload,offset + 2,offsetPerInfo,ti);
-                    map.put(String.valueOf(address),String.valueOf(data));
+                    if (address == iec101Config.getAddress()){
+                        globalMap.put(iec101Config.getTag(),decodeInfoData(tcpPayload,offset+2,offsetPerInfo,ti));
+                        break;
+                    }else{
+                        address++;
+                    }
+                    //System.out.println("工艺参数：address:" + address + " data:" + data );//
                 }
             }
-        }else{
+        }
+        /*else{
             //最后一种情况SOE
             int msL = Byte.toUnsignedInt(tcpPayload[INFO_TIME_OFFSET]) & 0xFF;
             int msH = Byte.toUnsignedInt(tcpPayload[INFO_TIME_OFFSET + 1]) & 0xFF;
@@ -85,13 +85,24 @@ public class IEC101DecodeMain {
             int year = Byte.toUnsignedInt(tcpPayload[INFO_TIME_OFFSET + 6]) & 0x7F;
             System.out.println(year + "." + month + "." + week + "." + day + "." + hour + "." + min + "." + msH + "." + msL);
         }
-        System.out.println(map);//TODO
+        */
     }
 
+    public static String decode101Funcode(byte[] tcpPayload){
+        if (tcpPayload.length == 5){
+            return decode5(tcpPayload);
+        }
+        if (tcpPayload.length > 5){
+            int prm = tcpPayload[4] & 0x40;
+            int fc = tcpPayload[4] & 0x0F;
+            String funCodeMeaning;
+            funCodeMeaning = getString(prm, fc);
+            return funCodeMeaning;
+        }
+        return null;
+    }
 
-    private static void decode5(byte[] tcpPayload) {
-        int prm = tcpPayload[1] & 0x40;
-        int fc = tcpPayload[1] & 0x0F;
+    private static String getString(int prm, int fc) {
         String funCodeMeaning;
         if (prm != 0){
             //报文来自启动站[启动方向]
@@ -102,6 +113,8 @@ public class IEC101DecodeMain {
                 case 3 : funCodeMeaning = "发送/确认用户数据";break;
                 case 4 : funCodeMeaning = "发送/无回答用户数据";break;
                 case 9 : funCodeMeaning = "请求/响应请求链路状态";break;
+                case 10 : funCodeMeaning = "请求/响应请求1级用户数据";break;
+                case 11 : funCodeMeaning = "请求/响应请求2级用户数据";break;
                 default:funCodeMeaning = "未知启动方向功能码操作";
             }
         }else{
@@ -109,15 +122,23 @@ public class IEC101DecodeMain {
             switch (fc){
                 case 0 : funCodeMeaning = "确认：认可";break;
                 case 1 : funCodeMeaning = "确认：否定认可";break;
+                case 8 : funCodeMeaning = "响应：用户数据";break;
+                case 9 : funCodeMeaning = "响应：无所请求的用户数据";break;
                 case 11 : funCodeMeaning = "响应：链路状态";break;
                 default: funCodeMeaning = "未知从动方向功能码操作";
             }
         }
-        System.out.println(funCodeMeaning);
+        return funCodeMeaning;
     }
 
-    private static void decode1(byte b) {
+    private static String decode5(byte[] tcpPayload) {
+        int prm = tcpPayload[1] & 0x40;
+        int fc = tcpPayload[1] & 0x0F;
+        return getString(prm, fc);
+    }
 
+    private static String decode1(byte b) {
+        return null;
     }
 
     private static String decodeTransferReason(byte payload){
@@ -175,16 +196,26 @@ public class IEC101DecodeMain {
     }
 
     private static float decodeInfoData(byte[] tcpPayload,int offset,int offsetPerInfo,int ti){
-        switch (offsetPerInfo){
-            case 1 :
+        switch (ti){
+            case 0x01 :
+            case 0x03 :
                 return tcpPayload[offset];
-            case 5 :
-                if (ti == 0x0d){//遥测
-                    return (float) (tcpPayload[offset] + tcpPayload[offset + 1] / 100.0);
-                } else{//KWH
-                    return 0f;
-                }
+            case 0x14 : return 8;
+            //遥测
+            case 0x09 : return 3;
+            case 0x0a :
+            case 0x0c :
+                return 6;
+            case 0x0b : return 3;
+            case 0x0d : byte[] Payload = {tcpPayload[offset+3],tcpPayload[offset+2],tcpPayload[offset+1],tcpPayload[offset]};
+                return Bytecut.BytesTofloat(Payload,0);
+            case 0x0e : return 8;
+            case 0x15 : return 2;
+            //KWH
+            case 0x0f : return 5;
+            case 0x10 : return 8;
+            case 0x25 : return 12;
+            default: return -1;//SOE
         }
-        return -1f;
     }
 }

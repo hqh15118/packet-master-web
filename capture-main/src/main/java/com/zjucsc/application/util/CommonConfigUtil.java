@@ -17,8 +17,8 @@ public class CommonConfigUtil {
 
     public static boolean SHOW_LOG = false;
 
-    public static HashMap<Integer,String> getTargetProtocolAllFuncodeMeaning(String protocol) {
-        HashMap<Integer,String> map;
+    public static HashMap<String,String> getTargetProtocolAllFuncodeMeaning(String protocol) {
+        HashMap<String,String> map;
         if ((map = CONFIGURATION_MAP.get(protocol)) == null){
 //            throw new ProtocolIdNotValidException("can not find  the target protocol " + protocol + " in CONFIGURATION_MAP \n CONFIGURATION_MAP is : " +
 //                    CONFIGURATION_MAP.keySet());
@@ -29,15 +29,15 @@ public class CommonConfigUtil {
         }
     }
 
-    public static HashMap<Integer,String> getTargetProtocolAllFuncodeMeaning(int protocolId) throws ProtocolIdNotValidException {
+    public static HashMap<String,String> getTargetProtocolAllFuncodeMeaning(int protocolId) throws ProtocolIdNotValidException {
         return getTargetProtocolAllFuncodeMeaning(convertIdToName(protocolId));
     }
 
-    public static String getTargetProtocolFuncodeMeaning(String protocol,int funcode) throws ProtocolIdNotValidException {
+    public static String getTargetProtocolFuncodeMeaning(String protocol,String funcode) throws ProtocolIdNotValidException {
         String funcodeMeaning;
-        HashMap<Integer,String> map = getTargetProtocolAllFuncodeMeaning(protocol);
+        HashMap<String,String> map = getTargetProtocolAllFuncodeMeaning(protocol);
         if (map==null || (funcodeMeaning = map.get(funcode)) == null){
-            if (funcode == -1){
+            if (funcode == null){
                 return "--";
             }
             funcodeMeaning = "未知功能码操作--" + funcode;
@@ -49,8 +49,8 @@ public class CommonConfigUtil {
         return funcodeMeaning;
     }
 
-    public static void addProtocolFuncodeMeaning(String protocol , int funcode , String optMeaning){
-        HashMap<Integer,String> funcodeMeaning;
+    public static void addProtocolFuncodeMeaning(String protocol , String funcode , String optMeaning){
+        HashMap<String,String> funcodeMeaning;
         if ((funcodeMeaning = CONFIGURATION_MAP.get(protocol)) == null){
             //CONFIGURATION_MAP中不包含该协议，需要添加一个新的map
             funcodeMeaning = new HashMap<>();
@@ -75,7 +75,7 @@ public class CommonConfigUtil {
     }
 
     public static void addProtocolFuncodeMeaning(String protocol , List<FuncodeStatement> funcodeStatements){
-        HashMap<Integer,String> funcodeMeaning = null;
+        HashMap<String,String> funcodeMeaning = null;
         if ((funcodeMeaning = CONFIGURATION_MAP.get(protocol)) == null) {
             //CONFIGURATION_MAP中不包含该协议，需要添加一个新的map
             funcodeMeaning = new HashMap<>();
@@ -85,7 +85,7 @@ public class CommonConfigUtil {
             //防止多个线程对同一个hashmap并发访问
             //由于只是加了一个写锁，所以读的时候可能会出现滞后的问题
             for (FuncodeStatement funcodeStatement : funcodeStatements) {
-                funcodeMeaning.put(funcodeStatement.getId() , funcodeStatement.getLabel());
+                funcodeMeaning.put(funcodeStatement.getFunCode() , funcodeStatement.getLabel());
             }
             if (SHOW_LOG) {
                 log.info("add NEW funcode meaning / protocol : {} , funcodes : {} ", protocol, funcodeStatements);
@@ -93,8 +93,8 @@ public class CommonConfigUtil {
         }
     }
 
-    public static void addProtocolFuncodeMeaning(String protocol , HashMap<Integer,String> funcodeStatements){
-        HashMap<Integer,String> funcodeMeaning = null;
+    public static void addProtocolFuncodeMeaning(String protocol , HashMap<String,String> funcodeStatements){
+        HashMap<String,String> funcodeMeaning = null;
         if ((funcodeMeaning = CONFIGURATION_MAP.get(protocol)) != null) {
             //CONFIGURATION_MAP中不包含该协议，需要添加一个新的map
             CONFIGURATION_MAP.put(protocol, funcodeStatements);

@@ -79,7 +79,7 @@ public class GplotController {
     }
 
     @ApiOperation("设置选定的组态图ID")
-    @GetMapping("set_gplot_id")
+    //@GetMapping("set_gplot_id")
     @Log
     public BaseResponse setGplotId(@RequestParam int gplotId) throws ProtocolIdNotValidException {
         iGplotService.changeGplot(gplotId);

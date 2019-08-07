@@ -12,4 +12,6 @@ public class FvDimensionFilterCondition {
     private String dstPort;
     private String protocol;
     private String funCode;
+    private String timeStart;
+    private String timeEnd;
 }

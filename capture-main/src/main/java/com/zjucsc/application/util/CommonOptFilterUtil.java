@@ -8,6 +8,7 @@ import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.zjucsc.application.config.Common.GPLOT_ID;
@@ -41,8 +42,8 @@ public class CommonOptFilterUtil {
             analyzerMap = new ConcurrentHashMap<>();
             OPERATION_FILTER_PRO.put(deviceTag, analyzerMap);
         }
-        for (Integer funCode : optFilterForFront.getFunCodes()) {
-            String protocolName = CommonCacheUtil.convertIdToName(optFilterForFront.getProtocolId());
+        String protocolName = CommonCacheUtil.convertIdToName(optFilterForFront.getProtocolId());
+        for (String funCode : optFilterForFront.getFunCodes()) {
             analyzerMap.putIfAbsent(protocolName,new OperationAnalyzer(new OperationPacketFilter<>(filterName)));
 //            int filterType = optFilter.getFilterType();
 //            if (filterType == 0){
@@ -59,6 +60,19 @@ public class CommonOptFilterUtil {
         }
 
     }
+
+    public static void removeTargetDeviceAnalyzeFuncode(OptFilterForFront optFilterForFront) throws ProtocolIdNotValidException {
+        String deviceTag = CommonCacheUtil.getTargetDeviceTagByNumber(optFilterForFront.getDeviceNumber());
+        String protocolName = CommonCacheUtil.convertIdToName(optFilterForFront.getProtocolId());
+        List<String> funCodes = optFilterForFront.getFunCodes();
+        for (String funCode : funCodes) {
+            if (OPERATION_FILTER_PRO.containsKey(deviceTag)) {
+                OPERATION_FILTER_PRO.get(deviceTag).get(protocolName).getAnalyzer().getWhiteMap()
+                        .remove(funCode);
+            }
+        }
+    }
+
 
 
     public static void addOrUpdateAnalyzer(String deviceTag, String protocolName, OperationAnalyzer analyzer) throws OptFilterNotValidException {
@@ -78,10 +92,10 @@ public class CommonOptFilterUtil {
 
     /**
      * 删除某个设备对应的所有分析器
-     * @param deviceIp
+     * @param deviceTag
      */
-    public static void removeTargetDeviceAnalyzer(String deviceIp){
-        OPERATION_FILTER_PRO.remove(deviceIp);
+    public static void disableTargetDeviceAnalyzer(String deviceTag){
+        OPERATION_FILTER_PRO.remove(deviceTag);
     }
 
     /**
@@ -113,27 +127,7 @@ public class CommonOptFilterUtil {
         }
     }
 
-    public static void removeTargetDeviceAnalyzeFuncode(OptFilterForFront optFilterForFront) throws ProtocolIdNotValidException {
-        String deviceTag = CommonCacheUtil.getTargetDeviceTagByNumber(optFilterForFront.getDeviceNumber());
-        String protocolName = CommonCacheUtil.convertIdToName(optFilterForFront.getProtocolId());
-        List<Integer> funCodes = optFilterForFront.getFunCodes();
-        for (Integer funCode : funCodes) {
-            OPERATION_FILTER_PRO.get(deviceTag).get(protocolName).getAnalyzer().
-        }
-    }
-
-    /**
-     * 获取指定设备、协议下对应的报文分析器
-     * @param deviceIp
-     * @param protocol
-     * @return
-     */
-    public static OperationAnalyzer getTargetDeviceProtocolOptAnalyzer(String deviceIp , String protocol){
-        return OPERATION_FILTER_PRO.get(deviceIp).get(protocol);
-    }
-
     public static void removeAllOptFilter(){
         OPERATION_FILTER_PRO.clear();
-        log.info("change gplot so -> clear all opt dimension filter of gplot_id : [{}] " , GPLOT_ID);
     }
 }

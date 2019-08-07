@@ -13,7 +13,7 @@ import java.util.Arrays;
  * #create_time 2019-05-11 - 21:23
  */
 
-public class FvDimensionLayer implements Serializable{
+public class FvDimensionLayer implements Serializable,Comparable<FvDimensionLayer>{
     //用于前端显示的协议
     public String protocol;
     //更细致的协议
@@ -229,5 +229,14 @@ public class FvDimensionLayer implements Serializable{
 
     public void setRawData(byte[] rawData) {
         this.rawData = rawData;
+    }
+
+    @Override
+    public int compareTo(FvDimensionLayer o) {
+        if (o.timeStampInLong == timeStampInLong){
+            return 0;
+        }else {
+            return o.timeStampInLong > timeStampInLong ? -1 : 1;
+        }
     }
 }

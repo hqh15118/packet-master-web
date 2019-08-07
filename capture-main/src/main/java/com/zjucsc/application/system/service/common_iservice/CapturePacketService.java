@@ -26,6 +26,6 @@ public interface CapturePacketService<S,E> {
      */
     CompletableFuture<Exception> stopSimulate();
 
-    Map<AbstractAsyncHandler,Integer> load();
+    Map<String,Integer> load();
 
 }

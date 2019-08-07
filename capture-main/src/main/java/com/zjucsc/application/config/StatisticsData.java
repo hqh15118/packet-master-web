@@ -41,11 +41,6 @@ public class StatisticsData {
     private static final ConcurrentHashMap<String,String> ALL_IP_ADDRESS = new ConcurrentHashMap<>();
 
     /**
-     * 异常【既不在黑名单也不在白名单】
-     */
-    public static AtomicInteger exceptionNumber = new AtomicInteger(0);
-
-    /**
      * 攻击数【黑名单里面】
      */
     public static AtomicInteger attackNumber = new AtomicInteger(0);
@@ -64,7 +59,7 @@ public class StatisticsData {
      * key 是工艺参数的名字
      */
     public static final ConcurrentHashMap<String, LinkedList<String>> ART_INFO = new ConcurrentHashMap<>();
-    public static final ConcurrentHashMap<String, LinkedList<String>> ART_INFO_SEND = new ConcurrentHashMap<>();//只发送需要显示的个工艺参数
+    //public static final ConcurrentHashMap<String, LinkedList<String>> ART_INFO_SEND = new ConcurrentHashMap<>();//只发送需要显示的个工艺参数
     public static final ConcurrentHashMap<String,String> ART_INFO_SEND_SINGLE = new ConcurrentHashMap<>();
 
     public static void increaseNumberByDeviceIn(String deviceNumber,int delta){
@@ -228,7 +223,6 @@ public class StatisticsData {
         COLLECTOR_DELAY_MAP.clear();
         FLOW.set(0);
         ALL_IP_ADDRESS.clear();
-        exceptionNumber.set(0);
         attackNumber.set(0);
     }
 }

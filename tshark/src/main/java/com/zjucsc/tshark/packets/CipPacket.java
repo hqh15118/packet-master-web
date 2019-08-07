@@ -8,6 +8,6 @@ public class CipPacket {
 
     public static class LayersBean extends FvDimensionLayer {
         @JSONField(name = "cip_sc")
-        public String[] cip_funcode = {"-1"};
+        public String[] cip_funcode = {"--"};
     }
 }

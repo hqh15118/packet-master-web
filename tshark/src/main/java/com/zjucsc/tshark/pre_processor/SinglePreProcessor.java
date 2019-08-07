@@ -13,10 +13,11 @@ public abstract class SinglePreProcessor<P> extends BasePreProcessor{
 
     @Override
     public void decodeJSONString(String packetJSON) {
-        decodeThreadPool.execute(() -> {
-            //将数据推入到pipeLine中
-            pipeLine.pushDataAtHead(postDecode(decode(JSON.parseObject(preDecode(packetJSON),decodeType()))));
-        });
+//        decodeThreadPool.execute(() -> {
+//            //将数据推入到pipeLine中
+//            pipeLine.pushDataAtHead(postDecode(decode(JSON.parseObject(preDecode(packetJSON),decodeType()))));
+//        });
+        pipeLine.pushDataAtHead(postDecode(decode(JSON.parseObject(preDecode(packetJSON),decodeType()))));
     }
 
     public abstract FvDimensionLayer decode(P packetInstance);

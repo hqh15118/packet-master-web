@@ -2,6 +2,7 @@ package com.zjucsc.application.controller;
 
 
 import com.zjucsc.application.domain.bean.*;
+import com.zjucsc.application.domain.non_hessian.PacketRealTimeBean;
 import com.zjucsc.application.system.service.hessian_iservice.IPacketInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -57,4 +58,10 @@ public class PacketInfoController {
     public BaseResponse selectPacketByTimeStamp(@RequestParam String timeStamp){
         return BaseResponse.OK(iPacketInfoService.selectPacketRawDataByTimeStamp(timeStamp));
     }
+
+    @PostMapping("real_time_packet")
+    public BaseResponse selectRealTimePacketByTimeStamp(@RequestBody PacketRealTimeBean packetRealTimeBean){
+        return BaseResponse.OK(iPacketInfoService.selectRealTimePacketList(packetRealTimeBean));
+    }
+    
 }
