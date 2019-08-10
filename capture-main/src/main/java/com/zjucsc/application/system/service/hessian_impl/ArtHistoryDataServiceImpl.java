@@ -1,7 +1,7 @@
 package com.zjucsc.application.system.service.hessian_impl;
 
 import com.zjucsc.application.config.Common;
-import com.zjucsc.application.domain.bean.ArtBeanF;
+import com.zjucsc.application.domain.bean.ArtBeanFWrapper;
 import com.zjucsc.application.domain.bean.ArtHistoryData;
 import com.zjucsc.application.domain.bean.ArtHistoryForFront;
 import com.zjucsc.application.domain.non_hessian.ArtBean;
@@ -98,8 +98,8 @@ public class ArtHistoryDataServiceImpl extends BaseServiceImpl<ArtHistoryData,Ar
     }
 
     @Override
-    public CompletableFuture<List<ArtBeanF>> getAllArtData(ArtBean artBean) {
-        List<ArtBeanF> artBeanFS = this.baseMapper.selectArtPacketByTimeStamp(artBean);
+    public CompletableFuture<ArtBeanFWrapper> getAllArtData(ArtBean artBean) {
+        ArtBeanFWrapper artBeanFS = this.baseMapper.selectArtPacketByTimeStamp(artBean);
         return CompletableFuture.completedFuture(artBeanFS);
     }
 

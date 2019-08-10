@@ -89,4 +89,9 @@ public class PacketInfoServiceImpl  implements IPacketInfoService {
         return packetInfoMapper.selectRealTimePacketList(packetRealTimeBean);
     }
 
+    @Override
+    public List<RightPacketInfo> selectAllRightPacketInfo() {
+        return packetInfoMapper.selectAllRightPacketInfo();
+    }
+
 }

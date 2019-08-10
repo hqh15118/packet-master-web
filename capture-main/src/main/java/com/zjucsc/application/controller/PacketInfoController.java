@@ -4,6 +4,8 @@ package com.zjucsc.application.controller;
 import com.zjucsc.application.domain.bean.*;
 import com.zjucsc.application.domain.non_hessian.PacketRealTimeBean;
 import com.zjucsc.application.system.service.hessian_iservice.IPacketInfoService;
+import com.zjucsc.application.util.CacheUtil;
+import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,8 +62,17 @@ public class PacketInfoController {
     }
 
     @PostMapping("real_time_packet")
-    public BaseResponse selectRealTimePacketByTimeStamp(@RequestBody PacketRealTimeBean packetRealTimeBean){
+    public BaseResponse selectRealTimePacketByTimeStamp(@RequestBody PacketRealTimeBean packetRealTimeBean) {
+        try {
+            packetRealTimeBean.setProtocol(CacheUtil.convertIdToName(packetRealTimeBean.getProtocolId()));
+        } catch (ProtocolIdNotValidException e) {
+            packetRealTimeBean.setProtocol("");
+        }
         return BaseResponse.OK(iPacketInfoService.selectRealTimePacketList(packetRealTimeBean));
     }
-    
+
+    @GetMapping("right_packet")
+    public BaseResponse selectAllRightPacket(){
+        return BaseResponse.OK(iPacketInfoService.selectAllRightPacketInfo());
+    }
 }

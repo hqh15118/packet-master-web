@@ -7,11 +7,8 @@ import com.zjucsc.application.domain.bean.BaseResponse;
 import com.zjucsc.application.domain.bean.Device;
 import com.zjucsc.application.domain.bean.StatisticSelect;
 import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
-import com.zjucsc.application.util.CommonCacheUtil;
-import com.zjucsc.application.util.CommonFvFilterUtil;
-import com.zjucsc.application.util.CommonOptFilterUtil;
+import com.zjucsc.application.util.CacheUtil;
 import com.zjucsc.application.util.DeviceOptUtil;
-import com.zjucsc.attack.AttackCommon;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -33,17 +30,17 @@ public class DeviceController {
     @PostMapping("new_device")
     public BaseResponse addDeviceInfo(@RequestBody @Valid @NotEmpty List<Device> deviceList){
         iDeviceService.removeAllDevicesByGplotId(Common.GPLOT_ID);
-        CommonCacheUtil.removeAllCachedDeviceNumber();
-        CommonCacheUtil.removeAllDeviceNumberToName();
+        CacheUtil.removeAllCachedDeviceNumber();
+        CacheUtil.removeAllDeviceNumberToName();
         for (Device device : deviceList) {
             if (Common.filterStatement == 0) {
-                CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(device.getDeviceNumber(), device.getDeviceTag());
-                CommonCacheUtil.addDeviceNumberToName(device.getDeviceNumber(),device.getDeviceInfo());
-                CommonCacheUtil.addOrUpdateDeviceManually(device);
+                CacheUtil.addOrUpdateDeviceNumberAndTAG(device.getDeviceNumber(), device.getDeviceTag());
+                CacheUtil.addDeviceNumberToName(device.getDeviceNumber(),device.getDeviceInfo());
+                CacheUtil.addOrUpdateDeviceManually(device);
             }else{
-                CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(device.getDeviceNumber(), device.getDeviceTag());
-                CommonCacheUtil.addDeviceNumberToName(device.getDeviceNumber(),device.getDeviceInfo());
-                CommonCacheUtil.addOrUpdateDeviceManually(device);
+                CacheUtil.addOrUpdateDeviceNumberAndTAG(device.getDeviceNumber(), device.getDeviceTag());
+                CacheUtil.addDeviceNumberToName(device.getDeviceNumber(),device.getDeviceInfo());
+                CacheUtil.addOrUpdateDeviceManually(device);
             }
         }
         iDeviceService.saveBatch(deviceList);

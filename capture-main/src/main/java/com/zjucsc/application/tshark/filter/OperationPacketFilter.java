@@ -1,5 +1,7 @@
 package com.zjucsc.application.tshark.filter;
 
+import com.zjucsc.application.domain.bean.Rule;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +26,10 @@ public class OperationPacketFilter<K,V> {
         whiteMap.put(key,value);
     }
 
+    public void resetAllRule(){
+        whiteMap.clear();
+        blackMap.clear();
+    }
 
     public void addBlackRule(K key,V value){
         blackMap.put(key,value);

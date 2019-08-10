@@ -26,4 +26,6 @@ public interface IPacketInfoService {
     String selectPacketRawDataByTimeStamp(String timeStamp);
 
     List<SavedPacket> selectRealTimePacketList(PacketRealTimeBean packetRealTimeBean);
+
+    List<RightPacketInfo> selectAllRightPacketInfo();
 }

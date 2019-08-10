@@ -1,7 +1,6 @@
 package com.zjucsc.application.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.sun.org.apache.bcel.internal.generic.BREAKPOINT;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.PACKET_PROTOCOL;
 import com.zjucsc.application.config.auth.Log;
@@ -11,7 +10,7 @@ import com.zjucsc.application.domain.bean.BaseResponse;
 import com.zjucsc.application.domain.bean.PagedArtConfig;
 import com.zjucsc.application.system.service.hessian_iservice.IArtConfigService;
 import com.zjucsc.application.util.AppCommonUtil;
-import com.zjucsc.application.util.CommonCacheUtil;
+import com.zjucsc.application.util.CacheUtil;
 import com.zjucsc.art_decode.ArtDecodeCommon;
 import com.zjucsc.art_decode.artconfig.*;
 import com.zjucsc.art_decode.base.BaseConfig;
@@ -62,9 +61,9 @@ public class ArtConfigController {
         }
 
         if (baseConfig.getShowGraph() == 1){
-            CommonCacheUtil.addShowGraphArg(baseConfig.getProtocolId(),baseConfig.getTag());
+            CacheUtil.addShowGraphArg(baseConfig.getProtocolId(),baseConfig.getTag());
         }else{
-            CommonCacheUtil.removeShowGraph(baseConfig.getProtocolId(),baseConfig.getTag());
+            CacheUtil.removeShowGraph(baseConfig.getProtocolId(),baseConfig.getTag());
         }
 
         switch (baseConfig.getProtocolId()) {
@@ -128,7 +127,7 @@ public class ArtConfigController {
         if (baseConfig.getProtocolId() == 2){
             baseConfig.setProtocol("s7comm");
         }else{
-            baseConfig.setProtocol(CommonCacheUtil.convertIdToName(baseConfig.getProtocolId()));
+            baseConfig.setProtocol(CacheUtil.convertIdToName(baseConfig.getProtocolId()));
         }
         //移除要显示的map
         AppCommonUtil.removeArtMap(baseConfig.getTag());
@@ -166,7 +165,7 @@ public class ArtConfigController {
             BaseConfig baseConfig = targetClass.cast(o);
             AppCommonUtil.initArtMap(baseConfig.getTag());
             if (baseConfig.getShowGraph() == 1){
-                CommonCacheUtil.addShowGraphArg(baseConfig.getProtocolId(),baseConfig.getTag());
+                CacheUtil.addShowGraphArg(baseConfig.getProtocolId(),baseConfig.getTag());
             }
         }
     }
@@ -178,10 +177,10 @@ public class ArtConfigController {
         iArtConfigService.changeArtConfigShowState(artArgShowState);
         if (artArgShowState.getShowGraph() == 1){
             //如果要显示
-            CommonCacheUtil.addShowGraphArg(artArgShowState.getProtocolId(),artArgShowState.getTag());
+            CacheUtil.addShowGraphArg(artArgShowState.getProtocolId(),artArgShowState.getTag());
             return BaseResponse.OK(true);
         }else{
-            return BaseResponse.OK(CommonCacheUtil.removeShowGraph(artArgShowState.getProtocolId(),artArgShowState.getTag()));
+            return BaseResponse.OK(CacheUtil.removeShowGraph(artArgShowState.getProtocolId(),artArgShowState.getTag()));
         }
     }
 

@@ -28,7 +28,7 @@ public class CositeDosAttackAnalyzeList extends AbstractDosList {
         }
         long cositeTimeStamp = getDosConfig().getCoSiteTime();
         int cositeNum = getDosConfig().getCoSiteNum();
-        if (fvDimensionLayers.size() < cositeTimeStamp){
+        if (fvDimensionLayers.size() < cositeNum){
             return null;
         }
         return doAnalyze(fvDimensionLayers,cositeTimeStamp,cositeNum);
@@ -39,7 +39,7 @@ public class CositeDosAttackAnalyzeList extends AbstractDosList {
                              long cositeTimeStamp,
                              int cositeNum){
         for (;;){
-            FvDimensionLayer layer = fvDimensionLayers.poll();// min timeStampInLong
+            FvDimensionLayer layer = fvDimensionLayers.element();// min timeStampInLong
             if (layer == null){
                 break;
             }else{

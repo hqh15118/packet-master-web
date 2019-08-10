@@ -6,4 +6,5 @@ import lombok.Data;
 public class AttackConfigState {
     private int id;
     private boolean enable;
+    private String protocol;
 }

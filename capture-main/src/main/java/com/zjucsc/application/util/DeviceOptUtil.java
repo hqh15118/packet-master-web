@@ -56,15 +56,15 @@ public class DeviceOptUtil {
     }
 
     public static void removeDeviceBindStrategy(String deviceTag){
-        CommonFvFilterUtil.disableDeviceAllConfig(deviceTag);
-        CommonOptFilterUtil.disableTargetDeviceAnalyzer(deviceTag);
+        FvFilterUtil.disableDeviceAllConfig(deviceTag);
+        OptFilterUtil.disableTargetDeviceAnalyzer(deviceTag);
         AttackCommon.disableDeviceDosAnalyzePoolEntry(deviceTag);
     }
 
     public static void removeCachedDeviceConfigs(Device device){
-        CommonCacheUtil.removeDeviceNumberToTag(device.getDeviceNumber());
-        CommonCacheUtil.removeDeviceNumberToName(device.getDeviceNumber());
-        CommonCacheUtil.removeAllDeviceListByMacAddress(device.getDeviceTag());
-        CommonCacheUtil.removeDeviceToDevicePacketPair(device);
+        CacheUtil.removeDeviceNumberToTag(device.getDeviceNumber());
+        CacheUtil.removeDeviceNumberToName(device.getDeviceNumber());
+        CacheUtil.removeAllDeviceListByMacAddress(device.getDeviceTag());
+        CacheUtil.removeDeviceToDevicePacketPair(device);
     }
 }

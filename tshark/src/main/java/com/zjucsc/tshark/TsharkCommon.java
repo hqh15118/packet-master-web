@@ -43,7 +43,7 @@ public class TsharkCommon {
 
     private static ErrorCallback errorCallback;
 
-    private static final byte[] LOCK1 = new byte[1];
+//    private static final byte[] LOCK1 = new byte[1];
 
 //    public static void handleTsharkErrorStream(String comment,final BufferedReader bfr){
 //        assert errorCallback!=null;

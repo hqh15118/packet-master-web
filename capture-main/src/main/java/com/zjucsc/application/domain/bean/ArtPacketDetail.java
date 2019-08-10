@@ -1,6 +1,5 @@
 package com.zjucsc.application.domain.bean;
 
-import com.zjucsc.application.util.CommonCacheUtil;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import lombok.Data;
 

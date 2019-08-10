@@ -21,8 +21,8 @@ public abstract class BaseArtDecode<T extends BaseConfig> implements IArtDecode<
     private ConcurrentSkipListSet<T> configs =
             new ConcurrentSkipListSet<>();
 
-    protected void callback(String artName,float value,FvDimensionLayer layer){
-        ArtDecodeCommon.validPacketCallback.callback(artName, value, layer);
+    protected void callback(String artName,float value,FvDimensionLayer layer,Object...objs){
+        ArtDecodeCommon.validPacketCallback.callback(artName, value, layer,objs);
     }
 
     private ExecutorService executorService = CommonUtil.getSingleThreadPoolSizeThreadPool(10000, r -> {

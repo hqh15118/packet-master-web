@@ -6,6 +6,7 @@ import java.util.Map;
 
 public class ArtAttackAnalyzeUtil {
     private static List<String> exp = new ArrayList<>();
+
     public static String attackDecode(List<String> expression, Map<String, Float> techmap, String description)
     {
         if(expression ==null)

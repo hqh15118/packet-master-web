@@ -308,4 +308,81 @@ public class PacketDecodeUtil {
         return allBytes;
     }
 
+
+    public static String getAttackBeanInfo(String protocol,String funCodeStr)
+    {
+        if(protocol==null || funCodeStr.equals("--"))
+        {
+            return null;
+        }
+        int funCode = Integer.decode(funCodeStr);
+        switch (protocol)
+        {
+            case "s7comm": {
+                switch (funCode) {
+                    case 0x04:
+                        return "数据篡改攻击!";
+                    case 0x05:
+                        return "非法读取数据!";
+                    case 0x1a:
+                    case 0x1b:
+                        return "代码篡改攻击";
+                    case 0x1c:
+                        return "代码异常攻击";
+                    case 0x1d:
+                    case 0x1e:
+                    case 0x1f:
+                        return "非法获取控制代码!";
+                    case 0x28:
+                    case 0x29:
+                        return "配置篡改攻击!";
+                    default:
+                        return "非法功能码未知操作";
+                }
+            }
+            case "s7comm_user_data":
+            {
+                switch (funCode) {
+                    case 0xf:
+                        return "代码篡改攻击!";
+                    case 0x1:
+                    case 0x0:
+                        return "配置篡改攻击!";
+                    case 0x4:
+                        return "非法访问CPU!";
+                    case 0x2:
+                        return "非法读取数据!";
+                    default:
+                        return null;
+                }
+            }
+            case "modbus":
+            {
+                switch (funCode) {
+                    case 43:
+                        return "嗅探攻击";
+                    case 5:
+                    case 15:
+                    case 6:
+                    case 16:
+                    case 23:
+                        return "数据篡改攻击!";
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
+                        return "非法读取数据!";
+                    case 22:
+                        return "配置篡改攻击!";
+                    case 20:
+                    case 21:
+                        return "非法访问文件记录";
+                    default:
+                        return "非法功能码未知操作";
+                }
+            }
+            default:
+                return "未知攻击";
+        }
+    }
 }

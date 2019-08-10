@@ -12,15 +12,15 @@ import com.zjucsc.application.system.service.hessian_mapper.DeviceMaxFlowMapper;
 import com.zjucsc.application.system.service.hessian_mapper.DosConfigMapper;
 import com.zjucsc.application.system.service.hessian_mapper.OptAttackMapper;
 import com.zjucsc.application.system.service.hessian_mapper.PacketInfoMapper;
-import com.zjucsc.application.util.CommonCacheUtil;
+import com.zjucsc.application.util.CacheUtil;
+import com.zjucsc.application.util.CommonConfigUtil;
 import com.zjucsc.application.util.ConfigUtil;
 import com.zjucsc.attack.bean.*;
 import com.zjucsc.attack.AttackCommon;
-import com.zjucsc.attack.config.ModbusOptConfig;
-import com.zjucsc.attack.config.PnioOptConfig;
-import com.zjucsc.attack.config.S7OptAttackConfig;
+import com.zjucsc.attack.config.*;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import io.swagger.annotations.ApiOperation;
+import kafka.utils.Json;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -67,7 +67,7 @@ public class AttackConfigController {
     @Log
     public BaseResponse configMaxFlowOfDevice(@RequestBody DeviceMaxFlow deviceMaxFlow){
         deviceMaxFlowMapper.insertByDeviceNumber(deviceMaxFlow);
-        CommonCacheUtil.addOrUpdateDeviceMaxFlow(deviceMaxFlow);
+        CacheUtil.addOrUpdateDeviceMaxFlow(deviceMaxFlow);
         return BaseResponse.OK();
     }
 
@@ -75,7 +75,7 @@ public class AttackConfigController {
     @PostMapping("new_dos_config")
     public BaseResponse dosConfig(@RequestBody DosConfig dosConfig) {
         dosConfigMapper.addOrUpdateDosConfig(dosConfig);
-        return BaseResponse.OK(AttackCommon.addOrUpdateDosAnalyzePoolEntry(CommonCacheUtil.getTargetDeviceTagByNumber(dosConfig.getDeviceNumber()),dosConfig));
+        return BaseResponse.OK(AttackCommon.addOrUpdateDosAnalyzePoolEntry(CacheUtil.getTargetDeviceTagByNumber(dosConfig.getDeviceNumber()),dosConfig));
     }
 
     @ApiOperation("获取Dos攻击配置")
@@ -88,7 +88,7 @@ public class AttackConfigController {
     @PostMapping("remove_dos_config")
     public BaseResponse removeDosConfig(@RequestBody DosConfig dosConfig){
         dosConfigMapper.removeDosConfig(dosConfig);
-        String deviceTag = CommonCacheUtil.getTargetDeviceTagByNumber(dosConfig.getDeviceNumber());
+        String deviceTag = CacheUtil.getTargetDeviceTagByNumber(dosConfig.getDeviceNumber());
         AttackCommon.removeDosAnalyzePoolEntry(deviceTag,dosConfig.getProtocol());
         return BaseResponse.OK();
     }
@@ -99,7 +99,7 @@ public class AttackConfigController {
         int id = enableDos.getId();
         boolean enable = enableDos.isEnable();
         DosConfig dosConfig = dosConfigMapper.changeDosConfigState(id,enable);
-        String deviceTag = CommonCacheUtil.getTargetDeviceTagByNumber(dosConfig.getDeviceNumber());
+        String deviceTag = CacheUtil.getTargetDeviceTagByNumber(dosConfig.getDeviceNumber());
         AttackCommon.changeDosConfig(deviceTag,dosConfig.getProtocol(),enable);
         return BaseResponse.OK();
     }
@@ -132,30 +132,49 @@ public class AttackConfigController {
     @ApiOperation("添加/修改工艺参数攻击监测配置")
     @PostMapping("art_attack_config")
     public BaseResponse configArtAttack(@RequestBody ArtAttackConfig artAttackConfig){
-        List<ArtAttack2Config> configs = artAttackConfig.getRule();
-        List<String> list = new ArrayList<>();
-        for (ArtAttack2Config config : configs) {
-            list.add(config.getValue());
-        }
-        int id = ((Integer) packetInfoMapper.saveOrUpdateArtAttackConfig(artAttackConfig).data);
-        AttackCommon.addArtAttackAnalyzeConfig(new ArtAttackAnalyzeConfig(list,
-                artAttackConfig.getDetail(),artAttackConfig.isEnable(),id));
+//        List<ArtAttack2Config> configs = artAttackConfig.getRule();
+//        List<String> list = new ArrayList<>();
+//        for (ArtAttack2Config config : configs) {
+//            list.add(config.getValue());
+//        }
+//        int id = ((Integer) packetInfoMapper.saveOrUpdateArtAttackConfig(artAttackConfig).data);
+//        AttackCommon.addArtAttackAnalyzeConfig(new ArtAttackAnalyzeConfig(list,
+//                artAttackConfig.getDetail(),artAttackConfig.isEnable(),id));
+        packetInfoMapper.saveOrUpdateArtAttackConfig(artAttackConfig);
         return BaseResponse.OK();
+    }
+
+    public static void addArtAttackConfig2Cache( List<ArtAttackConfigDB> configDBS) throws ProtocolIdNotValidException {
+        for (ArtAttackConfigDB configDB : configDBS) {
+            if (configDB.isEnable()){
+                List<String> strings = new ArrayList<>();
+                List<ArtAttack2Config> artAttack2Configs = JSON.parseArray(configDB.getRuleJson(),ArtAttack2Config.class);
+                for (ArtAttack2Config artAttack2Config : artAttack2Configs)
+                {
+                    strings.add(artAttack2Config.getValue());
+                }
+                String protocol = CacheUtil.convertIdToName(configDB.getProtocolId());
+                AttackCommon.addArtAttackAnalyzeConfig(protocol,new ArtAttackAnalyzeConfig(strings,configDB.getDetail(),
+                        configDB.isEnable(),configDB.getId()));
+            }
+        }
     }
 
     @ApiOperation("修改攻击配置状态")
     @PostMapping("change_attack_config_state")
-    public BaseResponse changeAttackConfigState(@RequestBody AttackConfigState attackConfigState){
+    public BaseResponse changeAttackConfigState(@RequestBody AttackConfigState attackConfigState) throws ProtocolIdNotValidException {
         packetInfoMapper.updateArtAttackConfigState(attackConfigState.getId(),attackConfigState.isEnable());
-        AttackCommon.changeArtAttackAnalyzeConfigState(attackConfigState.getId(),attackConfigState.isEnable());
+        List<ArtAttackConfigDB> configDBS = packetInfoMapper.selectArtAttackConfigPaged(999,1);
+        AttackCommon.removeAllArtAttackAnalyzeConfig(attackConfigState.getProtocol());
+        addArtAttackConfig2Cache(configDBS);
         return BaseResponse.OK();
     }
 
     @ApiOperation("删除工艺参数攻击配置")
     @DeleteMapping("delete_art_attack_config")
-    public BaseResponse deleteArtAttackConfig(@RequestParam int id){
+    public BaseResponse deleteArtAttackConfig(@RequestParam int id , @RequestParam String protocol){
         packetInfoMapper.deleteArtAttackConfig(id);
-        AttackCommon.removeArtAttackAnalyzeConfig(new ArtAttackAnalyzeConfig(id));
+        AttackCommon.removeArtAttackAnalyzeConfig(protocol,new ArtAttackAnalyzeConfig(id));
         return BaseResponse.OK();
     }
 
@@ -171,7 +190,17 @@ public class AttackConfigController {
     public BaseResponse setRightPacket(@RequestBody List<RightPacketInfo> rightPacketInfo){
         packetInfoMapper.addNormalPacket(rightPacketInfo,Common.GPLOT_ID);
         for (RightPacketInfo packetInfo : rightPacketInfo) {
-            CommonCacheUtil.addNormalRightPacketInfo(packetInfo);
+            CacheUtil.addNormalRightPacketInfo(packetInfo);
+        }
+        return BaseResponse.OK();
+    }
+
+    @ApiOperation("删除正常报文五元组")
+    @PostMapping("del_right_packet")
+    public BaseResponse removeRightPacket(@RequestBody List<RightPacketInfo> rightPacketInfos){
+        packetInfoMapper.removeNormalPacket(rightPacketInfos,Common.GPLOT_ID);
+        for (RightPacketInfo packetInfo : rightPacketInfos) {
+            CacheUtil.removeNormalRightPacketInfo(packetInfo);
         }
         return BaseResponse.OK();
     }
@@ -187,24 +216,8 @@ public class AttackConfigController {
         }
         String jsonData = sb.toString();
         BaseOptConfig baseConfig = JSON.parseObject(jsonData,BaseOptConfig.class);
-        int protocolId = baseConfig.getProtocolId();
+        //直接存到数据库里，不启用
         optAttackMapper.addOrUpdateAllOptAttackConfigByProtocolAndId(baseConfig.getProtocolId(),baseConfig.getId(),jsonData);
-        BaseOptConfig resConfig = null;
-        if (protocolId == PACKET_PROTOCOL.S7_ID){
-            resConfig = JSON.parseObject(jsonData,S7OptAttackConfig.class);
-        }else if (protocolId == PACKET_PROTOCOL.MODBUS_ID){
-            resConfig = JSON.parseObject(jsonData,ModbusOptConfig.class);
-        }else if (protocolId == PACKET_PROTOCOL.PN_IO_ID){
-            resConfig = JSON.parseObject(jsonData,PnioOptConfig.class);
-        }
-        if (resConfig!=null) {
-            List<String> expression = new ArrayList<>();
-            for (ArtOptWrapper artOptWrapper : baseConfig.getRule()) {
-                expression.add(artOptWrapper.getValue());
-            }
-            resConfig.setExpression(expression);
-            AttackCommon.addOptAttackConfig(resConfig);
-        }
         return BaseResponse.OK();
     }
 
@@ -227,10 +240,42 @@ public class AttackConfigController {
 
     @ApiOperation("配置工艺参数操作攻击enable")
     @PostMapping("enable_opt_config")
-    public BaseResponse enableOptConfig(@RequestBody OptConfigEnable optConfigEnable) throws ProtocolIdNotValidException {
-        String protocol = CommonCacheUtil.convertIdToName(optConfigEnable.getProtocolId());
-        optAttackMapper.changeOptConfigStateByOpName(protocol,optConfigEnable.getOpName(),optConfigEnable.isEnable());
-        boolean isSuccess = AttackCommon.changeArtOptAttackAnalyzeConfigState(optConfigEnable.getProtocolId(),optConfigEnable.isEnable(),optConfigEnable.getOpName());
-        return BaseResponse.OK(isSuccess);
+    public BaseResponse enableOptConfig(@RequestBody OptConfigEnable optConfigEnable) {
+        BaseOptConfig baseConfig = optAttackMapper.changeOptConfigStateByOpName(optConfigEnable.getProtocolId(),optConfigEnable.getOpName(),optConfigEnable.isEnable());
+//        if (optConfigEnable.isEnable()) {
+            AttackCommon.addOptAttackConfig(baseConfig);
+            baseConfig.setEnable(true);
+//        }else{
+//            AttackCommon.removeArtOptAttackConfig(baseConfig);
+//        }
+        return BaseResponse.OK();
+    }
+
+
+    private BaseOptConfig getArtOptAttackConfig(String jsonData) throws ProtocolIdNotValidException {
+        BaseOptConfig baseConfig = JSON.parseObject(jsonData,BaseOptConfig.class);
+        BaseOptConfig resConfig;
+        int protocolId = baseConfig.getProtocolId();
+        switch (protocolId)
+        {
+            case PACKET_PROTOCOL.S7_ID : resConfig = JSON.parseObject(jsonData,S7OptAttackConfig.class);break;
+            case PACKET_PROTOCOL.MODBUS_ID : resConfig = JSON.parseObject(jsonData,ModbusOptConfig.class);break;
+            case PACKET_PROTOCOL.OPC_UA_ID : resConfig = JSON.parseObject(jsonData,OpcuaOptConfig.class);break;
+            case PACKET_PROTOCOL.PN_IO_ID : resConfig = JSON.parseObject(jsonData,PnioOptConfig.class);break;
+            case PACKET_PROTOCOL.IEC104_ASDU_ID : resConfig = JSON.parseObject(jsonData, IEC104Opconfig.class);break;
+            case PACKET_PROTOCOL.DNP3_0_PRI_ID : resConfig = JSON.parseObject(jsonData,dnp3Opconfig.class);break;
+            default:
+                throw new ProtocolIdNotValidException("不支持添加协议ID为【" + protocolId + "】的操作攻击配置");
+        }
+
+        if (resConfig!=null) {
+            List<String> expression = new ArrayList<>();
+            for (ArtOptWrapper artOptWrapper : baseConfig.getRule()) {
+                expression.add(artOptWrapper.getValue());
+            }
+            resConfig.setExpression(expression);
+            AttackCommon.addOptAttackConfig(resConfig);
+        }
+        return resConfig;
     }
 }

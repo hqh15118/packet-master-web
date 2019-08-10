@@ -27,6 +27,7 @@ public class AnalyzePoolEntryImpl implements AnalyzePoolEntry {
                 String temp = analyzer.analyze(layer);
                 if (temp!=null){
                     msg = temp;
+                    break;
                 }
             }
             return msg;
@@ -77,4 +78,10 @@ public class AnalyzePoolEntryImpl implements AnalyzePoolEntry {
         return null;
     }
 
+    @Override
+    public String toString() {
+        return "AnalyzePoolEntryImpl{" +
+                "analyzerHashMap=" + analyzerHashMap +
+                '}';
+    }
 }

@@ -9,4 +9,6 @@ public class ArtBean {
     private List<String> artName;
     private String startTime;
     private String endTime;
+    private int limit;
+    private int page;
 }

@@ -15,4 +15,6 @@ public class PacketRealTimeBean {
     private String dstIp;
     private String srcPost;
     private String dstPort;
+    private String protocol;
+    private String funCode;
 }

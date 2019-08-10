@@ -51,13 +51,4 @@ public abstract class BaseOptAnalyzer<T extends BaseOptConfig> implements IOptAt
 
     public abstract AttackBean doAnalyze(FvDimensionLayer layer,Map<String,Float> techmap, T t, Object... objs);
 
-    public boolean changeOptAnalyzeConfigState(String opName,boolean enable){
-        for (T config : configs) {
-            if (opName.equals(config.getOpname())){
-                config.setEnable(enable);
-                return true;
-            }
-        }
-        return false;
-    }
 }

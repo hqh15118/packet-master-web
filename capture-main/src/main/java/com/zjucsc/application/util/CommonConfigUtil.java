@@ -1,6 +1,5 @@
 package com.zjucsc.application.util;
 
-import com.sun.org.apache.bcel.internal.generic.I2F;
 import com.zjucsc.application.domain.bean.FuncodeStatement;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import lombok.extern.slf4j.Slf4j;
@@ -8,8 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.zjucsc.application.util.CommonCacheUtil.CONFIGURATION_MAP;
-import static com.zjucsc.application.util.CommonCacheUtil.convertIdToName;
+import static com.zjucsc.application.util.CacheUtil.CONFIGURATION_MAP;
+import static com.zjucsc.application.util.CacheUtil.convertIdToName;
 
 
 @Slf4j

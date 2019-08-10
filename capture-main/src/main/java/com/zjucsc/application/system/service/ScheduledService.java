@@ -8,12 +8,10 @@ import com.zjucsc.application.domain.non_hessian.DeviceMaxFlow;
 import com.zjucsc.application.system.service.common_impl.CapturePacketServiceImpl;
 import com.zjucsc.application.system.service.common_iservice.CapturePacketService;
 import com.zjucsc.application.system.service.hessian_iservice.IArtHistoryDataService;
-import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
 import com.zjucsc.application.util.AppCommonUtil;
-import com.zjucsc.application.util.CommonCacheUtil;
+import com.zjucsc.application.util.CacheUtil;
 import com.zjucsc.application.util.SysRunStateUtil;
 import com.zjucsc.art_decode.ArtDecodeCommon;
-import com.zjucsc.attack.AttackCommon;
 import com.zjucsc.socket_io.SocketIoEvent;
 import com.zjucsc.socket_io.SocketServiceCenter;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
@@ -24,8 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import sun.plugin2.util.SystemUtil;
-import sun.util.locale.provider.CalendarProviderImpl;
 
 import java.io.File;
 import java.util.*;
@@ -33,7 +29,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 
 import static com.zjucsc.application.config.StatisticsData.*;
 
@@ -42,8 +37,6 @@ import static com.zjucsc.application.config.StatisticsData.*;
 public class ScheduledService {
 
     @Autowired public PacketAnalyzeService packetAnalyzeService;
-
-    @Autowired private IDeviceService iDeviceService;
 
     @Autowired private IArtHistoryDataService iArtHistoryDataService;
 
@@ -67,26 +60,25 @@ public class ScheduledService {
     private final BiConsumer<String,GraphInfo> GRAPH_INFO_CONSUMER =
             StatisticsData::addDeviceGraphInfo;
 
-    private int count = 0;
-
     @Scheduled(fixedDelay = 1000)
     @Async(value = "common_schedule")
     public void commonScheduleService(){
-        if (CommonCacheUtil.getScheduleServiceRunningState()){
-            count ++;
-            if (count >= 5){
-                sendGraphInfo();        //工艺参数
-                statisticFlow();        //统计总流量，超过限制报错
-                CommonCacheUtil.updateAttackLog();  //统计攻击类型，及所占比例
-                count = 0;
-                //detectDecodeMethodDelay();
-            }
+        if (CacheUtil.getScheduleServiceRunningState()){
             try {
                 sendAllFvDimensionPacket2();    //每秒钟发送一次五元组
             } catch (InterruptedException e) {
                 System.err.println("五元组发送异常");
             }
         }
+    }
+
+    @Scheduled(fixedRate = 5000)
+    @Async(value = "common_service")
+    public void commonService(){
+        sendGraphInfo();        //工艺参数
+        statisticFlow();        //统计总流量，超过限制报错
+        CacheUtil.updateAttackLog();  //统计攻击类型，及所占比例
+        //detectDecodeMethodDelay();
     }
 
     private void detectDecodeMethodDelay() {
@@ -99,7 +91,7 @@ public class ScheduledService {
     @Scheduled(fixedRate = 5000)
     @Async("device_schedule_service")
     public void deviceStatisticsInfo(){
-        if (CommonCacheUtil.getScheduleServiceRunningState()) {
+        if (CacheUtil.getScheduleServiceRunningState()) {
             sendPacketStatisticsMsg();      //报文统计信息，包括...
         }
     }
@@ -110,7 +102,7 @@ public class ScheduledService {
     public void sysRunState() throws SigarException {
         SysRunStateUtil.StateWrapper wrapper = SysRunStateUtil.getSysRunState();
         SocketServiceCenter.updateAllClient(SocketIoEvent.SYS_RUN_STATE,wrapper);
-        int state = CommonCacheUtil.runStateDetect(wrapper);
+        int state = CacheUtil.runStateDetect(wrapper);
         String info = null;
         switch (state){
             case 1 : info = "CPU异常";break;
@@ -126,28 +118,31 @@ public class ScheduledService {
     @Async("d2d_schedule_service")
     //设备到设备之间的流量信息
     public void device2DevicePacketInfo(){
-        if (CommonCacheUtil.getScheduleServiceRunningState()) {
+        if (CacheUtil.getScheduleServiceRunningState()) {
             sendDevice2DevicePackets();
         }
     }
+
+
+
 
     private final HashMap<String,Map<String, D2DWrapper>>
         D2DPacketInfoMap = new HashMap<>();
 
     private void sendDevice2DevicePackets() {
         D2DPacketInfoMap.clear();
-        CommonCacheUtil.getDeviceToDevicePackets().forEach((dstDevice, deviceAtomicIntegerConcurrentHashMap) -> {
+        CacheUtil.getDeviceToDevicePackets().forEach((dstDevice, deviceAtomicIntegerConcurrentHashMap) -> {
             if (dstDevice.getDeviceType() != 1){
                 Map<String,D2DWrapper> map = new HashMap<>();
                 deviceAtomicIntegerConcurrentHashMap.forEach((srcDevice, atomicInteger) -> {
-                    map.put(srcDevice.getDeviceNumber(),new D2DWrapper(atomicInteger.get(),CommonCacheUtil.d2DAttackExist(dstDevice.getDeviceNumber(),srcDevice.getDeviceNumber())));
+                    map.put(srcDevice.getDeviceNumber(),new D2DWrapper(atomicInteger.get(), CacheUtil.d2DAttackExist(dstDevice.getDeviceNumber(),srcDevice.getDeviceNumber())));
                 });
                 D2DPacketInfoMap.put(dstDevice.getDeviceNumber(),map);
             }
         });
         SocketServiceCenter.updateAllClient(SocketIoEvent.DEVICE_2_DEVICE_PACKETS, D2DPacketInfoMap);
         //推送后即清除上一次的所有被攻击设备对
-        CommonCacheUtil.clearD2DAttackPair();
+        CacheUtil.clearD2DAttackPair();
     }
 
 
@@ -160,7 +155,7 @@ public class ScheduledService {
     private void sendPacketStatisticsMsg(){
         SEND_CONSUMER.setTimeStamp(new Date().toString());
         //将之前的统计信息置0
-        CommonCacheUtil.resetSaveBean();
+        CacheUtil.resetSaveBean();
         final HashMap<String,Integer> DELAY_INFO = packetAnalyzeService.getCollectorNumToDelayList();
         int receivePacket;
         int allReceivePacket = recvPacketNumber.get();
@@ -190,16 +185,17 @@ public class ScheduledService {
                 .setNumber(allReceivePacket)                //捕获的总报文数
                 .setNumberByDeviceIn(numberByDeviceIn)      //分设备的接收报文数
                 .setNumberByDeviceOut(numberByDeviceOut)    //分设备的发送报文数
-                .setTop5Statistic(CommonCacheUtil.getTop5StatisticsData())
-                .setDeviceCount(CommonCacheUtil.getAllDeviceCount())
-                .setAttackedDeviceCount(CommonCacheUtil.getAttackedDeviceCount())
+                .setTop5Statistic(CacheUtil.getTop5StatisticsData())
+                .setDeviceCount(CacheUtil.getAllDeviceCount())
+                .setAttackedDeviceCount(CacheUtil.getAttackedDeviceCount())
                 .build());
 
         graphInfoInList.forEach(GRAPH_INFO_CONSUMER);
         SocketServiceCenter.updateAllClient(SocketIoEvent.GRAPH_INFO,StatisticsData.GRAPH_BY_DEVICE);
 
         //保存每个设备当前时间间隔内的统计信息到数据库服务器
-        iDeviceService.saveStatisticInfo(CommonCacheUtil.getStatisticsInfoBean());
+        //FIXME 巨慢
+        //iDeviceService.saveStatisticInfo(CommonCacheUtil.getStatisticsInfoBean());
     }
 
 //    @Scheduled(fixedRate = 60 * 1000)
@@ -208,7 +204,8 @@ public class ScheduledService {
 //    }
 
     //定时重启tshark全部进程
-    @Scheduled(cron = "0 0 0 ? * MON-FRI")
+    //@Scheduled(cron = "0 0 0 ? * MON-FRI")
+    @Scheduled(cron = "0 0 0 * * ?")
     public void restartTsharkProcess(){
         for (BasePreProcessor basePreProcessor : CapturePacketServiceImpl.basePreProcessors) {
             Thread thread = new Thread(basePreProcessor::restartCapture);
@@ -218,7 +215,8 @@ public class ScheduledService {
     }
 
     //定时删除临时的wireshark报文
-    @Scheduled(cron = "0 5 0 ? * MON-FRI")
+    //@Scheduled(cron = "0 5 0 ? * MON-FRI")
+    @Scheduled(cron = "30 0 0 * * ? ")
     public void deletePcapFileScheduled(){
         File file = new File(Common.WIRESHARK_TEMP_FILE);
         File[] files = file.listFiles();
@@ -229,6 +227,9 @@ public class ScheduledService {
                     if(file1.delete()){
                         System.out.println("成功删除【wireshark】临时文件" + file1.getAbsolutePath());
                     } //如果文件正在被占用，那么会先删除失败，没关系第二天继续尝试就好了
+                    else{
+                        System.out.println("无法删除【wireshark】临时文件" + file1.getAbsolutePath());
+                    }
                 }
             }
         }
@@ -280,7 +281,7 @@ public class ScheduledService {
 //                StatisticsData.ART_INFO_SEND.put(artName, StatisticsData.ART_INFO.get(artName));
 //            }
             StatisticsData.ART_INFO.forEach((artName, artValueList) -> {
-                if (CommonCacheUtil.isArtShow(artName)){
+                if (CacheUtil.isArtShow(artName)){
                     //StatisticsData.ART_INFO_SEND.put(artName, artValueList);
                     if (artValueList.size() > 0)
                         ART_INFO_SEND_SINGLE.put(artName,artValueList.getLast());
@@ -364,10 +365,10 @@ public class ScheduledService {
             /**
              * 设置需要保存的统计信息
              */
-            StatisticInfoSaveBean bean = CommonCacheUtil.getStatisticsInfoBean().get(deviceNumber);
+            StatisticInfoSaveBean bean = CacheUtil.getStatisticsInfoBean().get(deviceNumber);
             if (bean == null) {
                 bean = new StatisticInfoSaveBean();
-                CommonCacheUtil.getStatisticsInfoBean().put(deviceNumber,bean);
+                CacheUtil.getStatisticsInfoBean().put(deviceNumber,bean);
             }
                 bean.setTime(timeStamp);
                 switch (index){
@@ -412,7 +413,7 @@ public class ScheduledService {
         private int type;//0 upload 1 download
         @Override
         public void accept(String deviceNumber, AtomicInteger atomicInteger) {
-            DeviceMaxFlow deviceMaxFlow = CommonCacheUtil.getDeviceMaxFlow(deviceNumber);
+            DeviceMaxFlow deviceMaxFlow = CacheUtil.getDeviceMaxFlow(deviceNumber);
             switch (type){
                 case 0 : if (atomicInteger.get() > deviceMaxFlow.getMaxFlowOut())
                 {

@@ -25,9 +25,7 @@ public class ServiceConfig {
 
     @Bean("common_schedule")
     public Executor taskExecutor() {
-        CustomThreadPoolExecutor customThreadPoolExecutor = generateCommonThreadPool("-common-schedule-", "error of common schedule service ", "common schedule service reject task");
-        ThreadPoolUtil.registerThreadPoolExecutor(customThreadPoolExecutor);
-        return customThreadPoolExecutor;
+        return generateCommonThreadPool("-common-schedule-", "error of common schedule service ", "common schedule service reject task");
     }
 
     @Bean("common_async")
@@ -44,23 +42,23 @@ public class ServiceConfig {
         return customThreadPoolExecutor;
     }
 
-    @Bean("device_schedule_service")
-    public Executor deviceScheduleService(){
-        CustomThreadPoolExecutor customThreadPoolExecutor = generateCommonThreadPool("-device-schedule-service-", "error of device schedule service ", "device schedule service reject task");;
-        ThreadPoolUtil.registerThreadPoolExecutor(customThreadPoolExecutor);
-        return customThreadPoolExecutor;
+    @Bean("common_service")
+    public Executor taskExecutor1() {
+        return generateCommonThreadPool("-common-service-", "error of common service service ", "common service service reject task");
     }
 
-    private CustomThreadPoolExecutor generateCommonThreadPool(String s, String threadErrorMsg, String rejectErrorMsg) {
-        CustomThreadPoolExecutor customThreadPoolExecutor = (CustomThreadPoolExecutor) CommonUtil.getFixThreadPoolSizeThreadPool(50, new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread thread = new Thread(r);
-                thread.setName(s);
-                thread.setUncaughtExceptionHandler((t, e) -> log.error(threadErrorMsg,e));
-                return thread;
-            }
-        }, s, (r, executor) -> log.error(rejectErrorMsg));
+    @Bean("device_schedule_service")
+    public Executor deviceScheduleService(){
+        return generateCommonThreadPool("-device-schedule-service-", "error of device schedule service ", "device schedule service reject task");
+    }
+
+    private CustomThreadPoolExecutor generateCommonThreadPool(String threadName, String threadErrorMsg, String rejectErrorMsg) {
+        CustomThreadPoolExecutor customThreadPoolExecutor = (CustomThreadPoolExecutor) CommonUtil.getFixThreadPoolSizeThreadPool(50, r -> {
+            Thread thread = new Thread(r);
+            thread.setName(threadName);
+            thread.setUncaughtExceptionHandler((t, e) -> log.error(threadErrorMsg,e));
+            return thread;
+        },threadName, (r, executor) -> log.error(rejectErrorMsg));
         ThreadPoolUtil.registerThreadPoolExecutor(customThreadPoolExecutor);
         return customThreadPoolExecutor;
     }
@@ -81,9 +79,7 @@ public class ServiceConfig {
 
     @Bean("top5_schedule_service")
     public Executor top5ScheduleService(){
-        CustomThreadPoolExecutor customThreadPoolExecutor = generateCommonThreadPool("-top5-schedule-service-",
+        return generateCommonThreadPool("-top5-schedule-service-",
                 "error of top5 schedule service ","top5 schedule service reject task");
-        ThreadPoolUtil.registerThreadPoolExecutor(customThreadPoolExecutor);
-        return customThreadPoolExecutor;
     }
 }

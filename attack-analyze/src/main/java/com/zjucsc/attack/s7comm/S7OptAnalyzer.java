@@ -42,7 +42,7 @@ public class S7OptAnalyzer extends BaseOptAnalyzer<S7OptAttackConfig>{
     private List<DBclass> Writejobdecode(FvDimensionLayer S7layer )
     {
         byte[] S7data;
-        if(!S7layer.tcp_payload[0].equals(""))
+        if(S7layer.tcpPayload!=null)
         {
             S7data = GetS7load.S7load(S7layer.tcpPayload,1);
         }

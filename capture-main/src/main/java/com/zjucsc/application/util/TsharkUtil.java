@@ -1,11 +1,7 @@
 package com.zjucsc.application.util;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.zjucsc.application.domain.non_hessian.CustomPacket;
-import com.zjucsc.application.domain.non_hessian.PacketDetail;
-import com.zjucsc.tshark.packets.FvDimensionLayer;
 import org.pcap4j.core.*;
+import org.pcap4j.packet.namednumber.DataLinkType;
 
 import java.io.*;
 
@@ -58,67 +54,28 @@ public class TsharkUtil {
         return true;
     }
 
-    private static TsharkThread tsharkThread = null;
-    private static PcapHandle pcapHandle = null;
-    public synchronized static void startHistoryPacketAnalyzeThread(String command , String virtualName) throws PcapNativeException {
-        if (tsharkThread == null){
-            tsharkThread = new TsharkThread(command);
-            tsharkThread.start();
-        }
-        if (pcapHandle == null){
-            PcapNetworkInterface pcapNetworkInterface = Pcaps.getDevByName(virtualName);
-            pcapHandle = pcapNetworkInterface.openLive(65536, PcapNetworkInterface.PromiscuousMode.PROMISCUOUS
-                    ,1000);
-        }
+    public static String analyzeRawData(byte[] rawData) throws PcapNativeException, IOException, NotOpenException {
+        File file = new File("temp.pcap");
+        file.deleteOnExit();
+        file.createNewFile();
+        String filePath = file.getAbsolutePath();
+        PcapHandle handle = Pcaps.openDead(DataLinkType.EN10MB, 65536);
+        PcapDumper pcapDumper = handle.dumpOpen(filePath);
+        pcapDumper.dumpRaw(rawData);
+        String res =  tsharkAnalyzeTempFile(filePath);
+        pcapDumper.close();
+        handle.close();
+        return res;
     }
 
-    public static void analyzeHistoryPacket(CustomPacket customPacket, TsharkThread.HistoryPacketCallback historyPacketCallback) throws PcapNativeException, NotOpenException {
-        pcapHandle.sendPacket(customPacket);
-        tsharkThread.setHistoryPacketCallback(historyPacketCallback);
+    private static String tsharkAnalyzeTempFile(String filePath) throws IOException {
+        String command = "tshark -T ek -r " + filePath;
+        Process process = Runtime.getRuntime().exec(command);
+        BufferedReader bfReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        bfReader.readLine();
+        String res = bfReader.readLine();
+        bfReader.close();
+        process.destroyForcibly();
+        return res;
     }
-
-    public static class TsharkThread extends Thread{
-        private String command;
-        private HistoryPacketCallback historyPacketCallback;
-        TsharkThread(String command) {
-            this.command = command;
-        }
-
-        @Override
-        public void run() {
-            BufferedReader bfReader = null;
-            try {
-                Process process = Runtime.getRuntime().exec(command);
-                bfReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                for (;;){
-                    String content = bfReader.readLine();
-                    if (content.length() > 90){
-                        PacketDetail detail = JSON.parseObject(content,PacketDetail.class);
-                        if (historyPacketCallback!=null) {
-                            historyPacketCallback.callback(detail.getLayers().getExt().getExt_custom_ext_raw_data(), content);
-                        }
-                    }
-                }
-            }catch (Exception e){
-                e.printStackTrace();
-            }finally {
-                if (bfReader != null) {
-                    try {
-                        bfReader.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-
-        public void setHistoryPacketCallback(HistoryPacketCallback historyPacketCallback){
-            this.historyPacketCallback = historyPacketCallback;
-        }
-
-        public interface HistoryPacketCallback{
-            void callback(String rawData,String content);
-        }
-    }
-
 }

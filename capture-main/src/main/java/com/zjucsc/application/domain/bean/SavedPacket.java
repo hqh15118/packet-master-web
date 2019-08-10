@@ -31,5 +31,5 @@ public class SavedPacket implements Serializable {
     private String funCode;
     private String length;
     private String protocol;
-
+    private boolean isAttack;
 }

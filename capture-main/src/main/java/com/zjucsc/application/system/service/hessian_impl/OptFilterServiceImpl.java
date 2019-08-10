@@ -7,9 +7,8 @@ import com.zjucsc.application.system.mapper.base.BaseServiceImpl;
 import com.zjucsc.application.system.service.hessian_iservice.IOptFilterService;
 import com.zjucsc.application.system.service.hessian_mapper.OptFilterMapper;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
-import com.zjucsc.application.util.CommonCacheUtil;
-import com.zjucsc.application.util.CommonOptFilterUtil;
-import com.zjucsc.common.exceptions.DeviceNotValidException;
+import com.zjucsc.application.util.CacheUtil;
+import com.zjucsc.application.util.OptFilterUtil;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -19,9 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiConsumer;
 
-import static com.zjucsc.application.util.CommonCacheUtil.convertIdToName;
+import static com.zjucsc.application.util.CacheUtil.convertIdToName;
 
 /**
  * @author hongqianhui
@@ -30,17 +28,11 @@ import static com.zjucsc.application.util.CommonCacheUtil.convertIdToName;
 @Service
 public class OptFilterServiceImpl extends BaseServiceImpl<OptFilter,OptFilterMapper> implements IOptFilterService {
 
-    /**
-     * 每次传的时候，都传功能码那里所有协议下的所有配置
-     * 会将该设备ID下的map[协议，分析器]整个替换掉。
-     * @param
-     * @return
-     */
     @Override
-    public CompletableFuture<Exception> addOperationFilter(OptFilterForFront optFilterForFront) throws DeviceNotValidException {
-        //更新数据库
+    public CompletableFuture<Exception> addOperationFilter(List<OptFilterForFront> optFilterForFront) {
+        this.baseMapper.deleteByDeviceNumber(optFilterForFront.get(0).getDeviceNumber(),Common.GPLOT_ID);
         this.baseMapper.saveOrUpdateBatch(optFilterForFront,Common.GPLOT_ID);
-        return CompletableFuture.completedFuture(null);
+        return null;
     }
 
     /**
@@ -55,28 +47,13 @@ public class OptFilterServiceImpl extends BaseServiceImpl<OptFilter,OptFilterMap
     @Override
     public CompletableFuture<List<String>> getTargetExistIdFilter(String deviceNumber, boolean cached , int protocolId) throws ProtocolIdNotValidException {
         if (cached){
-            String deviceTag = CommonCacheUtil.getTargetDeviceTagByNumber(deviceNumber);
-            ConcurrentHashMap<String, OperationAnalyzer> map = CommonOptFilterUtil.getTargetProtocolToOperationAnalyzerByDeviceTag(deviceTag);
+            String deviceTag = CacheUtil.getTargetDeviceTagByNumber(deviceNumber);
+            ConcurrentHashMap<String, OperationAnalyzer> map = OptFilterUtil.getTargetProtocolToOperationAnalyzerByDeviceTag(deviceTag);
             if (map == null){
                 throw new ProtocolIdNotValidException("缓存中不存在ID为 " + deviceNumber + " 的规则");
             }
             final List<String> optFilterList  = new ArrayList<>();
             OperationAnalyzer analyzer = map.get(convertIdToName(protocolId));
-//                if (type == 0) {
-//                    analyzer.getAnalyzer().getWhiteMap().forEach(new BiConsumer<Integer, String>() {
-//                        @Override
-//                        public void accept(Integer integer, String s) {
-//                            optFilterList.add(integer);
-//                        }
-//                    });
-//                } else {
-//                    analyzer.getAnalyzer().getBlackMap().forEach(new BiConsumer<Integer, String>() {
-//                        @Override
-//                        public void accept(Integer integer, String s) {
-//                            optFilterList.add(integer);
-//                        }
-//                    });
-//                }
             if (analyzer == null || analyzer.getAnalyzer() == null || analyzer.getAnalyzer().getWhiteMap() == null){
                 return CompletableFuture.completedFuture(new ArrayList<>(0));
             }

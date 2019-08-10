@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture;
  * @author hongqianhui
  */
 public interface IOptFilterService  {
-    CompletableFuture<Exception> addOperationFilter(OptFilterForFront optFilterForFront) throws ProtocolIdNotValidException, OptFilterNotValidException, DeviceNotValidException;
+    CompletableFuture<Exception> addOperationFilter(List<OptFilterForFront> optFilterForFront) throws ProtocolIdNotValidException, OptFilterNotValidException, DeviceNotValidException;
     CompletableFuture<List<String>> getTargetExistIdFilter(String deviceId, boolean cached, int protocolId) throws DeviceNotValidException, ProtocolIdNotValidException;
 
     List<String> selectTargetOptFilter(String device, int protocolId);

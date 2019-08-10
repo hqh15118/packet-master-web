@@ -12,7 +12,7 @@ public interface OptFilterMapper extends BaseMapper<OptFilter> {
 
         List<String> selectTargetOptFilter(String device, int protocolId, int gplotId);
 
-        void saveOrUpdateBatch(OptFilterForFront optFilterForFront, int gplotId);
+        void saveOrUpdateBatch(List<OptFilterForFront> optFilterForFront, int gplotId);
 
         void deleteByDeviceNumber(String deviceNumber, int gplotId);
 

@@ -118,11 +118,11 @@ public class ModbusOptAnalyzer extends BaseOptAnalyzer<ModbusOptConfig> {
                     {
                         return false;
                     }
-                    int addresshead = ByteUtil.bytesToShort(modbusload,0);
-                    int length = ByteUtil.bytesToShort(modbusload,2);
+                    int addresshead = ByteUtil.bytesToShort(modbusload,1);
+                    int length = ByteUtil.bytesToShort(modbusload,3);
                     if(addresshead<=modbusopconfig.getAddress() && (addresshead + length)>modbusopconfig.getAddress())
                     {
-                        int i = 5 + (modbusopconfig.getAddress()-addresshead)*2 + (1-modbusopconfig.getBitoffset()/8);
+                        int i = 6 + (modbusopconfig.getAddress()-addresshead)*2 + (1-modbusopconfig.getBitoffset()/8);
                         if((modbusload[i]>>(modbusopconfig.getBitoffset()%8) & 1)==1 && modbusopconfig.isResult())
                         {
                             return true;

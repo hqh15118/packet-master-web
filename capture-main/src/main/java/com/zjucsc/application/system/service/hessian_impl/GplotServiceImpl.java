@@ -8,21 +8,19 @@ import com.zjucsc.application.system.service.hessian_iservice.IGplotService;
 import com.zjucsc.application.system.service.hessian_iservice.IWhiteProtocolService;
 import com.zjucsc.application.system.service.hessian_mapper.DosConfigMapper;
 import com.zjucsc.application.system.service.hessian_mapper.GplotMapper;
-import com.zjucsc.application.util.CommonCacheUtil;
-import com.zjucsc.application.util.CommonFvFilterUtil;
-import com.zjucsc.application.util.CommonOptFilterUtil;
+import com.zjucsc.application.util.CacheUtil;
+import com.zjucsc.application.util.FvFilterUtil;
+import com.zjucsc.application.util.OptFilterUtil;
 import com.zjucsc.attack.AttackCommon;
 import com.zjucsc.attack.bean.DosConfig;
-import com.zjucsc.common.common_util.PrinterUtil;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
+
+import static com.zjucsc.application.util.OptFilterUtil.getOptFilterForFront;
 
 /**
  * @author hongqianhui
@@ -57,9 +55,10 @@ public class GplotServiceImpl extends BaseServiceImpl<Gplot,GplotMapper> impleme
             String deviceNumber = device.getDeviceNumber();
             //更新DEVICE_NUMBER和DEVICE_TAG之间的对应关系
             //更新DEVICE_NUMBER和StatisticInfoSaveBean【设备upload、download等报文信息】
-            CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(deviceNumber , device.getDeviceTag());
-            CommonCacheUtil.addDeviceNumberToName(deviceNumber,device.getDeviceInfo());
-            CommonCacheUtil.addOrUpdateDeviceManually(device);  //手动将设备添加到缓存
+            CacheUtil.addOrUpdateDeviceNumberAndTAG(deviceNumber , device.getDeviceTag());
+            CacheUtil.addDeviceNumberToName(deviceNumber,device.getDeviceInfo());
+            CacheUtil.addOrUpdateDeviceManually(device);  //手动将设备添加到缓存
+            CacheUtil.addMacAddress(device.getDeviceMac());//添加mac地址
             if (!device.isConfig()){
                 continue;
             }
@@ -68,14 +67,21 @@ public class GplotServiceImpl extends BaseServiceImpl<Gplot,GplotMapper> impleme
                     loadAllFvDimensionFilterByDeviceNumberAndGplotId(deviceNumber,gplotId);
             //add all fv filters to cache
             if (rules.size() > 0) {
-                CommonFvFilterUtil.addOrUpdateFvFilter(device.getDeviceTag(), rules, "");
+                FvFilterUtil.addOrUpdateFvFilter(device.getDeviceTag(), rules, "");
             }
             //load all opt dimension rule from opt filter table by device_number + gplot_id
-            List<OptFilterForFront> optFilters = iDeviceService.loadAllOptFilterByDeviceNumberAndGplotId(deviceNumber,gplotId);
+            //List<OptFilterForFront> optFilters = iDeviceService.loadAllOptFilterByDeviceNumberAndGplotId(deviceNumber,gplotId);
             //add all opt filters to cache
+            /*
             if (optFilters.size() > 0) {
                 for (OptFilterForFront optFilter : optFilters) {
                     CommonOptFilterUtil.addOrUpdateAnalyzer(device.getDeviceTag(), optFilter, optFilter.toString());
+                }
+            }
+            */
+            for (Rule rule : rules) {
+                if (rule.isEnable()){
+                    OptFilterUtil.addOrUpdateAnalyzer(device.getDeviceTag(), createOptFilterForFront(rule),"");
                 }
             }
 
@@ -84,7 +90,7 @@ public class GplotServiceImpl extends BaseServiceImpl<Gplot,GplotMapper> impleme
              *************************/
             DeviceProtocol deviceProtocol = iWhiteProtocolService.selectByDeviceNumber(device.getDevice_id());
             if (deviceProtocol.getDeviceNumber()!=null) {
-                CommonCacheUtil.addWhiteProtocolToCache(deviceProtocol.getDeviceNumber(), deviceProtocol.getProtocolName());
+                CacheUtil.addWhiteProtocolToCache(deviceProtocol.getDeviceNumber(), deviceProtocol.getProtocolName());
             }
             /**********************************
              * 初始化DOS攻击配置
@@ -100,6 +106,10 @@ public class GplotServiceImpl extends BaseServiceImpl<Gplot,GplotMapper> impleme
         Common.GPLOT_ID = gplotId;
 
         return BaseResponse.OK();
+    }
+
+    private OptFilterForFront createOptFilterForFront(Rule rule){
+        return getOptFilterForFront(rule);
     }
 
     @Override

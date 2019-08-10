@@ -21,7 +21,6 @@ import com.zjucsc.tshark.packets.FvDimensionLayer;
 import io.netty.util.internal.ThreadLocalRandom;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import sun.security.krb5.Config;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,7 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
 @Slf4j
-public class CommonCacheUtil {
+public class CacheUtil {
 
     /*********************************
      * 清楚当前组态图下所有缓存的配置
@@ -39,72 +38,75 @@ public class CommonCacheUtil {
         removeAllDeviceNumberToName();
     }
     */
-    public static final BiMap<Integer,String> AUTH_MAP = HashBiMap.create();
+    public static final BiMap<Integer,String> AUTH_MAP = HashBiMap.create();        //初始化时候已经加载
     /**************************************
      * 所有可配置的协议
      * 协议 --> 功能码 以及 对应的含义
      *************************************/
-    public static final HashMap<String , HashMap<String,String>> CONFIGURATION_MAP = new HashMap<>();
+    public static final HashMap<String , HashMap<String,String>> CONFIGURATION_MAP = new HashMap<>();   //初始化时候已经加载
     /**************************************
      * init in
      * @see com.zjucsc.application.task.InitConfigurationService
      *************************************/
-    public static final BiMap<Integer,String> PROTOCOL_STR_TO_INT = HashBiMap.create();
+    public static final BiMap<Integer,String> PROTOCOL_STR_TO_INT = HashBiMap.create();//初始化时候已经加载
     /**************************************
      * 设备IP和DEVICE_NUMBER之间互相转换
      *************************************/
-    public static final BiMap<String,String> DEVICE_NUMBER_TO_TAG = HashBiMap.create();
+    public static final BiMap<String,String> DEVICE_NUMBER_TO_TAG = HashBiMap.create();//初始化时候已经加载
     /**************************************
      * 【key 设备deviceNumber deviceTag设备标识（Ip/Mac）】
      * 每台设备的统计信息
      *************************************/
-    private static final ConcurrentHashMap<String, StatisticInfoSaveBean> STATISTICS_INFO_BEAN =
+    private static final ConcurrentHashMap<String, StatisticInfoSaveBean> STATISTICS_INFO_BEAN = //初始化时候不需要加载
             new ConcurrentHashMap<>();
     /*************************************
      * 要显示的工艺参数集合
      * 【将这个set里面的工艺参数数据传输到前端，其他的不用传】
      ************************************/
-    public static final Set<String> SHOW_GRAPH_SET = Collections.synchronizedSet(new HashSet<>());
+    public static final Set<String> SHOW_GRAPH_SET = Collections.synchronizedSet(new HashSet<>());  //初始化时候已经加载
     /************************************
      * 通用正常报文 [协议：报文List]
      ***********************************/
-    private static final HashMap<String, HashMap<RightPacketInfo,String>> RIGHT_PACKET_INFOS = new HashMap<>();
+    private static final HashMap<String, HashMap<RightPacketInfo,String>> RIGHT_PACKET_INFOS = new HashMap<>(); //初始化时候已经加载
     /***********************************
      * 五元组白名单
+     * deviceNumber -- 协议名字map
      **********************************/
-    private static final Map<String,Map<String,String>> RIGHT_PROTOCOL_LIST = new ConcurrentHashMap<>();
+    private static final Map<String,Map<String,String>> RIGHT_PROTOCOL_LIST = new ConcurrentHashMap<>();    // 初始化时候已经加载
     /*************************************
      * 所有IP地址和MAC地址
+     * deviceTag -- device
+     * 所有设备
      ************************************/
-    private static final ConcurrentHashMap<String, Device> ALL_DEVICES = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, Device> ALL_DEVICES = new ConcurrentHashMap<>();     // 初始化时候已经加载
     //存储所有的mac地址，防止设备重复
-    private static final ConcurrentHashMap<String,String> ALL_MAC_ADDRESS = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String,String> ALL_MAC_ADDRESS = new ConcurrentHashMap<>(); // 初始化时候已经加载
     /************************************
      * 所有要识别的工控协议【用于设备识别】
      ************************************/
-    private static final Map<String,String> ALL_IPROTOCOL = new ConcurrentHashMap<>();
+    private static final Map<String,String> ALL_IPROTOCOL = new ConcurrentHashMap<>();  // 初始化时候已经加载
     /*************************************
      * [deviceNumber - deviceName]
      ************************************/
-    private static final Map<String,String> DEVICE_NUMBER_TO_NAME = new ConcurrentHashMap<>();
+    private static final Map<String,String> DEVICE_NUMBER_TO_NAME = new ConcurrentHashMap<>(); // 初始化时候已经加载
     /*************************************
      * 报文 : 当前设备【srcMacAddress】 --> 目的设备【dstMacAddress】
      * 源设备发送到其他设备的报文数量 [当前设备，[目的设备，报文流量]]
      ************************************/
-    private static final ConcurrentHashMap<Device,ConcurrentHashMap<Device, AtomicInteger>> DEVICE_TO_DEVICE_PACKETS
+    private static final ConcurrentHashMap<Device,ConcurrentHashMap<Device, AtomicInteger>> DEVICE_TO_DEVICE_PACKETS // 不需要初始化
             = new ConcurrentHashMap<>();
     /*************************************
      * 配置设备最大流量
      ************************************/
-    private static final Map<String,DeviceMaxFlow> DEVICE_MAX_FLOW = new ConcurrentHashMap<>();
+    private static final Map<String,DeviceMaxFlow> DEVICE_MAX_FLOW = new ConcurrentHashMap<>();  // 初始化时候已经加载
     /*************************************
      * 设备和设备匹配
      ************************************/
-    private static ConcurrentHashMap<String,String> D2DAttackPair = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<String,String> D2DAttackPair = new ConcurrentHashMap<>(); //不需要初始化
     /*************************************
      * 所有被丢弃的协议【设备识别】
      ************************************/
-    private static final HashMap<String,String> ALL_DROP_PROTOCOL = new HashMap<>();
+    private static final HashMap<String,String> ALL_DROP_PROTOCOL = new HashMap<>(); //不需要初始化
     /*********************************
      *
      *  CONFIGURATION_MAP
@@ -121,8 +123,7 @@ public class CommonCacheUtil {
         PROTOCOL_STR_TO_INT.inverse().remove(protocolName);
     }
 
-    private static void deleteCachedFuncodeByName(String protocolName,
-                                                 String funcode) throws ProtocolIdNotValidException {
+    private static void deleteCachedFuncodeByName(String protocolName, String funcode) throws ProtocolIdNotValidException {
         HashMap<String, String> funcodeMeaningMap;
         if ((funcodeMeaningMap = CONFIGURATION_MAP.get(protocolName)) == null) {
             throw new ProtocolIdNotValidException("deleteCachedFuncodeByName " + protocolName + " protocol name not exist and the CONFIGURATION_MAP is : \n" + CONFIGURATION_MAP);
@@ -185,7 +186,6 @@ public class CommonCacheUtil {
                                                     String funcode,
                                                     String opt) throws ProtocolIdNotValidException {
         HashMap<String, String> funcodeMeaningMap;
-
         if ((funcodeMeaningMap = CONFIGURATION_MAP.get(protocol)) == null) {
             throw new ProtocolIdNotValidException("updateOldProtocolCacheByName " + protocol + " protocol name not exist and the CONFIGURATION_MAP is : \n" + CONFIGURATION_MAP);
         } else {
@@ -268,7 +268,7 @@ public class CommonCacheUtil {
     }
     /**
      * @param deviceNumber 设备Number
-     * @param deviceTag    device 的 ip地址或者mac地址
+     * @param deviceTag    device的ip地址或者mac地址
      */
     public static void addOrUpdateDeviceNumberAndTAG(String deviceNumber, String deviceTag) {
         DEVICE_NUMBER_TO_TAG.forcePut(deviceNumber, deviceTag);
@@ -303,9 +303,7 @@ public class CommonCacheUtil {
     }
 
     /*********************************
-     *
      *  CACHED SHOW GRAPH ARGS
-     *
      **********************************/
 
     public static void addShowGraphArg(int protocolId, String artArg) {
@@ -389,11 +387,11 @@ public class CommonCacheUtil {
      *
      *********************************/
     public static ConcurrentHashMap<String, OperationAnalyzer> getOptAnalyzer(FvDimensionLayer layer) {
-        ConcurrentHashMap<String, OperationAnalyzer> map = CommonOptFilterUtil.getTargetProtocolToOperationAnalyzerByDeviceTag(layer.ip_dst[0]);
+        ConcurrentHashMap<String, OperationAnalyzer> map = OptFilterUtil.getTargetProtocolToOperationAnalyzerByDeviceTag(layer.ip_dst[0]);
         if (map != null) {
             return map;
         }
-        return CommonOptFilterUtil.getTargetProtocolToOperationAnalyzerByDeviceTag(layer.eth_dst[0]);
+        return OptFilterUtil.getTargetProtocolToOperationAnalyzerByDeviceTag(layer.eth_dst[0]);
     }
 
 
@@ -449,6 +447,17 @@ public class CommonCacheUtil {
             rightPacketInfos.put(rightPacketInfo,"");
         }
     }
+    public static void removeNormalRightPacketInfo(RightPacketInfo packetInfo){
+        synchronized (NORMAL_LOCK){
+            String protocol = packetInfo.getProtocol();
+            Map<RightPacketInfo,String> map = RIGHT_PACKET_INFOS.get(protocol);
+            if (map == null){
+                return;
+            }
+            map.remove(packetInfo);
+        }
+    }
+
     public static boolean isNormalRightPacket(RightPacketInfo rightPacketInfo){
         synchronized (NORMAL_LOCK){
             String protocol = rightPacketInfo.getProtocol();
@@ -580,6 +589,9 @@ public class CommonCacheUtil {
         return ALL_DEVICES.size();
     }
 
+    public static void addMacAddress(String srcMacAddress){
+        ALL_MAC_ADDRESS.put(srcMacAddress,"");
+    }
     /**
      *
      * @param layer 五元组
@@ -739,7 +751,7 @@ public class CommonCacheUtil {
      ************************************/
     private static FvDimensionFilterCondition fvDimensionFilterCondition;
     public static void addOrUpdateFvDimensionFilterCondition(FvDimensionFilterCondition fvDimensionFilterCondition){
-        CommonCacheUtil.fvDimensionFilterCondition = fvDimensionFilterCondition;
+        CacheUtil.fvDimensionFilterCondition = fvDimensionFilterCondition;
     }
     public static boolean realTimeFvDimensionFilter(FvDimensionLayer layer){
         if (fvDimensionFilterCondition == null){

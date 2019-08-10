@@ -17,7 +17,7 @@ public abstract class BaseAttackAnalyzer<T extends AbstractDosList> implements I
     //分析需要用到的数据结构
     protected Map<String,T> t;
     protected Class<T> clazz;
-    DosConfig dosConfig;
+    private DosConfig dosConfig;
     /**
      * 通过构造函数注入分析结构
      * @param t key 源地址，value 分析的数据结构
@@ -36,7 +36,7 @@ public abstract class BaseAttackAnalyzer<T extends AbstractDosList> implements I
     @Override
     public String analyze(FvDimensionLayer layer) throws IllegalAccessException, InstantiationException {
         if (validPacket(layer)){
-            doAnalyze(layer);
+            return doAnalyze(layer);
         }
         return null;
     }
@@ -72,5 +72,12 @@ public abstract class BaseAttackAnalyzer<T extends AbstractDosList> implements I
     public BaseAttackAnalyzer setDosConfig(DosConfig dosConfig) {
         this.dosConfig = dosConfig;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "BaseAttackAnalyzer{" +
+                ", dosConfig=" + dosConfig +
+                '}';
     }
 }

@@ -1,31 +1,31 @@
 package com.zjucsc.application.task;
 
-import com.alibaba.fastjson.JSON;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.zjucsc.IProtocolFuncodeMap;
 import com.zjucsc.application.config.*;
 import com.zjucsc.application.config.auth.Auth;
+import com.zjucsc.application.controller.AttackConfigController;
 import com.zjucsc.application.domain.bean.*;
 import com.zjucsc.application.domain.non_hessian.DeviceMaxFlow;
-import com.zjucsc.application.system.service.common_impl.NetworkInterfaceServiceImpl;
-import com.zjucsc.application.system.service.hessian_iservice.*;
+import com.zjucsc.application.system.service.hessian_iservice.IArtConfigService;
+import com.zjucsc.application.system.service.hessian_iservice.IConfigurationSettingService;
+import com.zjucsc.application.system.service.hessian_iservice.IGplotService;
+import com.zjucsc.application.system.service.hessian_iservice.IProtocolIdService;
 import com.zjucsc.application.system.service.hessian_mapper.DeviceMaxFlowMapper;
-import com.zjucsc.application.system.service.hessian_mapper.DosConfigMapper;
+import com.zjucsc.application.system.service.hessian_mapper.OptAttackMapper;
 import com.zjucsc.application.system.service.hessian_mapper.PacketInfoMapper;
 import com.zjucsc.application.util.AppCommonUtil;
-import com.zjucsc.application.util.CommonCacheUtil;
+import com.zjucsc.application.util.CacheUtil;
 import com.zjucsc.art_decode.ArtDecodeCommon;
 import com.zjucsc.art_decode.base.BaseConfig;
-import com.zjucsc.attack.bean.ArtAttackAnalyzeConfig;
 import com.zjucsc.attack.AttackCommon;
+import com.zjucsc.attack.bean.BaseOptConfig;
 import com.zjucsc.base.util.SpringContextUtil;
 import com.zjucsc.common.common_util.PrinterUtil;
-import com.zjucsc.common.exceptions.PacketDetailServiceNotValidException;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.socket_io.*;
 import com.zjucsc.tshark.TsharkCommon;
 import lombok.extern.slf4j.Slf4j;
-import org.pcap4j.core.PcapNativeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -35,14 +35,10 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.SocketException;
 import java.util.*;
 
-import static com.zjucsc.application.util.CommonCacheUtil.AUTH_MAP;
-import static com.zjucsc.application.util.CommonCacheUtil.PROTOCOL_STR_TO_INT;
-import static com.zjucsc.application.util.CommonCacheUtil.convertIdToName;
+import static com.zjucsc.application.util.CacheUtil.*;
 import static com.zjucsc.application.util.CommonConfigUtil.addProtocolFuncodeMeaning;
-import static com.zjucsc.application.util.TsharkUtil.startHistoryPacketAnalyzeThread;
 
 /**
  * 加载组态配置到内存中 + 保存到本地数据库
@@ -61,6 +57,7 @@ public class InitConfigurationService implements ApplicationRunner {
     @Autowired private PreProcessor preProcessor;
     @Autowired private DeviceMaxFlowMapper deviceMaxFlowMapper;
     @Autowired private IGplotService iGplotService;
+    @Autowired private OptAttackMapper optAttackMapper;
 
     @Override
     public void run(ApplicationArguments args) throws IllegalAccessException, NoSuchFieldException, ProtocolIdNotValidException, IOException {
@@ -186,7 +183,7 @@ public class InitConfigurationService implements ApplicationRunner {
                     funcodeStatements.put(fun_code, map.get(fun_code));
                     //添加到protocol_id表
                     ConfigurationSetting configurationSetting = new ConfigurationSetting();
-                    int protocolId = CommonCacheUtil.convertNameToId(protocolName);
+                    int protocolId = CacheUtil.convertNameToId(protocolName);
                     configurationSetting.setProtocolId(protocolId);
                     configurationSetting.setOpt(map.get(fun_code));
                     configurationSetting.setFunCode(fun_code);
@@ -240,7 +237,7 @@ public class InitConfigurationService implements ApplicationRunner {
                     if (baseConfig.getProtocolId() == PACKET_PROTOCOL.S7_ID){
                         baseConfig.setProtocol("s7comm");
                     }else {
-                        baseConfig.setProtocol(CommonCacheUtil.convertIdToName(baseConfig.getProtocolId()));
+                        baseConfig.setProtocol(CacheUtil.convertIdToName(baseConfig.getProtocolId()));
                     }
                     //添加工艺参数配置到缓存中
                     ArtDecodeCommon.addArtDecodeConfig(baseConfig);
@@ -248,7 +245,7 @@ public class InitConfigurationService implements ApplicationRunner {
                     AppCommonUtil.initArtMap(baseConfig.getTag());
                     if (baseConfig.getShowGraph() == 1){
                         //添加要显示的工艺参数名字到缓存中
-                        CommonCacheUtil.addShowGraphArg(baseConfig.getProtocolId(),baseConfig.getTag());
+                        CacheUtil.addShowGraphArg(baseConfig.getProtocolId(),baseConfig.getTag());
                     }
                 }
             }
@@ -265,20 +262,18 @@ public class InitConfigurationService implements ApplicationRunner {
          ***************************/
         List<ArtAttackConfigDB> configDBS = packetInfoMapper.selectArtAttackConfigPaged(999,1);
 
-        for (ArtAttackConfigDB configDB : configDBS) {
-            if (configDB.isEnable()){
-                List<String> strings = new ArrayList<>();
-                List<ArtAttack2Config> artAttack2Configs = JSON.parseArray(configDB.getRuleJson(),ArtAttack2Config.class);
-                for (ArtAttack2Config artAttack2Config : artAttack2Configs)
-                {
-                    strings.add(artAttack2Config.getValue());
-                }
-                AttackCommon.addArtAttackAnalyzeConfig(new ArtAttackAnalyzeConfig(strings,configDB.getDetail(),
-                        configDB.isEnable(),configDB.getId()));
-            }
-        }
+        AttackConfigController.addArtAttackConfig2Cache(configDBS);
 
-        CommonCacheUtil.initIProtocol(preProcessor.getI_protocols());
+        CacheUtil.initIProtocol(preProcessor.getI_protocols());
+
+        /*****************************
+         * 初始化所有的正常报文
+         ****************************/
+
+//        List<RightPacketInfo> rightPacketInfos = packetInfoMapper.selectAllRightPacketInfo();
+//        for (RightPacketInfo rightPacketInfo : rightPacketInfos) {
+//            CacheUtil.addNormalRightPacketInfo(rightPacketInfo);
+//        }
 
         initArtTest();
         /**************************
@@ -291,45 +286,18 @@ public class InitConfigurationService implements ApplicationRunner {
         //System.out.println("spring boot admin address : http://your-address:8989");
         //System.out.println("swagger-ui address : http://your-address:your-port/swagger-ui.html#/greeting-controller");
 
-        String virtualNetworkcardName = constantConfig.getVirtual_network();
-        List<String> ipAddress = new ArrayList<>();
-        try {
-            List<NetworkInterface> networkInterfaces = NetworkInterfaceServiceImpl.doGetAllNetworkInterface();
-            for (NetworkInterface networkInterface : networkInterfaces) {
-                if (virtualNetworkcardName != null){
-                    if (virtualNetworkcardName.equals(networkInterface.getDeviceRealName())){
-                        ipAddress.addAll(networkInterface.getIpAddressed());
-                        break;
-                    }
-                }else {
-                    if (networkInterface.getDescription().contains("Npcap Loopback Adapter")) {
-                        virtualNetworkcardName = networkInterface.getDeviceRealName();
-                        ipAddress.addAll(networkInterface.getIpAddressed());
-                        break;
-                    }
-                }
-            }
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
-        if (virtualNetworkcardName == null){
-            System.err.println("未检测到回环网卡，报文分析无法进行");
-            throw new PacketDetailServiceNotValidException("未检测到回环网卡，报文分析无法进行");
-        }
-        doStartPacketDetailThread(virtualNetworkcardName,ipAddress);
-
         /***********************************
          * 初始化设备最大上行和下行流量
          **********************************/
         List<DeviceMaxFlow> deviceMaxFlows = deviceMaxFlowMapper.selectBatch();
         for (DeviceMaxFlow deviceMaxFlow : deviceMaxFlows) {
-            CommonCacheUtil.addOrUpdateDeviceMaxFlow(deviceMaxFlow);
+            CacheUtil.addOrUpdateDeviceMaxFlow(deviceMaxFlow);
         }
 
         /************************************
          * 初始化CPU和内存检测参数
          ***********************************/
-        CommonCacheUtil.initCpuAndMemState();
+        CacheUtil.initCpuAndMemState();
 
         MainServer.initSocketIoServer(constantConfig.getGlobal_address(), Common.SOCKET_IO_PORT);
         /************************************
@@ -345,6 +313,19 @@ public class InitConfigurationService implements ApplicationRunner {
         for (Class<?> sourceClass : dataSourceClasses) {
             handleDataSourceClass(sourceClass, SpringContextUtil.getBean(sourceClass));
         }
+        /************************************
+         * 初始化工艺参数操作攻击配置
+         ***********************************/
+        List<Integer> protocolIdsForOptAttack = Arrays.asList(PACKET_PROTOCOL.MODBUS_ID,PACKET_PROTOCOL.S7_ID);
+        for (Integer protocolId : protocolIdsForOptAttack) {
+            List<BaseOptConfig> baseOptConfigs = optAttackMapper.selectAllOptAttackConfigByProtocol(protocolId,1,999);
+            for (BaseOptConfig baseOptConfig : baseOptConfigs) {
+                if (baseOptConfig.isEnable()) {
+                    AttackCommon.addOptAttackConfig(baseOptConfig);
+                }
+            }
+        }
+
         /************************************
          * 启动结束
          ***********************************/
@@ -372,31 +353,6 @@ public class InitConfigurationService implements ApplicationRunner {
                 SocketServiceCenter.registerSocketIoDataListenter(eventMsg,eventType, ((DataListener) dataListener));
             }
         } catch (IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void doStartPacketDetailThread(String virtualLoopback , List<String> ipAddresses) {
-        StringBuilder commandBuilder = new StringBuilder();
-        //ipv6.src != fe80::d19:df03:c48a:11a8 && ip.src != 192.168.232.123
-        String ipV4 = null;
-        for (String ipAddress : ipAddresses) {
-            if (!ipAddress.contains(":")){
-                ipV4 = ipAddress;
-                break;
-            }
-        }
-        //assert ipV4 != null;
-        PrinterUtil.printStarter();
-        PrinterUtil.printMsg("【回环IP地址】：" + ipV4);
-        PrinterUtil.printEnder();
-        //tshark -i "{device_name}" -T ek -Y "ip.src!=192.168.123.232"
-        commandBuilder.append("tshark -i \"").append(virtualLoopback).append("\"")
-                .append(" -T ek").append(" -Y \"ip.src!=")
-                .append(ipV4).append("\"").append(" -M 1000");
-        try {
-            startHistoryPacketAnalyzeThread(commandBuilder.toString(),virtualLoopback);
-        } catch (PcapNativeException e) {
             e.printStackTrace();
         }
     }

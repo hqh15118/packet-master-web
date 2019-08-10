@@ -9,28 +9,12 @@ public class PnioOptConfig extends BaseOptConfig {
     private boolean result;
     private String comment;
 
-    public boolean isResult() {
-        return result;
+    public String getMacaddress() {
+        return macaddress;
     }
 
-    public void setResult(boolean result) {
-        this.result = result;
-    }
-
-    public int getBitoffset() {
-        return bitoffset;
-    }
-
-    public void setBitoffset(int bitoffset) {
-        this.bitoffset = bitoffset;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
+    public void setMacaddress(String macaddress) {
+        this.macaddress = macaddress;
     }
 
     public int getByteoffset() {
@@ -41,11 +25,27 @@ public class PnioOptConfig extends BaseOptConfig {
         this.byteoffset = byteoffset;
     }
 
-    public void setMacaddress(String macaddress) {
-        this.macaddress = macaddress;
+    public int getBitoffset() {
+        return bitoffset;
     }
 
-    public String getMacaddress() {
-        return macaddress;
+    public void setBitoffset(int bitoffset) {
+        this.bitoffset = bitoffset;
+    }
+
+    public boolean isResult() {
+        return result;
+    }
+
+    public void setResult(boolean result) {
+        this.result = result;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 }

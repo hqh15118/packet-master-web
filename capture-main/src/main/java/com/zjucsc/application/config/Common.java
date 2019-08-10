@@ -68,4 +68,5 @@ public class Common {
     public final static List<String> LOGGINED_USERS = new ArrayList<>();
 
     public static final ThreadExceptionHandler COMMON_THREAD_EXCEPTION_HANDLER = new ThreadExceptionHandler();
+
 }

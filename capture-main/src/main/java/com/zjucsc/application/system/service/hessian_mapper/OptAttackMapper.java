@@ -10,5 +10,5 @@ public interface OptAttackMapper {
     List<BaseOptConfig> selectAllOptAttackConfigByProtocol(int protocolId ,int page,int limit);
     void addOrUpdateAllOptAttackConfigByProtocolAndId(int protocolId,int configId,String jsonData);
     BaseOptConfig selectOptConfigByProtocolAndId(int protocolId,int id);
-    void changeOptConfigStateByOpName(String protocol,String opName,boolean enable);
+    BaseOptConfig changeOptConfigStateByOpName(int protocolId,String opName,boolean enable);
 }

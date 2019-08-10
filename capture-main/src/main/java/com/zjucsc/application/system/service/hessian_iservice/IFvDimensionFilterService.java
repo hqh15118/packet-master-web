@@ -16,7 +16,7 @@ public interface IFvDimensionFilterService {
      * @param rules
      * @return
      */
-    CompletableFuture<Exception> addFvDimensionFilter(List<Rule> rules);
+    CompletableFuture<Exception> addFvDimensionFilter(List<Rule> rules) throws ProtocolIdNotValidException;
     CompletableFuture<List<Rule>> getTargetExistIdFilter(String deviceId, boolean cached) throws DeviceNotValidException;
     void deleteAllFilterByDeviceNumberAndGplotId(String deviceNumber, int gplotId);
     Rule changeRuleStateByDeviceNumberAndFvId(String deviceNumber,String fvId,boolean enable) throws ProtocolIdNotValidException;

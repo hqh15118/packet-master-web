@@ -63,4 +63,8 @@ public interface PacketInfoMapper  {
     void addNormalPacket(List<RightPacketInfo> rightPacketInfo , int gplotId);
 
     List<SavedPacket> selectRealTimePacketList(PacketRealTimeBean packetRealTimeBean);
+
+    void removeNormalPacket(List<RightPacketInfo> rightPacketInfo , int gplotId);
+
+    List<RightPacketInfo> selectAllRightPacketInfo();
 }

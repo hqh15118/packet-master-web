@@ -5,7 +5,7 @@ import com.zjucsc.application.config.auth.Log;
 import com.zjucsc.application.domain.bean.BaseResponse;
 import com.zjucsc.application.domain.bean.DeviceProtocol;
 import com.zjucsc.application.system.service.hessian_iservice.IWhiteProtocolService;
-import com.zjucsc.application.util.CommonCacheUtil;
+import com.zjucsc.application.util.CacheUtil;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +20,7 @@ public class WhiteProtocolController {
     @ApiOperation("添加协议白名单")
     @PostMapping("add_rp")
     public BaseResponse addRightProtocolToCache(@RequestBody DeviceProtocol rightProtocols){
-        CommonCacheUtil.addWhiteProtocolToCache(rightProtocols.getDeviceNumber(),rightProtocols.getProtocolName());
+        CacheUtil.addWhiteProtocolToCache(rightProtocols.getDeviceNumber(),rightProtocols.getProtocolName());
         iWhiteProtocolService.insertById(rightProtocols);
         return BaseResponse.OK();
     }
@@ -29,7 +29,7 @@ public class WhiteProtocolController {
     @ApiOperation("删除协议白名单")
     @PostMapping("del_rp")
     public BaseResponse delRightProtocolToCache(@RequestBody DeviceProtocol rightProtocols){
-        int count = CommonCacheUtil.removeWhiteProtocolFromCache(rightProtocols.getDeviceNumber(),rightProtocols.getProtocolName());
+        int count = CacheUtil.removeWhiteProtocolFromCache(rightProtocols.getDeviceNumber(),rightProtocols.getProtocolName());
         iWhiteProtocolService.deleteById(rightProtocols);
         return BaseResponse.OK(count);
     }

@@ -5,7 +5,7 @@ import com.zjucsc.application.config.auth.Log;
 import com.zjucsc.application.domain.bean.*;
 import com.zjucsc.application.system.service.hessian_iservice.IConfigurationSettingService;
 import com.zjucsc.application.system.service.hessian_iservice.IProtocolIdService;
-import com.zjucsc.application.util.CommonCacheUtil;
+import com.zjucsc.application.util.CacheUtil;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.zjucsc.application.util.CommonCacheUtil.*;
+import static com.zjucsc.application.util.CacheUtil.*;
 
 /**
  * @author hongqianhui
@@ -48,7 +48,7 @@ public class ConfigurationSettingController {
             for (ConfigurationSetting configurationSetting : list) {
                 funCodeMeaningMap.put(configurationSetting.getFunCode(),configurationSetting.getOpt());
             }
-            CommonCacheUtil.addNewProtocolAndFuncodeMapToCache(configurationForFronts.getProtocolName(),
+            CacheUtil.addNewProtocolAndFuncodeMapToCache(configurationForFronts.getProtocolName(),
                     convertNameToId(configurationForFronts.getProtocolName()),
                     funCodeMeaningMap);
         }

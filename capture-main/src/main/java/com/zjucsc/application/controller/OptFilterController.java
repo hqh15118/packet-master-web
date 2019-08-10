@@ -5,8 +5,8 @@ import com.zjucsc.application.config.auth.Log;
 import com.zjucsc.application.domain.bean.BaseResponse;
 import com.zjucsc.application.domain.bean.OptRulePullForFront;
 import com.zjucsc.application.system.service.hessian_iservice.IOptFilterService;
-import com.zjucsc.application.util.CommonCacheUtil;
-import com.zjucsc.application.util.CommonOptFilterUtil;
+import com.zjucsc.application.util.CacheUtil;
+import com.zjucsc.application.util.OptFilterUtil;
 import com.zjucsc.common.exceptions.DeviceNotValidException;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import io.swagger.annotations.ApiOperation;
@@ -52,17 +52,17 @@ public class OptFilterController {
     @DeleteMapping("/delete_opt_filter")
     @Log
     public BaseResponse deleteOptFilter(@RequestParam String deviceId , @RequestParam int funcode , @RequestParam int protocolId) throws ProtocolIdNotValidException {
-        String deviceTag = CommonCacheUtil.getTargetDeviceTagByNumber(deviceId);
+        String deviceTag = CacheUtil.getTargetDeviceTagByNumber(deviceId);
 
         if (funcode > 0 ){
             iOptFilterService.deleteByDeviceNumberAndProtocolIdAndFuncode(deviceId, funcode, protocolId);
-            CommonOptFilterUtil.removeTargetDeviceAnalyzerFuncode(deviceTag , funcode , protocolId);
+            OptFilterUtil.removeTargetDeviceAnalyzerFuncode(deviceTag , funcode , protocolId);
         }else if(protocolId > 0){
             iOptFilterService.deleteByDeviceNumberAndProtocolId(deviceId,protocolId);
-            CommonOptFilterUtil.removeTargetDeviceAnalyzerProtocol(deviceTag  , protocolId);
+            OptFilterUtil.removeTargetDeviceAnalyzerProtocol(deviceTag  , protocolId);
         }else{
             iOptFilterService.deleteByDeviceNumber(deviceId);
-            CommonOptFilterUtil.disableTargetDeviceAnalyzer(deviceTag);
+            OptFilterUtil.disableTargetDeviceAnalyzer(deviceTag);
         }
         return BaseResponse.OK();
     }

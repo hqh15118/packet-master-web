@@ -2,6 +2,7 @@ package com.zjucsc.application.system.service.hessian_mapper;
 
 import com.zjucsc.application.domain.bean.FvDimensionFilter;
 import com.zjucsc.application.domain.bean.Rule;
+import com.zjucsc.application.domain.bean.RuleWrapper;
 import com.zjucsc.application.system.mapper.base.BaseMapper;
 import org.apache.tomcat.util.digester.Rules;
 
@@ -36,5 +37,5 @@ public interface FvDimensionFilterMapper extends BaseMapper<Rule> {
      */
     Rule changeRuleStateByDeviceNumberAndFvId(String deviceNumber,String fvId,boolean enable);
 
-    List<Rule> deleteRuleByFvId(List<String> fvId);
+    RuleWrapper deleteRuleByFvId(List<String> fvId);
 }

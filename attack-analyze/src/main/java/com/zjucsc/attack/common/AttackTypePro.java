@@ -1,7 +1,8 @@
 package com.zjucsc.attack.common;
 
 public interface AttackTypePro {
-    String DOS_ATTACK = "DOS攻击";
+    String COSITE_DOS_ATTACK = "同址DOS攻击";
+    String MULTI_DOS_ATTACK = "多址DOS攻击";
     String VISIT_DEVICE =  "非授权设备访问";
     String VISIT_COMMAND = "非授权指令访问";
     String VISIT_PORT = "非授权端口访问";

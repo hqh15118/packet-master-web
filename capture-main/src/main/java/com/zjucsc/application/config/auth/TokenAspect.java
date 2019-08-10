@@ -1,8 +1,7 @@
 package com.zjucsc.application.config.auth;
 
-import com.zjucsc.application.config.Common;
 import com.zjucsc.application.system.service.hessian_iservice.UserOptService;
-import com.zjucsc.application.util.CommonCacheUtil;
+import com.zjucsc.application.util.CacheUtil;
 import com.zjucsc.base.util.HttpContextUtil;
 import com.zjucsc.common.exceptions.AuthNotValidException;
 import com.zjucsc.common.exceptions.TokenNotValidException;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 
 @Slf4j
 @Aspect
@@ -43,7 +41,7 @@ public class TokenAspect {
         if (request_role == null){
             throw new TokenNotValidException("数据库中找不到token : " + token);
         }
-        int request_role_id = CommonCacheUtil.AUTH_MAP.inverse().get(request_role);
+        int request_role_id = CacheUtil.AUTH_MAP.inverse().get(request_role);
         if (request_role_id < token.value()){
             throw new AuthNotValidException("权限不足");
         }

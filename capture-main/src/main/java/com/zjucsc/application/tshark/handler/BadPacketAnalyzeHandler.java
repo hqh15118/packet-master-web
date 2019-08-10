@@ -2,14 +2,11 @@ package com.zjucsc.application.tshark.handler;
 
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.PACKET_PROTOCOL;
-import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.domain.bean.RightPacketInfo;
 import com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
-import com.zjucsc.application.util.AppCommonUtil;
-import com.zjucsc.application.util.CommonCacheUtil;
+import com.zjucsc.application.util.CacheUtil;
 import com.zjucsc.application.util.PacketDecodeUtil;
-import com.zjucsc.art_decode.ArtDecodeCommon;
 import com.zjucsc.attack.bean.AttackBean;
 import com.zjucsc.attack.AttackCommon;
 import com.zjucsc.attack.common.AttackTypePro;
@@ -18,7 +15,6 @@ import com.zjucsc.tshark.packets.FvDimensionLayer;
 import com.zjucsc.tshark.packets.UndefinedPacket;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 
@@ -53,10 +49,10 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
         rightPacketInfo.setFunCode(layer.funCode);
         rightPacketInfo.setProtocol(layer.protocol);
         //判断是否是白名单报文
-        if (CommonCacheUtil.isNormalRightPacket(rightPacketInfo)){
+        if (CacheUtil.isNormalRightPacket(rightPacketInfo)){
             operationAnalyze(layer);
         }else {
-            if ((fiveDimensionAnalyzer = CommonCacheUtil.getFvDimensionFilter(layer)) != null) {
+            if ((fiveDimensionAnalyzer = CacheUtil.getFvDimensionFilter(layer)) != null) {
                 //sniff
                 //eth:llc:data
                 String protocolStack = layer.frame_protocols[0];
@@ -78,6 +74,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
                 }
             }
         }
+
     }
 
     private void operationAnalyze(FvDimensionLayer layer){
@@ -85,14 +82,14 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
             String funCode = layer.funCode;
             //有功能码
             if (!"--".equals(funCode)) {
-                doOperationAnalyze(Integer.valueOf(funCode), layer);
+                doOperationAnalyze(layer.funCode, layer);
             }
         }
     }
 
-    private void doOperationAnalyze(int funCode , FvDimensionLayer layer) {
+    private void doOperationAnalyze(String funCode , FvDimensionLayer layer) {
         //根据目的IP/MAC地址获取对应的功能码分析器
-        ConcurrentHashMap<String, OperationAnalyzer> map = CommonCacheUtil.getOptAnalyzer(layer);
+        ConcurrentHashMap<String, OperationAnalyzer> map = CacheUtil.getOptAnalyzer(layer);
         String protocol = checkProtocol(layer);
         if (map != null){
             OperationAnalyzer operationAnalyzer;
@@ -107,9 +104,14 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
             if ((operationAnalyzer = map.get(protocol))!=null){
                 Object attackBean = operationAnalyzer.analyze(funCode,layer,protocol);
                 if (attackBean!=null){
-                    ((AttackBean) attackBean).setAttackType("非授权指令");
                     AttackCommon.appendFvDimensionError(((AttackBean) attackBean),layer);
                     //statisticsBadPacket(deviceNumber);
+                }
+            }else{
+                if (!layer.funCode.equals("--")){
+                    AttackCommon.appendFvDimensionError(AttackBean.builder().attackType(AttackTypePro.VISIT_COMMAND)
+                    .fvDimension(layer).attackInfo(PacketDecodeUtil.getAttackBeanInfo(layer.protocol,layer.funCode))
+                    .build(),layer);
                 }
             }
         }

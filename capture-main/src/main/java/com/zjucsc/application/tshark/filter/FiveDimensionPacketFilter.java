@@ -1,6 +1,6 @@
 package com.zjucsc.application.tshark.filter;
 
-import com.zjucsc.application.util.CommonCacheUtil;
+import com.zjucsc.application.util.CacheUtil;
 import com.zjucsc.attack.bean.AttackBean;
 import com.zjucsc.attack.common.AttackTypePro;
 import com.zjucsc.application.domain.bean.FvDimensionFilter;
@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.zjucsc.application.config.PACKET_PROTOCOL.OTHER;
-import static com.zjucsc.application.util.CommonCacheUtil.PROTOCOL_STR_TO_INT;
+import static com.zjucsc.application.util.CacheUtil.PROTOCOL_STR_TO_INT;
 
 /**
  * #project packet-master-web
@@ -76,7 +76,12 @@ public class FiveDimensionPacketFilter {
         this.userName = userName;
     }
 
+    /**
+     * 说是add，其实是重置=-=
+     * @param rules 要重新添加到缓存中的rule
+     */
     public void addRules(List<Rule> rules){
+        clearRule();//先清除所有已经配置好的rule
         for (Rule rule : rules) {
             addRule(rule);
         }
@@ -91,7 +96,7 @@ public class FiveDimensionPacketFilter {
             srcMacAddressWhite = checkMap(srcMacAddressWhite,fvDimensionFilter.getSrcMac());
             srcPortWhiteMap = checkMap(srcPortWhiteMap,fvDimensionFilter.getSrcPort());
             try {
-                protocolWhiteMap = checkMap(protocolWhiteMap,CommonCacheUtil.convertIdToName(fvDimensionFilter.getProtocolId()));
+                protocolWhiteMap = checkMap(protocolWhiteMap, CacheUtil.convertIdToName(fvDimensionFilter.getProtocolId()));
             } catch (ProtocolIdNotValidException e) {
                 e.printStackTrace();
             }
@@ -107,10 +112,20 @@ public class FiveDimensionPacketFilter {
         doRemoveRule(dstIpWhiteMap,filter.getDstIp());
         doRemoveRule(dstMacAddressWhite,filter.getDstMac());
         try {
-            doRemoveRule(protocolWhiteMap,CommonCacheUtil.convertIdToName(filter.getProtocolId()));
+            doRemoveRule(protocolWhiteMap, CacheUtil.convertIdToName(filter.getProtocolId()));
         } catch (ProtocolIdNotValidException e) {
             e.printStackTrace();
         }
+    }
+
+    public void clearRule(){
+        srcIpWhiteMap.clear();
+        srcMacAddressWhite.clear();
+        srcPortWhiteMap.clear();
+        dstPortWhiteMap.clear();
+        dstIpWhiteMap.clear();
+        dstMacAddressWhite.clear();
+        protocolWhiteMap.clear();
     }
 
     private void doRemoveRule(Map<String,String> map , String key){
@@ -255,7 +270,7 @@ public class FiveDimensionPacketFilter {
     public AttackBean OK(FvDimensionLayer layer){
         String deviceNumber = layer.deviceNumber;
         if (deviceNumber!=null) {
-                if (CommonCacheUtil.isNormalWhiteProtocol(deviceNumber,layer.protocol))//判断是否在白名单协议之内
+                if (CacheUtil.isNormalWhiteProtocol(deviceNumber,layer.protocol))//判断是否在白名单协议之内
             {
                 return null;
             }

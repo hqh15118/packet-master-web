@@ -2,23 +2,18 @@ package com.zjucsc.application.controller;
 
 import com.zjucsc.application.config.auth.Log;
 import com.zjucsc.application.domain.bean.BaseResponse;
-import com.zjucsc.application.domain.bean.DeviceProtocol;
 import com.zjucsc.application.domain.bean.Rule;
 import com.zjucsc.application.domain.non_hessian.FvDimensionFilterCondition;
 import com.zjucsc.application.domain.non_hessian.RuleEnable;
 import com.zjucsc.application.system.service.hessian_iservice.IFvDimensionFilterService;
-import com.zjucsc.application.util.CommonCacheUtil;
-import com.zjucsc.application.util.ConfigUtil;
 import com.zjucsc.common.exceptions.DeviceNotValidException;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import sun.security.krb5.Config;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -53,7 +48,7 @@ public class FvDimensionFilterController {
     @Log
     @ApiOperation("添加/更新[五元组 + 功能码]过滤规则")
     @PostMapping("/new_rule")
-    public BaseResponse addFvDimensionFilterRules(@RequestBody @Valid @NotEmpty List<Rule> list) throws ExecutionException, InterruptedException {
+    public BaseResponse addFvDimensionFilterRules(@RequestBody @Valid @NotEmpty List<Rule> list) throws ExecutionException, InterruptedException, ProtocolIdNotValidException {
         if (list.size() == 0){
             return BaseResponse.ERROR(500,"未添加任何规则");
         }

@@ -51,15 +51,11 @@ public class AttackCommon {
 
     private static AttackCallback attackCallback;
 
-    private final static Set<ArtAttackAnalyzeConfig> ART_ATTACK_ANALYZE_CONFIGS
-            = new ConcurrentSkipListSet<>();
-
-    private final static List<Entry> ATTACK_ENTRY = new ArrayList<Entry>(){
-        {
-            add(new CositeDosAttackAnalyzeList());
-            add(new MultisiteDosAttackAnalyzeList());
-        }
-    };
+    /**
+     * 【协议名字，该协议对应的公式】
+     */
+    private final static Map<String,Set<ArtAttackAnalyzeConfig>> ART_ATTACK_ANALYZE_CONFIGS
+            = new ConcurrentHashMap<>();
 
     private static final HashMap<Integer, BaseOptAnalyzer> OPT_ATTACK_DECODE_CONCURRENT_HASH_MAP
             = new HashMap<>(10);
@@ -81,7 +77,7 @@ public class AttackCommon {
         return thread;
     },"ART_ATTACK_ANALYZE_SERVICE");
 
-    private static final ConcurrentHashMap<String, AnalyzePoolEntry> ANALYZE_POOL_ENTRY_CONCURRENT_HASH_MAP =
+    public static final ConcurrentHashMap<String, AnalyzePoolEntry> ANALYZE_POOL_ENTRY_CONCURRENT_HASH_MAP =
             new ConcurrentHashMap<>();
     public static boolean addOrUpdateDosAnalyzePoolEntry(String deviceTag, DosConfig dosConfig){
         AnalyzePoolEntry analyzePoolEntry = ANALYZE_POOL_ENTRY_CONCURRENT_HASH_MAP.computeIfAbsent(deviceTag, s -> new AnalyzePoolEntryImpl());
@@ -172,7 +168,17 @@ public class AttackCommon {
         if (analyzePoolEntry!=null){
             DOS_ATTACK_ANALYZE_SERVICE.execute(() -> {
                 try {
-                    analyzePoolEntry.append(layer);
+                    String dosMsg = analyzePoolEntry.append(layer);
+                    if (dosMsg!=null){
+                        AttackBean attackBean = AttackBean.builder().attackInfo(layer.protocol)
+                                .fvDimension(layer).build();
+                        if (dosMsg.equals("同源DOS攻击")){
+                            attackBean.setAttackType(AttackTypePro.COSITE_DOS_ATTACK);
+                        }else{
+                            attackBean.setAttackType(AttackTypePro.MULTI_DOS_ATTACK);
+                        }
+                        AttackCommon.appendFvDimensionError(attackBean,layer);
+                    }
                 } catch (InstantiationException | IllegalAccessException e) {
                     e.printStackTrace();
                 }
@@ -180,59 +186,45 @@ public class AttackCommon {
         }
     }
 
-    //五元组分析，给CommonAttackTask用的
-    public static void doAnalyzeFvDimension(FvDimensionLayer layer){
-        for (Entry entry : ATTACK_ENTRY) {
-            String description = entry.append(layer);
-            if (description!=null){
-                AttackCommon.appendFvDimensionError(AttackBean.builder()
-                        .attackType(AttackTypePro.DOS_ATTACK)
-                        .attackInfo(description)
-                        .fvDimension(layer)
-                        .build(),layer);
-            }
+
+    public static void addArtAttackAnalyzeConfig(String protocol,ArtAttackAnalyzeConfig artAttackAnalyzeConfig){
+        Set<ArtAttackAnalyzeConfig> configSet = ART_ATTACK_ANALYZE_CONFIGS.putIfAbsent(protocol,new ConcurrentSkipListSet<>());
+        configSet = ART_ATTACK_ANALYZE_CONFIGS.get(protocol);
+        if (configSet!=null){
+            configSet.remove(artAttackAnalyzeConfig);
+            configSet.add(artAttackAnalyzeConfig);
         }
     }
 
-    public static void addArtAttackAnalyzeConfig(ArtAttackAnalyzeConfig artAttackAnalyzeConfig){
-        ART_ATTACK_ANALYZE_CONFIGS.remove(artAttackAnalyzeConfig);
-        ART_ATTACK_ANALYZE_CONFIGS.add(artAttackAnalyzeConfig);
-    }
-
-    public static void removeArtAttackAnalyzeConfig(ArtAttackAnalyzeConfig artAttackAnalyzeConfig){
-        ART_ATTACK_ANALYZE_CONFIGS.remove(artAttackAnalyzeConfig);
-    }
-
-    /**
-     * 工艺参数异常
-     * @param id
-     * @param enable
-     */
-    public static void changeArtAttackAnalyzeConfigState(int id,boolean enable){
-        for (ArtAttackAnalyzeConfig artAttackAnalyzeConfig : ART_ATTACK_ANALYZE_CONFIGS) {
-            if (artAttackAnalyzeConfig.getId() == id){
-                artAttackAnalyzeConfig.setEnable(enable);
-                break;
-            }
+    public static void removeAllArtAttackAnalyzeConfig(String protocol){
+        Set<ArtAttackAnalyzeConfig> configSet = ART_ATTACK_ANALYZE_CONFIGS.get(protocol);
+        if (configSet!=null){
+            configSet.removeAll(configSet);
         }
     }
 
-    public static boolean changeArtOptAttackAnalyzeConfigState(int protocolId,boolean enable,String opName){
-        BaseOptAnalyzer baseOptAnalyzer = OPT_ATTACK_DECODE_CONCURRENT_HASH_MAP.get(protocolId);
-        return baseOptAnalyzer.changeOptAnalyzeConfigState(opName, enable);
+    public static void removeArtAttackAnalyzeConfig(String protocol,ArtAttackAnalyzeConfig artAttackAnalyzeConfig){
+        Set<ArtAttackAnalyzeConfig> configSet = ART_ATTACK_ANALYZE_CONFIGS.get(protocol);
+        if (configSet!=null){
+            configSet.remove(artAttackAnalyzeConfig);
+        }
     }
+
 
     /**
      * 工艺参数攻击检测
      * @param techmap
      */
     public static void appendArtAnalyze( Map<String,Float> techmap,FvDimensionLayer layer){
-        for (ArtAttackAnalyzeConfig artAttackAnalyzeConfig : ART_ATTACK_ANALYZE_CONFIGS) {
-            if (artAttackAnalyzeConfig.isEnable()) {
-                doAppendArtAnalyze(artAttackAnalyzeConfig.getExpression(),
-                        techmap,
-                        artAttackAnalyzeConfig.getDescription(),
-                        layer);
+        Set<ArtAttackAnalyzeConfig> expressionSet = ART_ATTACK_ANALYZE_CONFIGS.get(layer.protocol);
+        if (expressionSet!=null) {
+            for (ArtAttackAnalyzeConfig artAttackAnalyzeConfig : expressionSet) {
+                if (artAttackAnalyzeConfig.isEnable()) {
+                    doAppendArtAnalyze(artAttackAnalyzeConfig.getExpression(),
+                            techmap,
+                            artAttackAnalyzeConfig.getDescription(),
+                            layer);
+                }
             }
         }
     }
@@ -274,6 +266,15 @@ public class AttackCommon {
             baseOptAnalyzer.addOptAnalyzeConfig(baseOptConfig);
         }
     }
+
+    @SuppressWarnings("unchecked")
+    public static void removeArtOptAttackConfig(BaseOptConfig baseOptConfig){
+        BaseOptAnalyzer baseOptAnalyzer = OPT_ATTACK_DECODE_CONCURRENT_HASH_MAP.get(baseOptConfig.getProtocolId());
+        if (baseOptAnalyzer!=null){
+            baseOptAnalyzer.deleteOptAnalyzeConfig(baseOptConfig);
+        }
+    }
+
 
     @SuppressWarnings("unchecked")
     public static void updateOptAttackConfig(BaseOptConfig baseOptConfig){

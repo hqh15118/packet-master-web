@@ -4,12 +4,8 @@ import com.zjucsc.application.domain.bean.*;
 import com.zjucsc.application.system.mapper.base.BaseServiceImpl;
 import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
 import com.zjucsc.application.system.service.hessian_mapper.DeviceMapper;
-import com.zjucsc.application.util.CommonCacheUtil;
-import com.zjucsc.application.util.CommonFvFilterUtil;
-import com.zjucsc.application.util.CommonOptFilterUtil;
+import com.zjucsc.application.util.CacheUtil;
 import com.zjucsc.application.util.DeviceOptUtil;
-import com.zjucsc.attack.AttackCommon;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -83,9 +79,9 @@ public class DeviceServiceImpl extends BaseServiceImpl< Device , DeviceMapper> i
         //new device
         //CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(srcDevice.getDeviceNumber(), srcDevice.getDeviceTag());
         //CommonCacheUtil.addDeviceNumberToName(srcDevice.getDeviceNumber(), srcDevice.getDeviceInfo());
-        CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(device.getDeviceNumber(), device.getDeviceTag());
-        CommonCacheUtil.addDeviceNumberToName(device.getDeviceNumber(),device.getDeviceInfo());
-        CommonCacheUtil.addOrUpdateDeviceManually(device);
+        CacheUtil.addOrUpdateDeviceNumberAndTAG(device.getDeviceNumber(), device.getDeviceTag());
+        CacheUtil.addDeviceNumberToName(device.getDeviceNumber(),device.getDeviceInfo());
+        CacheUtil.addOrUpdateDeviceManually(device);
     }
 
     @Override
@@ -96,7 +92,7 @@ public class DeviceServiceImpl extends BaseServiceImpl< Device , DeviceMapper> i
     @Override
     public void changeDeviceConfigState(String deviceNumber , boolean isConfig) {
         this.baseMapper.changeDeviceConfigState(deviceNumber , isConfig);
-        String deviceTag = CommonCacheUtil.getTargetDeviceTagByNumber(deviceNumber);
+        String deviceTag = CacheUtil.getTargetDeviceTagByNumber(deviceNumber);
         //CommonFvFilterUtil.disableDeviceAllConfig(deviceTag);
         //CommonOptFilterUtil.disableTargetDeviceAnalyzer(deviceTag);
         //AttackCommon.disableDeviceDosAnalyzePoolEntry(deviceTag);

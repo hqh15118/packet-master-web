@@ -1,6 +1,7 @@
 package com.zjucsc.application.util;
 
 import com.zjucsc.application.domain.bean.OptFilterForFront;
+import com.zjucsc.application.domain.bean.Rule;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
 import com.zjucsc.application.tshark.filter.OperationPacketFilter;
 import com.zjucsc.common.exceptions.OptFilterNotValidException;
@@ -8,14 +9,12 @@ import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.zjucsc.application.config.Common.GPLOT_ID;
-import static com.zjucsc.application.util.CommonCacheUtil.convertIdToName;
+import static com.zjucsc.application.util.CacheUtil.convertIdToName;
 
 @Slf4j
-public class CommonOptFilterUtil {
+public class OptFilterUtil {
 
     /**
      * cache6
@@ -35,6 +34,7 @@ public class CommonOptFilterUtil {
      * @param filterName 过滤器名字，随便写一个就好
      * @throws ProtocolIdNotValidException
      */
+    @SuppressWarnings("unchecked")
     public static void addOrUpdateAnalyzer(String deviceTag , OptFilterForFront optFilterForFront , String filterName) throws ProtocolIdNotValidException {
         ConcurrentHashMap<String, OperationAnalyzer> analyzerMap;
         if ((analyzerMap = OPERATION_FILTER_PRO.get(deviceTag)) == null){
@@ -42,9 +42,11 @@ public class CommonOptFilterUtil {
             analyzerMap = new ConcurrentHashMap<>();
             OPERATION_FILTER_PRO.put(deviceTag, analyzerMap);
         }
-        String protocolName = CommonCacheUtil.convertIdToName(optFilterForFront.getProtocolId());
+        String protocolName = CacheUtil.convertIdToName(optFilterForFront.getProtocolId());
+        analyzerMap.putIfAbsent(protocolName,new OperationAnalyzer(new OperationPacketFilter<>(filterName)));
+        OperationPacketFilter analyzer = analyzerMap.get(protocolName).getAnalyzer();
+        analyzer.resetAllRule();
         for (String funCode : optFilterForFront.getFunCodes()) {
-            analyzerMap.putIfAbsent(protocolName,new OperationAnalyzer(new OperationPacketFilter<>(filterName)));
 //            int filterType = optFilter.getFilterType();
 //            if (filterType == 0){
 //                //white
@@ -55,15 +57,13 @@ public class CommonOptFilterUtil {
 //                        CommonConfigUtil.getTargetProtocolFuncodeMeaning(protocolName,optFilter.getFunCode()));
 //            }
             //white
-            analyzerMap.get(protocolName).getAnalyzer().addWhiteRule(funCode,
-                    CommonConfigUtil.getTargetProtocolFuncodeMeaning(protocolName,funCode));
+            analyzer.addWhiteRule(funCode, CommonConfigUtil.getTargetProtocolFuncodeMeaning(protocolName,funCode));
         }
-
     }
 
     public static void removeTargetDeviceAnalyzeFuncode(OptFilterForFront optFilterForFront) throws ProtocolIdNotValidException {
-        String deviceTag = CommonCacheUtil.getTargetDeviceTagByNumber(optFilterForFront.getDeviceNumber());
-        String protocolName = CommonCacheUtil.convertIdToName(optFilterForFront.getProtocolId());
+        String deviceTag = CacheUtil.getTargetDeviceTagByNumber(optFilterForFront.getDeviceNumber());
+        String protocolName = CacheUtil.convertIdToName(optFilterForFront.getProtocolId());
         List<String> funCodes = optFilterForFront.getFunCodes();
         for (String funCode : funCodes) {
             if (OPERATION_FILTER_PRO.containsKey(deviceTag)) {
@@ -129,5 +129,16 @@ public class CommonOptFilterUtil {
 
     public static void removeAllOptFilter(){
         OPERATION_FILTER_PRO.clear();
+    }
+
+
+    public static OptFilterForFront getOptFilterForFront(Rule rule) {
+        OptFilterForFront optFilterForFront = new OptFilterForFront();
+        List<String> funCodes = rule.getFunCodes();
+        optFilterForFront.setDeviceNumber(rule.getFvDimensionFilter().getDeviceNumber());
+        optFilterForFront.setFvId(rule.getFvDimensionFilter().getFvId());
+        optFilterForFront.setProtocolId(rule.getFvDimensionFilter().getProtocolId());
+        optFilterForFront.setFunCodes(funCodes);
+        return optFilterForFront;
     }
 }

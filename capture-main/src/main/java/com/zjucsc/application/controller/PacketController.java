@@ -10,17 +10,19 @@ import com.zjucsc.application.system.service.common_impl.NetworkInterfaceService
 import com.zjucsc.application.system.service.common_iservice.CapturePacketService;
 import com.zjucsc.application.system.service.common_iservice.IPacketService;
 import com.zjucsc.application.tshark.capture.ProcessCallback;
-import com.zjucsc.application.util.CommonCacheUtil;
+import com.zjucsc.application.util.CacheUtil;
 import com.zjucsc.common.exceptions.OpenCaptureServiceException;
 import com.zjucsc.socket_io.MainServer;
 import com.zjucsc.socket_io.SocketServiceCenter;
 import com.zjucsc.tshark.pre_processor.BasePreProcessor;
-import io.netty.util.concurrent.CompleteFuture;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.pcap4j.core.NotOpenException;
+import org.pcap4j.core.PcapNativeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.net.SocketException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -43,7 +45,7 @@ public class PacketController {
     @RequestMapping(value = "/start_service" , method = RequestMethod.POST)
     public BaseResponse startCaptureService(@RequestBody CaptureService service) {
         //开始周期任务
-        CommonCacheUtil.setScheduleServiceRunningState(true);
+        CacheUtil.setScheduleServiceRunningState(true);
         return BaseResponse.OK(doStartService(service));
     }
 
@@ -159,7 +161,7 @@ public class PacketController {
     @ApiOperation("停止抓包")
     @GetMapping("stop_service")
     public BaseResponse stopService(@RequestParam String service_name){
-        CommonCacheUtil.setScheduleServiceRunningState(false);
+        CacheUtil.setScheduleServiceRunningState(false);
         if (Common.systemRunType == 1) {
             synchronized (lock1){
                 if (!Common.hasStartedHost.contains(service_name)){
@@ -184,7 +186,7 @@ public class PacketController {
 
     @ApiOperation("查询报文详细信息")
     @PostMapping("packet_detail")
-    public BaseResponse getPacketDetail(@RequestBody String rawData){
+    public BaseResponse getPacketDetail(@RequestBody String rawData) throws PcapNativeException, IOException, NotOpenException {
         String data = iPacketService.getPacketDetail(rawData);
         if (data == null){
             return BaseResponse.OK("解析超时，请重试");

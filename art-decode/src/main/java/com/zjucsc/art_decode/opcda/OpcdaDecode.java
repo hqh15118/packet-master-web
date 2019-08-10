@@ -1,5 +1,7 @@
 package com.zjucsc.art_decode.opcda;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.zjucsc.art_decode.artconfig.OpcdaConfig;
 import com.zjucsc.art_decode.base.BaseArtDecode;
 import com.zjucsc.common.common_util.Bytecut;
@@ -14,8 +16,8 @@ public class OpcdaDecode extends BaseArtDecode<OpcdaConfig> {
     private class OpcdaMap{
         /** 考虑到opcda创建监控变量的流程特点，构建三个hashmap，形成MonitoredItemId -> Name -> ClientHandle -> Value的链式结构，方便索引与修改 **/
         //private Map<String,Float> Handle_Value_Map = new HashMap<>();
-        private Map<String,String> Handle_Name_Map = new HashMap<>();
-        private Map<String,String> Id_Handle_Map = new HashMap<>();
+        private BiMap<String,String> Handle_Name_Map = HashBiMap.create();
+        private BiMap<String,String> Id_Handle_Map = HashBiMap.create();
 
         /** 英文名称与中文名称对应的map，第一项为英文名称，第二项为中文名称 **/
         private Map<String, String> NameConfigMap = new HashMap<>();
@@ -25,6 +27,9 @@ public class OpcdaDecode extends BaseArtDecode<OpcdaConfig> {
 
         /** Request Map，用于Request与Response的对应 **/
         private Map<String,ArrayList<String>> Request_Map = new HashMap<>();
+
+        /** Name Id Map, for attack detection **/
+        private Map<String,String> Id_Name_Map = new HashMap<>();
     }
 
     private OpcdaMap opcdaMap = new OpcdaMap();
@@ -388,6 +393,13 @@ public class OpcdaDecode extends BaseArtDecode<OpcdaConfig> {
             String name_cn = opcdaMap.NameConfigMap.get(name_en); //变量对应的中文名称
             opcdaMap.Output_Map.put(name_cn, value); //更新输出Map
             callback(name_cn, value, fvDimensionLayer); //callback function
+
+            String client_handle = opcdaMap.Handle_Name_Map.inverse().get(name_en);
+            String server_handle = opcdaMap.Id_Handle_Map.inverse().get(client_handle);
+            opcdaMap.Id_Name_Map.put(server_handle, name_cn);
+            if( !(opcdaMap.Id_Name_Map.isEmpty()) ) {
+                callback("",0f,null,"opcda",opcdaMap.Id_Name_Map);
+            }
         }
     }
 

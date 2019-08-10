@@ -1,7 +1,7 @@
 package com.zjucsc.application.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.zjucsc.application.domain.bean.ArtBeanF;
+import com.zjucsc.application.domain.bean.ArtBeanFWrapper;
 import com.zjucsc.application.domain.bean.ArtHistoryBean;
 import com.zjucsc.application.domain.bean.ArtHistoryForFront;
 import com.zjucsc.application.domain.bean.BaseResponse;
@@ -39,8 +39,9 @@ public class ArtHistoryDataController {
     @ApiOperation("查询工艺参数有关报文")
     @PostMapping("all")
     public BaseResponse getAllArtPacket(@RequestBody ArtBean artBean) throws ExecutionException, InterruptedException {
-        CompletableFuture<List<ArtBeanF>> artBeanFCompletableFuture = iArtHistoryDataService.getAllArtData(artBean);
-        List<ArtBeanF> artBeanFS = artBeanFCompletableFuture.get();
-        return BaseResponse.OK(artBeanFS);
+        CompletableFuture<ArtBeanFWrapper> artBeanFCompletableFuture = iArtHistoryDataService.getAllArtData(artBean);
+        return BaseResponse.OK(artBeanFCompletableFuture.get());
     }
+
+
 }
