@@ -433,6 +433,10 @@ public class PacketDecodeUtil {
                         return "非法功能码";
                 }
             }
+            case "dnp3.0_set":
+            {
+                return "非法功能码";
+            }
             case "mms":
             {
                 switch (funCode)
@@ -486,6 +490,21 @@ public class PacketDecodeUtil {
                     case 64:
                     case 71:
                         return "嗅探攻击";
+                    default:
+                        return "非法功能码";
+                }
+            }
+            case "104apci": {
+                switch (funCode)
+                {
+                    case 100:
+                        return "嗅探攻击";
+                    case 45:
+                    case 46:
+                        return "数据篡改攻击";
+                    case 48:
+                    case 50:
+                        return "配置篡改攻击";
                     default:
                         return "非法功能码";
                 }
