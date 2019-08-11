@@ -321,9 +321,9 @@ public class PacketDecodeUtil {
             case "s7comm": {
                 switch (funCode) {
                     case 0x04:
-                        return "数据篡改攻击!";
+                        return "数据篡改攻击";
                     case 0x05:
-                        return "非法读取数据!";
+                        return "非法读取数据";
                     case 0x1a:
                     case 0x1b:
                         return "代码篡改攻击";
@@ -335,25 +335,25 @@ public class PacketDecodeUtil {
                         return "非法获取控制代码!";
                     case 0x28:
                     case 0x29:
-                        return "配置篡改攻击!";
+                        return "配置篡改攻击";
                     default:
-                        return "非法功能码未知操作";
+                        return "非法功能码";
                 }
             }
             case "s7comm_user_data":
             {
                 switch (funCode) {
                     case 0xf:
-                        return "代码篡改攻击!";
+                        return "代码篡改攻击";
                     case 0x1:
                     case 0x0:
-                        return "配置篡改攻击!";
+                        return "配置篡改攻击";
                     case 0x4:
-                        return "非法访问CPU!";
+                        return "非法访问CPU";
                     case 0x2:
-                        return "非法读取数据!";
+                        return "非法读取数据";
                     default:
-                        return null;
+                        return "非法功能码";
                 }
             }
             case "modbus":
@@ -366,23 +366,132 @@ public class PacketDecodeUtil {
                     case 6:
                     case 16:
                     case 23:
-                        return "数据篡改攻击!";
+                        return "数据篡改攻击";
                     case 1:
                     case 2:
                     case 3:
                     case 4:
-                        return "非法读取数据!";
+                        return "非法读取数据";
                     case 22:
-                        return "配置篡改攻击!";
+                        return "配置篡改攻击";
                     case 20:
                     case 21:
                         return "非法访问文件记录";
                     default:
-                        return "非法功能码未知操作";
+                        return "非法功能码";
+                }
+            }
+            case "opcua":
+            {
+                switch (funCode)
+                {
+                    case 527:
+                    case 530:
+                    case 533:
+                    case 536:
+                        return "嗅探攻击";
+                    case 793:
+                    case 796:
+                        return "配置篡改攻击";
+                    case 673:
+                    case 676:
+                        return "数据篡改攻击";
+                    default:
+                        return "非法功能码";
+                }
+            }
+            case "decrpc":
+            {
+                switch (funCodeStr)
+                {
+                    case "IOPCServerList":
+                    case "IOPCServerList2":
+                    case "IOPCBrowseServerAddressSpace":
+                        return "嗅探攻击";
+                    case "IOPCItemDeadbandMgt":
+                    case "IOPCItemSamplingMgt":
+                        return "配置篡改攻击";
+                    case "IOPCSyncIO":
+                    case "IOPCAsyncIO":
+                    case "IOPCAsyncIO2":
+                    case "IOPCSyncIO2":
+                    case "IOPCAsyncIO3":
+                        return "数据篡改攻击";
+                    default:
+                        return "非法功能码";
+                }
+            }
+            case "dnp3.0_pri":
+            {
+                switch (funCode) {
+                    case 3:
+                    case 4:
+                        return "数据篡改攻击";
+                    case 9:
+                        return "嗅探攻击";
+                    default:
+                        return "非法功能码";
+                }
+            }
+            case "mms":
+            {
+                switch (funCode)
+                {
+                    case 3:
+                    case 7:
+                    case 8:
+                    case 10:
+                    case 11:
+                    case 13:
+                    case 14:
+                    case 15:
+                    case 16:
+                    case 17:
+                    case 21:
+                    case 22:
+                    case 26:
+                    case 28:
+                    case 29:
+                    case 31:
+                    case 36:
+                    case 38:
+                    case 39:
+                    case 40:
+                    case 41:
+                    case 42:
+                    case 43:
+                    case 44:
+                    case 47:
+                    case 48:
+                    case 51:
+                    case 53:
+                    case 54:
+                    case 57:
+                    case 58:
+                    case 59:
+                    case 69:
+                    case 70:
+                    case 75:
+                    case 76:
+                        return "配置篡改攻击";
+                    case 6:
+                    case 9:
+                    case 12:
+                    case 37:
+                    case 45:
+                    case 46:
+                    case 49:
+                    case 55:
+                    case 61:
+                    case 64:
+                    case 71:
+                        return "嗅探攻击";
+                    default:
+                        return "非法功能码";
                 }
             }
             default:
-                return "未知攻击";
+                return "非法协议";
         }
     }
 }
