@@ -68,7 +68,7 @@ public class AnalyzePoolEntryImpl implements AnalyzePoolEntry {
                     new TcpDosAttackAnalyzer<>(new HashMap<>(), MultisiteDosAttackAnalyzeList.class).setDosConfig(dosConfig));
             case "dnp3" : return Arrays.asList(new Dnp3DosAttackAnalyzer<>(new HashMap<>(), CositeDosAttackAnalyzeList.class).setDosConfig(dosConfig),
                     new Dnp3DosAttackAnalyzer<>(new HashMap<>(), MultisiteDosAttackAnalyzeList.class).setDosConfig(dosConfig));
-            case "104asdu" : return Arrays.asList(new Iec104DosAttackAnalyzer<>(new HashMap<>(), CositeDosAttackAnalyzeList.class).setDosConfig(dosConfig),
+            case "104apci" : return Arrays.asList(new Iec104DosAttackAnalyzer<>(new HashMap<>(), CositeDosAttackAnalyzeList.class).setDosConfig(dosConfig),
                     new Iec104DosAttackAnalyzer<>(new HashMap<>(), MultisiteDosAttackAnalyzeList.class).setDosConfig(dosConfig));
             case "modbus" : return Arrays.asList(new ModbusDosAttackAnalyzer<>(new HashMap<>(), CositeDosAttackAnalyzeList.class).setDosConfig(dosConfig),
                     new ModbusDosAttackAnalyzer<>(new HashMap<>(), MultisiteDosAttackAnalyzeList.class).setDosConfig(dosConfig));

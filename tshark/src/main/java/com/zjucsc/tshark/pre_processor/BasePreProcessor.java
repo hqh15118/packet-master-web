@@ -305,14 +305,20 @@ public abstract class BasePreProcessor implements PreProcessor {
         try {
             if ((str = bufferedReader.readLine()) != null) {
                 System.out.println(">>>>>>>>>>>>>" + str);
+                if (!str.startsWith("Capturing")){
+                    str = bufferedReader.readLine();
+                    if (!"".equals(str)) {
+                        System.out.println(">>>>>>>>>>>>>" + str);
+                    }
+                }
                 /*
                  * 当接收到capture on xxx的时候，就表示该tshark进程已经开启完毕了，那么就可以释放
                  * 信号量，让下一个线程打开tshark
                  */
-                semaphore.release();
                 //统一设置错误流
                 //TsharkCommon.handleTsharkErrorStream(command.split("-Y")[1],bufferedReader);
             }
+            semaphore.release();
         } catch (IOException e) {
             //log.error("" , e);//TODO LOG HERE
         }

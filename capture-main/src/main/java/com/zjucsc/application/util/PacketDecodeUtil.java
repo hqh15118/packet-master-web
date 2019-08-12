@@ -1,8 +1,11 @@
 package com.zjucsc.application.util;
 
+import com.zjucsc.application.config.PACKET_PROTOCOL;
 import com.zjucsc.common.common_util.ByteUtil;
 import com.zjucsc.tshark.bean.CollectorState;
+import com.zjucsc.tshark.packets.Dnp3_0Packet;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
+import com.zjucsc.tshark.packets.IEC104Packet;
 import com.zjucsc.tshark.packets.S7CommPacket;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -309,8 +312,10 @@ public class PacketDecodeUtil {
     }
 
 
-    public static String getAttackBeanInfo(String protocol,String funCodeStr)
+    public static String getAttackBeanInfo(FvDimensionLayer layer)
     {
+        String protocol = layer.protocol;
+        String funCodeStr = layer.funCode;
         if(protocol==null || funCodeStr.equals("--"))
         {
             return null;
@@ -421,22 +426,25 @@ public class PacketDecodeUtil {
                         return "非法功能码";
                 }
             }
-            case "dnp3.0_pri":
-            {
-                switch (funCode) {
-                    case 3:
-                    case 4:
-                        return "数据篡改攻击";
-                    case 9:
-                        return "嗅探攻击";
-                    default:
+            case "dnp3" :
+                switch (getDnp3DetailType(layer)){
+                    case "dnp3.0_pri":
+                    {
+                        switch (funCode) {
+                            case 3:
+                            case 4:
+                                return "数据篡改攻击";
+                            case 9:
+                                return "嗅探攻击";
+                            default:
+                                return "非法功能码";
+                        }
+                    }
+                    case "dnp3.0_set":
+                    {
                         return "非法功能码";
+                    }
                 }
-            }
-            case "dnp3.0_set":
-            {
-                return "非法功能码";
-            }
             case "mms":
             {
                 switch (funCode)
@@ -494,7 +502,7 @@ public class PacketDecodeUtil {
                         return "非法功能码";
                 }
             }
-            case "104apci": {
+            case "104asdu": {
                 switch (funCode)
                 {
                     case 100:
@@ -509,8 +517,48 @@ public class PacketDecodeUtil {
                         return "非法功能码";
                 }
             }
+            case "104apci":
+            {
+                //TODO
+                return "非法功能码";
+            }
             default:
                 return "非法协议";
+        }
+    }
+
+    /**
+     * 判断报文的真实类型
+     * s7comm、iec104、dnp
+     * @param layer
+     * @return
+     */
+    public static String getPacketDetailProtocol(FvDimensionLayer layer){
+        switch (layer.protocol){
+            case "s7comm" : break;
+            case "dnp3" : return getDnp3DetailType(layer);
+        }
+        return null;
+    }
+
+    private static String getDnp3DetailType(FvDimensionLayer layer){
+        Dnp3_0Packet.LayersBean dnpPacket = ((Dnp3_0Packet.LayersBean) layer);
+        int type = Integer.decode(dnpPacket.dnp3_ctl_prm[0]);
+        switch (type){
+            case 1: return PACKET_PROTOCOL.DNP3_0_PRI ;
+            case 0: return PACKET_PROTOCOL.DNP3_0_SET ;
+        }
+        return "dnp3";
+    }
+
+    public static String getIEC104DetailType(FvDimensionLayer layer){
+        IEC104Packet.LayersBean iec104_packet = ((IEC104Packet.LayersBean) layer);
+        int type = Integer.decode(iec104_packet.iec104_type[0]);
+        switch (type){
+            case 0 :
+                return PACKET_PROTOCOL.IEC104_ASDU;
+            default:
+                return PACKET_PROTOCOL.IEC104_APCI;
         }
     }
 }

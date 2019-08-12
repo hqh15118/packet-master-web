@@ -104,6 +104,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
 
     private void processAttackInfo(AttackBean attackBean, FvDimensionLayer layer) {
         if (attackBean.getAttackType().equals(AttackTypePro.ART_EXCEPTION)){
+            //工艺参数攻击
             SocketServiceCenter.updateAllClient(SocketIoEvent.ATTACK_INFO, attackBean);
         }else {
             //通知攻击到达
@@ -212,7 +213,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             //解析原始数据
             byte[] payload = PacketDecodeUtil.hexStringToByteArray2(fvDimensionLayer.custom_ext_raw_data[0]);    //t-s
             fvDimensionLayer.rawData = payload;
-            fvDimensionLayer.tcpPayload = PacketDecodeUtil.hexStringToByteArray(fvDimensionLayer.tcp_payload[0]);
+            fvDimensionLayer.tcpPayload = PacketDecodeUtil.hexStringToByteArray2(fvDimensionLayer.tcp_payload[0]);
             preProcess(fvDimensionLayer);
 
             fvDimensionLayer.deviceNumber = CacheUtil.getTargetDeviceNumberByTag(fvDimensionLayer.ip_dst[0],fvDimensionLayer.eth_dst[0]);
@@ -252,7 +253,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
 
     private void preProcess(FvDimensionLayer fvDimensionLayer) {
         if (fvDimensionLayer.protocol.equals("tcp") && !fvDimensionLayer.tcp_payload[0].equals("")){
-            byte[] tcpPayload = PacketDecodeUtil.hexStringToByteArray(fvDimensionLayer.tcp_payload[0]);
+            byte[] tcpPayload = PacketDecodeUtil.hexStringToByteArray2(fvDimensionLayer.tcp_payload[0]);
             //set iec101 protocol 单字节的101怎么设置
             byte startByte = tcpPayload[0];
             if (startByte == 0x68 || startByte == 0x10){
@@ -376,6 +377,18 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                 if (funCodeMeaningStr!=null){
                     t.funCodeMeaning = funCodeMeaningStr;
                 }
+            }
+        }else if (t instanceof OpcUaPacket.LayersBean){
+            OpcUaPacket.LayersBean opcuaPacket = ((OpcUaPacket.LayersBean) t);
+            if (opcuaPacket.opcua_servicenodeid_numeric!=null){
+                funCode = opcuaPacket.opcua_servicenodeid_numeric[0];
+                opcuaPacket.funCodeMeaning = CommonConfigUtil.getTargetProtocolFuncodeMeaning(PACKET_PROTOCOL.OPC_UA,funCode);
+            }
+        }else if (t instanceof OpcDaPacket.LayersBean){
+            OpcDaPacket.LayersBean opcDaPacket = ((OpcDaPacket.LayersBean) t);
+            if (opcDaPacket.dcerpc_datype[0]!=null){
+                funCode = opcDaPacket.dcerpc_datype[0];
+                opcDaPacket.funCodeMeaning = CommonConfigUtil.getTargetProtocolFuncodeMeaning(PACKET_PROTOCOL.OPC_DA,funCode);
             }
         }
         return funCode;

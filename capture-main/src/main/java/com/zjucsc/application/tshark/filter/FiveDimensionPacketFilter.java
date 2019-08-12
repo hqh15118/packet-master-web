@@ -96,7 +96,11 @@ public class FiveDimensionPacketFilter {
             srcMacAddressWhite = checkMap(srcMacAddressWhite,fvDimensionFilter.getSrcMac());
             srcPortWhiteMap = checkMap(srcPortWhiteMap,fvDimensionFilter.getSrcPort());
             try {
-                protocolWhiteMap = checkMap(protocolWhiteMap, CacheUtil.convertIdToName(fvDimensionFilter.getProtocolId()));
+                String protocolName = CacheUtil.convertIdToName(fvDimensionFilter.getProtocolId());
+                if (protocolName.startsWith("dnp3")){
+                    protocolName = "dnp3";
+                }
+                protocolWhiteMap = checkMap(protocolWhiteMap, protocolName);
             } catch (ProtocolIdNotValidException e) {
                 e.printStackTrace();
             }
@@ -252,6 +256,9 @@ public class FiveDimensionPacketFilter {
             if (var == null){
                 doSet(allMap, FiveDimensionPacketFilter.PROTOCOL_WHITE,OTHER);
             }else{
+                if (var.startsWith("dnp3")){
+                    var = "dnp3";
+                }
                 doSet(allMap, FiveDimensionPacketFilter.PROTOCOL_WHITE, var);
             }
         }

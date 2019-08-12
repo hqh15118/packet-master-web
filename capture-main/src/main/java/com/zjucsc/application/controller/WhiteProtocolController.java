@@ -20,8 +20,8 @@ public class WhiteProtocolController {
     @ApiOperation("添加协议白名单")
     @PostMapping("add_rp")
     public BaseResponse addRightProtocolToCache(@RequestBody DeviceProtocol rightProtocols){
-        CacheUtil.addWhiteProtocolToCache(rightProtocols.getDeviceNumber(),rightProtocols.getProtocolName());
         iWhiteProtocolService.insertById(rightProtocols);
+        CacheUtil.addWhiteProtocolToCache(rightProtocols.getDeviceNumber(),rightProtocols.getProtocolName());
         return BaseResponse.OK();
     }
 
@@ -29,8 +29,8 @@ public class WhiteProtocolController {
     @ApiOperation("删除协议白名单")
     @PostMapping("del_rp")
     public BaseResponse delRightProtocolToCache(@RequestBody DeviceProtocol rightProtocols){
-        int count = CacheUtil.removeWhiteProtocolFromCache(rightProtocols.getDeviceNumber(),rightProtocols.getProtocolName());
         iWhiteProtocolService.deleteById(rightProtocols);
+        int count = CacheUtil.removeWhiteProtocolFromCache(rightProtocols.getDeviceNumber(),rightProtocols.getProtocolName());
         return BaseResponse.OK(count);
     }
 

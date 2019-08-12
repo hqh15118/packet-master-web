@@ -19,7 +19,7 @@ public class Iec104DosAttackAnalyzer<T extends AbstractDosList> extends BaseAtta
 
     @Override
     protected boolean validPacket(FvDimensionLayer layer) {
-        return layer.protocol.equals("104asdu") && layer.funCode.equals("1");
+        return layer.protocol.equals("104apci") && layer.funCode.equals("1");
     }
 
 }

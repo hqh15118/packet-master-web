@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 
 @Slf4j
-public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
+public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<FvDimensionLayer> {
 
     private ThreadLocal<RightPacketInfo> rightPacketInfoThreadLocal =
             ThreadLocal.withInitial(RightPacketInfo::new);
@@ -30,11 +30,11 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Void handle(Object t) {
+    public FvDimensionLayer handle(Object t) {
         FvDimensionLayer layer = ((FvDimensionLayer) t);
         //五元组分析
         protocolAnalyze(layer);
-        return null;
+        return layer;
     }
 
 
@@ -102,7 +102,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
              * @see Common 的 【PROTOCOL_STR_TO_INT】
              */
             if ((operationAnalyzer = map.get(protocol))!=null){
-                Object attackBean = operationAnalyzer.analyze(funCode,layer,protocol);
+                Object attackBean = operationAnalyzer.analyze(funCode,layer);
                 if (attackBean!=null){
                     AttackCommon.appendFvDimensionError(((AttackBean) attackBean),layer);
                     //statisticsBadPacket(deviceNumber);
@@ -110,7 +110,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
             }else{
                 if (!layer.funCode.equals("--")){
                     AttackCommon.appendFvDimensionError(AttackBean.builder().attackType(AttackTypePro.VISIT_COMMAND)
-                    .fvDimension(layer).attackInfo(PacketDecodeUtil.getAttackBeanInfo(layer.protocol,layer.funCode))
+                    .fvDimension(layer).attackInfo(PacketDecodeUtil.getAttackBeanInfo(layer))
                     .build(),layer);
                 }
             }
@@ -120,14 +120,19 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<Void> {
 
 
     private String checkProtocol(FvDimensionLayer layer){
-        if (layer.protocol.equals("s7comm")){
-            if (Common.systemRunType !=0 ) {
-                return PacketDecodeUtil.decodeS7Protocol(layer);
-            }else{
-                return PacketDecodeUtil.decodeS7Protocol2(layer);
-            }
-        }else {
-            return PacketDecodeUtil.discernPacket(layer);
+        switch (layer.protocol){
+            case "s7comm" :
+                if (Common.systemRunType !=0 ) {
+                    return PacketDecodeUtil.decodeS7Protocol(layer);
+                }else{
+                    return PacketDecodeUtil.decodeS7Protocol2(layer);
+                }
+            case "dnp3":
+                return PacketDecodeUtil.getPacketDetailProtocol(layer);
+            case "104apci":
+                return PacketDecodeUtil.getIEC104DetailType(layer);
+            default:return PacketDecodeUtil.discernPacket(layer);
         }
+
     }
 }

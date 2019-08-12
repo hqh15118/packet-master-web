@@ -16,6 +16,7 @@ import com.zjucsc.application.system.service.hessian_mapper.OptAttackMapper;
 import com.zjucsc.application.system.service.hessian_mapper.PacketInfoMapper;
 import com.zjucsc.application.util.AppCommonUtil;
 import com.zjucsc.application.util.CacheUtil;
+import com.zjucsc.application.util.TsharkUtil;
 import com.zjucsc.art_decode.ArtDecodeCommon;
 import com.zjucsc.art_decode.base.BaseConfig;
 import com.zjucsc.attack.AttackCommon;
@@ -61,6 +62,27 @@ public class InitConfigurationService implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws IllegalAccessException, NoSuchFieldException, ProtocolIdNotValidException, IOException {
+        String str = null;
+        if (constantConfig.getTshark_path() == null) {str = TsharkUtil.checkTsharkValid();}
+        else{str = constantConfig.getTshark_path();}
+        if (str == null) {
+            System.err.println("tshark is not in system PATH , application failed to start");
+            return;
+        }else{
+            TsharkUtil.setTsharkPath(str);
+            PrinterUtil.printMsg(0,"find tshark in: " + str);
+        }
+
+        try {
+            if(!TsharkUtil.addTsharkPlugin()){
+                PrinterUtil.printError("无法自动创建【tshark插件】，请检查权限或者手动添加到wireshark/plugins目录下");
+                return;
+            }
+        } catch (IOException e) {
+            PrinterUtil.printError("无法自动创建【tshark插件】，请检查权限或者手动添加到wireshark/plugins目录下");
+            log.error("创建tshark插件失败***",e);
+            return;
+        }
         /*
         List<String> virTempPath = args.getOptionValues("temp");
         //设置临时文件夹路径
@@ -270,10 +292,10 @@ public class InitConfigurationService implements ApplicationRunner {
          * 初始化所有的正常报文
          ****************************/
 
-//        List<RightPacketInfo> rightPacketInfos = packetInfoMapper.selectAllRightPacketInfo();
-//        for (RightPacketInfo rightPacketInfo : rightPacketInfos) {
-//            CacheUtil.addNormalRightPacketInfo(rightPacketInfo);
-//        }
+        List<RightPacketInfo> rightPacketInfos = packetInfoMapper.selectAllRightPacketInfo();
+        for (RightPacketInfo rightPacketInfo : rightPacketInfos) {
+            CacheUtil.addNormalRightPacketInfo(rightPacketInfo);
+        }
 
         initArtTest();
         /**************************

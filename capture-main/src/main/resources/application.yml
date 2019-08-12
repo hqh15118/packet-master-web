@@ -14,6 +14,7 @@ myconfig:
   reOpenTableName : 20190703  # 重放的数据库表名【packet_info_】 + 【表名】
   simulateStartNum : 0        # 从第几条数据开始
   virtual_network : \Device\NPF_{06E3803C-6CBD-4AD5-829B-58220E549DE0}         # 建立的虚拟网卡的名字
+  tshark-path: C:\Users\Administrator\Desktop\Release
 
 pre-processors:
 #  list[0] : s7comm

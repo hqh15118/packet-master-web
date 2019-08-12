@@ -33,4 +33,6 @@ public class ConstantConfig {
     private int simulateStartNum;
 
     private String virtual_network;
+
+    private String tshark_path;
 }

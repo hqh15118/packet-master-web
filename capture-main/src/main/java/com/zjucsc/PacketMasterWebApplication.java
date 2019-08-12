@@ -36,25 +36,7 @@ public class PacketMasterWebApplication{
 //        });
         String attention = "运行该程序前请运行一遍脚本文件，并检查用户环境变量【TEMP】";
         PrinterUtil.printMsg(2,attention);
-        String str = TsharkUtil.checkTsharkValid();
-        if (str == null) {
-            System.err.println("tshark is not in system PATH , application failed to start");
-            return;
-        }else{
-            TsharkUtil.setTsharkPath(str);
-            PrinterUtil.printMsg(0,"find tshark in: " + str);
-        }
-        checkWiresharkTempPath();
-        try {
-            if(!TsharkUtil.addTsharkPlugin()){
-                PrinterUtil.printError("无法自动创建【tshark插件】，请检查权限或者手动添加到wireshark/plugins目录下");
-                return;
-            }
-        } catch (IOException e) {
-            PrinterUtil.printError("无法自动创建【tshark插件】，请检查权限或者手动添加到wireshark/plugins目录下");
-            log.error("创建tshark插件失败***",e);
-            return;
-        }
+
         SpringApplication.run(PacketMasterWebApplication.class, args);
     }
 

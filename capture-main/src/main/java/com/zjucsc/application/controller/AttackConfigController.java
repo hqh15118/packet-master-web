@@ -242,12 +242,12 @@ public class AttackConfigController {
     @PostMapping("enable_opt_config")
     public BaseResponse enableOptConfig(@RequestBody OptConfigEnable optConfigEnable) {
         BaseOptConfig baseConfig = optAttackMapper.changeOptConfigStateByOpName(optConfigEnable.getProtocolId(),optConfigEnable.getOpName(),optConfigEnable.isEnable());
-//        if (optConfigEnable.isEnable()) {
+        if (optConfigEnable.isEnable()) {
             AttackCommon.addOptAttackConfig(baseConfig);
-            baseConfig.setEnable(true);
-//        }else{
-//            AttackCommon.removeArtOptAttackConfig(baseConfig);
-//        }
+//            baseConfig.setEnable(true);
+        }else{
+            AttackCommon.removeArtOptAttackConfig(baseConfig);
+        }
         return BaseResponse.OK();
     }
 

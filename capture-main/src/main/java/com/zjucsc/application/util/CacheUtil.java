@@ -559,6 +559,7 @@ public class CacheUtil {
     public static void addDeviceNumberToName(String deviceNumber,String deviceName){
         DEVICE_NUMBER_TO_NAME.put(deviceNumber, deviceName);
     }
+
     public static void removeAllDeviceNumberToName(){
         DEVICE_NUMBER_TO_NAME.clear();
     }

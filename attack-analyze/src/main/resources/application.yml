@@ -9,6 +9,7 @@ myconfig:
   # database name
   redis_host : localhost
   redis_port : 6379
+  tshark_path : C:\Users\Administrator\Desktop\Release
 
 spring:
   application:

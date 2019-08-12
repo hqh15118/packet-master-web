@@ -23,10 +23,9 @@ public class OperationAnalyzer extends AbstractAnalyzer<OperationPacketFilter<St
     public Object analyze(Object... objs){
         String fun_code = ((String) objs[0]);
         FvDimensionLayer layer = ((FvDimensionLayer) objs[1]);
-        String protocol = (String)objs[2];
         if (!getAnalyzer().getWhiteMap().containsKey(fun_code)){
             return new AttackBean.Builder()
-                    .attackInfo(getAttackBeanInfo(protocol,fun_code))
+                    .attackInfo(getAttackBeanInfo(layer))
                     .attackType(AttackTypePro.VISIT_COMMAND)
                     .fvDimension(layer)
                     .build();
