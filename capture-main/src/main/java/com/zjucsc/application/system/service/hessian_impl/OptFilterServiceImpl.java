@@ -32,7 +32,7 @@ public class OptFilterServiceImpl extends BaseServiceImpl<OptFilter,OptFilterMap
     public CompletableFuture<Exception> addOperationFilter(List<OptFilterForFront> optFilterForFront) {
         this.baseMapper.deleteByDeviceNumber(optFilterForFront.get(0).getDeviceNumber(),Common.GPLOT_ID);
         this.baseMapper.saveOrUpdateBatch(optFilterForFront,Common.GPLOT_ID);
-        return null;
+        return CompletableFuture.completedFuture(null);
     }
 
     /**
@@ -46,22 +46,7 @@ public class OptFilterServiceImpl extends BaseServiceImpl<OptFilter,OptFilterMap
     @Async("common_async")
     @Override
     public CompletableFuture<List<String>> getTargetExistIdFilter(String deviceNumber, boolean cached , int protocolId) throws ProtocolIdNotValidException {
-        if (cached){
-            String deviceTag = CacheUtil.getTargetDeviceTagByNumber(deviceNumber);
-            ConcurrentHashMap<String, OperationAnalyzer> map = OptFilterUtil.getTargetProtocolToOperationAnalyzerByDeviceTag(deviceTag);
-            if (map == null){
-                throw new ProtocolIdNotValidException("缓存中不存在ID为 " + deviceNumber + " 的规则");
-            }
-            final List<String> optFilterList  = new ArrayList<>();
-            OperationAnalyzer analyzer = map.get(convertIdToName(protocolId));
-            if (analyzer == null || analyzer.getAnalyzer() == null || analyzer.getAnalyzer().getWhiteMap() == null){
-                return CompletableFuture.completedFuture(new ArrayList<>(0));
-            }
-            analyzer.getAnalyzer().getWhiteMap().forEach((integer, s) -> optFilterList.add(integer));
-            return CompletableFuture.completedFuture(optFilterList);
-        }else{
-            return CompletableFuture.completedFuture(selectTargetOptFilter(deviceNumber  , protocolId));
-        }
+        return CompletableFuture.completedFuture(selectTargetOptFilter(deviceNumber  , protocolId));
     }
 
     @Override

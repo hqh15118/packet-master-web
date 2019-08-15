@@ -63,7 +63,6 @@ public class DOSAttackAnalyzeListTest {
         for (FvDimensionLayer fvDimensionLayer : fvDimensionLayers) {
             System.out.println(multisiteDOSAttackAnalyzeList.append(fvDimensionLayer));
         }
-        System.out.println(multisiteDOSAttackAnalyzeList.getSetSize());
     }
 
     private List<FvDimensionLayer> createFvFvDimensionList(int i) {

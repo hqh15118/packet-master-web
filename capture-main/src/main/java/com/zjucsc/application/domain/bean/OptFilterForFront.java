@@ -12,6 +12,8 @@ public class OptFilterForFront {
     private List<String> funCodes;
     private String deviceNumber;
     private boolean enable;
+    private String srcMac;
+    private String srcIp;
 
     @Override
     public String toString() {

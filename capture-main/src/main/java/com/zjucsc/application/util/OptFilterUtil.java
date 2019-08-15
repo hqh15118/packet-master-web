@@ -7,8 +7,10 @@ import com.zjucsc.application.tshark.filter.OperationPacketFilter;
 import com.zjucsc.common.exceptions.OptFilterNotValidException;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.zjucsc.application.util.CacheUtil.convertIdToName;
@@ -22,9 +24,19 @@ public class OptFilterUtil {
      * String -> 协议
      * OperationAnalyzer -> 报文操作分析器
      */
-    public static ConcurrentHashMap<String,ConcurrentHashMap<String, OperationAnalyzer>> OPERATION_FILTER_PRO =
+    public static ConcurrentHashMap<String,ConcurrentHashMap<String,ConcurrentHashMap<String, OperationAnalyzer>>> OPERATION_FILTER_PRO =
             new ConcurrentHashMap<>();
-    public static ConcurrentHashMap<String, OperationAnalyzer> getTargetProtocolToOperationAnalyzerByDeviceTag(String tag){
+
+    public static ConcurrentHashMap<String, OperationAnalyzer> getTargetProtocolToOperationAnalyzerByDeviceTag(String dstTag,String srcTag){
+        ConcurrentHashMap<String,ConcurrentHashMap<String, OperationAnalyzer>> map = OPERATION_FILTER_PRO.get(dstTag);
+        if (map == null){
+            return null;
+        }else{
+            return map.get(srcTag);
+        }
+    }
+
+    public static ConcurrentHashMap<String,ConcurrentHashMap<String, OperationAnalyzer>> getSrcAnalyzerByDstTag(String tag){
         return OPERATION_FILTER_PRO.get(tag);
     }
     /**
@@ -36,11 +48,18 @@ public class OptFilterUtil {
      */
     @SuppressWarnings("unchecked")
     public static void addOrUpdateAnalyzer(String deviceTag , OptFilterForFront optFilterForFront , String filterName) throws ProtocolIdNotValidException {
+        ConcurrentHashMap<String,ConcurrentHashMap<String,OperationAnalyzer>> srcAnalyzeMap = OPERATION_FILTER_PRO.get(deviceTag);
+        if (srcAnalyzeMap == null){
+            srcAnalyzeMap = new ConcurrentHashMap<>();
+            OPERATION_FILTER_PRO.put(deviceTag,srcAnalyzeMap);
+        }
         ConcurrentHashMap<String, OperationAnalyzer> analyzerMap;
-        if ((analyzerMap = OPERATION_FILTER_PRO.get(deviceTag)) == null){
+        String srcTag = StringUtils.isNotBlank(optFilterForFront.getSrcIp()) ? optFilterForFront.getSrcIp() : optFilterForFront.getSrcMac();
+        if ((analyzerMap = OPERATION_FILTER_PRO.get(deviceTag).get(srcTag)) == null){
             //新建设备
             analyzerMap = new ConcurrentHashMap<>();
-            OPERATION_FILTER_PRO.put(deviceTag, analyzerMap);
+            srcAnalyzeMap.put(srcTag,analyzerMap);
+            OPERATION_FILTER_PRO.put(deviceTag, srcAnalyzeMap);
         }
         String protocolName = CacheUtil.convertIdToName(optFilterForFront.getProtocolId());
         analyzerMap.putIfAbsent(protocolName,new OperationAnalyzer(new OperationPacketFilter<>(filterName)));
@@ -65,30 +84,15 @@ public class OptFilterUtil {
         String deviceTag = CacheUtil.getTargetDeviceTagByNumber(optFilterForFront.getDeviceNumber());
         String protocolName = CacheUtil.convertIdToName(optFilterForFront.getProtocolId());
         List<String> funCodes = optFilterForFront.getFunCodes();
+        String srcTag = StringUtils.isBlank(optFilterForFront.getSrcIp()) ? optFilterForFront.getSrcIp() : optFilterForFront.getSrcMac();
         for (String funCode : funCodes) {
             if (OPERATION_FILTER_PRO.containsKey(deviceTag)) {
-                OPERATION_FILTER_PRO.get(deviceTag).get(protocolName).getAnalyzer().getWhiteMap()
+                OPERATION_FILTER_PRO.get(deviceTag).get(protocolName).get(srcTag).getAnalyzer().getWhiteMap()
                         .remove(funCode);
             }
         }
     }
 
-
-
-    public static void addOrUpdateAnalyzer(String deviceTag, String protocolName, OperationAnalyzer analyzer) throws OptFilterNotValidException {
-        if (analyzer == null || analyzer.getAnalyzer() == null){
-            throw new OptFilterNotValidException("OperationAnalyzer为空");
-        }
-        if (OPERATION_FILTER_PRO.get(deviceTag) == null){
-            //不存在该设备ID对应的报文分析器
-            ConcurrentHashMap<String, OperationAnalyzer> map = new ConcurrentHashMap<>();
-            map.put(protocolName,analyzer);
-            OPERATION_FILTER_PRO.put(deviceTag,map);
-        }else{
-            //存在该设备对应的报文分析器，就加入新的分析器，覆盖旧的
-            OPERATION_FILTER_PRO.get(deviceTag).put(protocolName,analyzer);
-        }
-    }
 
     /**
      * 删除某个设备对应的所有分析器
@@ -98,34 +102,34 @@ public class OptFilterUtil {
         OPERATION_FILTER_PRO.remove(deviceTag);
     }
 
-    /**
-     * 删除某个设备下某个协议对应的分析器
-     * @param deviceTag
-     * @param protocolId
-     * @throws ProtocolIdNotValidException
-     */
-    public static void removeTargetDeviceAnalyzerProtocol(String deviceTag , int protocolId) throws ProtocolIdNotValidException {
-        ConcurrentHashMap<String,OperationAnalyzer> removedMap = OPERATION_FILTER_PRO.get(deviceTag);
-        if (removedMap != null){
-            removedMap.remove(convertIdToName(protocolId));
-        }
-    }
+//    /**
+//     * 删除某个设备下某个协议对应的分析器
+//     * @param deviceTag
+//     * @param protocolId
+//     * @throws ProtocolIdNotValidException
+//     */
+//    public static void removeTargetDeviceAnalyzerProtocol(String deviceTag , int protocolId) throws ProtocolIdNotValidException {
+//        ConcurrentHashMap<String,OperationAnalyzer> removedMap = OPERATION_FILTER_PRO.get(deviceTag);
+//        if (removedMap != null){
+//            removedMap.remove(convertIdToName(protocolId));
+//        }
+//    }
 
-    /**
-     * 删除某个设备 -> 某协议 -> 对应的功能码过滤项
-     * @param deviceTag
-     * @param funcode
-     * @param protocolId
-     * @throws ProtocolIdNotValidException
-     */
-    public static void removeTargetDeviceAnalyzerFuncode(String deviceTag , int funcode , int protocolId) throws ProtocolIdNotValidException, ProtocolIdNotValidException {
-        ConcurrentHashMap<String,OperationAnalyzer> removedMap = OPERATION_FILTER_PRO.get(deviceTag);
-        if (removedMap != null) {
-            OperationAnalyzer analyzer = removedMap.get(convertIdToName(protocolId));
-            analyzer.getAnalyzer().getBlackMap().remove(funcode);
-            analyzer.getAnalyzer().getWhiteMap().remove(funcode);
-        }
-    }
+//    /**
+//     * 删除某个设备 -> 某协议 -> 对应的功能码过滤项
+//     * @param deviceTag
+//     * @param funcode
+//     * @param protocolId
+//     * @throws ProtocolIdNotValidException
+//     */
+//    public static void removeTargetDeviceAnalyzerFuncode(String deviceTag , int funcode , int protocolId) throws ProtocolIdNotValidException, ProtocolIdNotValidException {
+//        ConcurrentHashMap<String,OperationAnalyzer> removedMap = OPERATION_FILTER_PRO.get(deviceTag);
+//        if (removedMap != null) {
+//            OperationAnalyzer analyzer = removedMap.get(convertIdToName(protocolId));
+//            analyzer.getAnalyzer().getBlackMap().remove(funcode);
+//            analyzer.getAnalyzer().getWhiteMap().remove(funcode);
+//        }
+//    }
 
     public static void removeAllOptFilter(){
         OPERATION_FILTER_PRO.clear();
@@ -139,6 +143,8 @@ public class OptFilterUtil {
         optFilterForFront.setFvId(rule.getFvDimensionFilter().getFvId());
         optFilterForFront.setProtocolId(rule.getFvDimensionFilter().getProtocolId());
         optFilterForFront.setFunCodes(funCodes);
+        optFilterForFront.setSrcMac(rule.getFvDimensionFilter().getSrcMac());
+        optFilterForFront.setSrcIp(rule.getFvDimensionFilter().getSrcIp());
         return optFilterForFront;
     }
 }

@@ -18,6 +18,7 @@ public abstract class BaseAttackAnalyzer<T extends AbstractDosList> implements I
     protected Map<String,T> t;
     protected Class<T> clazz;
     private DosConfig dosConfig;
+    private T multiDosList;
     /**
      * 通过构造函数注入分析结构
      * @param t key 源地址，value 分析的数据结构
@@ -54,11 +55,24 @@ public abstract class BaseAttackAnalyzer<T extends AbstractDosList> implements I
     protected String doAnalyze(FvDimensionLayer layer) throws IllegalAccessException, InstantiationException {
         String srcIp = layer.ip_src[0];
         if (!srcIp.equals("--")){
-            T analyzeList = getAnalyzer().get(srcIp);
-            if (analyzeList == null){
-                analyzeList = clazz.newInstance();
-                analyzeList.setBaseAttackAnalyzer(this);
-                getAnalyzer().put(srcIp,analyzeList);
+            T analyzeList;
+            if (getAnalyzer() == null){
+                //multi-site
+                if (multiDosList == null) {
+                    analyzeList = clazz.newInstance();
+                    analyzeList.setBaseAttackAnalyzer(this);
+                    multiDosList = analyzeList;
+                }else{
+                    analyzeList = multiDosList;
+                }
+            }else {
+                //cosite
+                analyzeList = getAnalyzer().get(srcIp);
+                if (analyzeList == null) {
+                    analyzeList = clazz.newInstance();
+                    analyzeList.setBaseAttackAnalyzer(this);
+                    getAnalyzer().put(srcIp, analyzeList);
+                }
             }
             return analyzeList.append(layer);
         }

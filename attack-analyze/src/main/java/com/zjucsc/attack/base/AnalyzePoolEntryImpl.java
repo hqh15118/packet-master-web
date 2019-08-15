@@ -65,15 +65,15 @@ public class AnalyzePoolEntryImpl implements AnalyzePoolEntry {
         switch (dosConfig.getProtocol()){
             case "tcp" :
                 return Arrays.asList(new TcpDosAttackAnalyzer<>(new HashMap<>(), CositeDosAttackAnalyzeList.class).setDosConfig(dosConfig),
-                    new TcpDosAttackAnalyzer<>(new HashMap<>(), MultisiteDosAttackAnalyzeList.class).setDosConfig(dosConfig));
+                    new TcpDosAttackAnalyzer<>(null, MultisiteDosAttackAnalyzeList.class).setDosConfig(dosConfig));
             case "dnp3" : return Arrays.asList(new Dnp3DosAttackAnalyzer<>(new HashMap<>(), CositeDosAttackAnalyzeList.class).setDosConfig(dosConfig),
-                    new Dnp3DosAttackAnalyzer<>(new HashMap<>(), MultisiteDosAttackAnalyzeList.class).setDosConfig(dosConfig));
+                    new Dnp3DosAttackAnalyzer<>(null, MultisiteDosAttackAnalyzeList.class).setDosConfig(dosConfig));
             case "104apci" : return Arrays.asList(new Iec104DosAttackAnalyzer<>(new HashMap<>(), CositeDosAttackAnalyzeList.class).setDosConfig(dosConfig),
-                    new Iec104DosAttackAnalyzer<>(new HashMap<>(), MultisiteDosAttackAnalyzeList.class).setDosConfig(dosConfig));
+                    new Iec104DosAttackAnalyzer<>(null, MultisiteDosAttackAnalyzeList.class).setDosConfig(dosConfig));
             case "modbus" : return Arrays.asList(new ModbusDosAttackAnalyzer<>(new HashMap<>(), CositeDosAttackAnalyzeList.class).setDosConfig(dosConfig),
-                    new ModbusDosAttackAnalyzer<>(new HashMap<>(), MultisiteDosAttackAnalyzeList.class).setDosConfig(dosConfig));
+                    new ModbusDosAttackAnalyzer<>(null, MultisiteDosAttackAnalyzeList.class).setDosConfig(dosConfig));
             case "s7comm" : return Arrays.asList(new S7commDosAttackAnalyzer<>(new HashMap<>(), CositeDosAttackAnalyzeList.class).setDosConfig(dosConfig),
-                    new S7commDosAttackAnalyzer<>(new HashMap<>(), MultisiteDosAttackAnalyzeList.class).setDosConfig(dosConfig));
+                    new S7commDosAttackAnalyzer<>(null, MultisiteDosAttackAnalyzeList.class).setDosConfig(dosConfig));
         }
         return null;
     }

@@ -13,6 +13,7 @@ import com.zjucsc.application.domain.non_hessian.Top5Statistic;
 import com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
 import com.zjucsc.attack.bean.AttackBean;
+import com.zjucsc.attack.bean.BaseOptAnalyzer;
 import com.zjucsc.common.common_util.CommonUtil;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.socket_io.SocketIoEvent;
@@ -370,28 +371,77 @@ public class CacheUtil {
      *
      *********************************/
     public static FiveDimensionAnalyzer getFvDimensionFilter(FvDimensionLayer layer) {
-        FiveDimensionAnalyzer fiveDimensionAnalyzer = Common.FV_DIMENSION_FILTER_PRO.get(layer.ip_dst[0]);
-        if (fiveDimensionAnalyzer != null) {
-            return fiveDimensionAnalyzer;
-        }
-        if (!layer.ip_dst[0].equals("--")) {
+        FiveDimensionAnalyzer fiveDimensionAnalyzer = getAnalyzerByTag(layer.ip_dst[0],layer.ip_src[0]);
+        if (fiveDimensionAnalyzer == null && !layer.ip_dst[0].equals("--")) {
             //报文有IP地址
             return null;
         }
-        return Common.FV_DIMENSION_FILTER_PRO.get(layer.eth_dst[0]);
+        return getAnalyzerByTag(layer.eth_dst[0],layer.eth_src[0]);
+    }
+
+    public static Map<String,FiveDimensionAnalyzer> getSrcAnalyzerMap(FvDimensionLayer layer){
+        Map<String,FiveDimensionAnalyzer> fiveDimensionAnalyzerMap = Common.FV_DIMENSION_FILTER_PRO.get(layer.ip_dst[0]);
+        if (fiveDimensionAnalyzerMap == null){
+            return Common.FV_DIMENSION_FILTER_PRO.get(layer.eth_dst[0]);
+        }
+        return fiveDimensionAnalyzerMap;
+    }
+
+    /**
+     *
+     * @param srcAnalyzeMap can not be null
+     * @param layer 五元组
+     * @return
+     */
+    public static FiveDimensionAnalyzer getAnalyzerBySrcTag(Map<String,FiveDimensionAnalyzer> srcAnalyzeMap , FvDimensionLayer layer){
+        FiveDimensionAnalyzer fiveDimensionAnalyzer = srcAnalyzeMap.get(layer.ip_src[0]);
+        if (fiveDimensionAnalyzer == null)
+        {
+            return srcAnalyzeMap.get(layer.eth_src[0]);
+        }
+        return fiveDimensionAnalyzer;
+    }
+
+    private static FiveDimensionAnalyzer getAnalyzerByTag(String dstTag,String srcTag){
+        Map<String,FiveDimensionAnalyzer> fiveDimensionAnalyzerMap = Common.FV_DIMENSION_FILTER_PRO.get(dstTag);
+        if (fiveDimensionAnalyzerMap!=null){
+            return fiveDimensionAnalyzerMap.get(srcTag);
+        }
+        return null;
     }
 
     /**********************************
      *
-     * 获取功能码过滤器
+     * 获取功能码过滤器 key是协议，OperationAnalyzer是分析器
      *
      *********************************/
+    /**
+     * @param layer
+     * @return null ==> 没有针对该目的设备配置过功能码规则或者没有配置过源设备
+     */
     public static ConcurrentHashMap<String, OperationAnalyzer> getOptAnalyzer(FvDimensionLayer layer) {
-        ConcurrentHashMap<String, OperationAnalyzer> map = OptFilterUtil.getTargetProtocolToOperationAnalyzerByDeviceTag(layer.ip_dst[0]);
-        if (map != null) {
-            return map;
+        ConcurrentHashMap<String,ConcurrentHashMap<String, OperationAnalyzer>> map = getSrcOptAnalyzer(layer);
+        if (map == null){
+            return null;    //没有针对该目的设备配置过对应的源设备的分析器
         }
-        return OptFilterUtil.getTargetProtocolToOperationAnalyzerByDeviceTag(layer.eth_dst[0]);
+        ConcurrentHashMap<String,OperationAnalyzer> targetMap = map.get(layer.ip_src[0]);
+        if (targetMap == null){
+            return map.get(layer.eth_src[0]);
+        }
+        return targetMap;
+    }
+
+    /**
+     * @param layer
+     * 根据目的地址获取【源地址，【协议，分析器】】组
+     * @return
+     */
+    private static ConcurrentHashMap<String,ConcurrentHashMap<String, OperationAnalyzer>> getSrcOptAnalyzer(FvDimensionLayer layer){
+        ConcurrentHashMap<String,ConcurrentHashMap<String, OperationAnalyzer>> map = OptFilterUtil.getSrcAnalyzerByDstTag(layer.ip_dst[0]);
+        if (map == null){
+            return OptFilterUtil.getSrcAnalyzerByDstTag(layer.eth_dst[0]);
+        }
+        return map;
     }
 
 
@@ -572,6 +622,7 @@ public class CacheUtil {
 
     public static void addOrUpdateDeviceManually(Device device){
         ALL_DEVICES.put(device.getDeviceTag(),device);
+        ALL_MAC_ADDRESS.put(device.getDeviceMac(),"");
         ConcurrentHashMap<Device, AtomicInteger> map = DEVICE_TO_DEVICE_PACKETS.remove(device);
         if (map!=null){
             DEVICE_TO_DEVICE_PACKETS.put(device,map);
@@ -638,6 +689,11 @@ public class CacheUtil {
         */
         return null;
     }
+
+    public static void removeDeviceCachedMac(String macAddress){
+        ALL_MAC_ADDRESS.remove(macAddress);
+    }
+
     private static Device getDeviceByTag(String deviceTag){
         return ALL_DEVICES.get(deviceTag);
     }

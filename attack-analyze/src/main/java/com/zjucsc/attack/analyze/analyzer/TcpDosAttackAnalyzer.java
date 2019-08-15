@@ -2,7 +2,6 @@ package com.zjucsc.attack.analyze.analyzer;
 
 import com.zjucsc.attack.analyze.analyzer_util.AbstractDosList;
 import com.zjucsc.attack.util.BaseAttackAnalyzer;
-import com.zjucsc.tshark.FvDimensionList;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 
 import java.util.Map;

@@ -43,7 +43,7 @@ public class Common {
      * cache5
      * DEVICE_TAG 五元组过滤器
      */
-    public static ConcurrentHashMap<String, FiveDimensionAnalyzer> FV_DIMENSION_FILTER_PRO = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String, ConcurrentHashMap<String,FiveDimensionAnalyzer>> FV_DIMENSION_FILTER_PRO = new ConcurrentHashMap<>();
 
     /**
      * BaseResponse的返回状态 - 修改起来比较方便

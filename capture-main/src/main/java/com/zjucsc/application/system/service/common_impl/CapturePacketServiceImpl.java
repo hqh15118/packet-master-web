@@ -91,6 +91,9 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                 //iArtPacketService.insertArtPacket(argName,artPacketDetail);
                 Map<String, Float> res = AppCommonUtil.getGlobalArtMap();
                 AttackCommon.appendArtAnalyze(res, layer);
+                //分析结果
+                //数据发送
+                StatisticsData.addArtMapData(res);
             }else{
                 String event = (String) objs[0];
                 switch (event){
@@ -236,7 +239,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             sendFvDimensionPacket(fvDimensionLayer , payload);                    //发送五元组所有报文到前端
             sendPacketStatisticsEvent(fvDimensionLayer);                          //发送统计信息
             int collectorId = PacketDecodeUtil.decodeCollectorId(payload,24);
-            if (collectorId > 0){
+            if (collectorId > 0 && collectorId < 50){
                 analyzeCollectorState(payload , collectorId);                         //分析采集器状态信息
                 fvDimensionLayer.delay = collectorDelayInfo(fvDimensionLayer,payload,collectorId);     //解析时延信息
                 fvDimensionLayer.collectorId = collectorId;                           //设置报文采集器ID
@@ -252,19 +255,35 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     };
 
     private void preProcess(FvDimensionLayer fvDimensionLayer) {
-        if (fvDimensionLayer.protocol.equals("tcp") && !fvDimensionLayer.tcp_payload[0].equals("")){
-            byte[] tcpPayload = PacketDecodeUtil.hexStringToByteArray2(fvDimensionLayer.tcp_payload[0]);
-            //set iec101 protocol 单字节的101怎么设置
-            byte startByte = tcpPayload[0];
-            if (startByte == 0x68 || startByte == 0x10){
-                fvDimensionLayer.protocol = "iec101";
-            }
-            //set dnp3.0 protocol
-            return;
-        }
-        if (fvDimensionLayer.rawData.length >= 16 && Byte.toUnsignedInt(fvDimensionLayer.rawData[13]) == 0x89
-            && fvDimensionLayer.rawData[14] == 0x07 && fvDimensionLayer.rawData[15] == 0x12 && fvDimensionLayer.rawData[16] == 0x34){
-            fvDimensionLayer.protocol = "can";
+        switch (fvDimensionLayer.protocol){
+            case "tcp" :
+                if (!fvDimensionLayer.tcp_payload[0].equals("")){
+                    byte[] tcpPayload = PacketDecodeUtil.hexStringToByteArray2(fvDimensionLayer.tcp_payload[0]);
+                    //set iec101 protocol 单字节的101怎么设置
+                    byte startByte = tcpPayload[0];
+                    if (startByte == 0x68 || startByte == 0x10){
+                        fvDimensionLayer.protocol = "iec101";
+                    }
+                    //set dnp3.0 protocol
+                    return;
+                }
+                break;
+            case "dcerpc" :
+                OpcDaPacket.LayersBean opcDaPacket = ((OpcDaPacket.LayersBean) fvDimensionLayer);
+                try {
+                    if (opcDaPacket.dcerpc_datype!=null &&
+                            CommonConfigUtil.getTargetProtocolFuncodeMeaning(PACKET_PROTOCOL.OPC_DA,opcDaPacket.dcerpc_datype[0])!=null){
+                        opcDaPacket.protocol = PACKET_PROTOCOL.OPC_DA;
+                    }
+                } catch (ProtocolIdNotValidException e) {
+                    log.error("",e);
+                }
+                break;
+            default:
+                if (fvDimensionLayer.rawData.length >= 16 && Byte.toUnsignedInt(fvDimensionLayer.rawData[13]) == 0x89
+                        && fvDimensionLayer.rawData[14] == 0x07 && fvDimensionLayer.rawData[15] == 0x12 && fvDimensionLayer.rawData[16] == 0x34){
+                    fvDimensionLayer.protocol = "can";
+                }
         }
     }
 
@@ -386,7 +405,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             }
         }else if (t instanceof OpcDaPacket.LayersBean){
             OpcDaPacket.LayersBean opcDaPacket = ((OpcDaPacket.LayersBean) t);
-            if (opcDaPacket.dcerpc_datype[0]!=null){
+            if (opcDaPacket.dcerpc_datype!=null){
                 funCode = opcDaPacket.dcerpc_datype[0];
                 opcDaPacket.funCodeMeaning = CommonConfigUtil.getTargetProtocolFuncodeMeaning(PACKET_PROTOCOL.OPC_DA,funCode);
             }
@@ -743,10 +762,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             Map<String,Float> res = AppCommonUtil.getGlobalArtMap();
             String protocol = layer.protocol;
             if (!(layer instanceof UndefinedPacket.LayersBean)){
-                res = artAnalyze(protocol,tcpPayload,layer,res);
-                //分析结果
-                //数据发送
-                StatisticsData.addArtMapData(res);
+                artAnalyze(protocol,tcpPayload,layer,res);
             }
             AttackCommon.appendDOSAnalyze(layer, DeviceOptUtil.getDstDeviceTag(layer));                     //将五元组添加到攻击分析模块中分析
             try {

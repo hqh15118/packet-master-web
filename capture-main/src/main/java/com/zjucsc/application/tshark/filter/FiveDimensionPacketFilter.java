@@ -81,7 +81,6 @@ public class FiveDimensionPacketFilter {
      * @param rules 要重新添加到缓存中的rule
      */
     public void addRules(List<Rule> rules){
-        clearRule();//先清除所有已经配置好的rule
         for (Rule rule : rules) {
             addRule(rule);
         }
@@ -275,13 +274,6 @@ public class FiveDimensionPacketFilter {
     }
 
     public AttackBean OK(FvDimensionLayer layer){
-        String deviceNumber = layer.deviceNumber;
-        if (deviceNumber!=null) {
-                if (CacheUtil.isNormalWhiteProtocol(deviceNumber,layer.protocol))//判断是否在白名单协议之内
-            {
-                return null;
-            }
-        }
         if (!layer.ip_dst[0].equals("--") && !srcIpWhiteMap.containsKey(layer.ip_src[0])){
             return getBadPacket(layer,AttackTypePro.VISIT_DEVICE,layer.ip_src[0]);//目的IP不在白名单
         }

@@ -41,29 +41,29 @@ public class OptFilterController {
         return BaseResponse.OK(future.get());
     }
 
-    /**
-     *
-     * @param deviceId > 0
-     * @param funcode
-     * @param protocolId
-     * @return
-     */
-    @ApiOperation("删除功能码规则[分别根据device/protocolId/funcode删除]")
-    @DeleteMapping("/delete_opt_filter")
-    @Log
-    public BaseResponse deleteOptFilter(@RequestParam String deviceId , @RequestParam int funcode , @RequestParam int protocolId) throws ProtocolIdNotValidException {
-        String deviceTag = CacheUtil.getTargetDeviceTagByNumber(deviceId);
-
-        if (funcode > 0 ){
-            iOptFilterService.deleteByDeviceNumberAndProtocolIdAndFuncode(deviceId, funcode, protocolId);
-            OptFilterUtil.removeTargetDeviceAnalyzerFuncode(deviceTag , funcode , protocolId);
-        }else if(protocolId > 0){
-            iOptFilterService.deleteByDeviceNumberAndProtocolId(deviceId,protocolId);
-            OptFilterUtil.removeTargetDeviceAnalyzerProtocol(deviceTag  , protocolId);
-        }else{
-            iOptFilterService.deleteByDeviceNumber(deviceId);
-            OptFilterUtil.disableTargetDeviceAnalyzer(deviceTag);
-        }
-        return BaseResponse.OK();
-    }
+//    /**
+//     *
+//     * @param deviceId > 0
+//     * @param funcode
+//     * @param protocolId
+//     * @return
+//     */
+//    @ApiOperation("删除功能码规则[分别根据device/protocolId/funcode删除]")
+//    @DeleteMapping("/delete_opt_filter")
+//    @Log
+//    public BaseResponse deleteOptFilter(@RequestParam String deviceId , @RequestParam int funcode , @RequestParam int protocolId) throws ProtocolIdNotValidException {
+//        String deviceTag = CacheUtil.getTargetDeviceTagByNumber(deviceId);
+//
+//        if (funcode > 0 ){
+//            iOptFilterService.deleteByDeviceNumberAndProtocolIdAndFuncode(deviceId, funcode, protocolId);
+//            OptFilterUtil.removeTargetDeviceAnalyzerFuncode(deviceTag , funcode , protocolId);
+//        }else if(protocolId > 0){
+//            iOptFilterService.deleteByDeviceNumberAndProtocolId(deviceId,protocolId);
+//            OptFilterUtil.removeTargetDeviceAnalyzerProtocol(deviceTag  , protocolId);
+//        }else{
+//            iOptFilterService.deleteByDeviceNumber(deviceId);
+//            OptFilterUtil.disableTargetDeviceAnalyzer(deviceTag);
+//        }
+//        return BaseResponse.OK();
+//    }
 }

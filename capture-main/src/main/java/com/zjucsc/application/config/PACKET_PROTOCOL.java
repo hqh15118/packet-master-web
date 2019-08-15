@@ -62,8 +62,8 @@ public interface PACKET_PROTOCOL {
     String CIP_IP = "cip";
     String MMS = "mms";
     String IEC101 = "iec101";
-    String OPC_DA = "dcerpc";
-
+    String OPC_DA = "opcda";
+    String LLC = "llc";
 
     int MODBUS_ID = 1;
     int S7_ID = 2;
@@ -82,7 +82,7 @@ public interface PACKET_PROTOCOL {
     int IEC104_ASDU_ID = 13;
     int IEC104_APCI_ID = 25;
     int DNP3_0_PRI_ID = 14;//DNP3_0_PRI
-    int DMP3_0_SET_ID = 26;//DNP3_0_SET   DNP3_0_SET_ID
+    int DNP3_0_SET_ID = 26;//DNP3_0_SET   DNP3_0_SET_ID
     int NBNS_ID = 15;
     int GOOSE_ID = 16;
     int STP_ID = 17;
@@ -98,4 +98,5 @@ public interface PACKET_PROTOCOL {
     int MMS_ID = 28;
     int IEC101_ID = 29;
     int OPC_DA_ID = 30;
+    int LLC_ID = 31;
 }

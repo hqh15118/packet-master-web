@@ -66,5 +66,6 @@ public class DeviceOptUtil {
         CacheUtil.removeDeviceNumberToName(device.getDeviceNumber());
         CacheUtil.removeAllDeviceListByMacAddress(device.getDeviceTag());
         CacheUtil.removeDeviceToDevicePacketPair(device);
+        CacheUtil.removeDeviceCachedMac(device.getDeviceMac());
     }
 }

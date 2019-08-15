@@ -20,5 +20,4 @@ public interface OptFilterMapper extends BaseMapper<OptFilter> {
 
         void deleteByDeviceNumberAndProtocolIdAndFuncode(String deviceNumber, int protocolId, int funCode, int gplotId);
 
-
 }

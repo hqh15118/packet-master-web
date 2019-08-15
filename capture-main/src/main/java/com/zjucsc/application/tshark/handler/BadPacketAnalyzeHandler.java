@@ -14,7 +14,9 @@ import com.zjucsc.tshark.handler.AbstractAsyncHandler;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import com.zjucsc.tshark.packets.UndefinedPacket;
 import lombok.extern.slf4j.Slf4j;
+import sun.misc.Cache;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 
@@ -33,6 +35,14 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<FvDimensionLay
     public FvDimensionLayer handle(Object t) {
         FvDimensionLayer layer = ((FvDimensionLayer) t);
         //五元组分析
+        String deviceNumber = layer.deviceNumber;
+        if (deviceNumber!=null) {
+            //如果在白名单协议里面，直接全部跳过
+            if (CacheUtil.isNormalWhiteProtocol(deviceNumber,layer.protocol))//判断是否在白名单协议之内
+            {
+                return layer;
+            }
+        }
         protocolAnalyze(layer);
         return layer;
     }
@@ -52,27 +62,40 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<FvDimensionLay
         if (CacheUtil.isNormalRightPacket(rightPacketInfo)){
             operationAnalyze(layer);
         }else {
-            if ((fiveDimensionAnalyzer = CacheUtil.getFvDimensionFilter(layer)) != null) {
-                //sniff
-                //eth:llc:data
-                String protocolStack = layer.frame_protocols[0];
-                if (protocolStack.length() >= 8 && protocolStack.charAt(4) == 'l' && protocolStack.charAt(5) == 'l'
-                        && protocolStack.charAt(6) == 'c' && layer.rawData[14]==(byte)0xaa && layer.rawData[15]==(byte)0xaa
-                && layer.rawData[20]==(byte) 0x01 && layer.rawData[21]==(byte)0xfd){
-                    AttackCommon.appendFvDimensionError(AttackBean.builder().attackType(AttackTypePro.SNIFF_ATTACK)
-                            .fvDimension(layer).build(),layer);
-                }
-                AttackBean attackBean = ((AttackBean) fiveDimensionAnalyzer.analyze(layer));
-                if (attackBean != null) {
-                    //statisticsBadPacket(deviceNumber);
-                    //回调对恶意报文进行发送和统计【实时推送】
-                    AttackCommon.appendFvDimensionError(attackBean,layer);
-                } else {
-                    //五元组正常，再进行操作的匹配
-                    //功能码分析
-                    operationAnalyze(layer);
+            //sniff
+            //eth:llc:data
+            String protocolStack = layer.frame_protocols[0];
+            if (protocolStack.length() >= 8 && protocolStack.charAt(4) == 'l' && protocolStack.charAt(5) == 'l'
+                    && protocolStack.charAt(6) == 'c' && layer.rawData[14]==(byte)0xaa && layer.rawData[15]==(byte)0xaa
+                    && layer.rawData[20]==(byte) 0x01 && layer.rawData[21]==(byte)0xfd){
+                AttackCommon.appendFvDimensionError(AttackBean.builder().attackType(AttackTypePro.SNIFF_ATTACK)
+                        .fvDimension(layer).build(),layer);
+            }
+            Map<String,FiveDimensionAnalyzer> analyzerMap = CacheUtil.getSrcAnalyzerMap(layer);
+            if (analyzerMap != null){
+                if ((fiveDimensionAnalyzer = CacheUtil.getAnalyzerBySrcTag(analyzerMap,layer)) != null) {
+                    AttackBean attackBean = ((AttackBean) fiveDimensionAnalyzer.analyze(layer));
+                    if (attackBean != null) {
+                        //statisticsBadPacket(deviceNumber);
+                        //回调对恶意报文进行发送和统计【实时推送】
+                        AttackCommon.appendFvDimensionError(attackBean,layer);
+                    } else {
+                        //五元组正常，再进行操作的匹配
+                        //功能码分析
+                        operationAnalyze(layer);
+                    }
+                }else{
+                    /**
+                     * 非授权访问设备
+                     */
+                    AttackCommon.appendFvDimensionError(new AttackBean.Builder()
+                            .fvDimension(layer)
+                            .attackType(AttackTypePro.VISIT_DEVICE)
+                            .attackInfo(layer.ip_src[0].equals("--") ? layer.ip_src[0] : layer.eth_src[0])
+                            .build(),layer);
                 }
             }
+
         }
 
     }

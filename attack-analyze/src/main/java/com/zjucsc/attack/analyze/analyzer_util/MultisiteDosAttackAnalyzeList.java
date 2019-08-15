@@ -6,10 +6,10 @@ import com.zjucsc.tshark.packets.FvDimensionLayer;
 
 import java.util.LinkedHashSet;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MultisiteDosAttackAnalyzeList extends AbstractDosList {
 
-    private LinkedHashSet<MultisiteFvDimensionAttackWrapper> hashSet = new LinkedHashSet<>();
 
     /**
      * @param fvDimensionLayers 新增加的五元组
@@ -25,7 +25,6 @@ public class MultisiteDosAttackAnalyzeList extends AbstractDosList {
     @Override
     protected String analyze(Queue<FvDimensionLayer> fvDimensionLayers,
                                     FvDimensionLayer newAppendLayer) {
-        hashSet.clear();
         //没有配置，直接返回，没有攻击
         if ( getDosConfig() == null || !getDosConfig().isEnable() || getDosConfig().getMulSiteNum() == 0 || getDosConfig().getMulSiteTime() == 0){
             return null;
@@ -40,7 +39,7 @@ public class MultisiteDosAttackAnalyzeList extends AbstractDosList {
 
     private String doAnalyze(Queue<FvDimensionLayer> fvDimensionLayers, long multiSiteTimeStamp, int multiSiteNum) {
         for (;;){
-            FvDimensionLayer layer = fvDimensionLayers.poll();// min timeStampInLong
+            FvDimensionLayer layer = fvDimensionLayers.element();// min timeStampInLong
             if (layer == null){
                 break;
             }else{
@@ -51,10 +50,7 @@ public class MultisiteDosAttackAnalyzeList extends AbstractDosList {
                 }
             }
         }
-        for (FvDimensionLayer fvDimensionLayer : fvDimensionLayers) {
-            hashSet.add(new MultisiteFvDimensionAttackWrapper(fvDimensionLayer));
-        }
-        if (hashSet.size()  >= multiSiteNum){
+        if (fvDimensionLayers.size()  >= multiSiteNum){
             if (AttackConfig.debug) {
                 System.out.println("-------------");
                 System.out.println("multi attack");
@@ -65,7 +61,4 @@ public class MultisiteDosAttackAnalyzeList extends AbstractDosList {
         return null;
     }
 
-    public int getSetSize(){
-        return hashSet.size();
-    }
 }

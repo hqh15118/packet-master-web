@@ -5,8 +5,13 @@ import com.zjucsc.application.domain.bean.Rule;
 import com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer;
 import com.zjucsc.application.tshark.filter.FiveDimensionPacketFilter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 public class FvFilterUtil {
@@ -15,24 +20,47 @@ public class FvFilterUtil {
         Common.FV_DIMENSION_FILTER_PRO.clear();
     }
 
+    /**
+     *
+     * @param deviceTag 目的设备
+     * @param filterList 规则列表
+     * @param filterName =-=没用
+     */
     public static void addOrUpdateFvFilter(String deviceTag , List<Rule> filterList , String filterName){
+        ConcurrentHashMap<String,FiveDimensionAnalyzer> map = Common.FV_DIMENSION_FILTER_PRO.get(deviceTag);
+        if (map == null){
+            map = new ConcurrentHashMap<>();
+            Common.FV_DIMENSION_FILTER_PRO.put(deviceTag,map);
+        }else{
+            map.clear();
+        }
         FiveDimensionAnalyzer analyzer;
-        if ((analyzer = Common.FV_DIMENSION_FILTER_PRO.get(deviceTag))==null){
-            FiveDimensionPacketFilter fiveDimensionPacketFilter = new FiveDimensionPacketFilter(filterName);
-            fiveDimensionPacketFilter.setFilterList(filterList);
-            analyzer = new FiveDimensionAnalyzer(fiveDimensionPacketFilter);
-            Common.FV_DIMENSION_FILTER_PRO.put(deviceTag,analyzer);
-        }else {
-            analyzer.getAnalyzer().addRules(filterList);
+
+        for (Rule rule : filterList) {
+            String srcTag = getSrcTagOfRule(rule);
+            analyzer = map.get(srcTag);
+            if (analyzer == null){
+                FiveDimensionPacketFilter fiveDimensionPacketFilter = new FiveDimensionPacketFilter(filterName);
+                fiveDimensionPacketFilter.setFilterList(filterList);
+                analyzer = new FiveDimensionAnalyzer(fiveDimensionPacketFilter);
+                map.put(srcTag,analyzer);
+            }else{
+                analyzer.getAnalyzer().addRules(Collections.singletonList(rule));
+            }
         }
     }
 
-    public static void removeFvFilter(String deviceTag , Rule rule){
-        FiveDimensionAnalyzer analyzer = Common.FV_DIMENSION_FILTER_PRO.get(deviceTag);
-        if (analyzer == null || analyzer.getAnalyzer() == null){
-            return;
+    private static String getSrcTagOfRule(Rule rule){
+        if (StringUtils.isNotBlank(rule.getFvDimensionFilter().getSrcIp())){
+            return rule.getFvDimensionFilter().getSrcIp();
         }
-        analyzer.getAnalyzer().removeRule(rule);
+        return rule.getFvDimensionFilter().getSrcMac();
+    }
+
+    public static void removeFvFilter(String deviceTag , Rule rule){
+        Map<String,FiveDimensionAnalyzer> analyzerMap = Common.FV_DIMENSION_FILTER_PRO.get(deviceTag);
+        String srcTag = getSrcTagOfRule(rule);
+        analyzerMap.get(srcTag).getAnalyzer().removeRule(rule);
     }
 
     public static void disableDeviceAllConfig(String deviceTag){

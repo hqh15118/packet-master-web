@@ -2,6 +2,7 @@ package com.zjucsc.application.util;
 
 import com.zjucsc.application.config.PACKET_PROTOCOL;
 import com.zjucsc.common.common_util.ByteUtil;
+import com.zjucsc.common.common_util.CommonUtil;
 import com.zjucsc.tshark.bean.CollectorState;
 import com.zjucsc.tshark.packets.Dnp3_0Packet;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
@@ -186,7 +187,14 @@ public class PacketDecodeUtil {
 //        }
         if(layer.frame_protocols[0].endsWith("data"))
         {
-            return UDP;
+//            StringBuilder sb = CommonUtil.getGlobalStringBuilder();
+            if (layer.frame_protocols[0].contains("udp")){
+                return UDP;
+            }
+            if (layer.frame_protocols[0].contains("llc")){
+                return LLC;
+            }
+            return layer.frame_protocols[0];
         }
 //        else{
         return getUnDefinedPacketProtocol(layer.frame_protocols[0]);
@@ -320,10 +328,11 @@ public class PacketDecodeUtil {
         {
             return null;
         }
-        int funCode = Integer.decode(funCodeStr);
+        int funCode = -1;
         switch (protocol)
         {
             case "s7comm": {
+                funCode = Integer.decode(funCodeStr);
                 switch (funCode) {
                     case 0x04:
                         return "数据篡改攻击";
@@ -347,6 +356,7 @@ public class PacketDecodeUtil {
             }
             case "s7comm_user_data":
             {
+                funCode = Integer.decode(funCodeStr);
                 switch (funCode) {
                     case 0xf:
                         return "代码篡改攻击";
@@ -363,6 +373,7 @@ public class PacketDecodeUtil {
             }
             case "modbus":
             {
+                funCode = Integer.decode(funCodeStr);
                 switch (funCode) {
                     case 43:
                         return "嗅探攻击";
@@ -388,6 +399,7 @@ public class PacketDecodeUtil {
             }
             case "opcua":
             {
+                funCode = Integer.decode(funCodeStr);
                 switch (funCode)
                 {
                     case 527:
@@ -405,28 +417,30 @@ public class PacketDecodeUtil {
                         return "非法功能码";
                 }
             }
-            case "decrpc":
-            {
-                switch (funCodeStr)
-                {
-                    case "IOPCServerList":
-                    case "IOPCServerList2":
-                    case "IOPCBrowseServerAddressSpace":
-                        return "嗅探攻击";
-                    case "IOPCItemDeadbandMgt":
-                    case "IOPCItemSamplingMgt":
-                        return "配置篡改攻击";
-                    case "IOPCSyncIO":
-                    case "IOPCAsyncIO":
-                    case "IOPCAsyncIO2":
-                    case "IOPCSyncIO2":
-                    case "IOPCAsyncIO3":
-                        return "数据篡改攻击";
-                    default:
-                        return "非法功能码";
-                }
-            }
+//            case "decrpc":
+//            {
+//                switch (funCodeStr)
+//                {
+//                    case "IOPCServerList":
+//                    case "IOPCServerList2":
+//                    case "IOPCBrowseServerAddressSpace":
+//                        return "嗅探攻击";
+//                    case "IOPCItemDeadbandMgt":
+//                    case "IOPCItemSamplingMgt":
+//                        return "配置篡改攻击";
+//                    case "IOPCSyncIO":
+//                    case "IOPCAsyncIO":
+//                    case "IOPCAsyncIO2":
+//                    case "IOPCSyncIO2":
+//                    case "IOPCAsyncIO3":
+//                        return "数据篡改攻击";
+//                    default:
+//                        return "非法功能码";
+//                }
+//                break;
+//            }
             case "dnp3" :
+                funCode = Integer.decode(funCodeStr);
                 switch (getDnp3DetailType(layer)){
                     case "dnp3.0_pri":
                     {
@@ -445,8 +459,10 @@ public class PacketDecodeUtil {
                         return "非法功能码";
                     }
                 }
+                break;
             case "mms":
             {
+                funCode = Integer.decode(funCodeStr);
                 switch (funCode)
                 {
                     case 3:
@@ -503,6 +519,7 @@ public class PacketDecodeUtil {
                 }
             }
             case "104asdu": {
+                funCode = Integer.decode(funCodeStr);
                 switch (funCode)
                 {
                     case 100:
@@ -522,9 +539,30 @@ public class PacketDecodeUtil {
                 //TODO
                 return "非法功能码";
             }
+            case "opcda" :
+                switch (funCodeStr)
+                {
+                    case "IOPCBrowseServerAddressSpace":
+                    case "IOPCServerList":
+                    case "IOPCServerList2":
+                    case "IOPCServer":
+                        return "嗅探攻击";
+                    case "IOPCSyncIO":
+                    case "IOPCAsyncIO":
+                    case "IOPCAsyncIO2":
+                    case "IOPCSyncIO2":
+                    case "IOPCAsyncIO3":
+                        return "数据篡改攻击";
+                    case "IOPCItemDeadbandMgt":
+                    case "IOPCItemSamplingMgt":
+                        return "配置篡改攻击";
+                    default:
+                        return "非法功能码";
+                }
             default:
                 return "非法协议";
         }
+        return "非法协议";
     }
 
     /**
