@@ -253,7 +253,6 @@ public abstract class BasePreProcessor implements PreProcessor {
             if (commandBuildFinishCallback!=null){
                 commandBuildFinishCallback.commandBuildFinish();
             }
-            //log.info("start running --------------------> now ");//TODO LOG HERE
             processRunning = true;
             try (BufferedReader bfReader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                 for (;processRunning;) {
@@ -264,7 +263,6 @@ public abstract class BasePreProcessor implements PreProcessor {
                         }
                     }else{
                         if (processRunning) {
-                            //TODO LOG HERE
                             //System.out.println("tshark process out by finishing read data");
                             //log.info("{} exit by end finishing reading ..", this.getClass().getName());
                         }else {
@@ -293,7 +291,6 @@ public abstract class BasePreProcessor implements PreProcessor {
                  * @throws IllegalThreadStateException if the subprocess represented
                  *         by this {@code Process} object has not yet terminated
                  */
-                //TODO LOG HERE
                 //log.info("{} exit with exit value : {} " , this.getClass().getName()  , process.exitValue());
             }
         }
@@ -320,7 +317,6 @@ public abstract class BasePreProcessor implements PreProcessor {
             }
             semaphore.release();
         } catch (IOException e) {
-            //log.error("" , e);//TODO LOG HERE
         }
     }
 

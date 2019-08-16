@@ -12,7 +12,7 @@ import java.util.List;
 public class CipMmsPreProcessor extends MultiPreProcessor {
     @Override
     public String[] packetProtocolStacks() {
-        return new String[]{"cip","mms"};
+        return new String[]{"cipcls","mms"};
     }
 
     @Override

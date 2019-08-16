@@ -164,7 +164,7 @@ public class PacketDecodeUtil {
         return String.valueOf(fun_code);
     }
 
-
+    //eth:llc:tcp:data
     public static String discernPacket(FvDimensionLayer layer){
 //        String protocolStack = layer.frame_protocols[0];
 //        if (protocolStack.endsWith("s7comm")){
@@ -187,14 +187,17 @@ public class PacketDecodeUtil {
 //        }
         if(layer.frame_protocols[0].endsWith("data"))
         {
-//            StringBuilder sb = CommonUtil.getGlobalStringBuilder();
-            if (layer.frame_protocols[0].contains("udp")){
-                return UDP;
+            StringBuilder sb = CommonUtil.getGlobalStringBuilder();
+            String tempProtocol = layer.frame_protocols[0];
+            char ch;
+            for (int i = tempProtocol.length() - 6;; i--) {
+                if ((ch = tempProtocol.charAt(i))!=':'){
+                    sb.append(ch);
+                }else{
+                    break;
+                }
             }
-            if (layer.frame_protocols[0].contains("llc")){
-                return LLC;
-            }
-            return layer.frame_protocols[0];
+            return sb.reverse().toString();
         }
 //        else{
         return getUnDefinedPacketProtocol(layer.frame_protocols[0]);

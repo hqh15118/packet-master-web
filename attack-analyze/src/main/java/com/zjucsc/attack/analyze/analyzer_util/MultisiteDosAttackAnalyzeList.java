@@ -10,7 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class MultisiteDosAttackAnalyzeList extends AbstractDosList {
 
-
     /**
      * @param fvDimensionLayers 新增加的五元组
      * @param newAppendLayer 新插入的五元组

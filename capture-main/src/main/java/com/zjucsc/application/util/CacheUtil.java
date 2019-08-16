@@ -535,13 +535,18 @@ public class CacheUtil {
     private static final ConcurrentHashMap<String,Integer> ATTACK_IPS = new ConcurrentHashMap<>();
     private static final ConcurrentHashMap<String,Integer> ATTACKED_IPS = new ConcurrentHashMap<>();
     private static final ConcurrentHashMap<String,Integer> ATTACK_PROTOCOL = new ConcurrentHashMap<>();
-    public static void addNewAttackBean(AttackBean attackBean){
+    public static void addNewAttackBean(AttackBean attackBean)
+    {
         newAttackCome(ATTACK_TYPE,attackBean.getAttackType());
         if (!attackBean.getSrcIp().equals("--")) {
             newAttackCome(ATTACK_IPS, attackBean.getSrcIp());
+        }else{
+            newAttackCome(ATTACK_IPS, attackBean.getSrcMac());
         }
         if (!attackBean.getDstIp().equals("--")){
             newAttackCome(ATTACKED_IPS,attackBean.getDstIp());
+        }else{
+            newAttackCome(ATTACKED_IPS,attackBean.getDstMac());
         }
         newAttackCome(ATTACK_PROTOCOL,attackBean.getProtocolName());
     }
@@ -559,7 +564,6 @@ public class CacheUtil {
     //单线程统计
     public static Top5Statistic getTop5StatisticsData(){
         ATTACK_TYPE_LIST.clear();
-        ATTACK_PROTOCOL.clear();
         ATTACK_IPS_LIST.clear();
         ATTACKED_IPS_LIST.clear();
         ATTACK_PROTOCOL_LIST.clear();
@@ -576,6 +580,7 @@ public class CacheUtil {
         ATTACK_PROTOCOL.forEach((type, count) -> {
             getTop5List(ATTACK_PROTOCOL_LIST,type,count);
         });
+
         top5Statistic.setAttackType(ATTACK_TYPE_LIST);
         top5Statistic.setAttackIps(ATTACK_IPS_LIST);
         top5Statistic.setAttackedIps(ATTACKED_IPS_LIST);

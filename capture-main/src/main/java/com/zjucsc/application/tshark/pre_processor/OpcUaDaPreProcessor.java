@@ -66,4 +66,9 @@ public class OpcUaDaPreProcessor extends MultiPreProcessor {
             }
         };
     }
+
+    @Override
+    public String extConfig() {
+        return "-d tcp.port==4862,opcua";
+    }
 }
