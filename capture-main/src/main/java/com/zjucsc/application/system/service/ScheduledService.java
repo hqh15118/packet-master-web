@@ -8,6 +8,7 @@ import com.zjucsc.application.domain.non_hessian.DeviceMaxFlow;
 import com.zjucsc.application.system.service.common_impl.CapturePacketServiceImpl;
 import com.zjucsc.application.system.service.common_iservice.CapturePacketService;
 import com.zjucsc.application.system.service.hessian_iservice.IArtHistoryDataService;
+import com.zjucsc.application.system.service.hessian_mapper.DeviceMapper;
 import com.zjucsc.application.util.AppCommonUtil;
 import com.zjucsc.application.util.CacheUtil;
 import com.zjucsc.application.util.SysRunStateUtil;
@@ -39,6 +40,8 @@ public class ScheduledService {
     @Autowired public PacketAnalyzeService packetAnalyzeService;
 
     @Autowired private IArtHistoryDataService iArtHistoryDataService;
+
+    @Autowired private DeviceMapper deviceMapper;
 
     private LinkedBlockingQueue<FvDimensionLayer> fvDimensionLayers = new LinkedBlockingQueue<>(5);
 
@@ -101,6 +104,7 @@ public class ScheduledService {
     @Scheduled(fixedRate = 2000)
     public void sysRunState() throws SigarException {
         SysRunStateUtil.StateWrapper wrapper = SysRunStateUtil.getSysRunState();
+        wrapper.setDbState(deviceMapper.selectDatabaseStatus());
         SocketServiceCenter.updateAllClient(SocketIoEvent.SYS_RUN_STATE,wrapper);
         int state = CacheUtil.runStateDetect(wrapper);
         String info = null;
@@ -124,12 +128,10 @@ public class ScheduledService {
     }
 
 
-
-
     private final HashMap<String,Map<String, D2DWrapper>>
         D2DPacketInfoMap = new HashMap<>();
 
-    private void sendDevice2DevicePackets() {
+    public synchronized void sendDevice2DevicePackets() {
         D2DPacketInfoMap.clear();
         CacheUtil.getDeviceToDevicePackets().forEach((dstDevice, deviceAtomicIntegerConcurrentHashMap) -> {
             if (dstDevice.getDeviceType() != 1){

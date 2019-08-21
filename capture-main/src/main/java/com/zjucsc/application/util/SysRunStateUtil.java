@@ -64,6 +64,7 @@ public class SysRunStateUtil {
     public static class StateWrapper{
         private double cpu;
         private MemoryWrapper memoryWrapper;
+        private String dbState;
     }
 
     private static void property() throws UnknownHostException {

@@ -25,7 +25,7 @@ public class MultisiteDosAttackAnalyzeList extends AbstractDosList {
     protected String analyze(Queue<FvDimensionLayer> fvDimensionLayers,
                                     FvDimensionLayer newAppendLayer) {
         //没有配置，直接返回，没有攻击
-        if ( getDosConfig() == null || !getDosConfig().isEnable() || getDosConfig().getMulSiteNum() == 0 || getDosConfig().getMulSiteTime() == 0){
+        if (getDosConfig() == null || !getDosConfig().isEnable() || getDosConfig().getMulSiteNum() == 0 || getDosConfig().getMulSiteTime() == 0){
             return null;
         }
         long mulSiteTime = getDosConfig().getMulSiteTime();

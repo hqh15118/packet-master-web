@@ -55,4 +55,6 @@ public interface DeviceMapper extends BaseMapper<Device> {
     List<Device> selectAllConfiguredDevices();
 
     Device selectDeviceByDeviceNumber(String deviceNumber);
+
+    String selectDatabaseStatus();
 }

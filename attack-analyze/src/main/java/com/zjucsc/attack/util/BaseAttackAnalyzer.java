@@ -54,7 +54,7 @@ public abstract class BaseAttackAnalyzer<T extends AbstractDosList> implements I
     @SuppressWarnings("unchecked")
     protected String doAnalyze(FvDimensionLayer layer) throws IllegalAccessException, InstantiationException {
         String srcIp = layer.ip_src[0];
-        if (!srcIp.equals("--")){
+        if (!srcIp.equals("--")){   //ip地址存在
             T analyzeList;
             if (getAnalyzer() == null){
                 //multi-site
