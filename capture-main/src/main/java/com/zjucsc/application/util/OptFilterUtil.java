@@ -54,7 +54,7 @@ public class OptFilterUtil {
             OPERATION_FILTER_PRO.put(deviceTag,srcAnalyzeMap);
         }
         ConcurrentHashMap<String, OperationAnalyzer> analyzerMap;
-        String srcTag = StringUtils.isNotBlank(optFilterForFront.getSrcIp()) ? optFilterForFront.getSrcIp() : optFilterForFront.getSrcMac();
+        String srcTag = !optFilterForFront.getSrcIp().equals("--") ? optFilterForFront.getSrcIp() : optFilterForFront.getSrcMac();
         if ((analyzerMap = OPERATION_FILTER_PRO.get(deviceTag).get(srcTag)) == null){
             //新建设备
             analyzerMap = new ConcurrentHashMap<>();
@@ -84,7 +84,7 @@ public class OptFilterUtil {
         String deviceTag = CacheUtil.getTargetDeviceTagByNumber(optFilterForFront.getDeviceNumber());
         String protocolName = CacheUtil.convertIdToName(optFilterForFront.getProtocolId());
         List<String> funCodes = optFilterForFront.getFunCodes();
-        String srcTag = StringUtils.isBlank(optFilterForFront.getSrcIp()) ? optFilterForFront.getSrcIp() : optFilterForFront.getSrcMac();
+        String srcTag = optFilterForFront.getSrcIp().equals("--") ? optFilterForFront.getSrcIp() : optFilterForFront.getSrcMac();
         for (String funCode : funCodes) {
             if (OPERATION_FILTER_PRO.containsKey(deviceTag)) {
                 OPERATION_FILTER_PRO.get(deviceTag).get(protocolName).get(srcTag).getAnalyzer().getWhiteMap()

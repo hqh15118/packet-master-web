@@ -53,8 +53,8 @@ public abstract class BaseAttackAnalyzer<T extends AbstractDosList> implements I
      */
     @SuppressWarnings("unchecked")
     protected String doAnalyze(FvDimensionLayer layer) throws IllegalAccessException, InstantiationException {
-        String srcIp = layer.ip_src[0];
-        if (!srcIp.equals("--")){   //ip地址存在
+        String srcTag = layer.ip_src[0].equals("--") ? layer.eth_src[0] : layer.ip_src[0];
+//        if (!srcIp.equals("--")){   //ip地址存在
             T analyzeList;
             if (getAnalyzer() == null){
                 //multi-site
@@ -67,16 +67,16 @@ public abstract class BaseAttackAnalyzer<T extends AbstractDosList> implements I
                 }
             }else {
                 //cosite
-                analyzeList = getAnalyzer().get(srcIp);
+                analyzeList = getAnalyzer().get(srcTag);
                 if (analyzeList == null) {
                     analyzeList = clazz.newInstance();
                     analyzeList.setBaseAttackAnalyzer(this);
-                    getAnalyzer().put(srcIp, analyzeList);
+                    getAnalyzer().put(srcTag, analyzeList);
                 }
             }
             return analyzeList.append(layer);
-        }
-        return null;
+//        }
+//        return null;
     }
 
     public DosConfig getDosConfig() {

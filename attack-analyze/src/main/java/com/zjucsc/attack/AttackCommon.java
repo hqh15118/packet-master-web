@@ -79,6 +79,7 @@ public class AttackCommon {
 
     public static final ConcurrentHashMap<String, AnalyzePoolEntry> ANALYZE_POOL_ENTRY_CONCURRENT_HASH_MAP =
             new ConcurrentHashMap<>();
+
     public static boolean addOrUpdateDosAnalyzePoolEntry(String deviceTag, DosConfig dosConfig){
         AnalyzePoolEntry analyzePoolEntry = ANALYZE_POOL_ENTRY_CONCURRENT_HASH_MAP.computeIfAbsent(deviceTag, s -> new AnalyzePoolEntryImpl());
         return analyzePoolEntry.addDosAnalyzer(dosConfig);

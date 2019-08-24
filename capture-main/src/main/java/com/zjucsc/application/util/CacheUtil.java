@@ -241,7 +241,6 @@ public class CacheUtil {
         return PROTOCOL_STR_TO_INT.inverse().get(protocolName);
     }
 
-
     public static boolean protocolExist(String protocolName) {
         try {
             convertNameToId(protocolName);
@@ -661,7 +660,7 @@ public class CacheUtil {
 //            if (!layer.eth_dst[0].equals("ff:ff:ff:ff:ff:ff") && !layer.ip_dst[0].equals("0.0.0.0")
 //            && !layer.ip_dst[0].equals("255.255.255.255")) {
 //                //非广播mac地址
-//                dstDevice = createDevice(layer);
+//                dstDevice = createDevice更新(layer);
 //                ALL_DEVICES.put(dstDevice.getDeviceTag(), dstDevice);
 //                //new device
 //                CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(dstDevice.getDeviceNumber(), dstDevice.getDeviceTag());
@@ -673,6 +672,10 @@ public class CacheUtil {
             if (!ALL_DEVICES.containsKey(deviceTag) && ALL_MAC_ADDRESS.putIfAbsent(layer.eth_src[0],"") == null/*未存过该MAC地址*/) {
                 Device srcDevice = createDeviceInverse(layer, deviceTag);
                 ALL_DEVICES.put(srcDevice.getDeviceTag(), srcDevice);
+                //缓存中的设备名和设备TAG
+                addOrUpdateDeviceNumberAndTAG(srcDevice.getDeviceNumber(),srcDevice.getDeviceTag());
+                //缓存找那个的设备Number和Name更新
+                addDeviceNumberToName(srcDevice.getDeviceNumber(),srcDevice.getDeviceInfo());
                 return srcDevice;
             }
         }

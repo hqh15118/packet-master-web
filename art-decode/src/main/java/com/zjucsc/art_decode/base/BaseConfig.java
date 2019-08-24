@@ -10,6 +10,7 @@ public class BaseConfig implements Serializable , Comparable<BaseConfig>{
     private int id;
     private int protocolId;
     private String detail;
+    private String deviceMac;
 
     public String getProtocol() {
         return protocol;
@@ -62,5 +63,13 @@ public class BaseConfig implements Serializable , Comparable<BaseConfig>{
     @Override
     public int compareTo(BaseConfig o) {
         return this.getTag().hashCode() > o.getTag().hashCode() ? 1 : -1;
+    }
+
+    public String getDeviceMac() {
+        return deviceMac;
+    }
+
+    public void setDeviceMac(String deviceMac) {
+        this.deviceMac = deviceMac;
     }
 }

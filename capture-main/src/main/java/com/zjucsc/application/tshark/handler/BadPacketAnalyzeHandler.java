@@ -67,9 +67,11 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<FvDimensionLay
             String protocolStack = layer.frame_protocols[0];
             if (protocolStack.length() >= 8 && protocolStack.charAt(4) == 'l' && protocolStack.charAt(5) == 'l'
                     && protocolStack.charAt(6) == 'c' && layer.rawData[14]==(byte)0xaa && layer.rawData[15]==(byte)0xaa
-                    && layer.rawData[20]==(byte) 0x01 && layer.rawData[21]==(byte)0xfd){
+                    && layer.rawData[20]==(byte) 0x01 && layer.rawData[21]==(byte)0xfd
+                    && layer.eth_dst[0].equals("ff:ff:ff:ff:ff:ff")){
                 AttackCommon.appendFvDimensionError(AttackBean.builder().attackType(AttackTypePro.SNIFF_ATTACK)
                         .fvDimension(layer).build(),layer);
+                return;
             }
             Map<String,FiveDimensionAnalyzer> analyzerMap = CacheUtil.getSrcAnalyzerMap(layer);
             if (analyzerMap != null){
@@ -91,7 +93,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<FvDimensionLay
                     AttackCommon.appendFvDimensionError(new AttackBean.Builder()
                             .fvDimension(layer)
                             .attackType(AttackTypePro.VISIT_DEVICE)
-                            .attackInfo(layer.ip_src[0].equals("--") ? layer.ip_src[0] : layer.eth_src[0])
+                            .attackInfo(!layer.ip_src[0].equals("--") ? layer.ip_src[0] : layer.eth_src[0])
                             .build(),layer);
                 }
             }

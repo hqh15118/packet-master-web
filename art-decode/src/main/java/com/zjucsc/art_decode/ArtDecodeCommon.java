@@ -18,10 +18,7 @@ import com.zjucsc.common.bean.ThreadPoolInfoWrapper;
 import com.zjucsc.common.common_util.CommonUtil;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.BiFunction;
 
@@ -67,6 +64,12 @@ public class ArtDecodeCommon {
             put("opcua",0L);put("dnp3",0L);put("iec101",0L);put("mms",0L);
         }
     };
+
+    @SuppressWarnings("unchecked")
+    public static Set<BaseConfig> getArtConfig(String protocolName){
+        BaseArtDecode baseArtDecode = ART_DECODE_CONCURRENT_HASH_MAP.get(protocolName);
+        return baseArtDecode.getArtConfigs();
+    }
 
     public static Map<String,Long> getDecodeDelayMapInfo(){
         return DECODE_DELAY_WRAPPER;

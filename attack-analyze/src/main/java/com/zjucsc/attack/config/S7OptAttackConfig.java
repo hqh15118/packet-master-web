@@ -8,6 +8,15 @@ public class S7OptAttackConfig extends BaseOptConfig {
     private int Bitoffset;
     private boolean result;
     private String comment;
+    private int areaNum;
+
+    public int getAreaNum() {
+        return areaNum;
+    }
+
+    public void setAreaNum(int areaNum) {
+        this.areaNum = areaNum;
+    }
 
     public void setResult(boolean result) {
         this.result = result;

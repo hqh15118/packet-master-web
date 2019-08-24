@@ -41,7 +41,7 @@ public class FvFilterUtil {
             analyzer = map.get(srcTag);
             if (analyzer == null){
                 FiveDimensionPacketFilter fiveDimensionPacketFilter = new FiveDimensionPacketFilter(filterName);
-                fiveDimensionPacketFilter.setFilterList(filterList);
+                fiveDimensionPacketFilter.setFilterList(Collections.singletonList(rule));
                 analyzer = new FiveDimensionAnalyzer(fiveDimensionPacketFilter);
                 map.put(srcTag,analyzer);
             }else{
@@ -51,7 +51,7 @@ public class FvFilterUtil {
     }
 
     private static String getSrcTagOfRule(Rule rule){
-        if (StringUtils.isNotBlank(rule.getFvDimensionFilter().getSrcIp())){
+        if (!rule.getFvDimensionFilter().getSrcIp().equals("--")){
             return rule.getFvDimensionFilter().getSrcIp();
         }
         return rule.getFvDimensionFilter().getSrcMac();

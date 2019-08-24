@@ -57,4 +57,5 @@ public class  S7Config extends BaseConfig {
     public String getType() {
         return type;
     }
+
 }

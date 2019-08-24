@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadFactory;
@@ -23,6 +24,10 @@ public abstract class BaseArtDecode<T extends BaseConfig> implements IArtDecode<
 
     protected void callback(String artName,float value,FvDimensionLayer layer,Object...objs){
         ArtDecodeCommon.validPacketCallback.callback(artName, value, layer,objs);
+    }
+
+    public Set<T> getArtConfigs(){
+        return configs;
     }
 
     private ExecutorService executorService = CommonUtil.getSingleThreadPoolSizeThreadPool(10000, r -> {
@@ -70,7 +75,10 @@ public abstract class BaseArtDecode<T extends BaseConfig> implements IArtDecode<
         }
         executorService.execute(() -> {
             for (T config : configs) {
-                decode(config,map,payload,layer,objs);
+                if (layer.eth_src[0].equals(config.getDeviceMac())
+                        || layer.eth_dst[0].equals(config.getDeviceMac())){
+                    decode(config,map,payload,layer,objs);
+                }
             }
         });
     }

@@ -18,7 +18,6 @@ public class S7OptAnalyzer extends BaseOptAnalyzer<S7OptAttackConfig>{
 
     private List<DBclass> DBlist = new ArrayList<>();
 
-
     private AttackBean Attackdecode(FvDimensionLayer layer, S7OptAttackConfig s7OptAttackConfig, Map<String,Float> techmap)
     {
         if(attackDecode(s7OptAttackConfig.getExpression(),techmap,"1")==null || Writejobdecode(layer)==null)

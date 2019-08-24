@@ -11,16 +11,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class S7Decode extends BaseArtDecode<S7Config> {
 
-    private Map<Integer,List<DBclass>> DBmap = new HashMap<>(); ////pduref,DB
+    private class S7Inner{
+        private Map<Integer,List<DBclass>> DBmap = new HashMap<>(); ////pduref,DB
 
-    private Map<Integer,byte[]> Datamap = new HashMap<>();  //// seq ,data
+        private Map<Integer,byte[]> Datamap = new HashMap<>();  //// seq ,data
 
-    private Map<Integer,Integer> PDUrefmap = new HashMap<>(); ////////seq ,pduref
+        private Map<Integer,Integer> PDUrefmap = new HashMap<>(); ////////seq ,pduref
 
-    public Map<Integer,Map<Integer,Byte>> map = new HashMap<>();
+        public Map<Integer,Map<Integer,Byte>> map = new HashMap<>();
+    }
+
+    private Map<String,S7Inner> innerMap = new ConcurrentHashMap<>();
 
     private GetS7load getS7load = new GetS7load();
 
@@ -29,7 +34,7 @@ public class S7Decode extends BaseArtDecode<S7Config> {
         if(load != null)
         {
             putDBmap(load);
-            return map;
+            return s7Inner.map;
         }
         return null;
     }
@@ -87,7 +92,7 @@ public class S7Decode extends BaseArtDecode<S7Config> {
                                 }
                             }
                         }
-                        DBmap.put(PDUref,DBlist);
+                        s7Inner.DBmap.put(PDUref,DBlist);
                     }
                 }
             }
@@ -96,14 +101,14 @@ public class S7Decode extends BaseArtDecode<S7Config> {
                 byte[] parameter = Bytecut.Bytecut(s7load,10,-1);
                 if(parameter!=null && parameter[4]==(byte)0x12 && parameter[5]==(byte)0x82 && parameter[6]==(byte)0x05)
                 {
-                    List<DBclass> DBlist = DBmap.get((int)ByteUtil.bytesToShort(s7load,4));
+                    List<DBclass> DBlist = s7Inner.DBmap.get((int)ByteUtil.bytesToShort(s7load,4));
                     if(DBlist != null)
                     {
-                        PDUrefmap.put((int)parameter[7],(int)ByteUtil.bytesToShort(s7load,4));
+                        s7Inner.PDUrefmap.put((int)parameter[7],(int)ByteUtil.bytesToShort(s7load,4));
                         byte[] data = Bytecut.Bytecut(parameter,12,-1);
                         if(data!=null && data[0]==(byte)0xff)
                         {
-                            Datamap.put((int)ByteUtil.bytesToShort(s7load,4),data);
+                            s7Inner.Datamap.put((int)ByteUtil.bytesToShort(s7load,4),data);
                             decodeDBlist(DBlist,data);
                         }
                      }
@@ -112,24 +117,24 @@ public class S7Decode extends BaseArtDecode<S7Config> {
                 {
                     int sequence_num = (int)parameter[7];/////////////与response seq num 对应
                     byte[] data = Bytecut.Bytecut(parameter,12,-1);//////////与response一样
-                    if(data!=null && Datamap!=null && PDUrefmap!=null )
+                    if(data!=null && s7Inner.Datamap!=null && s7Inner.PDUrefmap!=null )
                     {
-                        byte[] bytes = Datamap.get(PDUrefmap.get(sequence_num));///////////modify
-                        if (bytes!=null && data[0] == (byte) 0xff &&  PDUrefmap.get(sequence_num) != null) {
-                            Datamap.put(PDUrefmap.get(sequence_num), data);
-                            decodeDBlist(DBmap.get(PDUrefmap.get(sequence_num)), data);
+                        byte[] bytes = s7Inner.Datamap.get(s7Inner.PDUrefmap.get(sequence_num));///////////modify
+                        if (bytes!=null && data[0] == (byte) 0xff &&  s7Inner.PDUrefmap.get(sequence_num) != null) {
+                            s7Inner.Datamap.put(s7Inner.PDUrefmap.get(sequence_num), data);
+                            decodeDBlist(s7Inner.DBmap.get(s7Inner.PDUrefmap.get(sequence_num)), data);
                         }
                     }
                 }
                 else if(parameter!=null && parameter[4]==(byte)0x12 && parameter[5]==(byte)0x82 && parameter[6]==(byte)0x04)
                 {
                     int sequence_num = (int)parameter[7];
-                    if(PDUrefmap.get(sequence_num)!=null)
+                    if(s7Inner.PDUrefmap.get(sequence_num)!=null)
                     {
-                        int PDU = PDUrefmap.get(sequence_num);
-                        DBmap.remove(PDU);
-                        Datamap.remove(sequence_num);
-                        PDUrefmap.remove(sequence_num);
+                        int PDU = s7Inner.PDUrefmap.get(sequence_num);
+                        s7Inner.DBmap.remove(PDU);
+                        s7Inner.Datamap.remove(sequence_num);
+                        s7Inner.PDUrefmap.remove(sequence_num);
                     }
                 }
             }
@@ -151,12 +156,12 @@ public class S7Decode extends BaseArtDecode<S7Config> {
                     if (len == DBlist.get(j).getLength()) {
                         DBclass s = DBlist.get(j);
                         for (int i = 0; i < s.getLength(); i++) {
-                            if (map.get(s.getDbnum()) != null) {
-                                (map.get(s.getDbnum())).put(i + s.getByteoffset(), iteamdata[4 + i]);
+                            if (s7Inner.map.get(s.getDbnum()) != null) {
+                                (s7Inner.map.get(s.getDbnum())).put(i + s.getByteoffset(), iteamdata[4 + i]);
                             } else {
                                 Map<Integer, Byte> Bmap = new HashMap<>();
                                 Bmap.put(i + s.getByteoffset(), iteamdata[4 + i]);
-                                map.put(s.getDbnum(), Bmap);
+                                s7Inner.map.put(s.getDbnum(), Bmap);
                             }
                         }
                         iteamdata = Bytecut.Bytecut(iteamdata, 4 + len, -1);
@@ -168,12 +173,12 @@ public class S7Decode extends BaseArtDecode<S7Config> {
                                 if (subitemdata[0] == (byte) 0xff) {
                                     DBclass s = DBlist.get(subitem_cnt * j + k);
                                     for (int i = 0; i < s.getLength(); i++) {
-                                        if (map.get(s.getDbnum()) != null) {
-                                            (map.get(s.getDbnum())).put(i + s.getByteoffset(), subitemdata[1 + i]);
+                                        if (s7Inner.map.get(s.getDbnum()) != null) {
+                                            (s7Inner.map.get(s.getDbnum())).put(i + s.getByteoffset(), subitemdata[1 + i]);
                                         } else {
                                             Map<Integer, Byte> Bmap = new HashMap<>();
                                             Bmap.put(i + s.getByteoffset(), subitemdata[1 + i]);
-                                            map.put(s.getDbnum(), Bmap);
+                                            s7Inner.map.put(s.getDbnum(), Bmap);
                                         }
                                     }
                                     subitemdata = Bytecut.Bytecut(subitemdata, 1 + s.getLength(), -1);
@@ -233,12 +238,29 @@ public class S7Decode extends BaseArtDecode<S7Config> {
                     callback(S7tech.getTag(),tech_map.get(S7tech.getTag()), layer);
                 }
             }
+            else if(S7tech.getLength() == 1 && S7tech.getType().equals("byte"))
+            {
+                if(datamap==null || datamap.get(S7tech.getByteoffset())==null)
+                {
+                    return tech_map;
+                }
+                int data = Byte.toUnsignedInt(datamap.get(S7tech.getByteoffset()));//
+                tech_map.put(S7tech.getTag(),(float) data /255 * S7tech.getRange()[1]);
+                callback(S7tech.getTag(),tech_map.get(S7tech.getTag()), layer);
+            }
         }
         return tech_map;
     }
 
+    private S7Inner s7Inner = null;
+
     @Override
     public Map<String, Float> decode(S7Config s7Config, Map<String, Float> globalMap, byte[] payload, FvDimensionLayer layer, Object... obj) {
+        s7Inner = innerMap.get(s7Config.getDeviceMac());
+        if (s7Inner == null){
+            s7Inner = new S7Inner();
+            innerMap.put(s7Config.getDeviceMac(),s7Inner);
+        }
         return decode_tech(s7Config,globalMap,payload,(int)obj[0],layer);
     }
 
@@ -246,8 +268,6 @@ public class S7Decode extends BaseArtDecode<S7Config> {
     public String protocol() {
         return "s7comm";
     }
-
-
 
 }
 

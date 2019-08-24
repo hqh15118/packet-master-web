@@ -46,7 +46,7 @@ pre-processors:
 
 tshark-config:
   modbus_filter : tcp
-  s7comm_filter : tcp
+  s7comm_filter : not tcp
 
 hessian-config:
   hessian-url: 10.15.191.214:36955/hessian

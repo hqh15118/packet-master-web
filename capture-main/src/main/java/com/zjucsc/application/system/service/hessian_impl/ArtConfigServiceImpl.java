@@ -106,5 +106,4 @@ public class ArtConfigServiceImpl extends BaseServiceImpl<BaseArtConfig,ArtConfi
         return this.baseMapper.selectArtNameByProtocolName(protocol);
     }
 
-
 }

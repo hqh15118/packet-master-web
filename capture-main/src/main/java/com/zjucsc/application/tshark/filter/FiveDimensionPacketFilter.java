@@ -1,6 +1,7 @@
 package com.zjucsc.application.tshark.filter;
 
 import com.zjucsc.application.util.CacheUtil;
+import com.zjucsc.application.util.PacketDecodeUtil;
 import com.zjucsc.attack.bean.AttackBean;
 import com.zjucsc.attack.common.AttackTypePro;
 import com.zjucsc.application.domain.bean.FvDimensionFilter;
@@ -222,10 +223,10 @@ public class FiveDimensionPacketFilter {
     private void setFilterMap(HashMap<String, ConcurrentHashMap<String, String>> allMap,
                               FvDimensionFilter fiveDimensionFilter,List<String> dstPorts) {
         String str;
-        if (StringUtils.isNotBlank((str = fiveDimensionFilter.getDstIp()))){
+        if (!(str = fiveDimensionFilter.getDstIp()).equals("--")){
             doSet(allMap, FiveDimensionPacketFilter.DST_IP_WHITE,str);
         }
-        if (StringUtils.isNotBlank((str = fiveDimensionFilter.getSrcIp()))){
+        if (!(str = fiveDimensionFilter.getSrcIp()).equals("--")){
             doSet(allMap, FiveDimensionPacketFilter.SRC_IP_WHITE,str);
         }
 //        if (StringUtils.isNotBlank((str = fiveDimensionFilter.getDstPort()))){
@@ -274,6 +275,7 @@ public class FiveDimensionPacketFilter {
     }
 
     public AttackBean OK(FvDimensionLayer layer){
+        String typeProtocol = PacketDecodeUtil.getPacketDetailProtocol(layer);
         if (!layer.ip_dst[0].equals("--") && !srcIpWhiteMap.containsKey(layer.ip_src[0])){
             return getBadPacket(layer,AttackTypePro.VISIT_DEVICE,layer.ip_src[0]);//目的IP不在白名单
         }
@@ -286,7 +288,7 @@ public class FiveDimensionPacketFilter {
         if (!srcMacAddressWhite.containsKey(layer.eth_src[0])){
             return getBadPacket(layer,AttackTypePro.VISIT_DEVICE,layer.eth_src[0]);//源mac不在白名单
         }
-        if (!protocolWhiteMap.containsKey(layer.protocol)){
+        if (!protocolWhiteMap.containsKey(typeProtocol)){
             return getBadPacket(layer,AttackTypePro.VISIT_PROTOCOL,layer.protocol);//协议不在白名单
         }
 

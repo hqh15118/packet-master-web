@@ -325,13 +325,13 @@ public class PacketDecodeUtil {
 
     public static String getAttackBeanInfo(FvDimensionLayer layer)
     {
-        String protocol = layer.protocol;
+        String protocol = getPacketDetailProtocol(layer);
         String funCodeStr = layer.funCode;
         if(protocol==null || funCodeStr.equals("--"))
         {
             return null;
         }
-        int funCode = -1;
+        int funCode;
         switch (protocol)
         {
             case "s7comm": {
@@ -576,7 +576,7 @@ public class PacketDecodeUtil {
      */
     public static String getPacketDetailProtocol(FvDimensionLayer layer){
         switch (layer.protocol){
-            case "s7comm" : break;
+            case "s7comm" : return getS7commDetailType(layer);
             case "dnp3" : return getDnp3DetailType(layer);
         }
         return null;
@@ -601,5 +601,16 @@ public class PacketDecodeUtil {
             default:
                 return PACKET_PROTOCOL.IEC104_APCI;
         }
+    }
+
+    public static String getS7commDetailType(FvDimensionLayer layer){
+        S7CommPacket.LayersBean s7comm_packet = ((S7CommPacket.LayersBean) layer);
+            //setFuncodeMeaning of s7comm
+            if (s7comm_packet.s7comm_header_rosctr[0].equals(S7CommPacket.USER_DATA)) {
+                //user data
+                return PACKET_PROTOCOL.S7_User_data;
+            } else {
+                return PACKET_PROTOCOL.S7;
+            }
     }
 }
