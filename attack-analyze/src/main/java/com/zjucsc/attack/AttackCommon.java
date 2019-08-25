@@ -9,6 +9,7 @@ import com.zjucsc.attack.base.IOptAttackEntry;
 import com.zjucsc.attack.common.ArtAttackAnalyzeTask;
 import com.zjucsc.attack.common.AttackCallback;
 import com.zjucsc.attack.common.AttackTypePro;
+import com.zjucsc.attack.common.CommandCallback;
 import com.zjucsc.attack.modbus.ModbusOptAnalyzer;
 import com.zjucsc.attack.pn_io.PnioOptDecode;
 import com.zjucsc.attack.s7comm.S7OptAnalyzer;
@@ -50,7 +51,7 @@ public class AttackCommon {
     }
 
     private static AttackCallback attackCallback;
-
+    private static CommandCallback commandCallback;
     /**
      * 【协议名字，该协议对应的公式】
      */
@@ -115,8 +116,9 @@ public class AttackCommon {
                 return thread;
             },"ART_OPT_ANALYZE_SERVICE");
 
-    public static void registerAttackCallback(AttackCallback attackCallback){
+    public static void registerAttackCallback(AttackCallback attackCallback,CommandCallback commandCallback){
         AttackCommon.attackCallback = attackCallback;
+        AttackCommon.commandCallback = commandCallback;
     }
 
     //懒加载单例模式
@@ -247,6 +249,11 @@ public class AttackCommon {
      */
     public static void appendFvDimensionError(AttackBean attackBean,FvDimensionLayer layer){
         attackCallback.artCallback(attackBean,layer);
+    }
+
+    public static void appendCommandFvDimensionPacket(String command , FvDimensionLayer layer
+    ,Object...objs){
+        commandCallback.commandCallback(layer, command, objs);
     }
 
     /**

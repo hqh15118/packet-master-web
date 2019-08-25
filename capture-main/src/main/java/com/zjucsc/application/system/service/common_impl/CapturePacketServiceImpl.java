@@ -3,6 +3,7 @@ package com.zjucsc.application.system.service.common_impl;
 import com.zjucsc.application.config.*;
 import com.zjucsc.application.domain.bean.ArtPacketDetail;
 import com.zjucsc.application.domain.bean.Device;
+import com.zjucsc.application.domain.non_hessian.CommandWrapper;
 import com.zjucsc.application.system.service.PacketAnalyzeService;
 import com.zjucsc.application.system.service.common_iservice.CapturePacketService;
 import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
@@ -16,6 +17,7 @@ import com.zjucsc.art_decode.iec101.IEC101DecodeMain;
 import com.zjucsc.attack.bean.AttackBean;
 import com.zjucsc.attack.AttackCommon;
 import com.zjucsc.attack.common.AttackTypePro;
+import com.zjucsc.attack.common.CommandCallback;
 import com.zjucsc.common.common_util.CommonUtil;
 import com.zjucsc.common.common_util.DBUtil;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
@@ -70,7 +72,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     public CapturePacketServiceImpl(PacketAnalyzeService packetAnalyzeService) {
         this.packetAnalyzeService = packetAnalyzeService;
         //所有攻击报文的入口
-        AttackCommon.registerAttackCallback((attackBean,layer) -> {
+        AttackCommon.registerAttackCallback((attackBean, layer) -> {
             //设置攻击设备和被攻击设备
             setDeviceInfo(attackBean);
             //发送攻击信息保存到数据库
@@ -79,7 +81,15 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             CacheUtil.addNewAttackBean(attackBean);
             //恶意报文统计【五秒钟一次的延迟推送】
             statisticsBadPacket(attackBean.getDeviceNumber());
-            processAttackInfo(attackBean,layer);
+            processAttackInfo(attackBean, layer);
+        },/*所有指令报文的*/
+        (layer, command, objs) -> {
+            CommandWrapper commandWrapper = new CommandWrapper();
+            commandWrapper.setCommand(command);
+            commandWrapper.setDstDevice(CacheUtil.convertDeviceNumberToName(layer.deviceNumber));
+            commandWrapper.setTimeStamp(layer.getTimeStamp());
+//            commandWrapper.setSrcDevice(CacheUtil.convertDeviceNumberToName());
+            SocketServiceCenter.updateAllClient(SocketIoEvent.COMMAND,command);
         });
 
         ArtDecodeCommon.registerPacketValidCallback((argName, value, layer, objs) -> {

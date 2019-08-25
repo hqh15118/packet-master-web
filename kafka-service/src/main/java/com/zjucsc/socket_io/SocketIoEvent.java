@@ -39,4 +39,6 @@ public class SocketIoEvent {
     public static final String SYS_RUN_ERROR = "sys_run_error";
     //系统任务栈溢出异常
     public static final String TASK_QUEUE_OVER_FLOW = "task_over_flow";
+    //
+    public static final String COMMAND = "command";
 }
