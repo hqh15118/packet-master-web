@@ -220,4 +220,5 @@ public class ArtConfigController {
     public BaseResponse getAllArtConfigOfTargetProtocol(@RequestParam String protocol){
         return BaseResponse.OK(iArtConfigService.selectArtNameByProtocolName(protocol));
     }
+
 }

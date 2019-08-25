@@ -35,6 +35,7 @@ public class HessianConfig {
     private String dos_config;
     private String art_opt_command;
     private String art_opt_name;
+    private String art_group;
 
     @Bean
     public ArtHistoryDataMapper artHistoryHessianBean() throws MalformedURLException {
@@ -129,5 +130,10 @@ public class HessianConfig {
     @Bean
     public ArtOptCommandMapper artOptCommandMapper() throws MalformedURLException {
         return (ArtOptCommandMapper) new HessianProxyFactory().create(ArtOptCommandMapper.class,art_opt_command);
+    }
+
+    @Bean
+    public ArtGroupMapper artGroupMapper() throws MalformedURLException {
+        return (ArtGroupMapper) new HessianProxyFactory().create(ArtGroupMapper.class,art_group);
     }
 }

@@ -1,4 +1,4 @@
-package com.zjucsc.application.util;
+package com.zjucsc.base.util;
 
 import com.zjucsc.common.bean.CustomThreadPoolExecutor;
 import com.zjucsc.common.bean.ThreadPoolInfoWrapper;
@@ -8,6 +8,7 @@ import java.util.List;
 
 public class ThreadPoolUtil {
     private final static List<CustomThreadPoolExecutor> ALL_REGISTEED_THREAD_POOL = new ArrayList<>();
+
     public static synchronized void registerThreadPoolExecutor(CustomThreadPoolExecutor threadPoolExecutor){
         ALL_REGISTEED_THREAD_POOL.add(threadPoolExecutor);
     }

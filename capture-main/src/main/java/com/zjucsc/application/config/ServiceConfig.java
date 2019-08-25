@@ -1,14 +1,12 @@
 package com.zjucsc.application.config;
 
-import com.zjucsc.application.util.ThreadPoolUtil;
+import com.zjucsc.base.util.ThreadPoolUtil;
 import com.zjucsc.common.bean.CustomThreadPoolExecutor;
 import com.zjucsc.common.common_util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.*;
 

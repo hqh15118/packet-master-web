@@ -13,9 +13,9 @@ import com.zjucsc.application.domain.non_hessian.Top5Statistic;
 import com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
 import com.zjucsc.attack.bean.AttackBean;
-import com.zjucsc.attack.bean.BaseOptAnalyzer;
-import com.zjucsc.attack.s7comm.S7OptCommandConfig;
-import com.zjucsc.attack.s7comm.S7OptName;
+import com.zjucsc.base.util.SysRunStateUtil;
+import com.zjucsc.base.util.limit.LimitServiceEntry;
+import com.zjucsc.base.util.limit.ValidInstanceCallback;
 import com.zjucsc.common.common_util.CommonUtil;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.socket_io.SocketIoEvent;
@@ -27,11 +27,11 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 @Slf4j
 public class CacheUtil {
@@ -114,6 +114,10 @@ public class CacheUtil {
      ************************************/
     private static final HashMap<String,String> ALL_DROP_PROTOCOL = new HashMap<>(); //不需要初始化
 
+    /**********************************
+     * 工艺参数名字 -- 工艺参数组别
+     **********************************/
+    private static ConcurrentHashMap<String,String> ART_NAME_TO_GROUP = new ConcurrentHashMap<>();
     /*********************************
      *
      *  CONFIGURATION_MAP
@@ -297,6 +301,10 @@ public class CacheUtil {
         }
         tag = DEVICE_NUMBER_TO_TAG.inverse().get(eth_dst);
         return tag;
+    }
+
+    public static String getDeviceNameByDeviceTag(String deviceTag){
+        return ALL_DEVICES.get(deviceTag).getDeviceInfo();
     }
 
     public static String getTargetDeviceTagByNumber(String deviceNumber) {
@@ -944,17 +952,36 @@ public class CacheUtil {
     }
 
     //攻击推送限流
-    private static final ConcurrentHashMap<AttackBean, LinkedBlockingQueue<AttackBean>> ATTACK_LIMIT
-            = new ConcurrentHashMap<>();
+    private static final LimitServiceEntry<AttackBean> LIMIT_SERVICE_ENTRY = new LimitServiceEntry<>
+            (Executors.newScheduledThreadPool(1), new ValidInstanceCallback<AttackBean>() {
+                @Override
+                public void callback(AttackBean t) {
+                    SocketServiceCenter.updateAllClient(SocketIoEvent.ATTACK_INFO,t);
+                }
+            },1, TimeUnit.SECONDS);
 
     public static void appendAttackBean(AttackBean attackBean){
-        LinkedBlockingQueue<AttackBean> queue = ATTACK_LIMIT.putIfAbsent(attackBean,new LinkedBlockingQueue<AttackBean>(5){{add(attackBean);}});
-        if (queue != null){
-            queue.offer(attackBean);
-        }
-    }
-    public static ConcurrentHashMap<AttackBean, LinkedBlockingQueue<AttackBean>> getAttackLimit(){
-        return ATTACK_LIMIT;
+        LIMIT_SERVICE_ENTRY.appendInstance(attackBean);
     }
 
+    /*********************************
+     *
+     *********************************/
+    public static void addOrUpdateArtName2ArtGroup(String artName,String artGroup){
+        ART_NAME_TO_GROUP.put(artName, artGroup);
+    }
+
+    public static String getArtGroupByArtName(String artName){
+        String artGroup = ART_NAME_TO_GROUP.get(artName);
+        if (artGroup == null)
+        {
+            return "default";
+        }
+        return artGroup;
+    }
+    public static void removeArtGroup(List<String> artNames){
+        for (String artName : artNames) {
+            ART_NAME_TO_GROUP.put(artName,"defalut");
+        }
+    }
 }

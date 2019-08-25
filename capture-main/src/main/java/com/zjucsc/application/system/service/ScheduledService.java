@@ -11,7 +11,7 @@ import com.zjucsc.application.system.service.hessian_iservice.IArtHistoryDataSer
 import com.zjucsc.application.system.service.hessian_mapper.DeviceMapper;
 import com.zjucsc.application.util.AppCommonUtil;
 import com.zjucsc.application.util.CacheUtil;
-import com.zjucsc.application.util.SysRunStateUtil;
+import com.zjucsc.base.util.SysRunStateUtil;
 import com.zjucsc.art_decode.ArtDecodeCommon;
 import com.zjucsc.socket_io.SocketIoEvent;
 import com.zjucsc.socket_io.SocketServiceCenter;

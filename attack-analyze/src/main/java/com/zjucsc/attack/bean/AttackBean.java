@@ -11,7 +11,7 @@ import java.util.Objects;
  * #create_time 2019-05-30 - 20:06
  */
 
-public class AttackBean {
+public class AttackBean implements Comparable<AttackBean>{
 
     private AttackBean(){}
     //攻击类型
@@ -173,6 +173,19 @@ public class AttackBean {
 
     public void setDeviceNumber(String deviceNumber) {
         this.deviceNumber = deviceNumber;
+    }
+
+    @Override
+    public int compareTo(AttackBean o) {
+        if (equals(o)) {
+            return 0;
+        }else{
+            if (o.hashCode() > hashCode()){
+                return 1;
+            }else{
+                return -1;
+            }
+        }
     }
 
     public static class Builder{

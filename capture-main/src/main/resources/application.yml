@@ -70,6 +70,7 @@ hessian-config:
   dos_config : http://${hessian-config.hessian-url}/DosConfigMapper.hessian
   art_opt_command : http://${hessian-config.hessian-url}/ArtOptCommand.hessian
   art_opt_name : http://${hessian-config.hessian-url}/ArtOptName.hessian
+  art_group : http://${hessian-config.hessian-url}/ArtGroup.hessian
 
 server:
   port: ${myconfig.packet_master_web_port}

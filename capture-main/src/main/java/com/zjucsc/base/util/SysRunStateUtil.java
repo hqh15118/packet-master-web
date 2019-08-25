@@ -1,4 +1,4 @@
-package com.zjucsc.application.util;
+package com.zjucsc.base.util;
 
 import lombok.Data;
 import org.hyperic.sigar.CpuPerc;

@@ -68,7 +68,8 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     private final KafkaThread<AttackBean> ATTACK_SENDER = KafkaThread.createNewKafkaThread("packet_attack", KafkaTopic.SEND_PACKET_ATTACK,sendErrorCallback);
     @SuppressWarnings("unchecked")
     private final KafkaThread<ArtPacketDetail> ART_PACKET = KafkaThread.createNewKafkaThread("art_packet",KafkaTopic.ART_PACKET,sendErrorCallback);
-
+    @SuppressWarnings("unchecked")
+    private final KafkaThread<CommandWrapper> COMMAND_PACKET = KafkaThread.createNewKafkaThread("command_packet",KafkaTopic.COMMAND_PACKET,sendErrorCallback);
     public CapturePacketServiceImpl(PacketAnalyzeService packetAnalyzeService) {
         this.packetAnalyzeService = packetAnalyzeService;
         //所有攻击报文的入口
@@ -81,15 +82,20 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             CacheUtil.addNewAttackBean(attackBean);
             //恶意报文统计【五秒钟一次的延迟推送】
             statisticsBadPacket(attackBean.getDeviceNumber());
-            processAttackInfo(attackBean, layer);
+            processAttackInfo(attackBean);
         },/*所有指令报文的*/
         (layer, command, objs) -> {
             CommandWrapper commandWrapper = new CommandWrapper();
             commandWrapper.setCommand(command);
-            commandWrapper.setDstDevice(CacheUtil.convertDeviceNumberToName(layer.deviceNumber));
+            String srcTag = layer.ip_src[0].equals("--") ? layer.eth_src[0] : layer.ip_src[0];
+            String dstTag = layer.ip_dst[0].equals("--") ? layer.eth_dst[0] : layer.ip_dst[0];
+            commandWrapper.setDstDevice(CacheUtil.getDeviceNameByDeviceTag(dstTag));
+            commandWrapper.setSrcDevice(CacheUtil.getDeviceNameByDeviceTag(srcTag));
             commandWrapper.setTimeStamp(layer.getTimeStamp());
-//            commandWrapper.setSrcDevice(CacheUtil.convertDeviceNumberToName());
-            SocketServiceCenter.updateAllClient(SocketIoEvent.COMMAND,command);
+            commandWrapper.setDstTag(dstTag);
+            commandWrapper.setSrcTag(srcTag);
+            SocketServiceCenter.updateAllClient(SocketIoEvent.COMMAND,commandWrapper);
+            COMMAND_PACKET.sendMsg(commandWrapper);
         });
 
         ArtDecodeCommon.registerPacketValidCallback((argName, value, layer, objs) -> {
@@ -115,10 +121,10 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         });
     }
 
-    private void processAttackInfo(AttackBean attackBean, FvDimensionLayer layer) {
+    private void processAttackInfo(AttackBean attackBean) {
         if (attackBean.getAttackType().equals(AttackTypePro.ART_EXCEPTION)){
             //工艺参数攻击
-            SocketServiceCenter.updateAllClient(SocketIoEvent.ATTACK_INFO, attackBean);
+            CacheUtil.appendAttackBean(attackBean);
         }else {
             //通知攻击到达
             SocketServiceCenter.updateAllClient(SocketIoEvent.ATTACK_INFO, attackBean);
@@ -179,11 +185,13 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         FV_D_SENDER.startService();
         ATTACK_SENDER.startService();
         ART_PACKET.startService();
+        COMMAND_PACKET.startService();
     }
     private void stopAllKafkaThread(){
         FV_D_SENDER.stopService();
         ATTACK_SENDER.stopService();
         ART_PACKET.stopService();
+        COMMAND_PACKET.stopService();
     }
 
     private NewFvDimensionCallback newFvDimensionCallback;
