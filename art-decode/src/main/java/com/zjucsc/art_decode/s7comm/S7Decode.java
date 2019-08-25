@@ -45,7 +45,7 @@ public class S7Decode extends BaseArtDecode<S7Config> {
             if(ByteUtil.bytesToShort(s7load,6)==8)
             {
                 byte[] parameter = Bytecut.Bytecut(s7load,10,8);
-                if(parameter!=null && parameter[4]==0x11 && parameter[5]==0x42 && parameter[6]==0x05)/////////////subfunction ,method ,function group,type
+                if(parameter!=null && parameter[4]==0x11 && parameter[5]==0x42 && (parameter[6]==0x05||parameter[6]==0x07))/////////////subfunction ,method ,function group,type
                 {
                     int PDUref = ByteUtil.bytesToShort(s7load,4);
                     byte[] data = Bytecut.Bytecut(s7load,18,-1);
@@ -99,7 +99,7 @@ public class S7Decode extends BaseArtDecode<S7Config> {
             else if(ByteUtil.bytesToShort(s7load,6)==12)
             {
                 byte[] parameter = Bytecut.Bytecut(s7load,10,-1);
-                if(parameter!=null && parameter[4]==(byte)0x12 && parameter[5]==(byte)0x82 && parameter[6]==(byte)0x05)
+                if(parameter!=null && parameter[4]==(byte)0x12 && parameter[5]==(byte)0x82 && (parameter[6]==0x05||parameter[6]==0x07))
                 {
                     List<DBclass> DBlist = s7Inner.DBmap.get((int)ByteUtil.bytesToShort(s7load,4));
                     if(DBlist != null)
@@ -183,7 +183,7 @@ public class S7Decode extends BaseArtDecode<S7Config> {
                                     }
                                     subitemdata = Bytecut.Bytecut(subitemdata, 1 + s.getLength(), -1);
                                 }
-                                else if(subitemdata[0]==(byte)0xfe)
+                                else if(subitemdata[0]==(byte)0xfe || subitemdata[0]==(byte)0x0a)
                                 {
                                     subitemdata =Bytecut.Bytecut(subitemdata,1,-1);
                                 }

@@ -484,10 +484,6 @@ public class OpcdaDecode extends BaseArtDecode<OpcdaConfig> {
         opcdaMap.NameConfigMap.put(name_en, name_cn); //更新名称配置对应表 20190726
     }
 
-    @Override
-    public void updateArtConfig(OpcdaConfig a) {
-        addArtConfig(a);
-    }
 
 
 

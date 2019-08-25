@@ -44,14 +44,6 @@ public abstract class BaseArtDecode<T extends BaseConfig> implements IArtDecode<
      * @param a 工艺参数配置
      */
     public void addArtConfig(T a){
-        configs.add(a);
-    }
-
-    /**
-     * update
-     * @param a config
-     */
-    public void updateArtConfig(T a){
         configs.remove(a);
         configs.add(a);
     }

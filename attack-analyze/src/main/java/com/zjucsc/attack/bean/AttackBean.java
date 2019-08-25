@@ -2,6 +2,8 @@ package com.zjucsc.attack.bean;
 
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 
+import java.util.Objects;
+
 /**
  * #project packet-master-web
  *
@@ -211,5 +213,25 @@ public class AttackBean {
         public AttackBean build(){
             return attackBean;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AttackBean)) return false;
+        AttackBean that = (AttackBean) o;
+        return  getAttackType().equals(that.getAttackType()) &&
+                getAttackInfo().equals(that.getAttackInfo()) &&
+                getProtocolName().equals(that.getProtocolName()) &&
+                getFunCode().equals(that.getFunCode()) &&
+                getPacketTimeStamp().equals(that.getPacketTimeStamp()) &&
+                getSrcDevice().equals(that.getSrcDevice()) &&
+                getDstDevice().equals(that.getDstDevice()) &&
+                getFunCodeMeaning().equals(that.getFunCodeMeaning());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getAttackType(), getAttackInfo(), getProtocolName(), getFunCode(), getDeviceNumber(), getPacketTimeStamp(), getSrcDevice(), getDstDevice(), getFunCodeMeaning());
     }
 }

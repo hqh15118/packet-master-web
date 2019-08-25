@@ -62,4 +62,14 @@ public class ArtAttackAnalyzeConfig implements Comparable<ArtAttackAnalyzeConfig
             return o.id > this.id ? 1 : -1;
         }
     }
+
+    @Override
+    public String toString() {
+        return "ArtAttackAnalyzeConfig{" +
+                "expression=" + expression +
+                ", description='" + description + '\'' +
+                ", enable=" + enable +
+                ", id=" + id +
+                '}';
+    }
 }

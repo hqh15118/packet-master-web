@@ -65,6 +65,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<FvDimensionLay
             //sniff
             //eth:llc:data
             String protocolStack = layer.frame_protocols[0];
+            //判断是否是嗅探攻击
             if (protocolStack.length() >= 8 && protocolStack.charAt(4) == 'l' && protocolStack.charAt(5) == 'l'
                     && protocolStack.charAt(6) == 'c' && layer.rawData[14]==(byte)0xaa && layer.rawData[15]==(byte)0xaa
                     && layer.rawData[20]==(byte) 0x01 && layer.rawData[21]==(byte)0xfd
@@ -73,6 +74,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<FvDimensionLay
                         .fvDimension(layer).build(),layer);
                 return;
             }
+
             Map<String,FiveDimensionAnalyzer> analyzerMap = CacheUtil.getSrcAnalyzerMap(layer);
             if (analyzerMap != null){
                 if ((fiveDimensionAnalyzer = CacheUtil.getAnalyzerBySrcTag(analyzerMap,layer)) != null) {

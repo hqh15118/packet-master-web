@@ -14,6 +14,8 @@ import com.zjucsc.application.tshark.analyzer.FiveDimensionAnalyzer;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
 import com.zjucsc.attack.bean.AttackBean;
 import com.zjucsc.attack.bean.BaseOptAnalyzer;
+import com.zjucsc.attack.s7comm.S7OptCommandConfig;
+import com.zjucsc.attack.s7comm.S7OptName;
 import com.zjucsc.common.common_util.CommonUtil;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.socket_io.SocketIoEvent;
@@ -25,8 +27,11 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 @Slf4j
 public class CacheUtil {
@@ -108,6 +113,7 @@ public class CacheUtil {
      * 所有被丢弃的协议【设备识别】
      ************************************/
     private static final HashMap<String,String> ALL_DROP_PROTOCOL = new HashMap<>(); //不需要初始化
+
     /*********************************
      *
      *  CONFIGURATION_MAP
@@ -936,4 +942,19 @@ public class CacheUtil {
     public static int getAttackedDeviceCount(){
         return D2DAttackPair.size();
     }
+
+    //攻击推送限流
+    private static final ConcurrentHashMap<AttackBean, LinkedBlockingQueue<AttackBean>> ATTACK_LIMIT
+            = new ConcurrentHashMap<>();
+
+    public static void appendAttackBean(AttackBean attackBean){
+        LinkedBlockingQueue<AttackBean> queue = ATTACK_LIMIT.putIfAbsent(attackBean,new LinkedBlockingQueue<AttackBean>(5){{add(attackBean);}});
+        if (queue != null){
+            queue.offer(attackBean);
+        }
+    }
+    public static ConcurrentHashMap<AttackBean, LinkedBlockingQueue<AttackBean>> getAttackLimit(){
+        return ATTACK_LIMIT;
+    }
+
 }

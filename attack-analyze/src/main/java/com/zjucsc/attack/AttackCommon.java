@@ -197,6 +197,10 @@ public class AttackCommon {
         }
     }
 
+    public static Map<String,Set<ArtAttackAnalyzeConfig>> getArtExpressionByProtocol(){
+        return  ART_ATTACK_ANALYZE_CONFIGS;
+    }
+
     public static void removeAllArtAttackAnalyzeConfig(String protocol){
         Set<ArtAttackAnalyzeConfig> configSet = ART_ATTACK_ANALYZE_CONFIGS.get(protocol);
         if (configSet!=null){

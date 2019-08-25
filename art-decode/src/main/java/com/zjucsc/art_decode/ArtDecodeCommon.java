@@ -108,13 +108,6 @@ public class ArtDecodeCommon {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public static void updateArtDecodeConfig(BaseConfig config){
-        BaseArtDecode baseArtDecode = ART_DECODE_CONCURRENT_HASH_MAP.get(config.getProtocol());
-        if (baseArtDecode!=null){
-            baseArtDecode.updateArtConfig(config);
-        }
-    }
 
     @SuppressWarnings("unchecked")
     public static void deleteArtConfig(BaseConfig config){
