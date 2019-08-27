@@ -11,9 +11,7 @@ import com.zjucsc.application.system.service.hessian_iservice.IArtConfigService;
 import com.zjucsc.application.system.service.hessian_iservice.IConfigurationSettingService;
 import com.zjucsc.application.system.service.hessian_iservice.IGplotService;
 import com.zjucsc.application.system.service.hessian_iservice.IProtocolIdService;
-import com.zjucsc.application.system.service.hessian_mapper.DeviceMaxFlowMapper;
-import com.zjucsc.application.system.service.hessian_mapper.OptAttackMapper;
-import com.zjucsc.application.system.service.hessian_mapper.PacketInfoMapper;
+import com.zjucsc.application.system.service.hessian_mapper.*;
 import com.zjucsc.application.util.AppCommonUtil;
 import com.zjucsc.application.util.CacheUtil;
 import com.zjucsc.application.util.TsharkUtil;
@@ -21,6 +19,9 @@ import com.zjucsc.art_decode.ArtDecodeCommon;
 import com.zjucsc.art_decode.base.BaseConfig;
 import com.zjucsc.attack.AttackCommon;
 import com.zjucsc.attack.bean.BaseOptConfig;
+import com.zjucsc.attack.s7comm.S7OptCommandConfig;
+import com.zjucsc.attack.s7comm.S7OptName;
+import com.zjucsc.attack.util.ArtOptAttackUtil;
 import com.zjucsc.base.util.SpringContextUtil;
 import com.zjucsc.common.common_util.PrinterUtil;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
@@ -59,6 +60,8 @@ public class InitConfigurationService implements ApplicationRunner {
     @Autowired private DeviceMaxFlowMapper deviceMaxFlowMapper;
     @Autowired private IGplotService iGplotService;
     @Autowired private OptAttackMapper optAttackMapper;
+    @Autowired private ArtOptNameMapper artOptNameMapper;
+    @Autowired private ArtOptCommandMapper artOptCommandMapper;
 
     @Override
     public void run(ApplicationArguments args) throws IllegalAccessException, NoSuchFieldException, ProtocolIdNotValidException, IOException {
@@ -265,6 +268,7 @@ public class InitConfigurationService implements ApplicationRunner {
                     ArtDecodeCommon.addArtDecodeConfig(baseConfig);
                     //初始化工艺参数全局map，往里面放工艺参数名字和初始值0F
                     AppCommonUtil.initArtMap(baseConfig.getTag());
+                    CacheUtil.addOrUpdateArtName2ArtGroup(baseConfig.getTag(),baseConfig.getGroup());
                     if (baseConfig.getShowGraph() == 1){
                         //添加要显示的工艺参数名字到缓存中
                         CacheUtil.addShowGraphArg(baseConfig.getProtocolId(),baseConfig.getTag());
@@ -348,6 +352,16 @@ public class InitConfigurationService implements ApplicationRunner {
             }
         }
 
+        /*************************************
+         * 加载操作指令解析
+         ************************************/
+        List<S7OptName> s7OptNameList = artOptNameMapper.selectBatch();
+        ArtOptAttackUtil.resetOpName2OptConfig(s7OptNameList);
+        /*************************************
+         * 加载操作指令公式
+         ************************************/
+        List<S7OptCommandConfig> s7OptCommandConfigs = artOptCommandMapper.selectBatch();
+        ArtOptAttackUtil.resetProtocol2OptCommandConfig(s7OptCommandConfigs);
         /************************************
          * 启动结束
          ***********************************/

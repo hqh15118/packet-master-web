@@ -18,20 +18,18 @@ public class ArtGroupServiceImpl implements IArtGroupService {
     @Override
     public void insert(ArtGroup artGroup) {
         artGroupMapper.insert(artGroup);
-        CacheUtil.addOrUpdateArtName2ArtGroup(artGroup.getArtName(),artGroup.getGroup());
     }
 
     @Override
     public void update(ArtGroup artGroup) {
         artGroupMapper.update(artGroup);
-        CacheUtil.addOrUpdateArtName2ArtGroup(artGroup.getArtName(),artGroup.getGroup());
     }
 
     @Override
     public List<String> delete(String artGroup) {
-        List<String> defalutGroupArtName = artGroupMapper.delete(artGroup);
-        CacheUtil.removeArtGroup(defalutGroupArtName);
-        return defalutGroupArtName;
+        List<String> defaultGroupArtName = artGroupMapper.delete(artGroup);
+        CacheUtil.removeArtGroup(defaultGroupArtName);
+        return defaultGroupArtName;
     }
 
     @Override

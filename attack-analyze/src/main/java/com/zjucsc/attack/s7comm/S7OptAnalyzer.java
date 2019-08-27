@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.zjucsc.attack.common.ArtAttackAnalyzeUtil.attackDecode;
+import static com.zjucsc.attack.s7comm.s7Opdecode.getdBclasses;
 
 public class S7OptAnalyzer extends BaseOptAnalyzer<S7OptAttackConfig>{
 
@@ -40,49 +41,7 @@ public class S7OptAnalyzer extends BaseOptAnalyzer<S7OptAttackConfig>{
 
     private List<DBclass> Writejobdecode(FvDimensionLayer S7layer )
     {
-        byte[] S7data;
-        if(S7layer.tcpPayload!=null)
-        {
-            S7data = GetS7load.S7load(S7layer.tcpPayload,1);
-        }
-        else
-        {
-            S7data = GetS7load.S7load(S7layer.rawData,0);
-        }
-        int PDUref = ByteUtil.bytesToShort(S7data,4);
-        int ParaLen = ByteUtil.bytesToShort(S7data,6);
-        int DataLen = ByteUtil.bytesToShort(S7data,8);
-        byte[] paradata = Bytecut.Bytecut(S7data,10,ParaLen);
-        byte[] data = Bytecut.Bytecut(S7data,10+ParaLen,DataLen);
-        if(paradata!=null && S7data[1]==0x01 && paradata[0]==0x05)/////////job write
-        {
-            int itemcnt = paradata[1];
-            byte[] itemparadata = Bytecut.Bytecut(paradata,2,-1);
-            DBlist.clear();
-            DBclass DBifo = new DBclass();
-            for(int i=0;i<itemcnt && itemparadata!=null && data!=null;i++)
-            {
-                if(itemparadata[8]==(byte)0x84) {
-                    int len = itemparadata[1];
-                    DBifo.setDbnum(ByteUtil.bytesToShort(itemparadata, 6));
-                    DBifo.setTransportsize(itemparadata[3]);
-                    DBifo.setLength(ByteUtil.bytesToShort(itemparadata, 4));
-                    byte[] DBaddr = new byte[] {0x00,itemparadata[len-1],itemparadata[len],itemparadata[len+1]};
-                    DBifo.setBitoffset((int) DBaddr[3] & 7);
-                    DBifo.setByteoffset((ByteUtil.bytesToInt(DBaddr,0)>>3) & 0xffff);
-                    DBlist.add(DBifo);
-                    if(data[0]==0x00)
-                    {
-                        DBifo.setData(Bytecut.Bytecut(data,4,ByteUtil.bytesToShort(data,2)));
-                        DBlist.add(DBifo);
-                        itemparadata = Bytecut.Bytecut(itemparadata,len +2,-1);
-                        data = Bytecut.Bytecut(data,4+ByteUtil.bytesToShort(data,2),-1);
-                    }
-                }
-            }
-            return DBlist;////////decode
-        }
-        return null;
+        return getdBclasses(S7layer, DBlist);
     }
 
     private boolean OperationDecode(List<DBclass> DBlist, S7OptAttackConfig s7OptAttackConfig)
@@ -91,25 +50,8 @@ public class S7OptAnalyzer extends BaseOptAnalyzer<S7OptAttackConfig>{
         {
             return false;
         }
-        for(DBclass db:DBlist) {
-            if (s7OptAttackConfig.getDBnum()==db.getDbnum())
-            {
-                if(s7OptAttackConfig.getByteoffset()==db.getByteoffset() && db.getTransportsize()==1 )////开关量操作
-                {
-                    if(db.getBitoffset()<= s7OptAttackConfig.getBitoffset() && (db.getBitoffset()+db.getLength()> s7OptAttackConfig.getBitoffset()))
-                    {
-                        if((((int)db.getData()[0]>>(s7OptAttackConfig.getBitoffset()-db.getBitoffset())) & 1) == 1 && s7OptAttackConfig.isResult())
-                        {
-                            return true;
-                        }
-                        else if((((int)db.getData()[0]>>(s7OptAttackConfig.getBitoffset()-db.getBitoffset())) & 1) == 0 && !s7OptAttackConfig.isResult())
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
+        if (s7Opdecode.s7m1(DBlist, s7OptAttackConfig.getDBnum(), s7OptAttackConfig.getByteoffset(), s7OptAttackConfig.getBitoffset(), s7OptAttackConfig.isResult()))
+            return true;
         return false;
     }
 

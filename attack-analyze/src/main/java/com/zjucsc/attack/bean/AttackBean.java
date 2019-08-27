@@ -237,14 +237,11 @@ public class AttackBean implements Comparable<AttackBean>{
                 getAttackInfo().equals(that.getAttackInfo()) &&
                 getProtocolName().equals(that.getProtocolName()) &&
                 getFunCode().equals(that.getFunCode()) &&
-                getPacketTimeStamp().equals(that.getPacketTimeStamp()) &&
                 getSrcDevice().equals(that.getSrcDevice()) &&
-                getDstDevice().equals(that.getDstDevice()) &&
-                getFunCodeMeaning().equals(that.getFunCodeMeaning());
-    }
+                getDstDevice().equals(that.getDstDevice());}
 
     @Override
     public int hashCode() {
-        return Objects.hash(getAttackType(), getAttackInfo(), getProtocolName(), getFunCode(), getDeviceNumber(), getPacketTimeStamp(), getSrcDevice(), getDstDevice(), getFunCodeMeaning());
+        return Objects.hash(getAttackType(), getAttackInfo(), getProtocolName(), getFunCode(), getDeviceNumber(), getSrcDevice(), getDstDevice(), getFunCodeMeaning());
     }
 }

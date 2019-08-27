@@ -3,6 +3,7 @@ package com.zjucsc.application.system.service;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.domain.bean.*;
+import com.zjucsc.application.domain.non_hessian.ArtGroupWrapper;
 import com.zjucsc.application.domain.non_hessian.D2DWrapper;
 import com.zjucsc.application.domain.non_hessian.DeviceMaxFlow;
 import com.zjucsc.application.system.service.common_impl.CapturePacketServiceImpl;
@@ -10,6 +11,7 @@ import com.zjucsc.application.system.service.common_iservice.CapturePacketServic
 import com.zjucsc.application.system.service.hessian_iservice.IArtHistoryDataService;
 import com.zjucsc.application.system.service.hessian_mapper.DeviceMapper;
 import com.zjucsc.application.util.AppCommonUtil;
+import com.zjucsc.application.util.ArtDecodeUtil;
 import com.zjucsc.application.util.CacheUtil;
 import com.zjucsc.base.util.SysRunStateUtil;
 import com.zjucsc.art_decode.ArtDecodeCommon;
@@ -208,7 +210,8 @@ public class ScheduledService {
     //定时重启tshark全部进程
     //@Scheduled(cron = "0 0 0 ? * MON-FRI")
     @Scheduled(cron = "0 0 0 * * ?")
-    public void restartTsharkProcess(){
+//    @Scheduled(cron = "0 0/10 * * * ?")
+    public synchronized void restartTsharkProcess(){
         for (BasePreProcessor basePreProcessor : CapturePacketServiceImpl.basePreProcessors) {
             Thread thread = new Thread(basePreProcessor::restartCapture);
             thread.setName(basePreProcessor.getClass().getName());
@@ -219,7 +222,7 @@ public class ScheduledService {
     //定时删除临时的wireshark报文
     //@Scheduled(cron = "0 5 0 ? * MON-FRI")
     @Scheduled(cron = "30 0 0 * * ? ")
-    public void deletePcapFileScheduled(){
+    public synchronized void deletePcapFileScheduled(){
         File file = new File(Common.WIRESHARK_TEMP_FILE);
         File[] files = file.listFiles();
         if (files!=null) {
@@ -286,7 +289,7 @@ public class ScheduledService {
                 if (CacheUtil.isArtShow(artName)){
                     //StatisticsData.ART_INFO_SEND.put(artName, artValueList);
                     if (artValueList.size() > 0)
-                        ART_INFO_SEND_SINGLE.put(artName,artValueList.getLast());
+                        ART_INFO_SEND_SINGLE.put(artName,new ArtGroupWrapper(artValueList.getLast(), CacheUtil.getArtGroupByArtName(artName)));
                 }
                 if (artValueList.size() > 0 && !artName.equals("timestamp")){
                     iArtHistoryDataService.saveArtData(artName,artValueList.getLast(),null);
@@ -295,7 +298,7 @@ public class ScheduledService {
             //StatisticsData.ART_INFO_SEND.put("timestamp",StatisticsData.ART_INFO.get("timestamp"));
             LinkedList<String> timeStamp = StatisticsData.ART_INFO.get("timestamp");
             if (timeStamp.size() > 0){
-                ART_INFO_SEND_SINGLE.put("timestamp",timeStamp.getLast());
+                ART_INFO_SEND_SINGLE.put("timestamp",new ArtGroupWrapper(timeStamp.getLast(),"timeStamp"));
             }
             SocketServiceCenter.updateAllClient(SocketIoEvent.ART_INFO, StatisticsData.ART_INFO_SEND_SINGLE);
             addArtData("timestamp", AppCommonUtil.getDateFormat().format(new Date()));

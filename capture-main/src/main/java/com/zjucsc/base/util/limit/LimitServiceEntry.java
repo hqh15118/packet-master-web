@@ -1,51 +1,40 @@
 package com.zjucsc.base.util.limit;
 
-import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class LimitServiceEntry<E extends Comparable>{
-    private ConcurrentSkipListSet<E> concurrentSkipListSet = new ConcurrentSkipListSet<>();
+public class LimitServiceEntry<E>{
+    private ConcurrentHashMap<E, AtomicInteger> map = new ConcurrentHashMap<>();
     private ScheduledExecutorService scheduledExecutorService;
     private ValidInstanceCallback<E> validInstanceCallback;
-    private static final int SINGLE_MODE = 1;
-    private static final int MULTI_MODE = 2;
-    private int mode;
+    private int limitNum;
     public LimitServiceEntry(ScheduledExecutorService scheduledExecutorService,
                              ValidInstanceCallback<E> validInstanceCallback,
                              int limitTime,
+                             int limitNum,
                              TimeUnit timeUnit){
         this.scheduledExecutorService = scheduledExecutorService;
         this.validInstanceCallback = validInstanceCallback;
         scheduledExecutorService.scheduleAtFixedRate(() -> {
-            concurrentSkipListSet.clear();
+            map.clear();
         },limitTime,limitTime, timeUnit);
-        mode = SINGLE_MODE;
+        this.limitNum = limitNum;
     }
 
-//    public LimitServiceEntry(ScheduledExecutorService scheduledExecutorService,
-//                             ValidInstanceCallback<E> validInstanceCallback,
-//                             int limitNum,
-//                             int limitTime,
-//                             TimeUnit timeUnit){
-//        this.scheduledExecutorService = scheduledExecutorService;
-//        this.validInstanceCallback = validInstanceCallback;
-//        scheduledExecutorService.scheduleAtFixedRate(() -> {
-//            concurrentSkipListSet.clear();
-//        },limitTime,limitTime, timeUnit);
-//    }
-
     public void appendInstance(E element){
-        switch (mode){
-            case SINGLE_MODE :
-                if (concurrentSkipListSet.add(element)){
-                    validInstanceCallback.callback(element);
-                }
-                break;
-            case MULTI_MODE :
-                break;
+        AtomicInteger num = map.putIfAbsent(element,new AtomicInteger(1));
+        if (num != null){
+            int currentNum = num.incrementAndGet();
+            if (currentNum <= limitNum){
+                validInstanceCallback.callback(element);
+            }
         }
     }
 
 
+    public void stopLimit(){
+        scheduledExecutorService.shutdown();
+    }
 }

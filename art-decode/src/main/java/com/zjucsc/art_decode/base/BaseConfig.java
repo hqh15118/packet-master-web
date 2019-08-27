@@ -11,6 +11,7 @@ public class BaseConfig implements Serializable , Comparable<BaseConfig>{
     private int protocolId;
     private String detail;
     private String deviceMac;
+    private String group;
 
     public String getProtocol() {
         return protocol;
@@ -71,5 +72,14 @@ public class BaseConfig implements Serializable , Comparable<BaseConfig>{
 
     public void setDeviceMac(String deviceMac) {
         this.deviceMac = deviceMac;
+    }
+
+
+    public String getGroup() {
+        return group;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
     }
 }

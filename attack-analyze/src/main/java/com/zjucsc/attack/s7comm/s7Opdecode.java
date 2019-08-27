@@ -14,8 +14,12 @@ public class s7Opdecode extends AbstractOptCommandAttackEntry {
 
     private List<DBclass> Writejobdecode(FvDimensionLayer S7layer )
     {
+        return getdBclasses(S7layer, DBlist);
+    }
+
+    public static List<DBclass> getdBclasses(FvDimensionLayer S7layer, List<DBclass> dBlist) {
         byte[] S7data;
-        if(S7layer.tcpPayload!=null)
+        if(S7layer.tcpPayload.length != 0)
         {
             S7data = GetS7load.S7load(S7layer.tcpPayload,1);
         }
@@ -32,7 +36,7 @@ public class s7Opdecode extends AbstractOptCommandAttackEntry {
         {
             int itemcnt = paradata[1];
             byte[] itemparadata = Bytecut.Bytecut(paradata,2,-1);
-            DBlist.clear();
+            dBlist.clear();
             DBclass DBifo = new DBclass();
             for(int i=0;i<itemcnt && itemparadata!=null && data!=null;i++)
             {
@@ -44,17 +48,17 @@ public class s7Opdecode extends AbstractOptCommandAttackEntry {
                     byte[] DBaddr = new byte[] {0x00,itemparadata[len-1],itemparadata[len],itemparadata[len+1]};
                     DBifo.setBitoffset((int) DBaddr[3] & 7);
                     DBifo.setByteoffset((ByteUtil.bytesToInt(DBaddr,0)>>3) & 0xffff);
-                    DBlist.add(DBifo);
+                    dBlist.add(DBifo);
                     if(data[0]==0x00)
                     {
                         DBifo.setData(Bytecut.Bytecut(data,4,ByteUtil.bytesToShort(data,2)));
-                        DBlist.add(DBifo);
+                        dBlist.add(DBifo);
                         itemparadata = Bytecut.Bytecut(itemparadata,len +2,-1);
                         data = Bytecut.Bytecut(data,4+ByteUtil.bytesToShort(data,2),-1);
                     }
                 }
             }
-            return DBlist;////////decode
+            return dBlist;////////decode
         }
         return null;
     }
@@ -65,18 +69,24 @@ public class s7Opdecode extends AbstractOptCommandAttackEntry {
         {
             return false;
         }
+        if (s7m1(DBlist, s7OptName.getDbNum(), s7OptName.getByteOffset(), s7OptName.getBitOffset(), s7OptName.isResult()))
+            return true;
+        return false;
+    }
+
+    public static boolean s7m1(List<DBclass> DBlist, int dBnum, int byteoffset, int bitoffset, boolean result) {
         for(DBclass db:DBlist) {
-            if (s7OptName.getDBnum()==db.getDbnum())
+            if (dBnum ==db.getDbnum())
             {
-                if(s7OptName.getByteoffset()==db.getByteoffset() && db.getTransportsize()==1 )////开关量操作
+                if(byteoffset ==db.getByteoffset() && db.getTransportsize()==1 )////开关量操作
                 {
-                    if(db.getBitoffset()<= s7OptName.getBitoffset() && (db.getBitoffset()+db.getLength()> s7OptName.getBitoffset()))
+                    if(db.getBitoffset()<= bitoffset && (db.getBitoffset()+db.getLength()> bitoffset))
                     {
-                        if((((int)db.getData()[0]>>(s7OptName.getBitoffset()-db.getBitoffset())) & 1) == 1 && s7OptName.isResult())
+                        if((((int)db.getData()[0]>>(bitoffset -db.getBitoffset())) & 1) == 1 && result)
                         {
                             return true;
                         }
-                        else if((((int)db.getData()[0]>>(s7OptName.getBitoffset()-db.getBitoffset())) & 1) == 0 && !s7OptName.isResult())
+                        else if((((int)db.getData()[0]>>(bitoffset -db.getBitoffset())) & 1) == 0 && !result)
                         {
                             return true;
                         }
@@ -95,7 +105,9 @@ public class s7Opdecode extends AbstractOptCommandAttackEntry {
         }
         if(OperationDecode(Writejobdecode(layer), s7OptName))
         {
-            return s7OptName.getOpname();
+            //fix
+            commandCallback(s7OptName.getOpName(),layer);
+//            return s7OptName.getOpname();
         }
         return null;
     }

@@ -6,9 +6,10 @@ public class S7OptCommandConfig implements Comparable<S7OptCommandConfig>{
     private int id;
     private String protocol;
     private String process_operate;
-    private List<String> rule;
+    private List<CommandWrapper> rule;
     private String describe;
     private boolean enable;
+    private List<String> ruleString;
 
     public int getId() {
         return id;
@@ -34,11 +35,11 @@ public class S7OptCommandConfig implements Comparable<S7OptCommandConfig>{
         this.process_operate = process_operate;
     }
 
-    public List<String> getRule() {
+    public List<CommandWrapper> getRule() {
         return rule;
     }
 
-    public void setRule(List<String> rule) {
+    public void setRule(List<CommandWrapper> rule) {
         this.rule = rule;
     }
 
@@ -64,5 +65,25 @@ public class S7OptCommandConfig implements Comparable<S7OptCommandConfig>{
             return 1;
         }
         return process_operate.compareTo(o.process_operate);
+    }
+
+    public List<String> getRuleString() {
+        return ruleString;
+    }
+
+    public void setRuleString(List<String> ruleString) {
+        this.ruleString = ruleString;
+    }
+
+    @Override
+    public String toString() {
+        return "S7OptCommandConfig{" +
+                "\nid=" + id +
+                ", \nprotocol='" + protocol + '\'' +
+                ", \nprocess_operate='" + process_operate + '\'' +
+                ", \nrule=" + rule +
+                ", \ndescribe='" + describe + '\'' +
+                ", \nenable=" + enable +
+                "\n}";
     }
 }

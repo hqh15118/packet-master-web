@@ -1,13 +1,13 @@
 package com.zjucsc.attack.s7comm;
 
-public class S7OptName {
+public class S7OptName implements Comparable<S7OptName>{
     private int id;
-    private int protocolId;
-    private String Opname;
+    private String protocol;
+    private String opName;
     private String deviceMac;
-    private int Byteoffset;
-    private int Bitoffset;
-    private int DBnum;
+    private int byteOffset;
+    private int bitOffset;
+    private int dbNum;
     private boolean result;
     private boolean enable;
 
@@ -19,20 +19,20 @@ public class S7OptName {
         this.id = id;
     }
 
-    public int getProtocolId() {
-        return protocolId;
+    public String getProtocol() {
+        return protocol;
     }
 
-    public void setProtocolId(int protocolId) {
-        this.protocolId = protocolId;
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
     }
 
-    public String getOpname() {
-        return Opname;
+    public String getOpName() {
+        return opName;
     }
 
-    public void setOpname(String opname) {
-        Opname = opname;
+    public void setOpName(String opName) {
+        this.opName = opName;
     }
 
     public String getDeviceMac() {
@@ -43,28 +43,28 @@ public class S7OptName {
         this.deviceMac = deviceMac;
     }
 
-    public int getByteoffset() {
-        return Byteoffset;
+    public int getByteOffset() {
+        return byteOffset;
     }
 
-    public void setByteoffset(int byteoffset) {
-        Byteoffset = byteoffset;
+    public void setByteOffset(int byteOffset) {
+        this.byteOffset = byteOffset;
     }
 
-    public int getBitoffset() {
-        return Bitoffset;
+    public int getBitOffset() {
+        return bitOffset;
     }
 
-    public void setBitoffset(int bitoffset) {
-        Bitoffset = bitoffset;
+    public void setBitOffset(int bitOffset) {
+        this.bitOffset = bitOffset;
     }
 
-    public int getDBnum() {
-        return DBnum;
+    public int getDbNum() {
+        return dbNum;
     }
 
-    public void setDBnum(int DBnum) {
-        this.DBnum = DBnum;
+    public void setDbNum(int dbNum) {
+        this.dbNum = dbNum;
     }
 
     public boolean isResult() {
@@ -81,5 +81,31 @@ public class S7OptName {
 
     public void setEnable(boolean enable) {
         this.enable = enable;
+    }
+
+    @Override
+    public String toString() {
+        return "S7OptName{" +
+                "\nid=" + id +
+                ", \nprotocol=" + protocol +
+                ", \nOpname='" + opName + '\'' +
+                ", \ndeviceMac='" + deviceMac + '\'' +
+                ", \nByteoffset=" + byteOffset +
+                ", \nBitoffset=" + bitOffset +
+                ", \nDBnum=" + dbNum +
+                ", \nresult=" + result +
+                ", \nenable=" + enable +
+                "\n}";
+    }
+
+    @Override
+    public int compareTo(S7OptName o) {
+        if (o == null){
+            return 1;
+        }
+        if (opName.equals(o.opName)){
+            return 0;
+        }
+        return opName.hashCode() > o.opName.hashCode() ? 1 : -1;
     }
 }

@@ -117,7 +117,7 @@ public class CacheUtil {
     /**********************************
      * 工艺参数名字 -- 工艺参数组别
      **********************************/
-    private static ConcurrentHashMap<String,String> ART_NAME_TO_GROUP = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String,String> ART_NAME_TO_GROUP = new ConcurrentHashMap<>();
     /*********************************
      *
      *  CONFIGURATION_MAP
@@ -951,19 +951,6 @@ public class CacheUtil {
         return D2DAttackPair.size();
     }
 
-    //攻击推送限流
-    private static final LimitServiceEntry<AttackBean> LIMIT_SERVICE_ENTRY = new LimitServiceEntry<>
-            (Executors.newScheduledThreadPool(1), new ValidInstanceCallback<AttackBean>() {
-                @Override
-                public void callback(AttackBean t) {
-                    SocketServiceCenter.updateAllClient(SocketIoEvent.ATTACK_INFO,t);
-                }
-            },1, TimeUnit.SECONDS);
-
-    public static void appendAttackBean(AttackBean attackBean){
-        LIMIT_SERVICE_ENTRY.appendInstance(attackBean);
-    }
-
     /*********************************
      *
      *********************************/
@@ -979,9 +966,14 @@ public class CacheUtil {
         }
         return artGroup;
     }
+
     public static void removeArtGroup(List<String> artNames){
         for (String artName : artNames) {
-            ART_NAME_TO_GROUP.put(artName,"defalut");
+            ART_NAME_TO_GROUP.put(artName,"default");
         }
+    }
+
+    public static void removeArtNameInGroup(String artName){
+        ART_NAME_TO_GROUP.remove(artName);
     }
 }

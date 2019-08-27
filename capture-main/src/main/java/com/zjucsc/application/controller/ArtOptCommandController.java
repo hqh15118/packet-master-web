@@ -1,11 +1,10 @@
 package com.zjucsc.application.controller;
 
 
-import com.zjucsc.application.domain.bean.ArtOptCommand1;
 import com.zjucsc.application.domain.bean.BaseResponse;
+import com.zjucsc.application.domain.non_hessian.CommandState;
 import com.zjucsc.application.system.service.hessian_iservice.IArtOptCommandService;
 import com.zjucsc.attack.s7comm.S7OptCommandConfig;
-import com.zjucsc.attack.s7comm.S7OptName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,8 +34,18 @@ public class ArtOptCommandController {
     }
 
     @GetMapping("select")
-    public BaseResponse select(@RequestBody ArtOptCommand1 artOptCommand1){
-        return BaseResponse.OK(iArtOptCommandService.selectArtOptCommand(artOptCommand1.getDeviceMac(),
-                artOptCommand1.getOpName()));
+    public BaseResponse select(@RequestParam String processName){
+        return BaseResponse.OK(iArtOptCommandService.selectArtOptCommand(processName));
+    }
+
+    @GetMapping("all")
+    public BaseResponse selectAll(){
+        return BaseResponse.OK(iArtOptCommandService.selectBatch());
+    }
+
+    @PostMapping("change_state")
+    public BaseResponse changeCommandState(@RequestBody CommandState commandState){
+        iArtOptCommandService.changeCommandState(commandState);
+        return BaseResponse.OK();
     }
 }

@@ -13,4 +13,5 @@ public interface AttackTypePro {
     String SNIFF_ATTACK = "嗅探攻击";
     String CONFIG_FALSIFY = "配置篡改";
     String VISIT_PROTOCOL = "非授权协议访问";
+    String COMMAND_ATTACK = "工艺操作异常";
 }

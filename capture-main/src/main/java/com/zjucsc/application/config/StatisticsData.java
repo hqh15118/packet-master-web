@@ -2,11 +2,13 @@ package com.zjucsc.application.config;
 
 import com.zjucsc.application.domain.bean.GraphInfo;
 import com.zjucsc.application.domain.bean.GraphInfoCollection;
+import com.zjucsc.application.domain.non_hessian.ArtGroupWrapper;
 import com.zjucsc.application.domain.non_hessian.DeviceMaxFlow;
 import com.zjucsc.application.util.AppCommonUtil;
 import com.zjucsc.socket_io.SocketIoEvent;
 import com.zjucsc.socket_io.SocketServiceCenter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.crypto.hash.Hash;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -60,7 +62,7 @@ public class StatisticsData {
      */
     public static final ConcurrentHashMap<String, LinkedList<String>> ART_INFO = new ConcurrentHashMap<>();
     //public static final ConcurrentHashMap<String, LinkedList<String>> ART_INFO_SEND = new ConcurrentHashMap<>();//只发送需要显示的个工艺参数
-    public static final ConcurrentHashMap<String,String> ART_INFO_SEND_SINGLE = new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<String, ArtGroupWrapper> ART_INFO_SEND_SINGLE = new ConcurrentHashMap<>();
 
     public static void increaseNumberByDeviceIn(String deviceNumber,int delta){
         if (deviceNumber!=null) {

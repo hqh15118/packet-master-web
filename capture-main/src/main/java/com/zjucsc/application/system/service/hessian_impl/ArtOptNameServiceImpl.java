@@ -2,7 +2,7 @@ package com.zjucsc.application.system.service.hessian_impl;
 
 import com.zjucsc.application.system.service.hessian_iservice.IArtOptNameService;
 import com.zjucsc.application.system.service.hessian_mapper.ArtOptNameMapper;
-import com.zjucsc.application.util.ArtOptAttackUtil;
+import com.zjucsc.attack.util.ArtOptAttackUtil;
 import com.zjucsc.attack.s7comm.S7OptName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

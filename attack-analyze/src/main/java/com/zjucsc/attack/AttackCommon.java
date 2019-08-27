@@ -1,18 +1,21 @@
 package com.zjucsc.attack;
 
+import com.sun.javaws.CacheUtil;
 import com.zjucsc.attack.analyze.analyzer_util.CositeDosAttackAnalyzeList;
 import com.zjucsc.attack.analyze.analyzer_util.MultisiteDosAttackAnalyzeList;
+import com.zjucsc.attack.base.AbstractOptCommandAttackEntry;
 import com.zjucsc.attack.base.AnalyzePoolEntry;
 import com.zjucsc.attack.base.AnalyzePoolEntryImpl;
 import com.zjucsc.attack.bean.*;
 import com.zjucsc.attack.base.IOptAttackEntry;
-import com.zjucsc.attack.common.ArtAttackAnalyzeTask;
-import com.zjucsc.attack.common.AttackCallback;
-import com.zjucsc.attack.common.AttackTypePro;
-import com.zjucsc.attack.common.CommandCallback;
+import com.zjucsc.attack.common.*;
 import com.zjucsc.attack.modbus.ModbusOptAnalyzer;
 import com.zjucsc.attack.pn_io.PnioOptDecode;
 import com.zjucsc.attack.s7comm.S7OptAnalyzer;
+import com.zjucsc.attack.s7comm.S7OptCommandConfig;
+import com.zjucsc.attack.s7comm.S7OptName;
+import com.zjucsc.attack.s7comm.s7Opdecode;
+import com.zjucsc.attack.util.ArtOptAttackUtil;
 import com.zjucsc.common.bean.ThreadPoolInfoWrapper;
 import com.zjucsc.common.common_util.CommonUtil;
 import com.zjucsc.tshark.Entry;
@@ -60,6 +63,9 @@ public class AttackCommon {
 
     private static final HashMap<Integer, BaseOptAnalyzer> OPT_ATTACK_DECODE_CONCURRENT_HASH_MAP
             = new HashMap<>(10);
+
+    private static final HashMap<String, AbstractOptCommandAttackEntry> COMMAND_DECODE_HASH_MAP =
+            new HashMap<>(10);
     /**
      * 初始化
      */
@@ -67,7 +73,19 @@ public class AttackCommon {
         OPT_ATTACK_DECODE_CONCURRENT_HASH_MAP.put(2,new S7OptAnalyzer());
         OPT_ATTACK_DECODE_CONCURRENT_HASH_MAP.put(1,new ModbusOptAnalyzer());
         OPT_ATTACK_DECODE_CONCURRENT_HASH_MAP.put(23,new PnioOptDecode());
+
+        //init command decode hash_map
+        COMMAND_DECODE_HASH_MAP.put("s7comm",new s7Opdecode());
     }
+
+    private static ExecutorService ART_COMMAND_ATTACK_ANALYZE_SERVICE = CommonUtil.getSingleThreadPoolSizeThreadPool(10000,r -> {
+        Thread thread = new Thread(r);
+        thread.setName("-attack-command-art-analyze-service-");
+        thread.setUncaughtExceptionHandler((t, e) -> {
+            logger.error("error in -attack-command-art-analyze-service-",e);
+        });
+        return thread;
+    },"ART_COMMAND_ATTACK_ANALYZE_SERVICE");
 
     private static ExecutorService ART_ATTACK_ANALYZE_SERVICE = CommonUtil.getSingleThreadPoolSizeThreadPool(10000,r -> {
         Thread thread = new Thread(r);
@@ -102,6 +120,26 @@ public class AttackCommon {
                 thread.setName("-attack-art-analyze-service-");
                 thread.setUncaughtExceptionHandler((t, e) -> {
                     logger.error("error in attack-service-thread ",e);
+                });
+                return thread;
+            });
+
+    private static ExecutorService OPT_COMMAND_ANALYZE_SERVICE = Executors.newFixedThreadPool(1,
+            r -> {
+                Thread thread = new Thread(r);
+                thread.setName("-opt-command-analyze-service-");
+                thread.setUncaughtExceptionHandler((t, e) -> {
+                    logger.error("error in opt-command-service-thread ",e);
+                });
+                return thread;
+            });
+
+    private static ExecutorService OPT_COMMAND_ATTACK_ANALYZE_SERVICE = Executors.newFixedThreadPool(1,
+            r -> {
+                Thread thread = new Thread(r);
+                thread.setName("-opt-command-attack-analyze-service-");
+                thread.setUncaughtExceptionHandler((t, e) -> {
+                    logger.error("error in opt-command-attack-service-thread ",e);
                 });
                 return thread;
             });
@@ -199,6 +237,20 @@ public class AttackCommon {
         }
     }
 
+    public static void appendOptCommandDecode(FvDimensionLayer layer){
+        final Set<S7OptName> s7OptNameSet = ArtOptAttackUtil.getS7OptNameSetByProtocol(layer.protocol);
+        if (s7OptNameSet != null && s7OptNameSet.size() > 0){
+            AbstractOptCommandAttackEntry abstractOptCommandAttackEntry = COMMAND_DECODE_HASH_MAP.get(layer.protocol);
+            if (abstractOptCommandAttackEntry!=null){
+                OPT_COMMAND_ANALYZE_SERVICE.execute(()->{
+                    for (S7OptName s7OptName : s7OptNameSet) {
+                        abstractOptCommandAttackEntry.analyze(layer,s7OptName);
+                    }
+                });
+            }
+        }
+    }
+
     public static Map<String,Set<ArtAttackAnalyzeConfig>> getArtExpressionByProtocol(){
         return  ART_ATTACK_ANALYZE_CONFIGS;
     }
@@ -233,6 +285,26 @@ public class AttackCommon {
                             layer);
                 }
             }
+        }
+    }
+
+    /**
+     * 工艺参数操作指令公式分析
+     * @param layer
+     * @param map
+     */
+    public static void appendArtCommandAnalyze(String opName,FvDimensionLayer layer , Map<String,Float> map){
+        S7OptCommandConfig s7OptCommandConfig = ArtOptAttackUtil.getOptConfigByOpName(opName);
+        if (s7OptCommandConfig!=null){
+            ART_COMMAND_ATTACK_ANALYZE_SERVICE.execute(() -> {
+                    String info = ArtAttackAnalyzeUtil.attackDecode(s7OptCommandConfig.getRuleString(),
+                            map,s7OptCommandConfig.getDescribe());
+                    if (info!=null){
+                        appendFvDimensionError(AttackBean.builder().fvDimension(layer)
+                        .attackInfo(s7OptCommandConfig.getDescribe()).attackType(AttackTypePro.COMMAND_ATTACK)
+                        .build(),layer);
+                }
+            });
         }
     }
 

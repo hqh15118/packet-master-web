@@ -144,7 +144,7 @@ public class S7Decode extends BaseArtDecode<S7Config> {
 
     private void decodeDBlist(List<DBclass> DBlist, byte[] data)
     {
-        if(data!=null && DBlist!=null)
+        if(data!=null && DBlist!=null && DBlist.size() > 0)
         {
             int item_cnt = ByteUtil.bytesToShort(data,4);
             byte[] iteamdata = Bytecut.Bytecut(data,6,-1);

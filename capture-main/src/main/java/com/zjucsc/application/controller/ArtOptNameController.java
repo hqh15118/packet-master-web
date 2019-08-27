@@ -25,15 +25,20 @@ public class ArtOptNameController {
         return BaseResponse.OK();
     }
 
-    @GetMapping("delete")
+    @DeleteMapping("delete")
     public BaseResponse delete(@RequestParam String optName){
         S7OptName s7OptName = iArtOptNameService.deleteArtOptName(optName);
         return BaseResponse.OK();
     }
 
     @GetMapping("select")
-    public BaseResponse select(@RequestBody String s7OptName){
+    public BaseResponse select(@RequestParam String s7OptName){
         return BaseResponse.OK(iArtOptNameService.selectArtOptName(s7OptName));
+    }
+
+    @GetMapping("all")
+    public BaseResponse selectAll(){
+        return BaseResponse.OK(iArtOptNameService.selectBatch());
     }
 
 }

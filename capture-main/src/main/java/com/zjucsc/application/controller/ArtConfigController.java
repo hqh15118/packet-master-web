@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -108,6 +109,7 @@ public class ArtConfigController {
                 ArtDecodeCommon.addArtDecodeConfig(opcdaConfig);
                 break;
         }
+        CacheUtil.addOrUpdateArtName2ArtGroup(baseConfig.getTag(),baseConfig.getGroup());
         return BaseResponse.OK();
     }
 
@@ -133,6 +135,8 @@ public class ArtConfigController {
         AppCommonUtil.removeArtMap(baseConfig.getTag());
         //移除解析库中的配置
         ArtDecodeCommon.deleteArtConfig(baseConfig);
+        //移除工艺参数组别中的工艺参数
+        CacheUtil.removeArtNameInGroup(baseConfig.getTag());
         //移除数据库，返回被移除的工艺参数配置
         return BaseResponse.OK(iArtConfigService.delArtConfigByProtocolIdAndId(protocolId,artConfigId));
     }
