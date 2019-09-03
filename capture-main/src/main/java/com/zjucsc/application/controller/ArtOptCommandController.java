@@ -4,7 +4,7 @@ package com.zjucsc.application.controller;
 import com.zjucsc.application.domain.bean.BaseResponse;
 import com.zjucsc.application.domain.non_hessian.CommandState;
 import com.zjucsc.application.system.service.hessian_iservice.IArtOptCommandService;
-import com.zjucsc.attack.s7comm.S7OptCommandConfig;
+import com.zjucsc.attack.config.S7OptCommandConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

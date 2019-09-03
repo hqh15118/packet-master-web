@@ -72,6 +72,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     private final KafkaThread<ArtPacketDetail> ART_PACKET = KafkaThread.createNewKafkaThread("art_packet",KafkaTopic.ART_PACKET,sendErrorCallback);
     @SuppressWarnings("unchecked")
     private final KafkaThread<CommandWrapper> COMMAND_PACKET = KafkaThread.createNewKafkaThread("command_packet",KafkaTopic.COMMAND_PACKET,sendErrorCallback);
+
     public CapturePacketServiceImpl(PacketAnalyzeService packetAnalyzeService) {
         this.packetAnalyzeService = packetAnalyzeService;
         //所有攻击报文的入口
@@ -85,7 +86,8 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             //恶意报文统计【五秒钟一次的延迟推送】
             statisticsBadPacket(attackBean.getDeviceNumber());
             processAttackInfo(attackBean);
-        },/*所有指令报文的*/
+        },
+                /*所有指令报文的*/
         (layer, command, objs) -> {
             CommandWrapper commandWrapper = new CommandWrapper();
             commandWrapper.setCommand(command);

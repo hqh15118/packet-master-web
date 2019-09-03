@@ -2,8 +2,8 @@ package com.zjucsc.application.system.service.hessian_impl;
 
 import com.zjucsc.application.system.service.hessian_iservice.IArtOptNameService;
 import com.zjucsc.application.system.service.hessian_mapper.ArtOptNameMapper;
+import com.zjucsc.attack.bean.BaseOpName;
 import com.zjucsc.attack.util.ArtOptAttackUtil;
-import com.zjucsc.attack.s7comm.S7OptName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,36 +16,41 @@ public class ArtOptNameServiceImpl implements IArtOptNameService {
     @Autowired private ArtOptNameMapper optNameMapper;
 
     @Override
-    public void insertArtOptName(S7OptName s7OptName) {
+    public void insertArtOptName(BaseOpName s7OptName) {
         optNameMapper.insertArtOptName(s7OptName);
         resetConfigs();
     }
 
     @Override
-    public void updateArtOptName(S7OptName s7OptName) {
+    public void updateArtOptName(BaseOpName s7OptName) {
         optNameMapper.updateArtOptName(s7OptName);
         resetConfigs();
     }
 
     @Override
-    public S7OptName deleteArtOptName(String opName) {
-        S7OptName s7OptName = optNameMapper.deleteArtOptName(opName);
+    public BaseOpName deleteArtOptName(String opName) {
+        BaseOpName baseOpName = optNameMapper.deleteArtOptName(opName);
         resetConfigs();
-        return s7OptName;
+        return baseOpName;
     }
 
     @Override
-    public S7OptName selectArtOptName(String opName) {
+    public BaseOpName selectArtOptName(String opName) {
         return optNameMapper.selectArtOptName(opName);
     }
 
     @Override
-    public List<S7OptName> selectBatch() {
+    public List<BaseOpName> selectBatch() {
         return optNameMapper.selectBatch();
     }
 
+    @Override
+    public List<BaseOpName> selectByProtocol(String protocol) {
+        return optNameMapper.selectByProtocol(protocol);
+    }
+
     private void resetConfigs(){
-        List<S7OptName> s7OptNameList = optNameMapper.selectBatch();
+        List<BaseOpName> s7OptNameList = optNameMapper.selectBatch();
         ArtOptAttackUtil.resetOpName2OptConfig(s7OptNameList);
     }
 }

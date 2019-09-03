@@ -53,7 +53,7 @@ public abstract class BasePreProcessor implements PreProcessor {
 //    });
     private ProcessWrapper oldProcessWrapper;
 
-    static{
+    static {
         Thread thread = new Thread(() -> {
             System.out.println("hook start working ... ");
             CommonTsharkUtil.shotDownAllRunningTsharkProcess();

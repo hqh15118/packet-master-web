@@ -1,8 +1,5 @@
 package com.zjucsc.attack;
 
-import com.sun.javaws.CacheUtil;
-import com.zjucsc.attack.analyze.analyzer_util.CositeDosAttackAnalyzeList;
-import com.zjucsc.attack.analyze.analyzer_util.MultisiteDosAttackAnalyzeList;
 import com.zjucsc.attack.base.AbstractOptCommandAttackEntry;
 import com.zjucsc.attack.base.AnalyzePoolEntry;
 import com.zjucsc.attack.base.AnalyzePoolEntryImpl;
@@ -12,13 +9,12 @@ import com.zjucsc.attack.common.*;
 import com.zjucsc.attack.modbus.ModbusOptAnalyzer;
 import com.zjucsc.attack.pn_io.PnioOptDecode;
 import com.zjucsc.attack.s7comm.S7OptAnalyzer;
-import com.zjucsc.attack.s7comm.S7OptCommandConfig;
-import com.zjucsc.attack.s7comm.S7OptName;
+import com.zjucsc.attack.config.S7OptCommandConfig;
+import com.zjucsc.attack.s7comm.S7OpName;
 import com.zjucsc.attack.s7comm.s7Opdecode;
 import com.zjucsc.attack.util.ArtOptAttackUtil;
 import com.zjucsc.common.bean.ThreadPoolInfoWrapper;
 import com.zjucsc.common.common_util.CommonUtil;
-import com.zjucsc.tshark.Entry;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.slf4j.Logger;
@@ -31,7 +27,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.function.Function;
 
 /**
  * #project packet-master-web
@@ -237,13 +232,17 @@ public class AttackCommon {
         }
     }
 
+    /**
+     * 操作指令解析
+     * @param layer
+     */
     public static void appendOptCommandDecode(FvDimensionLayer layer){
-        final Set<S7OptName> s7OptNameSet = ArtOptAttackUtil.getS7OptNameSetByProtocol(layer.protocol);
-        if (s7OptNameSet != null && s7OptNameSet.size() > 0){
+        final Set<BaseOpName> baseOpNames = ArtOptAttackUtil.getS7OptNameSetByProtocol(layer.protocol);
+        if (baseOpNames != null && baseOpNames.size() > 0){
             AbstractOptCommandAttackEntry abstractOptCommandAttackEntry = COMMAND_DECODE_HASH_MAP.get(layer.protocol);
             if (abstractOptCommandAttackEntry!=null){
                 OPT_COMMAND_ANALYZE_SERVICE.execute(()->{
-                    for (S7OptName s7OptName : s7OptNameSet) {
+                    for (BaseOpName s7OptName : baseOpNames) {
                         abstractOptCommandAttackEntry.analyze(layer,s7OptName);
                     }
                 });

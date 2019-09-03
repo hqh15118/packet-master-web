@@ -8,7 +8,7 @@ import com.zjucsc.tshark.packets.FvDimensionLayer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class s7Opdecode extends AbstractOptCommandAttackEntry {
+public class s7Opdecode extends AbstractOptCommandAttackEntry<S7OpName> {
 
     private List<DBclass> DBlist = new ArrayList<>();
 
@@ -63,7 +63,7 @@ public class s7Opdecode extends AbstractOptCommandAttackEntry {
         return null;
     }
 
-    private boolean OperationDecode(List<DBclass> DBlist, S7OptName s7OptName)
+    private boolean OperationDecode(List<DBclass> DBlist, S7OpName s7OptName)
     {
         if(DBlist==null || s7OptName ==null)
         {
@@ -98,16 +98,14 @@ public class s7Opdecode extends AbstractOptCommandAttackEntry {
     }
 
     @Override
-    public Object analyze(FvDimensionLayer layer, S7OptName s7OptName, Object... objs) {
+    public Object analyze(FvDimensionLayer layer, S7OpName s7OptName, Object... objs) {
         if(!layer.eth_dst[0].equals(s7OptName.getDeviceMac()))
         {
             return null;
         }
         if(OperationDecode(Writejobdecode(layer), s7OptName))
         {
-            //fix
             commandCallback(s7OptName.getOpName(),layer);
-//            return s7OptName.getOpname();
         }
         return null;
     }

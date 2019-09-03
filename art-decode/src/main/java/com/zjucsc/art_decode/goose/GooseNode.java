@@ -1,5 +1,6 @@
 package com.zjucsc.art_decode.goose;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -68,6 +69,5 @@ public class GooseNode {
     public static boolean containNode(GooseNode prev,GooseNode next){
         return prev.getNexts().contains(next);
     }
-
 
 }

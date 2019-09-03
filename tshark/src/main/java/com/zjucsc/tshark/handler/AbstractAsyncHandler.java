@@ -43,16 +43,13 @@ public abstract class AbstractAsyncHandler<T> extends AbstractHandler<T> {
             }
         }else{
             //run handle in async schema
-            executor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    T t = handle(inValue);
-                    if (nextHandler()!=null) {
-                        nextHandler().handleAndPass(t);
-                    }
-                    for (PipeLine pipeLine : pipeLines) {
-                        pipeLine.pushDataAtHead(t);
-                    }
+            executor.execute(() -> {
+                T t = handle(inValue);
+                if (nextHandler()!=null) {
+                    nextHandler().handleAndPass(t);
+                }
+                for (PipeLine pipeLine : pipeLines) {
+                    pipeLine.pushDataAtHead(t);
                 }
             });
         }

@@ -18,9 +18,10 @@ import com.zjucsc.application.util.TsharkUtil;
 import com.zjucsc.art_decode.ArtDecodeCommon;
 import com.zjucsc.art_decode.base.BaseConfig;
 import com.zjucsc.attack.AttackCommon;
+import com.zjucsc.attack.bean.BaseOpName;
 import com.zjucsc.attack.bean.BaseOptConfig;
-import com.zjucsc.attack.s7comm.S7OptCommandConfig;
-import com.zjucsc.attack.s7comm.S7OptName;
+import com.zjucsc.attack.config.S7OptCommandConfig;
+import com.zjucsc.attack.s7comm.S7OpName;
 import com.zjucsc.attack.util.ArtOptAttackUtil;
 import com.zjucsc.base.util.SpringContextUtil;
 import com.zjucsc.common.common_util.PrinterUtil;
@@ -351,11 +352,10 @@ public class InitConfigurationService implements ApplicationRunner {
                 }
             }
         }
-
         /*************************************
          * 加载操作指令解析
          ************************************/
-        List<S7OptName> s7OptNameList = artOptNameMapper.selectBatch();
+        List<BaseOpName> s7OptNameList = artOptNameMapper.selectBatch();
         ArtOptAttackUtil.resetOpName2OptConfig(s7OptNameList);
         /*************************************
          * 加载操作指令公式

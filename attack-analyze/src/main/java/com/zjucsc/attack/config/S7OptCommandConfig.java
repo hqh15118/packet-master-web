@@ -1,10 +1,13 @@
-package com.zjucsc.attack.s7comm;
+package com.zjucsc.attack.config;
+
+import com.zjucsc.attack.s7comm.CommandWrapper;
 
 import java.util.List;
 
 public class S7OptCommandConfig implements Comparable<S7OptCommandConfig>{
     private int id;
     private String protocol;
+    //对应BaseOpName的OpName
     private String process_operate;
     private List<CommandWrapper> rule;
     private String describe;

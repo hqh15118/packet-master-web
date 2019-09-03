@@ -2,12 +2,16 @@ package com.zjucsc.common.common_util;
 
 import com.zjucsc.common.bean.CustomThreadPoolExecutor;
 import com.zjucsc.common.bean.ThreadPoolInfoWrapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.concurrent.*;
 
 public class CommonUtil {
+
+    private static final Logger logger = LoggerFactory.getLogger(CommonUtil.class);
     private static final ThreadLocal<StringBuilder> GLOBAL_THREAD_LOCAL_STRING_BUILDER =
             new ThreadLocal<StringBuilder>(){
                 @Override
@@ -59,7 +63,7 @@ public class CommonUtil {
             return new CustomThreadPoolExecutor(1, 1, Integer.MAX_VALUE, TimeUnit.SECONDS, new LinkedBlockingQueue<>(poolSize),
                     threadFactory,
                     (r, executor) -> {
-
+                        logger.error("[{}] reject task : [{}]",tag,r);
                     }).setTag(tag);
         }else{
             return new CustomThreadPoolExecutor(1, 1, Integer.MAX_VALUE, TimeUnit.SECONDS, new LinkedBlockingQueue<>(poolSize),

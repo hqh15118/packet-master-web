@@ -1,8 +1,9 @@
 package com.zjucsc.attack.util;
 
+import com.zjucsc.attack.bean.BaseOpName;
 import com.zjucsc.attack.s7comm.CommandWrapper;
-import com.zjucsc.attack.s7comm.S7OptCommandConfig;
-import com.zjucsc.attack.s7comm.S7OptName;
+import com.zjucsc.attack.config.S7OptCommandConfig;
+import com.zjucsc.attack.s7comm.S7OpName;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,11 +15,11 @@ public class ArtOptAttackUtil {
     /**************************************
      * 操作名称 -- 操作具体配置
      *************************************/
-    public static final ConcurrentHashMap<String, S7OptName> OPNAME_TO_OPT_CONFIG = new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<String, BaseOpName> OPNAME_TO_OPT_CONFIG = new ConcurrentHashMap<>();
     /***************************************
      * 协议 -- 该协议下的所有操作配置
      **************************************/
-    public static final ConcurrentHashMap<String,ConcurrentSkipListSet<S7OptName>> PROTOCOL_TO_OPT_CONFIGS =
+    public static final ConcurrentHashMap<String,ConcurrentSkipListSet<BaseOpName>> PROTOCOL_TO_OPT_CONFIGS =
             new ConcurrentHashMap<>();
     /**
      * opName -- 该opName对应的配置
@@ -27,25 +28,26 @@ public class ArtOptAttackUtil {
             = new ConcurrentHashMap<>();
 
     /***************************************
-     * @param s7OptNames
+     * 重置opName 配置
+     * opName -- 配置（用于解析协议指令）
      ***************************************/
-    public static void resetOpName2OptConfig(List<S7OptName> s7OptNames){
+    public static void resetOpName2OptConfig(List<? extends BaseOpName> baseOpNames){
         OPNAME_TO_OPT_CONFIG.clear();
-        for (S7OptName s7OptName : s7OptNames) {
-            OPNAME_TO_OPT_CONFIG.put(s7OptName.getOpName(),s7OptName);
-            Set<S7OptName> s7OptNameSet = PROTOCOL_TO_OPT_CONFIGS.putIfAbsent(s7OptName.getProtocol(),
-                    new ConcurrentSkipListSet<S7OptName>(){{add(s7OptName);}});
-            if (s7OptNameSet != null){
-                s7OptNameSet.add(s7OptName);
+        for (BaseOpName baseOpName : baseOpNames) {
+            OPNAME_TO_OPT_CONFIG.put(baseOpName.getOpName(),baseOpName);
+            Set<BaseOpName> baseOpNameSet = PROTOCOL_TO_OPT_CONFIGS.putIfAbsent(baseOpName.getProtocol(),
+                    new ConcurrentSkipListSet<BaseOpName>(){{add(baseOpName);}});
+            if (baseOpNameSet != null){
+                baseOpNameSet.add(baseOpName);
             }
         }
     }
 
-    public static S7OptName getS7OptNameByOpName(String opName){
+    public static BaseOpName getS7OptNameByOpName(String opName){
         return OPNAME_TO_OPT_CONFIG.get(opName);
     }
 
-    public static Set<S7OptName> getS7OptNameSetByProtocol(String protocol){
+    public static Set<BaseOpName> getS7OptNameSetByProtocol(String protocol){
         return PROTOCOL_TO_OPT_CONFIGS.get(protocol);
     }
 

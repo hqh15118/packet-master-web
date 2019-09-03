@@ -1,6 +1,6 @@
 package com.zjucsc.application.system.service.hessian_mapper;
 
-import com.zjucsc.attack.s7comm.S7OptCommandConfig;
+import com.zjucsc.attack.config.S7OptCommandConfig;
 
 import java.util.List;
 
