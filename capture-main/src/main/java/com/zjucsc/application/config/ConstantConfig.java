@@ -32,7 +32,11 @@ public class ConstantConfig {
 
     private int simulateStartNum;
 
-    private String virtual_network;
-
     private String tshark_path;
+
+    private String temp_path;
+
+    private String max_temp_file_size;
+
+    private String wireshark_version;
 }

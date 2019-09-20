@@ -28,6 +28,7 @@ import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.socket_io.*;
 import com.zjucsc.tshark.TsharkCommon;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -65,7 +66,13 @@ public class InitConfigurationService implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws IllegalAccessException, NoSuchFieldException, ProtocolIdNotValidException, IOException {
-        String str = null;
+        if (StringUtils.isNotBlank(constantConfig.getTemp_path())){
+            Common.WIRESHARK_TEMP_FILE = constantConfig.getTemp_path();
+        }
+        if (StringUtils.isNotBlank(constantConfig.getMax_temp_file_size())){
+            Common.MAX_WIREESHARK_SIZE_IN_BYTE = Long.parseLong(constantConfig.getMax_temp_file_size());
+        }
+        String str;
         if (constantConfig.getTshark_path() == null) {str = TsharkUtil.checkTsharkValid();}
         else{str = constantConfig.getTshark_path();}
         if (str == null) {
@@ -295,7 +302,6 @@ public class InitConfigurationService implements ApplicationRunner {
         /*****************************
          * 初始化所有的正常报文
          ****************************/
-
         List<RightPacketInfo> rightPacketInfos = packetInfoMapper.selectAllRightPacketInfo();
         for (RightPacketInfo rightPacketInfo : rightPacketInfos) {
             CacheUtil.addNormalRightPacketInfo(rightPacketInfo);

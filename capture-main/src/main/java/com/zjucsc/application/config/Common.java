@@ -38,7 +38,9 @@ public class Common {
     /**
      * wireshark 存储pcap文件的临时目录
      */
-    public static final String WIRESHARK_TEMP_FILE = "C:\\temp";
+    public static String WIRESHARK_TEMP_FILE = "C:\\temp";
+
+    public static long MAX_WIREESHARK_SIZE_IN_BYTE = 1024 * 1024 * 1024;//1G
     /**
      * cache5
      * DEVICE_TAG 五元组过滤器

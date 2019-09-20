@@ -15,6 +15,7 @@ import com.zjucsc.application.util.ArtDecodeUtil;
 import com.zjucsc.application.util.CacheUtil;
 import com.zjucsc.base.util.SysRunStateUtil;
 import com.zjucsc.art_decode.ArtDecodeCommon;
+import com.zjucsc.common.common_util.PrinterUtil;
 import com.zjucsc.socket_io.SocketIoEvent;
 import com.zjucsc.socket_io.SocketServiceCenter;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
@@ -219,25 +220,48 @@ public class ScheduledService {
         }
     }
 
+    @Scheduled(cron = "0 0/10 * * * ? ")
+    public synchronized void detectWiresharkTempFile() throws InterruptedException {
+        File[] files = getFiles();
+        if (files!=null){
+            for (File file : files) {
+                if(file.getName().startsWith("wireshark") && detect(file.length())){
+                    restartTsharkProcess();
+                    Thread.sleep(5000);
+                    deletePcapFileScheduled();
+                    break;
+                }
+            }
+        }
+    }
+
+    private boolean detect(long length) {
+        return length > Common.MAX_WIREESHARK_SIZE_IN_BYTE;
+    }
+
     //定时删除临时的wireshark报文
     //@Scheduled(cron = "0 5 0 ? * MON-FRI")
-    @Scheduled(cron = "30 0 0 * * ? ")
+    //@Scheduled(cron = "30 0 0 * * ? ")
     public synchronized void deletePcapFileScheduled(){
-        File file = new File(Common.WIRESHARK_TEMP_FILE);
-        File[] files = file.listFiles();
+        File[] files = getFiles();
         if (files!=null) {
             for (File tempFile : files) {
                 if (tempFile.getName().startsWith("wireshark")) {//wireshark temp pcap file
                     File file1 = new File(tempFile.getAbsolutePath());
                     if(file1.delete()){
-                        System.out.println("成功删除【wireshark】临时文件" + file1.getAbsolutePath());
+                        PrinterUtil.printMsg("成功删除【wireshark】临时文件" + file1.getAbsolutePath());
                     } //如果文件正在被占用，那么会先删除失败，没关系第二天继续尝试就好了
                     else{
-                        System.out.println("无法删除【wireshark】临时文件" + file1.getAbsolutePath());
+                        PrinterUtil.printMsg("无法删除【wireshark】临时文件" + file1.getAbsolutePath());
                     }
                 }
             }
         }
+    }
+
+    private File[] getFiles(){
+        File file = new File(Common.WIRESHARK_TEMP_FILE);
+        return file.listFiles();
     }
     //@Scheduled(fixedRate = 1000)
 //    private void sendAllFvDimensionPacket() throws InterruptedException {
@@ -302,6 +326,7 @@ public class ScheduledService {
             }
             SocketServiceCenter.updateAllClient(SocketIoEvent.ART_INFO, StatisticsData.ART_INFO_SEND_SINGLE);
             addArtData("timestamp", AppCommonUtil.getDateFormat().format(new Date()));
+            System.out.println(StatisticsData.ART_INFO_SEND_SINGLE);
         }
     }
 

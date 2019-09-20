@@ -112,7 +112,7 @@ public abstract class BasePreProcessor implements PreProcessor {
         if (extConfig()!=null && extConfig().length() > 0) {
             commandBuilder.append(" ").append(extConfig());
         }
-        commandBuilder.append(" -Y ").append("\"");
+        commandBuilder/*.append(" -b filesize:102400 -b files:5 ")*/.append(" -Y ").append("\"");
         for (int i = 0; i < protocolFilterField().length - 1; i++) {
             commandBuilder.append(protocolFilterField()[i]).append(" or");
         }

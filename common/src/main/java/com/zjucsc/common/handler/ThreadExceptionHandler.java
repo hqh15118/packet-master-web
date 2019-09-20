@@ -15,6 +15,6 @@ public class ThreadExceptionHandler implements Thread.UncaughtExceptionHandler{
     private static Logger logger = LoggerFactory.getLogger(ThreadPoolExecutor.class);
     @Override
     public void uncaughtException(Thread t, Throwable e) {
-        logger.error("thread [{}] catch a un_handle exception",t.getName(),e);
+        //logger.error("thread [{}] catch a un_handle exception",t.getName(),e);
     }
 }

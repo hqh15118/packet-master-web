@@ -217,7 +217,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     private BadPacketAnalyzeHandler badPacketAnalyzeHandler = new BadPacketAnalyzeHandler(Executors.newFixedThreadPool(1,
             r -> {
                 Thread thread = new Thread(r);
-                thread.setName("-bad_packet_analyze_handler-");
+                thread.setName("-bad_packet_analyze_handler-" + thread.getId());
                 thread.setUncaughtExceptionHandler(COMMON_THREAD_EXCEPTION_HANDLER);
                 return thread;
             }));
@@ -230,7 +230,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             = new AbstractAsyncHandler<FvDimensionLayer>(CommonUtil.getSingleThreadPoolSizeThreadPool(100000,
             r -> {
                 Thread thread = new Thread(r);
-                thread.setName("-fv-dimension-entry-handler-");
+                thread.setName("-fv-dimension-entry-handler-" + thread.getId());
                 thread.setUncaughtExceptionHandler((t, e) -> {
                     log.error("-fv-dimension-entry-捕获异常=====>",e);
                 });
@@ -257,8 +257,14 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             fvDimensionLayer.protocol = PacketDecodeUtil.discernPacket(fvDimensionLayer);   //t-s
             //解析原始数据
             byte[] payload = PacketDecodeUtil.hexStringToByteArray2(fvDimensionLayer.custom_ext_raw_data[0]);    //t-s
+            if ("2.0".equals(constantConfig.getWireshark_version())){
+                //2.0原始数据带冒号
+                fvDimensionLayer.tcpPayload = PacketDecodeUtil.hexStringToByteArray(fvDimensionLayer.tcp_payload[0]);
+            }else{
+                //3.0原始数据不带冒号
+                fvDimensionLayer.tcpPayload = PacketDecodeUtil.hexStringToByteArray2(fvDimensionLayer.tcp_payload[0]);
+            }
             fvDimensionLayer.rawData = payload;
-            fvDimensionLayer.tcpPayload = PacketDecodeUtil.hexStringToByteArray2(fvDimensionLayer.tcp_payload[0]);
             preProcess(fvDimensionLayer);
 
             fvDimensionLayer.deviceNumber = CacheUtil.getTargetDeviceNumberByTag(fvDimensionLayer.ip_dst[0],fvDimensionLayer.eth_dst[0]);

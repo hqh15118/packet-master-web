@@ -36,7 +36,7 @@ public class FvDimensionLayer implements Serializable,Comparable<FvDimensionLaye
     @JSONField(deserialize = false)
     public String funCodeMeaning = "--";
     //long格式的时间戳 , ns 为单位
-    @JSONField(deserialize = false,serialize = false)
+    @JSONField(serialize = false)
     public long timeStampInLong;
     public String[] tcp_flags_ack={""};
     public String[] tcp_flags_syn={""};
