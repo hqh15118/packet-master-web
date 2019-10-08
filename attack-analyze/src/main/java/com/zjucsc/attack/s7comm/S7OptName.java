@@ -1,5 +1,7 @@
 package com.zjucsc.attack.s7comm;
 
+import java.util.Objects;
+
 public class S7OptName implements Comparable<S7OptName>{
     private int id;
     private String protocol;
@@ -100,12 +102,22 @@ public class S7OptName implements Comparable<S7OptName>{
 
     @Override
     public int compareTo(S7OptName o) {
-        if (o == null){
-            return 1;
-        }
-        if (opName.equals(o.opName)){
+        if (equals(o)){
             return 0;
         }
         return opName.hashCode() > o.opName.hashCode() ? 1 : -1;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof S7OptName)) return false;
+        S7OptName s7OptName = (S7OptName) o;
+        return Objects.equals(getOpName(), s7OptName.getOpName());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getOpName());
     }
 }

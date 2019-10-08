@@ -4,16 +4,11 @@ import com.zjucsc.application.domain.bean.OptFilterForFront;
 import com.zjucsc.application.domain.bean.Rule;
 import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
 import com.zjucsc.application.tshark.filter.OperationPacketFilter;
-import com.zjucsc.common.exceptions.OptFilterNotValidException;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import static com.zjucsc.application.util.CacheUtil.convertIdToName;
 
 @Slf4j
 public class OptFilterUtil {
@@ -76,7 +71,7 @@ public class OptFilterUtil {
 //                        CommonConfigUtil.getTargetProtocolFuncodeMeaning(protocolName,optFilter.getFunCode()));
 //            }
             //white
-            analyzer.addWhiteRule(funCode, CommonConfigUtil.getTargetProtocolFuncodeMeaning(protocolName,funCode));
+            analyzer.addWhiteRule(funCode, ProtocolUtil.getTargetProtocolFuncodeMeaning(protocolName,funCode));
         }
     }
 

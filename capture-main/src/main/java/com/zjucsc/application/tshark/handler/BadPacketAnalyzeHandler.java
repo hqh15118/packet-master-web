@@ -158,7 +158,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<FvDimensionLay
                 return PacketDecodeUtil.getPacketDetailProtocol(layer);
             case "104apci":
                 return PacketDecodeUtil.getIEC104DetailType(layer);
-            default:return PacketDecodeUtil.discernPacket(layer);
+            default:return PacketDecodeUtil.discernPacket(layer.frame_protocols[0]);
         }
 
     }

@@ -24,6 +24,12 @@ public class ConfigUtil {
                     ")");
         } catch (SQLException e) {
             e.printStackTrace();
+        }finally {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -38,18 +44,15 @@ public class ConfigUtil {
                 return def;
             }
         }
-        if (preparedStatement!=null){
-            try {
-                preparedStatement.setString(1,key);
-                preparedStatement.execute();
-                ResultSet resultSet = preparedStatement.getResultSet();
-                String res =  resultSet.getString("v");
-                return res == null ? def : res;
-            } catch (SQLException e) {
-                return def;
-            }
+        try {
+            preparedStatement.setString(1,key);
+            preparedStatement.execute();
+            ResultSet resultSet = preparedStatement.getResultSet();
+            String res =  resultSet.getString("v");
+            return res == null ? def : res;
+        } catch (SQLException e) {
+            return def;
         }
-        return def;
     }
 
     public synchronized static boolean setData(String k,String v){

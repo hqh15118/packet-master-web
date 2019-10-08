@@ -5,7 +5,7 @@ import java.util.List;
 
 public class GooseNode {
     //连接的上一个Node
-    private GooseNode prev = new GooseNode();
+    private GooseNode prev;
     //该Node连接的所有Node
     private List<GooseNode> nexts = new LinkedList<>();
 

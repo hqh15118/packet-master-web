@@ -1,4 +1,4 @@
-package com.zjucsc.application.config;
+package com.zjucsc.application.config.properties;
 
 import com.zjucsc.tshark.TsharkCommon;
 import lombok.Data;

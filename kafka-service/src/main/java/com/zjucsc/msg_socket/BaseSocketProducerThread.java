@@ -1,9 +1,6 @@
 package com.zjucsc.msg_socket;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Properties;
@@ -69,7 +66,9 @@ public class BaseSocketProducerThread<T> extends Thread{
             throw new RuntimeException("config/socket.properties文件不存在");
         }
         Properties properties = new Properties();
-        properties.load(new FileInputStream(file));
+        try(InputStream is = new FileInputStream(file)){
+            properties.load(is);
+        }
         return new String[]{
                 properties.getProperty("socket.client.remote.address"),
                 properties.getProperty("socket.client.remote.port"),

@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 @EqualsAndHashCode(callSuper = false)
 @Data
-public class User  extends BaseResponse implements Serializable {
+public class User  extends BaseResponse{
     private String name;
     private String password;
     private String role;
@@ -24,9 +24,4 @@ public class User  extends BaseResponse implements Serializable {
                 '}';
     }
 
-
-    public static class UserForFront{
-        public String userName;
-        public String password;
-    }
 }

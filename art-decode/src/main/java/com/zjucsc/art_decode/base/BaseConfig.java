@@ -63,6 +63,13 @@ public class BaseConfig implements Serializable , Comparable<BaseConfig>{
 
     @Override
     public int compareTo(BaseConfig o) {
+        if (o == this){
+            return 0;
+        }
+        if (this.getTag().equals(o.getTag()))
+        {
+            return 0;
+        }
         return this.getTag().hashCode() > o.getTag().hashCode() ? 1 : -1;
     }
 

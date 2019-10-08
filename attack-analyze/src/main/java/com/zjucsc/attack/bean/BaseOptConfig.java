@@ -2,6 +2,7 @@ package com.zjucsc.attack.bean;
 
 
 import java.util.List;
+import java.util.Objects;
 
 public class BaseOptConfig implements Comparable<BaseOptConfig>{
 
@@ -46,7 +47,7 @@ public class BaseOptConfig implements Comparable<BaseOptConfig>{
 
     @Override
     public int compareTo(BaseOptConfig o) {
-        if (o.getOpname().equals(this.getOpname())){
+        if(equals(o)){
             return 0;
         }
         return o.getOpname().hashCode() > o.getOpname().hashCode() ? 1 : -1;
@@ -66,5 +67,18 @@ public class BaseOptConfig implements Comparable<BaseOptConfig>{
 
     public void setEnable(boolean enable) {
         this.enable = enable;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof BaseOptConfig)) return false;
+        BaseOptConfig that = (BaseOptConfig) o;
+        return Objects.equals(getOpname(), that.getOpname());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getOpname());
     }
 }

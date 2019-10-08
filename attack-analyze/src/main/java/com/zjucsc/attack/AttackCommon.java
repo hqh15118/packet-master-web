@@ -29,6 +29,7 @@ import redis.clients.jedis.JedisPool;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Function;
@@ -173,8 +174,10 @@ public class AttackCommon {
             }
             Properties properties = new Properties();
             String host = null, port = null;
+            InputStream is = null;
             try {
-                properties.load(new FileInputStream(file));
+                is = new FileInputStream(file);
+                properties.load(is);
                 host = properties.getProperty("redis_host");
                 if (host == null) {
                     throw new RedisConfigNotFoundException("文件：根目录/config/attack-redis.properties不存在[redis_host]属性");
@@ -185,6 +188,14 @@ public class AttackCommon {
                 }
             } catch (IOException | RedisConfigNotFoundException e) {
                 e.printStackTrace();
+            }finally {
+                if (is != null){
+                    try {
+                        is.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
             if (port != null) {
                 GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();

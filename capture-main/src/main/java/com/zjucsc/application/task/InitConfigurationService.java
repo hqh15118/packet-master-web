@@ -4,6 +4,10 @@ import com.corundumstudio.socketio.listener.DataListener;
 import com.zjucsc.IProtocolFuncodeMap;
 import com.zjucsc.application.config.*;
 import com.zjucsc.application.config.auth.Auth;
+import com.zjucsc.application.config.properties.ConstantConfig;
+import com.zjucsc.application.config.properties.PreProcessor;
+import com.zjucsc.application.config.properties.TsharkConfig;
+import com.zjucsc.application.config.sys.SocketIoConfig;
 import com.zjucsc.application.controller.AttackConfigController;
 import com.zjucsc.application.domain.bean.*;
 import com.zjucsc.application.domain.non_hessian.DeviceMaxFlow;
@@ -41,7 +45,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 import static com.zjucsc.application.util.CacheUtil.*;
-import static com.zjucsc.application.util.CommonConfigUtil.addProtocolFuncodeMeaning;
+import static com.zjucsc.application.util.ProtocolUtil.addProtocolFuncodeMeaning;
 
 /**
  * 加载组态配置到内存中 + 保存到本地数据库

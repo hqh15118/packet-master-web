@@ -2,6 +2,7 @@ package com.zjucsc.attack.bean;
 
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class BaseConfig implements Serializable , Comparable<BaseConfig>{
     private String protocol;
@@ -67,6 +68,24 @@ public class BaseConfig implements Serializable , Comparable<BaseConfig>{
 
     @Override
     public int compareTo(BaseConfig o) {
+        boolean b = equals(o);
+        if (b)
+        {
+            return 0;
+        }
         return this.getTag().hashCode() > o.getTag().hashCode() ? 1 : -1;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof BaseConfig)) return false;
+        BaseConfig that = (BaseConfig) o;
+        return Objects.equals(getTag(), that.getTag());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getTag());
     }
 }

@@ -1,4 +1,4 @@
-package com.zjucsc.application.config;
+package com.zjucsc.application.config.properties;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;

@@ -46,7 +46,7 @@ public class ArtOptCommandServiceImpl implements IArtOptCommandService {
 
     @Override
     public void changeCommandState(CommandState commandState) {
-        String changeProtocol = artOptCommandMapper.changeState(commandState.getId(),commandState.isEnable());
+        artOptCommandMapper.changeState(commandState.getId(),commandState.isEnable());
         resetConfigs();
     }
 

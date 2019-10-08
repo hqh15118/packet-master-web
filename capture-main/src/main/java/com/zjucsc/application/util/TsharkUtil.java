@@ -1,5 +1,6 @@
 package com.zjucsc.application.util;
 
+import org.apache.commons.io.IOUtils;
 import org.pcap4j.core.*;
 import org.pcap4j.packet.namednumber.DataLinkType;
 
@@ -40,14 +41,15 @@ public class TsharkUtil {
                 System.err.println("未检测到tshark【mywireshark_plugin.lua】插件，创建失败，检查权限");
                 return false;
             }
-            InputStream is = TsharkUtil.class.getResourceAsStream("/mywireshark_plugin.lua");
-            int length = is.available();
-            byte[] data = new byte[length];
-            int readLength = is.read(data);
-            assert readLength == length;
-            OutputStream os = new FileOutputStream(file);
-            os.write(data);
-            os.flush();
+            try(InputStream is = TsharkUtil.class.getResourceAsStream("/mywireshark_plugin.lua");
+                OutputStream os = new FileOutputStream(file)){
+                int length = is.available();
+                byte[] data = new byte[length];
+                int readLength = is.read(data);
+                assert readLength == length;
+                os.write(data);
+                os.flush();
+            }
         }else{
             System.out.println("检测到tshark插件>>");
         }

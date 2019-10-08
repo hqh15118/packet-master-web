@@ -61,9 +61,6 @@ public class S7OptCommandConfig implements Comparable<S7OptCommandConfig>{
 
     @Override
     public int compareTo(S7OptCommandConfig o) {
-        if (o == null){
-            return 1;
-        }
         return process_operate.compareTo(o.process_operate);
     }
 
@@ -86,4 +83,6 @@ public class S7OptCommandConfig implements Comparable<S7OptCommandConfig>{
                 ", \nenable=" + enable +
                 "\n}";
     }
+
+
 }

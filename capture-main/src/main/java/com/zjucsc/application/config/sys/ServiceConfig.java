@@ -1,4 +1,4 @@
-package com.zjucsc.application.config;
+package com.zjucsc.application.config.sys;
 
 import com.zjucsc.base.util.ThreadPoolUtil;
 import com.zjucsc.common.bean.CustomThreadPoolExecutor;

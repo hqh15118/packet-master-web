@@ -165,33 +165,13 @@ public class PacketDecodeUtil {
     }
 
     //eth:llc:tcp:data
-    public static String discernPacket(FvDimensionLayer layer){
-//        String protocolStack = layer.frame_protocols[0];
-//        if (protocolStack.endsWith("s7comm")){
-//            return "s7comm";
-//        }
-//        if (protocolStack.endsWith("modbus"))
-//        {
-//            return MODBUS;
-//        }
-//        else if(protocolStack.endsWith("dnp3"))
-//        {
-//
-//        }
-//        else if(protocolStack.endsWith("104apci"))
-//        {
-//            return IEC104_APCI;
-//        }
-//        else if (protocolStack.endsWith("104asdu")){
-//            return IEC104_ASDU;
-//        }
-        if(layer.frame_protocols[0].endsWith("data"))
+    public static String discernPacket(String protocolStack){
+        if(protocolStack.endsWith("data"))
         {
             StringBuilder sb = CommonUtil.getGlobalStringBuilder();
-            String tempProtocol = layer.frame_protocols[0];
             char ch;
-            for (int i = tempProtocol.length() - 6;; i--) {
-                if ((ch = tempProtocol.charAt(i))!=':'){
+            for (int i = protocolStack.length() - 6;; i--) {
+                if ((ch = protocolStack.charAt(i))!=':'){
                     sb.append(ch);
                 }else{
                     break;
@@ -199,9 +179,7 @@ public class PacketDecodeUtil {
             }
             return sb.reverse().toString();
         }
-//        else{
-        return getUnDefinedPacketProtocol(layer.frame_protocols[0]);
-//        }
+        return getUnDefinedPacketProtocol(protocolStack);
     }
 
     public static String decodeS7Protocol(FvDimensionLayer layer){
@@ -612,5 +590,25 @@ public class PacketDecodeUtil {
             } else {
                 return PACKET_PROTOCOL.S7;
             }
+    }
+
+    public static byte[] getTcpPayload(byte[] rawData){
+        /**
+         * 前14个字节是以太网的头 [0,13]
+         * (第15个字节的后四位 * 4)代表IP层头的长度 data[14] ==> ip_len [14,13+ip_len]
+         * 【TCP】
+         * 前12个字节都不是 [14+ip_len,25+ip_len]
+         * 第13个字节的前4为代表TCP头的长度 data[26+ip_len] ==> tcp_len
+         * 13+ip_len+tcp_len
+         * @param rawData
+         * @return
+         */
+        int ipHeaderLen = (rawData[14] & 0x0F) << 2;
+        int tcpHeaderLen = ( rawData[26 + ipHeaderLen] & 0xF0) >> 2;
+        int tcpPayloadStartIndex = 13 + ipHeaderLen + tcpHeaderLen + 1;
+        int tcpPayloadLen = rawData.length - tcpPayloadStartIndex;
+        byte[] tcpPayload = new byte[tcpPayloadLen];
+        System.arraycopy(rawData,tcpPayloadStartIndex,tcpPayload,0,tcpPayload.length);
+        return tcpPayload;
     }
 }

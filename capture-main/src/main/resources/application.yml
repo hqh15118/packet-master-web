@@ -2,7 +2,7 @@ myconfig:
   #global_address : 192.168.1.106
   #global_address : 192.168.0.114
   #global_address : 10.180.81.207
-  global_address : 192.168.41.7
+  global_address : localhost
   admin_server_port : 8989
   packet_master_web_port : 8080
   openAOPLog : true   # 是否开启请求日志
@@ -14,7 +14,7 @@ myconfig:
   reOpenTableName : 20190703  # 重放的数据库表名【packet_info_】 + 【表名】
   simulateStartNum : 0        # 从第几条数据开始
   #tshark可执行文件所在路径
-  tshark-path: C:\Users\Administrator\Desktop\Release
+  tshark-path: C:\Users\Administrator\Desktop\Release\tshark
   #临时文件路径，默认C:\\temp
   temp_path :
   # 最大字节数，byte为单位

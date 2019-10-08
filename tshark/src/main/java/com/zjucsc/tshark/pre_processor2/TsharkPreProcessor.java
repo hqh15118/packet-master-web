@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.util.concurrent.Semaphore;
 
 public class TsharkPreProcessor implements PreProfessor2{
 
@@ -16,6 +17,7 @@ public class TsharkPreProcessor implements PreProfessor2{
     private Process tsharkProcess;
     private Logger logger = LoggerFactory.getLogger(TsharkPreProcessor.class);
     private String bindCommand;
+    private volatile boolean running = true;
 
     @Override
     public void registerPacketCallback(TsharkListener tsharkListener, NewDataCallback newDataCallback) {
@@ -28,18 +30,18 @@ public class TsharkPreProcessor implements PreProfessor2{
     }
 
     @Override
-    public void startTshark()  {
+    public synchronized void startTshark()  {
         if (bindCommand == null) {
             bindCommand = tsharkPath + " -l -n " +
                     "-T ek " +
-                    "-f " + "\"not ether src \"" + macAddress + " " +
-                    " -i " + interfaceName;
+                    "-f " + "\"not ether src " + macAddress + " \"" +
+                    " -i " + interfaceName + " -Y s7comm";
         }
         try {
             tsharkProcess = Runtime.getRuntime().exec(bindCommand);
         } catch (IOException e) {
             logger.error("can not start tshark process ... " , e);
-            tsharkListener.error(e.toString());
+            tsharkListener.error(e.toString(),e);
         }
         InputStream tsharkErrorStream = tsharkProcess.getErrorStream();
         Thread tsharkErrorMsgThread = new Thread(new ExceptionSafeRunnable<Object>() {
@@ -65,7 +67,7 @@ public class TsharkPreProcessor implements PreProfessor2{
 
     private void handleTsharkMainMsg(InputStream inputStream) {
         try(BufferedReader bfReader = new BufferedReader(new InputStreamReader(inputStream))){
-            for (;;){
+            for (;running;){
                 String data = bfReader.readLine();
                 if (data!=null && data.length() > 90){
                     newDataCallback.callback(data);
@@ -73,7 +75,7 @@ public class TsharkPreProcessor implements PreProfessor2{
             }
         }catch (IOException e) {
             logger.error("" , e);
-            tsharkListener.error(e.toString());
+            tsharkListener.error("error while reading tshark output...",e);
         }
     }
 
@@ -82,7 +84,7 @@ public class TsharkPreProcessor implements PreProfessor2{
             String data;
             while ((data = bfReader.readLine()) != null) {
                 if (!data.startsWith("Capturing")) {
-                    tsharkListener.error(data);
+                    tsharkListener.error(data,null);
                 }else{
                     tsharkListener.success(bindCommand,tsharkProcess);
                     startMainCapture();

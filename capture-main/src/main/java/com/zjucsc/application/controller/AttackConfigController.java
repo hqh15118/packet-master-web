@@ -13,14 +13,12 @@ import com.zjucsc.application.system.service.hessian_mapper.DosConfigMapper;
 import com.zjucsc.application.system.service.hessian_mapper.OptAttackMapper;
 import com.zjucsc.application.system.service.hessian_mapper.PacketInfoMapper;
 import com.zjucsc.application.util.CacheUtil;
-import com.zjucsc.application.util.CommonConfigUtil;
 import com.zjucsc.application.util.ConfigUtil;
 import com.zjucsc.attack.bean.*;
 import com.zjucsc.attack.AttackCommon;
 import com.zjucsc.attack.config.*;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import io.swagger.annotations.ApiOperation;
-import kafka.utils.Json;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

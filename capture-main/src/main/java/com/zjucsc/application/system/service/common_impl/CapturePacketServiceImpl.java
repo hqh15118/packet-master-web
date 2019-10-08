@@ -1,13 +1,15 @@
 package com.zjucsc.application.system.service.common_impl;
 
 import com.zjucsc.application.config.*;
+import com.zjucsc.application.config.properties.ConstantConfig;
+import com.zjucsc.application.config.properties.PreProcessor;
 import com.zjucsc.application.domain.bean.ArtPacketDetail;
 import com.zjucsc.application.domain.bean.Device;
 import com.zjucsc.application.domain.non_hessian.CommandWrapper;
+import com.zjucsc.application.exception.DecodeException;
 import com.zjucsc.application.system.service.PacketAnalyzeService;
 import com.zjucsc.application.system.service.common_iservice.CapturePacketService;
 import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
-import com.zjucsc.application.system.service.hessian_mapper.ArtConfigMapper;
 import com.zjucsc.application.tshark.capture.NewFvDimensionCallback;
 import com.zjucsc.application.tshark.capture.ProcessCallback;
 import com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler;
@@ -18,7 +20,6 @@ import com.zjucsc.art_decode.iec101.IEC101DecodeMain;
 import com.zjucsc.attack.bean.AttackBean;
 import com.zjucsc.attack.AttackCommon;
 import com.zjucsc.attack.common.AttackTypePro;
-import com.zjucsc.attack.util.ArtOptAttackUtil;
 import com.zjucsc.base.util.limit.LimitServiceEntry;
 import com.zjucsc.common.common_util.CommonUtil;
 import com.zjucsc.common.common_util.DBUtil;
@@ -31,6 +32,7 @@ import com.zjucsc.tshark.handler.AbstractAsyncHandler;
 import com.zjucsc.tshark.handler.DefaultPipeLine;
 import com.zjucsc.tshark.packets.*;
 import com.zjucsc.tshark.pre_processor.BasePreProcessor;
+import com.zjucsc.tshark.pre_processor2.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -54,7 +56,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     private final PacketAnalyzeService packetAnalyzeService;
 
     private SimulateThread simulateThread;
-
+    private TsharkProxy tsharkPreProcessor;
     @Autowired private ConstantConfig constantConfig;
     @Autowired private PreProcessor preProcessor;
     @Autowired private IDeviceService iDeviceService;
@@ -222,6 +224,86 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                 return thread;
             }));
 
+
+    private AbstractAsyncHandler<FvDimensionLayer> fvDimensionLayerPreProcessor
+            = new AbstractAsyncHandler<FvDimensionLayer>(CommonUtil.getSingleThreadPoolSizeThreadPool(100000,
+            r -> {
+                Thread thread = new Thread(r);
+                thread.setName("-fv-dimension-preprocessor-" + thread.getId());
+                thread.setUncaughtExceptionHandler((t, e) -> {
+                    log.error("-fv-dimension-preprocessor-捕获异常=====>",e);
+                });
+                return thread;
+            },"-fv-dimension-thread-pool-")) {
+        @Override
+        public FvDimensionLayer handle(Object t) {
+            FvDimensionLayer rawFvDimensionLayer = ((FvDimensionLayer) t);
+            setFrameInfo(rawFvDimensionLayer);
+            //eth
+            FvDimensionLayer.LayersBean.EthBean ethBean = rawFvDimensionLayer.getLayers().getEth();
+            if (ethBean!=null){
+                setEthLayer(rawFvDimensionLayer,ethBean);
+                FvDimensionLayer.LayersBean.IpBean ipBean = rawFvDimensionLayer.getLayers().getIp();
+                //ip
+                if (ipBean!=null){
+                    setIpLayer(rawFvDimensionLayer,ipBean);
+                    //tcp
+                    FvDimensionLayer.LayersBean.TcpBean tcpBean = rawFvDimensionLayer.getLayers().getTcp();
+                    if (tcpBean!=null){
+                        setTcpLayer(rawFvDimensionLayer,tcpBean);
+                        //TODO tcp payload
+                        rawFvDimensionLayer.setTcpPayload(PacketDecodeUtil.getTcpPayload(rawFvDimensionLayer.getRawData()));
+                    }else{
+                        FvDimensionLayer.LayersBean.UdpBean udpBean = rawFvDimensionLayer.getLayers().getUdp();
+                        if (udpBean!=null){
+                    //udp
+                            setUdpLayer(rawFvDimensionLayer,udpBean);
+                        }else{
+                            throw new DecodeException("not tcp and not udp ??? ");
+                        }
+                    }
+                }
+            }else{
+                throw new DecodeException("not eth ???");
+            }
+            return rawFvDimensionLayer;
+        }
+    };
+
+    private void setFrameInfo(FvDimensionLayer rawFvDimensionLayer) {
+        String protocolStack = rawFvDimensionLayer.getLayers().getFrame().getFrame_frame_protocols();
+        rawFvDimensionLayer.setFrame_protocols(new String[]{protocolStack});
+        rawFvDimensionLayer.setProtocol(/*设置协议栈*/PacketDecodeUtil.discernPacket(protocolStack));
+        rawFvDimensionLayer.setCustom_ext_raw_data(new String[]{rawFvDimensionLayer.getLayers().getExt().getExt_custom_ext_raw_data()});
+        //frame infos
+        rawFvDimensionLayer.setFrame_cap_len(new String[]{rawFvDimensionLayer.getLayers().getFrame().getFrame_frame_len()});
+        rawFvDimensionLayer.setRawData(PacketDecodeUtil.hexStringToByteArray2(rawFvDimensionLayer.getCustom_ext_raw_data()[0]));    //t-s);
+    }
+
+    private void setUdpLayer(FvDimensionLayer rawFvDimensionLayer, FvDimensionLayer.LayersBean.UdpBean udpBean) {
+        rawFvDimensionLayer.setDst_port(new String[]{udpBean.getUdp_udp_dstport()});
+        rawFvDimensionLayer.setSrc_port(new String[]{udpBean.getUdp_udp_srcport()});
+    }
+
+    private void setTcpLayer(FvDimensionLayer rawFvDimensionLayer, FvDimensionLayer.LayersBean.TcpBean tcpBean) {
+        rawFvDimensionLayer.setTcp_flags_syn(new String[]{tcpBean.getTcp_flags_tcp_flags_syn()});
+        rawFvDimensionLayer.setTcp_flags_ack(new String[]{tcpBean.getTcp_flags_tcp_flags_ack()});
+        rawFvDimensionLayer.setDst_port(new String[]{tcpBean.getTcp_tcp_dstport()});
+        rawFvDimensionLayer.setSrc_port(new String[]{tcpBean.getTcp_tcp_srcport()});
+    }
+
+    private void setIpLayer(FvDimensionLayer rawFvDimensionLayer, FvDimensionLayer.LayersBean.IpBean ipBean) {
+        rawFvDimensionLayer.setIp_dst(new String[]{ipBean.getIp_ip_dst()});
+        rawFvDimensionLayer.setIp_src(new String[]{ipBean.getIp_ip_src()});
+    }
+
+    private void setEthLayer(FvDimensionLayer layer, FvDimensionLayer.LayersBean.EthBean ethBean){
+        layer.setEth_src(new String[]{ethBean.getEth_eth_src()});
+        layer.setEth_dst(new String[]{ethBean.getEth_eth_dst()});
+        layer.setEth_dst_re(new String[]{ethBean.getEth_dst_eth_addr_resolved()});
+        layer.setEth_src_re(new String[]{ethBean.getEth_src_eth_addr_resolved()});
+    }
+
     /**
      * 接收协议解析好的五元组，并作五元组发送、报文流量统计处理
      * 单线程处理，保证线程安全
@@ -253,20 +335,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         @Override
         public FvDimensionLayer handle(Object t) {
             FvDimensionLayer fvDimensionLayer = ((FvDimensionLayer) t);
-            //设置协议栈
-            fvDimensionLayer.protocol = PacketDecodeUtil.discernPacket(fvDimensionLayer);   //t-s
-            //解析原始数据
-            byte[] payload = PacketDecodeUtil.hexStringToByteArray2(fvDimensionLayer.custom_ext_raw_data[0]);    //t-s
-            if ("2.0".equals(constantConfig.getWireshark_version())){
-                //2.0原始数据带冒号
-                fvDimensionLayer.tcpPayload = PacketDecodeUtil.hexStringToByteArray(fvDimensionLayer.tcp_payload[0]);
-            }else{
-                //3.0原始数据不带冒号
-                fvDimensionLayer.tcpPayload = PacketDecodeUtil.hexStringToByteArray2(fvDimensionLayer.tcp_payload[0]);
-            }
-            fvDimensionLayer.rawData = payload;
             preProcess(fvDimensionLayer);
-
             fvDimensionLayer.deviceNumber = CacheUtil.getTargetDeviceNumberByTag(fvDimensionLayer.ip_dst[0],fvDimensionLayer.eth_dst[0]);
             //统计所有的IP地址
             if (fvDimensionLayer.ip_dst[0].length() > 0){
@@ -284,6 +353,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                     log.error("error set Funcode , msg : {} [缓存中找不到该五元组协议：{} 对应的功能码表]", e.getMsg(), fvDimensionLayer.frame_protocols[0]);
                 }
             }
+            byte[] payload = fvDimensionLayer.getRawData();
             sendFvDimensionPacket(fvDimensionLayer , payload);                    //发送五元组所有报文到前端
             sendPacketStatisticsEvent(fvDimensionLayer);                          //发送统计信息
             int collectorId = PacketDecodeUtil.decodeCollectorId(payload,24);
@@ -320,7 +390,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                 OpcDaPacket.LayersBean opcDaPacket = ((OpcDaPacket.LayersBean) fvDimensionLayer);
                 try {
                     if (opcDaPacket.dcerpc_datype!=null &&
-                            CommonConfigUtil.getTargetProtocolFuncodeMeaning(PACKET_PROTOCOL.OPC_DA,opcDaPacket.dcerpc_datype[0])!=null){
+                            ProtocolUtil.getTargetProtocolFuncodeMeaning(PACKET_PROTOCOL.OPC_DA,opcDaPacket.dcerpc_datype[0])!=null){
                         opcDaPacket.protocol = PACKET_PROTOCOL.OPC_DA;
                     }
                 } catch (ProtocolIdNotValidException e) {
@@ -369,11 +439,11 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                 //setFuncodeMeaning of s7comm
                 if (s7Packet.s7comm_header_rosctr[0].equals(S7CommPacket.USER_DATA)) {
                     //user data
-                    t.funCodeMeaning = CommonConfigUtil.
+                    t.funCodeMeaning = ProtocolUtil.
                             getTargetProtocolFuncodeMeaning(S7_User_data, funCode);
                 } else {
                     //other [job/ack_data]
-                    t.funCodeMeaning = CommonConfigUtil.
+                    t.funCodeMeaning = ProtocolUtil.
                             getTargetProtocolFuncodeMeaning(S7, funCode);
                 }
             }
@@ -381,7 +451,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             if (((ModbusPacket.LayersBean) t).modbus_func_code!=null) {
                 funCodeStr = ((ModbusPacket.LayersBean) t).modbus_func_code[0];
                 funCode =  PacketDecodeUtil.decodeFuncode("modbus", funCodeStr);
-                t.funCodeMeaning = CommonConfigUtil.
+                t.funCodeMeaning = ProtocolUtil.
                         getTargetProtocolFuncodeMeaning(MODBUS, funCode);
             }
         }else if (t instanceof IEC104Packet.LayersBean){
@@ -393,7 +463,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                         funCodeStr = iec104_packet.iec104asdu_typeid[0];
                         funCode =  PacketDecodeUtil.decodeFuncode("iec104", funCodeStr);
                         //decode funcode meaning by funcode
-                        t.funCodeMeaning = CommonConfigUtil.
+                        t.funCodeMeaning = ProtocolUtil.
                                 getTargetProtocolFuncodeMeaning(PACKET_PROTOCOL.IEC104_ASDU, funCode);
                         break;
                     case 1 :
@@ -404,7 +474,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                         funCodeStr = iec104_packet.iec104apci_utype[0];
                         funCode =  PacketDecodeUtil.decodeFuncode("iec104", funCodeStr);
                         //decode funcode meaning by funcode
-                        t.funCodeMeaning = CommonConfigUtil.
+                        t.funCodeMeaning = ProtocolUtil.
                                 getTargetProtocolFuncodeMeaning(PACKET_PROTOCOL.IEC104_APCI, funCode);
                         break;
                 }
@@ -417,25 +487,25 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                     funCodeStr = dnpPacket.dnp3_ctl_prifunc[0];
                     funCode = PacketDecodeUtil.decodeFuncode("dnp3.0", funCodeStr);
                     //decode funcode meaning by funcode
-                    t.funCodeMeaning = CommonConfigUtil.
+                    t.funCodeMeaning = ProtocolUtil.
                             getTargetProtocolFuncodeMeaning(PACKET_PROTOCOL.DNP3_0_PRI, funCode);
                     break;
                 case 0:
                     funCodeStr = dnpPacket.dnp3_ctl_secfunc[0];
                     funCode = PacketDecodeUtil.decodeFuncode("dnp3.0", funCodeStr);
-                    t.funCodeMeaning = CommonConfigUtil.
+                    t.funCodeMeaning = ProtocolUtil.
                             getTargetProtocolFuncodeMeaning(PACKET_PROTOCOL.DNP3_0_SET, funCode);
                     break;
             }
         }else if (t instanceof CipPacket.LayersBean){
             CipPacket.LayersBean cipPacket = ((CipPacket.LayersBean) t);
             funCode = cipPacket.cip_funcode[0];
-            t.funCodeMeaning = CommonConfigUtil.
+            t.funCodeMeaning = ProtocolUtil.
                     getTargetProtocolFuncodeMeaning(PACKET_PROTOCOL.CIP_IP, funCode);
         }else if (t instanceof MmsPacket.LayersBean){
             MmsPacket.LayersBean mmsPacket = ((MmsPacket.LayersBean) t);
             funCode = mmsPacket.mmsFuncode[0];
-            t.funCodeMeaning = CommonConfigUtil.
+            t.funCodeMeaning = ProtocolUtil.
                     getTargetProtocolFuncodeMeaning(PACKET_PROTOCOL.MMS, funCode);
         }else if (t instanceof UndefinedPacket.LayersBean){
             UndefinedPacket.LayersBean unknownPacket = ((UndefinedPacket.LayersBean) t);
@@ -449,13 +519,13 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             OpcUaPacket.LayersBean opcuaPacket = ((OpcUaPacket.LayersBean) t);
             if (opcuaPacket.opcua_servicenodeid_numeric!=null){
                 funCode = opcuaPacket.opcua_servicenodeid_numeric[0];
-                opcuaPacket.funCodeMeaning = CommonConfigUtil.getTargetProtocolFuncodeMeaning(PACKET_PROTOCOL.OPC_UA,funCode);
+                opcuaPacket.funCodeMeaning = ProtocolUtil.getTargetProtocolFuncodeMeaning(PACKET_PROTOCOL.OPC_UA,funCode);
             }
         }else if (t instanceof OpcDaPacket.LayersBean){
             OpcDaPacket.LayersBean opcDaPacket = ((OpcDaPacket.LayersBean) t);
             if (opcDaPacket.dcerpc_datype!=null){
                 funCode = opcDaPacket.dcerpc_datype[0];
-                opcDaPacket.funCodeMeaning = CommonConfigUtil.getTargetProtocolFuncodeMeaning(PACKET_PROTOCOL.OPC_DA,funCode);
+                opcDaPacket.funCodeMeaning = ProtocolUtil.getTargetProtocolFuncodeMeaning(PACKET_PROTOCOL.OPC_DA,funCode);
             }
         }
         return funCode;
@@ -465,6 +535,50 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     @Override
     public CompletableFuture<Exception> start(ProcessCallback<String,String> callback) {
         startAllKafkaThread();
+        return oldStart(callback);
+    }
+
+    @Override
+    public CompletableFuture<Exception> newStart(String macAddress, String interfaceName) {
+        return newStart1(macAddress, interfaceName);
+    }
+
+    private synchronized CompletableFuture<Exception> newStart1(String macAddress, String interfaceName) {
+        if (tsharkPreProcessor == null)
+        {
+            tsharkPreProcessor = new TsharkProxy();
+            tsharkPreProcessor.setTsharkPreProcessorInfos(macAddress, interfaceName,
+                    constantConfig.getTshark_path() == null ? "tshark" : constantConfig.getTshark_path(),
+                    100000,
+                    new TsharkListener() {
+                        @Override
+                        public void success(String tsharkCommand, Process process) {
+                            log.info("successfully start tshark process , tshark shell command : [{}]" , tsharkCommand);
+                        }
+
+                        @Override
+                        public void error(String msg, Exception e) {
+                            log.error("can not start tshark process" , e);
+                        }
+                    },
+                    msg -> {
+                        log.error("tshark data decode error : [{}]" , msg);
+                    }
+            );
+            final DefaultPipeLine pipeLine = new DefaultPipeLine("");
+            pipeLine.addLast(fvDimensionLayerPreProcessor);
+            pipeLine.addLast(fvDimensionLayerAbstractAsyncHandler);
+            pipeLine.addLast(deviceHandler);
+            pipeLine.addLast(attackAnalyzeHandler);
+            pipeLine.addLast(packetDetectHandler);
+            pipeLine.addLast(badPacketAnalyzeHandler);
+            tsharkPreProcessor.registerFvDimensionCallback(pipeLine::pushDataAtHead);
+        }
+        tsharkPreProcessor.start();
+        return CompletableFuture.completedFuture(null);
+    }
+
+    private CompletableFuture<Exception> oldStart(ProcessCallback<String,String> callback){
         this.callback = callback;
         basePreProcessors = new LinkedList<>();
         boolean cipMms = false;
@@ -507,8 +621,8 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         basePreProcessors.add(new UndefinedPreProcessor());
         try {
             callback.start(doStart(fvDimensionLayerAbstractAsyncHandler,
-                                    basePreProcessors
-                                   ));
+                    basePreProcessors
+            ));
         } catch (InterruptedException e) {
             return CompletableFuture.completedFuture(e);
         }
@@ -553,10 +667,10 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         int i = 0;
         for (; i < packetPreProcessor.size() - 1; i++) {
             BasePreProcessor basePreProcessor = packetPreProcessor.get(i);
-            doNow(basePreProcessor , fvDimensionHandler , downLatch , sb);
+            doNow(basePreProcessor , fvDimensionLayerPreProcessor , downLatch , sb);
         }
         downLatch.await(100, TimeUnit.SECONDS);
-        doNow(packetPreProcessor.get(i) , fvDimensionHandler,null , sb);
+        doNow(packetPreProcessor.get(i) , fvDimensionLayerPreProcessor,null , sb);
         return sb.toString();
     }
 
@@ -566,6 +680,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         DefaultPipeLine pipeLine = new DefaultPipeLine(processName);
         //fv_dimension_handler --> bad_packet_analyze_handler
         pipeLine.addLast(fvDimensionHandler);
+        pipeLine.addLast(fvDimensionLayerAbstractAsyncHandler);
         pipeLine.addLast(deviceHandler);
         pipeLine.addLast(attackAnalyzeHandler);
         pipeLine.addLast(packetDetectHandler);
@@ -633,6 +748,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         }
         if (!simulateThread.hasStart){
             DefaultPipeLine pipeLine = new DefaultPipeLine("simulate");
+            pipeLine.addLast(fvDimensionLayerPreProcessor);
             pipeLine.addLast(fvDimensionLayerAbstractAsyncHandler);
             pipeLine.addLast(deviceHandler);
             pipeLine.addLast(attackAnalyzeHandler);

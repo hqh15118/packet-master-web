@@ -2,7 +2,7 @@ package com.zjucsc.tshark.pre_processor2;
 
 import com.alibaba.fastjson.JSON;
 import com.zjucsc.common.common_util.ExceptionSafeRunnable;
-import com.zjucsc.tshark.packets.PacketDetail;
+import com.zjucsc.tshark.packets.FvDimensionLayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +12,8 @@ public class TsharkProxy {
     private TsharkPreProcessor tsharkPreProcessor = new TsharkPreProcessor();
     static final String DEFAULT_TSHARK_PATH = "tshark";
     private LinkedBlockingQueue<String> FVDIMENSIONLAYER_JSON_BUFFER;
-    private NewDataCallback<PacketDetail> newDataCallback;
+    private NewDataCallback<FvDimensionLayer> newDataCallback;
+    private volatile boolean running = true;
     private static Logger logger = LoggerFactory.getLogger(TsharkProxy.class);
     public void setTsharkPreProcessorInfos(String macAddress,
                                             String interfaceName,
@@ -37,16 +38,15 @@ public class TsharkProxy {
         Thread processThread = new Thread(new ExceptionSafeRunnable<Object>() {
             @Override
             public void run(Object o) {
+                try {
                 for (;;)
                 {
-                    try {
-                        String data = FVDIMENSIONLAYER_JSON_BUFFER.take();
-                        PacketDetail packetDetail = JSON.parseObject(data,PacketDetail.class);
-                        packetDetail.setRawJsonData(data);
-                        newDataCallback.callback(packetDetail);
-                    } catch (InterruptedException e) {
-                        logger.error("" , e);
-                    }
+                    String data = FVDIMENSIONLAYER_JSON_BUFFER.take();
+                    FvDimensionLayer packetDetail = JSON.parseObject(data, FvDimensionLayer.class);
+                    newDataCallback.callback(packetDetail);
+                }
+                } catch (InterruptedException e) {
+                    logger.error("" , e);
                 }
             }
         });
@@ -54,7 +54,11 @@ public class TsharkProxy {
         processThread.start();
     }
 
-    public void registerFvDimensionCallback(NewDataCallback<PacketDetail> newDataCallback){
+    public void registerFvDimensionCallback(NewDataCallback<FvDimensionLayer> newDataCallback){
         this.newDataCallback = newDataCallback;
+    }
+
+    public void stop(){
+        tsharkPreProcessor.stopTshark();
     }
 }

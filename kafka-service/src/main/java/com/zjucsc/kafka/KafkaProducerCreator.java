@@ -9,6 +9,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,11 +27,21 @@ public class KafkaProducerCreator {
         File file = new File("config/kafka-config-producer.properties");
         if (file.exists()){
             Properties properties = new Properties();
+            InputStream is = null;
             try {
+                is = new FileInputStream(file);
                 properties.load(new FileInputStream(file));
             } catch (IOException e) {
                 System.err.println("error load properties");
                 return null;
+            }finally {
+                if (is!=null){
+                    try {
+                        is.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
             return properties;
         }else{
