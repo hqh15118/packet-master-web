@@ -1,4 +1,4 @@
-package com.zjucsc.common.common_util;
+package com.zjucsc.common.util;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;

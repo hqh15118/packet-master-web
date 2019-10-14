@@ -1,7 +1,7 @@
 package com.zjucsc.application.system.service;
 
 import com.zjucsc.application.config.Common;
-import com.zjucsc.application.config.StatisticsData;
+import com.zjucsc.application.statistic.StatisticsData;
 import com.zjucsc.application.domain.bean.*;
 import com.zjucsc.application.domain.non_hessian.ArtGroupWrapper;
 import com.zjucsc.application.domain.non_hessian.D2DWrapper;
@@ -11,11 +11,10 @@ import com.zjucsc.application.system.service.common_iservice.CapturePacketServic
 import com.zjucsc.application.system.service.hessian_iservice.IArtHistoryDataService;
 import com.zjucsc.application.system.service.hessian_mapper.DeviceMapper;
 import com.zjucsc.application.util.AppCommonUtil;
-import com.zjucsc.application.util.ArtDecodeUtil;
 import com.zjucsc.application.util.CacheUtil;
 import com.zjucsc.base.util.SysRunStateUtil;
-import com.zjucsc.art_decode.ArtDecodeCommon;
-import com.zjucsc.common.common_util.PrinterUtil;
+import com.zjucsc.art_decode.ArtDecodeUtil;
+import com.zjucsc.common.util.PrinterUtil;
 import com.zjucsc.socket_io.SocketIoEvent;
 import com.zjucsc.socket_io.SocketServiceCenter;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
@@ -34,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
-import static com.zjucsc.application.config.StatisticsData.*;
+import static com.zjucsc.application.statistic.StatisticsData.*;
 
 @Slf4j
 @Service
@@ -88,7 +87,7 @@ public class ScheduledService {
     }
 
     private void detectDecodeMethodDelay() {
-        Map<String,Long> map = ArtDecodeCommon.getDecodeDelayMapInfo();
+        Map<String,Long> map = ArtDecodeUtil.getDecodeDelayMapInfo();
         map.forEach((s, aLong) -> {
             System.out.println(s + " time - " + aLong);
         });

@@ -1,8 +1,8 @@
 package com.zjucsc.application.util;
 
 import com.zjucsc.application.config.PACKET_PROTOCOL;
-import com.zjucsc.common.common_util.ByteUtil;
-import com.zjucsc.common.common_util.CommonUtil;
+import com.zjucsc.common.util.ByteUtil;
+import com.zjucsc.common.util.CommonUtil;
 import com.zjucsc.tshark.bean.CollectorState;
 import com.zjucsc.tshark.packets.Dnp3_0Packet;
 import com.zjucsc.tshark.packets.FvDimensionLayer;

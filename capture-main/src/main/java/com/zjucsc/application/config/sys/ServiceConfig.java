@@ -2,7 +2,7 @@ package com.zjucsc.application.config.sys;
 
 import com.zjucsc.base.util.ThreadPoolUtil;
 import com.zjucsc.common.bean.CustomThreadPoolExecutor;
-import com.zjucsc.common.common_util.CommonUtil;
+import com.zjucsc.common.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

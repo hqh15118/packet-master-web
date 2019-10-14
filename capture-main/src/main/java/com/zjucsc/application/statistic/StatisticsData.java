@@ -1,4 +1,4 @@
-package com.zjucsc.application.config;
+package com.zjucsc.application.statistic;
 
 import com.zjucsc.application.domain.bean.GraphInfo;
 import com.zjucsc.application.domain.bean.GraphInfoCollection;
@@ -143,6 +143,10 @@ public class StatisticsData {
         ART_INFO.put("timestamp",new LinkedList<>());
     }
 
+    /**
+     * 推送的信息初始化
+     * @param artArg 工艺参数名称
+     */
     public static void initArtArgs(String artArg){
         ART_INFO.putIfAbsent(artArg,new LinkedList<>());
     }

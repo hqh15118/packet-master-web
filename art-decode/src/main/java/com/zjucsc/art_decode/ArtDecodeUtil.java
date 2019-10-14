@@ -1,7 +1,5 @@
 package com.zjucsc.art_decode;
 
-import com.oracle.webservices.internal.api.databinding.DatabindingMode;
-import com.sun.javaws.CacheUtil;
 import com.zjucsc.art_decode.base.BaseConfig;
 import com.zjucsc.art_decode.base.ValidPacketCallback;
 import com.zjucsc.art_decode.base.BaseArtDecode;
@@ -15,30 +13,19 @@ import com.zjucsc.art_decode.opcda.OpcdaDecode;
 import com.zjucsc.art_decode.opcua.OpcuaDecode;
 import com.zjucsc.art_decode.pnio.PnioDecode;
 import com.zjucsc.art_decode.s7comm.S7Decode;
-import com.zjucsc.common.bean.ThreadPoolInfoWrapper;
-import com.zjucsc.common.common_util.CommonUtil;
+import com.zjucsc.common.util.CommonUtil;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.function.BiFunction;
 
-public class ArtDecodeCommon {
 
-    private static final ExecutorService ART_DECODE_SERVICE = CommonUtil.getSingleThreadPoolSizeThreadPool(10000,
-            r -> {
-                Thread thread = new Thread(r);
-                thread.setName("-art-decode-service-thread-");
-                return thread;
-            },"ART_DECODE_SERVICE");
+public class ArtDecodeUtil {
+    private static Logger logger = LoggerFactory.getLogger(ArtDecodeUtil.class);
 
-    public static List<ThreadPoolInfoWrapper> getArtDecodeServiceInfo(){
-        return new ArrayList<ThreadPoolInfoWrapper>(){
-            {
-                add(new ThreadPoolInfoWrapper("ART_DECODE_SERVICE", ((ThreadPoolExecutor) ART_DECODE_SERVICE).getQueue().size()));
-            }
-        };
-    }
+    public static ArtData artData = new ArtData();
 
     public static ValidPacketCallback validPacketCallback;
     private static final HashMap<String, BaseArtDecode> ART_DECODE_CONCURRENT_HASH_MAP
@@ -59,6 +46,9 @@ public class ArtDecodeCommon {
         ART_DECODE_CONCURRENT_HASH_MAP.put("dcerpc",new OpcdaDecode());
     }
 
+    /**
+     * 各个解析模块的延时统计
+     */
     private static HashMap<String,Long> DECODE_DELAY_WRAPPER = new HashMap<String,Long>(){
         {
             put("modbus",0L);put("s7comm",0L);put("pn_io",0L);put("104asdu",0L);
@@ -76,6 +66,13 @@ public class ArtDecodeCommon {
         return DECODE_DELAY_WRAPPER;
     }
 
+    /**
+     * @param artMap 工艺参数map
+     * @param payload tcp/原始数据
+     * @param protocol 解析协议
+     * @param layer 五元组
+     * @param objs 额外信息
+     */
     public static void artDecodeEntry(Map<String,Float> artMap, byte[] payload,
                                                    String protocol, FvDimensionLayer layer , Object...objs){
         IArtEntry entry = ART_DECODE_CONCURRENT_HASH_MAP.get(protocol);
@@ -90,13 +87,17 @@ public class ArtDecodeCommon {
                     return aLong;
                 }
             });
+        }else{
+            if (logger.isDebugEnabled())
+            {
+                logger.debug("无法获取协议：[{}]的工艺参数解析器",protocol);
+            }
         }
     }
 
     /**
-     * 添加工艺参数配置
-     * @param config
-     * @return
+     * 添加工艺参数解析配置
+     * @param config 工艺参数配置
      */
     @SuppressWarnings("unchecked")
     public static void addArtDecodeConfig(BaseConfig config){
@@ -106,7 +107,13 @@ public class ArtDecodeCommon {
                 baseArtDecode.removeAllArtConfig();
             }
             baseArtDecode.addArtConfig(config);
+        }else{
+            if (logger.isDebugEnabled())
+            {
+                logger.debug("添加工艺参数解析配置失败[{}]，不存在协议：[{}]对应的解析器",config,config.getProtocol());
+            }
         }
+        artData.insertNewArtTag(config.getTag());
     }
 
 
@@ -115,10 +122,31 @@ public class ArtDecodeCommon {
         BaseArtDecode baseArtDecode = ART_DECODE_CONCURRENT_HASH_MAP.get(config.getProtocol());
         if (baseArtDecode!=null){
             baseArtDecode.deleteArtConfig(config);
+        }else{
+            if (logger.isDebugEnabled())
+            {
+                logger.debug("删除工艺参数[{}]失败，不存在该参数对应的解析器",config);
+            }
         }
+        artData.removeArtTag(config.getTag());
     }
 
     public static void registerPacketValidCallback(ValidPacketCallback validPacketCallback){
-        ArtDecodeCommon.validPacketCallback = validPacketCallback;
+        ArtDecodeUtil.validPacketCallback = validPacketCallback;
+    }
+
+    public static final class ArtData{
+        //工艺参数解析数据map，key工艺参数名称，value，工艺参数值
+        private final ConcurrentHashMap<String,Float> ART_DATA_MAP = new ConcurrentHashMap<>();
+        public void insertNewArtTag(String artTag){
+            ART_DATA_MAP.putIfAbsent(artTag,0F);
+        }
+        public Map<String,Float> getArtDataMap(){
+            return ART_DATA_MAP;
+        }
+        public void removeArtTag(String artTag)
+        {
+            ART_DATA_MAP.remove(artTag);
+        }
     }
 }

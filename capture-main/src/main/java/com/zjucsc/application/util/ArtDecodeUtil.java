@@ -1,6 +1,6 @@
 package com.zjucsc.application.util;
 
-import com.zjucsc.common.common_util.ByteUtil;
+import com.zjucsc.common.util.ByteUtil;
 
 public class ArtDecodeUtil {
 

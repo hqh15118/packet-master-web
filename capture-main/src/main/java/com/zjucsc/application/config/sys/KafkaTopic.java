@@ -1,4 +1,4 @@
-package com.zjucsc.application.config;
+package com.zjucsc.application.config.sys;
 
 
 public class KafkaTopic {

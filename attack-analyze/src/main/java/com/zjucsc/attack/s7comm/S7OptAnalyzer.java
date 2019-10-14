@@ -4,8 +4,6 @@ package com.zjucsc.attack.s7comm;
 import com.zjucsc.attack.bean.AttackBean;
 import com.zjucsc.attack.bean.BaseOptAnalyzer;
 import com.zjucsc.attack.config.S7OptAttackConfig;
-import com.zjucsc.common.common_util.ByteUtil;
-import com.zjucsc.common.common_util.Bytecut;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 
 import java.util.ArrayList;

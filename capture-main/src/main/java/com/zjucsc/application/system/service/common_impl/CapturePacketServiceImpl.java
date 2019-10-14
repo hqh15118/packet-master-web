@@ -3,10 +3,12 @@ package com.zjucsc.application.system.service.common_impl;
 import com.zjucsc.application.config.*;
 import com.zjucsc.application.config.properties.ConstantConfig;
 import com.zjucsc.application.config.properties.PreProcessor;
+import com.zjucsc.application.config.sys.KafkaTopic;
 import com.zjucsc.application.domain.bean.ArtPacketDetail;
 import com.zjucsc.application.domain.bean.Device;
 import com.zjucsc.application.domain.non_hessian.CommandWrapper;
 import com.zjucsc.application.exception.DecodeException;
+import com.zjucsc.application.statistic.StatisticsData;
 import com.zjucsc.application.system.service.PacketAnalyzeService;
 import com.zjucsc.application.system.service.common_iservice.CapturePacketService;
 import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
@@ -15,14 +17,14 @@ import com.zjucsc.application.tshark.capture.ProcessCallback;
 import com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler;
 import com.zjucsc.application.tshark.pre_processor.*;
 import com.zjucsc.application.util.*;
-import com.zjucsc.art_decode.ArtDecodeCommon;
+import com.zjucsc.art_decode.ArtDecodeUtil;
 import com.zjucsc.art_decode.iec101.IEC101DecodeMain;
 import com.zjucsc.attack.bean.AttackBean;
 import com.zjucsc.attack.AttackCommon;
 import com.zjucsc.attack.common.AttackTypePro;
 import com.zjucsc.base.util.limit.LimitServiceEntry;
-import com.zjucsc.common.common_util.CommonUtil;
-import com.zjucsc.common.common_util.DBUtil;
+import com.zjucsc.common.util.CommonUtil;
+import com.zjucsc.common.util.DBUtil;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.kafka.KafkaThread;
 import com.zjucsc.socket_io.SocketIoEvent;
@@ -105,7 +107,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             AttackCommon.appendArtCommandAnalyze(command,layer, AppCommonUtil.getGlobalArtMap());
         });
 
-        ArtDecodeCommon.registerPacketValidCallback((argName, value, layer, objs) -> {
+        ArtDecodeUtil.registerPacketValidCallback((argName, value, layer, objs) -> {
             if (objs.length == 0) {
                 ArtPacketDetail artPacketDetail = ArtPacketDetail.newOne(layer);
                 artPacketDetail.setValue(value);
@@ -259,7 +261,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                     //udp
                             setUdpLayer(rawFvDimensionLayer,udpBean);
                         }else{
-                            throw new DecodeException("not tcp and not udp ??? ");
+                            log.error("非TCP且非UDP,协议为：[{}]",rawFvDimensionLayer.frame_protocols[0]);
                         }
                     }
                 }
@@ -942,28 +944,28 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         switch (protocol){
             case "s7comm":
                 if (!layer.tcp_flags_ack[0].equals("") || Common.systemRunType == 0){
-                   ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,"s7comm",layer,1);
+                   ArtDecodeUtil.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,"s7comm",layer,1);
                 }else{
-                    ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),layer.rawData,"s7comm",layer,0);
+                    ArtDecodeUtil.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),layer.rawData,"s7comm",layer,0);
                 }
                 break;
             case PACKET_PROTOCOL.MODBUS :
-                ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.protocol,layer);
+                ArtDecodeUtil.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.protocol,layer);
                 break;
             case PACKET_PROTOCOL.PN_IO :
-                ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),layer.rawData,layer.protocol,layer);
+                ArtDecodeUtil.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),layer.rawData,layer.protocol,layer);
                 break;
             case PACKET_PROTOCOL.IEC104_ASDU :
-                ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),layer.rawData,layer.protocol,layer);
+                ArtDecodeUtil.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),layer.rawData,layer.protocol,layer);
                 break;
             case PACKET_PROTOCOL.OPC_UA :
-                ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.protocol,layer);
+                ArtDecodeUtil.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.protocol,layer);
                 break;
             case "dnp3" :
-                ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.protocol,layer);
+                ArtDecodeUtil.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.protocol,layer);
                 break;
             case PACKET_PROTOCOL.MMS :
-                ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.protocol,layer);
+                ArtDecodeUtil.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.protocol,layer);
                 break;
         }
         return res;

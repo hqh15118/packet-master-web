@@ -2,7 +2,7 @@ package com.zjucsc;
 
 import com.zjucsc.application.config.properties.ConstantConfig;
 import com.zjucsc.application.config.properties.PreProcessor;
-import com.zjucsc.common.common_util.PrinterUtil;
+import com.zjucsc.common.util.PrinterUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

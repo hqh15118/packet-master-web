@@ -3,8 +3,8 @@ package com.zjucsc.art_decode.s7comm;
 
 import com.zjucsc.art_decode.artconfig.S7Config;
 import com.zjucsc.art_decode.base.BaseArtDecode;
-import com.zjucsc.common.common_util.ByteUtil;
-import com.zjucsc.common.common_util.Bytecut;
+import com.zjucsc.common.util.ByteUtil;
+import com.zjucsc.common.util.Bytecut;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 
 import java.util.ArrayList;

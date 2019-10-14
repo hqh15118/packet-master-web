@@ -7,6 +7,7 @@ import lombok.Data;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * #project packet-master-web
@@ -40,7 +41,7 @@ public class FvDimensionLayer implements Serializable,Comparable<FvDimensionLaye
     public String funCodeMeaning = "--";
     //long格式的时间戳 , ns 为单位
     @JSONField(serialize = false)
-    public long timeStampInLong;
+    public long timeStampInLong = -1;
     public String[] tcp_flags_ack={""};
     public String[] tcp_flags_syn={""};
     //raw data
@@ -85,6 +86,19 @@ public class FvDimensionLayer implements Serializable,Comparable<FvDimensionLaye
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof FvDimensionLayer)) return false;
+        FvDimensionLayer layer = (FvDimensionLayer) o;
+        assert getTimeStampInLong() > 0 && layer.getTimeStampInLong() > 0;
+        return getTimeStampInLong() == layer.getTimeStampInLong();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getTimeStampInLong());
+    }
 
     /**
      * timestamp : 1568943955164

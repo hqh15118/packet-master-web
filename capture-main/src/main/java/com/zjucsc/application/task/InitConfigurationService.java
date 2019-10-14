@@ -1,7 +1,6 @@
 package com.zjucsc.application.task;
 
 import com.corundumstudio.socketio.listener.DataListener;
-import com.zjucsc.IProtocolFuncodeMap;
 import com.zjucsc.application.config.*;
 import com.zjucsc.application.config.auth.Auth;
 import com.zjucsc.application.config.properties.ConstantConfig;
@@ -19,7 +18,7 @@ import com.zjucsc.application.system.service.hessian_mapper.*;
 import com.zjucsc.application.util.AppCommonUtil;
 import com.zjucsc.application.util.CacheUtil;
 import com.zjucsc.application.util.TsharkUtil;
-import com.zjucsc.art_decode.ArtDecodeCommon;
+import com.zjucsc.art_decode.ArtDecodeUtil;
 import com.zjucsc.art_decode.base.BaseConfig;
 import com.zjucsc.attack.AttackCommon;
 import com.zjucsc.attack.bean.BaseOptConfig;
@@ -27,7 +26,7 @@ import com.zjucsc.attack.s7comm.S7OptCommandConfig;
 import com.zjucsc.attack.s7comm.S7OptName;
 import com.zjucsc.attack.util.ArtOptAttackUtil;
 import com.zjucsc.base.util.SpringContextUtil;
-import com.zjucsc.common.common_util.PrinterUtil;
+import com.zjucsc.common.util.PrinterUtil;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.socket_io.*;
 import com.zjucsc.tshark.TsharkCommon;
@@ -111,19 +110,6 @@ public class InitConfigurationService implements ApplicationRunner {
         }
         Runtime.getRuntime().exec(command);
         */
-        /***************************
-         * RELOAD FROM JAR
-         ***************************/
-        List<String> virReload = args.getOptionValues("reload");
-        PrinterUtil.printStarter();
-        PrinterUtil.printMsg("program args [reload <--reload>]: " + virReload);
-        boolean reload = false;
-        if (virReload!=null && virReload.size() > 0){
-            if ("true".equals(virReload.get(0))){
-                //重新到jar包中加载功能码含义
-                reload = true;
-            }
-        }
 
         /***************************
          * IP OR MAC_ADDRESS
@@ -148,7 +134,7 @@ public class InitConfigurationService implements ApplicationRunner {
         }
 
         /****************************
-         * 演示/真实场景
+         * 演示/ 真实场景
          ***************************/
         List<String> virType = args.getOptionValues("type");
         PrinterUtil.printMsg("program args [type--type]: " + virType);
@@ -201,38 +187,10 @@ public class InitConfigurationService implements ApplicationRunner {
                 PROTOCOL_STR_TO_INT.put(protocol.getProtocolId() , protocol.getProtocolName());
             }
         }
-        PROTOCOL_STR_TO_INT.put(2,"s7comm");
-        if(reload || iConfigurationSettingService.selectAll().size() == 0) {
-            if(!reload) {
-                log.info("no configuration in database and ready to load from libs ... ");
-            }
-            /*
-             * INIT ALL FUN_CODE MAP
-             */
-            ServiceLoader<IProtocolFuncodeMap> serviceLoader = ServiceLoader.load(IProtocolFuncodeMap.class);
-            for (IProtocolFuncodeMap iProtocolFuncodeMap : serviceLoader) {
-                HashMap<String, String> funcodeStatements = new HashMap<>();
-                String protocolName = iProtocolFuncodeMap.protocolAnalyzerName();
-                Map<String, String> map = iProtocolFuncodeMap.initProtocol();
-                List<ConfigurationSetting> configurationSettings = new ArrayList<>();
-                for (String fun_code : map.keySet()) {
-                    funcodeStatements.put(fun_code, map.get(fun_code));
-                    //添加到protocol_id表
-                    ConfigurationSetting configurationSetting = new ConfigurationSetting();
-                    int protocolId = CacheUtil.convertNameToId(protocolName);
-                    configurationSetting.setProtocolId(protocolId);
-                    configurationSetting.setOpt(map.get(fun_code));
-                    configurationSetting.setFunCode(fun_code);
-                    configurationSettings.add(configurationSetting);
-                }
-                iConfigurationSettingService.saveOrUpdateBatch(configurationSettings);
-                addProtocolFuncodeMeaning(protocolName,funcodeStatements);
-            }
-        }else{
-            for (ConfigurationSetting configuration : iConfigurationSettingService.selectAll()) {
-                addProtocolFuncodeMeaning(convertIdToName(configuration.getProtocolId()),
-                        configuration.getFunCode(),configuration.getOpt());
-            }
+
+        for (ConfigurationSetting configuration : iConfigurationSettingService.selectAll()) {
+            addProtocolFuncodeMeaning(convertIdToName(configuration.getProtocolId()),
+                    configuration.getFunCode(),configuration.getOpt());
         }
         /***************************
          * INIT AUTH
@@ -251,7 +209,7 @@ public class InitConfigurationService implements ApplicationRunner {
         /***************************
          * INIT ART|OPT ATTACK DECODER
          ***************************/
-        ArtDecodeCommon.init();
+        ArtDecodeUtil.init();
         AttackCommon.init();
         /***************************
          * 初始化工艺参数配置
@@ -263,37 +221,12 @@ public class InitConfigurationService implements ApplicationRunner {
         List<Integer> protocolIds = Arrays.asList(PACKET_PROTOCOL.MODBUS_ID,PACKET_PROTOCOL.S7_ID,
                 PACKET_PROTOCOL.IEC104_ASDU_ID,PACKET_PROTOCOL.OPC_UA_ID,
                 PACKET_PROTOCOL.DNP3_0_PRI_ID,PACKET_PROTOCOL.MMS_ID,PACKET_PROTOCOL.PN_IO_ID);
-        for (Integer protocolId : protocolIds) {
-            pagedArtConfig.setProtocolId(protocolId);
-            BaseResponse baseResponse = iArtConfigService.getConfigPaged(pagedArtConfig);
-            if (baseResponse.data!=null){
-                List datas = (List) baseResponse.data;
-                for (Object data : datas) {
-                    BaseConfig baseConfig = ((BaseConfig) data);
-                    if (baseConfig.getProtocolId() == PACKET_PROTOCOL.S7_ID){
-                        baseConfig.setProtocol("s7comm");
-                    }else {
-                        baseConfig.setProtocol(CacheUtil.convertIdToName(baseConfig.getProtocolId()));
-                    }
-                    //添加工艺参数配置到缓存中
-                    ArtDecodeCommon.addArtDecodeConfig(baseConfig);
-                    //初始化工艺参数全局map，往里面放工艺参数名字和初始值0F
-                    AppCommonUtil.initArtMap(baseConfig.getTag());
-                    CacheUtil.addOrUpdateArtName2ArtGroup(baseConfig.getTag(),baseConfig.getGroup());
-                    if (baseConfig.getShowGraph() == 1){
-                        //添加要显示的工艺参数名字到缓存中
-                        CacheUtil.addShowGraphArg(baseConfig.getProtocolId(),baseConfig.getTag());
-                    }
-                }
-            }
-        }
-
+        initArtArgConfig(protocolIds,pagedArtConfig);
         /****************************
          * INIT TSHARK COMMON CONFIG
          ***************************/
         TsharkCommon.s7comm_filter = tsharkConfig.getS7comm_filter();
         TsharkCommon.modbus_filter = tsharkConfig.getModbus_filter();
-
         /****************************
          * 获取工艺参数攻击配置
          ***************************/
@@ -416,5 +349,32 @@ public class InitConfigurationService implements ApplicationRunner {
 //        CommonCacheUtil.addShowGraphArg(PACKET_PROTOCOL.DNP3_0_PRI_ID,"Ub");
     }
 
+
+    private void initArtArgConfig(List<Integer> protocolIds,PagedArtConfig pagedArtConfig) throws ProtocolIdNotValidException {
+        for (Integer protocolId : protocolIds) {
+            pagedArtConfig.setProtocolId(protocolId);
+            BaseResponse baseResponse = iArtConfigService.getConfigPaged(pagedArtConfig);
+            if (baseResponse.data!=null){
+                List datas = (List) baseResponse.data;
+                for (Object data : datas) {
+                    BaseConfig baseConfig = ((BaseConfig) data);
+                    if (baseConfig.getProtocolId() == PACKET_PROTOCOL.S7_ID){
+                        baseConfig.setProtocol("s7comm");
+                    }else {
+                        baseConfig.setProtocol(CacheUtil.convertIdToName(baseConfig.getProtocolId()));
+                    }
+                    //添加工艺参数解析配置到缓存中
+                    ArtDecodeUtil.addArtDecodeConfig(baseConfig);
+                    //初始化工艺参数全局map，往里面放工艺参数名字和初始值0F
+                    AppCommonUtil.initArtMap(baseConfig.getTag());
+                    CacheUtil.addOrUpdateArtName2ArtGroup(baseConfig.getTag(),baseConfig.getGroup());
+                    if (baseConfig.getShowGraph() == 1){
+                        //添加要显示的工艺参数名字到缓存中
+                        CacheUtil.addShowGraphArg(baseConfig.getProtocolId(),baseConfig.getTag());
+                    }
+                }
+            }
+        }
+    }
 
 }

@@ -1,6 +1,6 @@
 package com.zjucsc.art_decode.goose;
 
-import com.zjucsc.common.common_util.ByteUtil;
+import com.zjucsc.common.util.ByteUtil;
 
 import java.io.*;
 

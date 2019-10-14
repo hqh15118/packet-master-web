@@ -1,4 +1,4 @@
-package com.zjucsc.common.common_util;
+package com.zjucsc.common.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -11,11 +11,12 @@ import com.zjucsc.application.domain.bean.PagedArtConfig;
 import com.zjucsc.application.system.service.hessian_iservice.IArtConfigService;
 import com.zjucsc.application.util.AppCommonUtil;
 import com.zjucsc.application.util.CacheUtil;
-import com.zjucsc.art_decode.ArtDecodeCommon;
+import com.zjucsc.art_decode.ArtDecodeUtil;
 import com.zjucsc.art_decode.artconfig.*;
 import com.zjucsc.art_decode.base.BaseConfig;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,7 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -33,20 +33,28 @@ import java.util.concurrent.ExecutionException;
  */
 @RestController
 @RequestMapping("/art_config/")
+@Slf4j
 public class ArtConfigController {
 
     @Autowired private IArtConfigService iArtConfigService;
 
+    private String getJSONDataFromRequest(HttpServletRequest request){
+        StringBuilder sb = new StringBuilder();
+        try(BufferedReader bfr = request.getReader()){
+            String str;
+            while ((str = bfr.readLine())!=null){
+                sb.append(str);
+            }
+        } catch (IOException e) {
+            log.error("无法读取JSON数据");
+        }
+        return sb.toString();
+    }
+
     @ApiOperation("添加工艺参数配置，artConfig > 0表示更新；不填表示添加新的配置，顺序返回记录的ID列表")
     @PostMapping("new_config")
-    public BaseResponse addOrUpdateArtConfig(HttpServletRequest request) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        BufferedReader bfr = request.getReader();
-        String str;
-        while ((str = bfr.readLine())!=null){
-            sb.append(str);
-        }
-        String jsonData = sb.toString();
+    public BaseResponse addOrUpdateArtConfig(HttpServletRequest request) {
+        String jsonData = getJSONDataFromRequest(request);
         BaseConfig baseConfig = JSON.parseObject(jsonData,BaseConfig.class);
 
         //更新数据库
@@ -56,9 +64,9 @@ public class ArtConfigController {
         }else{
             //添加新的工艺参数配置到数据库
             iArtConfigService.insertByJSONStr(jsonData);
-            //初始化工艺参数配置
-            //将该工艺参数添加到MAP中
-            AppCommonUtil.initArtMap(baseConfig.getTag());
+            //初始化工艺参数配置，插入新的配置后，就需要将该配置对应的工艺参数名称添加到map中
+            //一是解析完成的往这里面put，二是对于要显示的要进行推送和显示
+            AppCommonUtil.initArtMap2Show(baseConfig.getTag());
         }
 
         if (baseConfig.getShowGraph() == 1){
@@ -71,42 +79,42 @@ public class ArtConfigController {
             case PACKET_PROTOCOL.MODBUS_ID:
                 ModBusConfig modBusConfig = JSON.parseObject(jsonData, ModBusConfig.class);
                 modBusConfig.setProtocol(PACKET_PROTOCOL.MODBUS);
-                ArtDecodeCommon.addArtDecodeConfig(modBusConfig);
+                ArtDecodeUtil.addArtDecodeConfig(modBusConfig);
                 return BaseResponse.OK(true);
             case PACKET_PROTOCOL.S7_ID:
                 S7Config s7Config = JSON.parseObject(jsonData, S7Config.class);
                 s7Config.setProtocol("s7comm");
-                ArtDecodeCommon.addArtDecodeConfig(s7Config);
+                ArtDecodeUtil.addArtDecodeConfig(s7Config);
                 return BaseResponse.OK(true);
             case PACKET_PROTOCOL.IEC104_ASDU_ID:
                 IEC104Config iec104Config = JSON.parseObject(jsonData, IEC104Config.class);
                 iec104Config.setProtocol(PACKET_PROTOCOL.IEC104_ASDU);
-                ArtDecodeCommon.addArtDecodeConfig(iec104Config);
+                ArtDecodeUtil.addArtDecodeConfig(iec104Config);
                 break;
             case PACKET_PROTOCOL.DNP3_0_PRI_ID:
                 DNP3Config dnp3Config = JSON.parseObject(jsonData, DNP3Config.class);
                 dnp3Config.setProtocol("dnp3");     //这个协议是和工艺参数解析的模块对应起来的
-                ArtDecodeCommon.addArtDecodeConfig(dnp3Config);
+                ArtDecodeUtil.addArtDecodeConfig(dnp3Config);
                 break;
             case PACKET_PROTOCOL.PN_IO_ID:
                 PnioConfig pnioConfig = JSON.parseObject(jsonData, PnioConfig.class);
                 pnioConfig.setProtocol(PACKET_PROTOCOL.PN_IO);
-                ArtDecodeCommon.addArtDecodeConfig(pnioConfig);
+                ArtDecodeUtil.addArtDecodeConfig(pnioConfig);
                 break;
             case PACKET_PROTOCOL.OPC_UA_ID:
                 OpcuaConfig opcuaConfig = JSON.parseObject(jsonData, OpcuaConfig.class);
                 opcuaConfig.setProtocol(PACKET_PROTOCOL.OPC_UA);
-                ArtDecodeCommon.addArtDecodeConfig(opcuaConfig);
+                ArtDecodeUtil.addArtDecodeConfig(opcuaConfig);
                 break;
             case PACKET_PROTOCOL.MMS_ID:
                 MMSConfig mmsConfig = JSON.parseObject(jsonData,MMSConfig.class);
                 mmsConfig.setProtocol(PACKET_PROTOCOL.MMS);
-                ArtDecodeCommon.addArtDecodeConfig(mmsConfig);
+                ArtDecodeUtil.addArtDecodeConfig(mmsConfig);
                 break;
             case PACKET_PROTOCOL.OPC_DA_ID:
                 OpcdaConfig opcdaConfig = JSON.parseObject(jsonData,OpcdaConfig.class);
                 opcdaConfig.setProtocol(PACKET_PROTOCOL.OPC_DA);
-                ArtDecodeCommon.addArtDecodeConfig(opcdaConfig);
+                ArtDecodeUtil.addArtDecodeConfig(opcdaConfig);
                 break;
         }
         CacheUtil.addOrUpdateArtName2ArtGroup(baseConfig.getTag(),baseConfig.getGroup());
@@ -132,9 +140,9 @@ public class ArtConfigController {
             baseConfig.setProtocol(CacheUtil.convertIdToName(baseConfig.getProtocolId()));
         }
         //移除要显示的map
-        AppCommonUtil.removeArtMap(baseConfig.getTag());
+        AppCommonUtil.removeArtMap2Show(baseConfig.getTag());
         //移除解析库中的配置
-        ArtDecodeCommon.deleteArtConfig(baseConfig);
+        ArtDecodeUtil.deleteArtConfig(baseConfig);
         //移除工艺参数组别中的工艺参数
         CacheUtil.removeArtNameInGroup(baseConfig.getTag());
         //移除数据库，返回被移除的工艺参数配置
@@ -167,7 +175,7 @@ public class ArtConfigController {
     private void addNewTag(List configList,Class<? extends BaseConfig> targetClass){
         for (Object o : configList) {
             BaseConfig baseConfig = targetClass.cast(o);
-            AppCommonUtil.initArtMap(baseConfig.getTag());
+            AppCommonUtil.initArtMap2Show(baseConfig.getTag());
             if (baseConfig.getShowGraph() == 1){
                 CacheUtil.addShowGraphArg(baseConfig.getProtocolId(),baseConfig.getTag());
             }
