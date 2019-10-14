@@ -5,9 +5,11 @@ import com.zjucsc.application.system.mapper.base.BaseServiceImpl;
 import com.zjucsc.application.system.service.hessian_iservice.IArtConfigService;
 import com.zjucsc.application.system.service.hessian_mapper.ArtConfigMapper;
 import com.zjucsc.common.exceptions.ScriptException;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -30,12 +32,13 @@ public class ArtConfigServiceImpl extends BaseServiceImpl<BaseArtConfig,ArtConfi
         return this.baseMapper.selectAllShowArt();
     }
 
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
     @Override
     public CompletableFuture<Exception> saveScriptFile(InputStream is,String name) {
         File file = new File("script");
         if (!file.exists()){
             FileOutputStream fis = null;
-            PrintWriter pw = null;
+            BufferedWriter pw = null;
             try {
                 boolean b = file.mkdir();
                 if (!b){
@@ -44,8 +47,8 @@ public class ArtConfigServiceImpl extends BaseServiceImpl<BaseArtConfig,ArtConfi
                 file = new File("script/name");
                 if (file.exists()){
                     fis = new FileOutputStream(file);
-                    pw = new PrintWriter(new OutputStreamWriter(fis));
-                    pw.println();
+                    pw = new BufferedWriter(new OutputStreamWriter(fis));
+                    pw.flush();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -58,7 +61,11 @@ public class ArtConfigServiceImpl extends BaseServiceImpl<BaseArtConfig,ArtConfi
                     }
                 }
                 if (pw!=null){
-                    pw.close();
+                    try {
+                        pw.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }

@@ -28,11 +28,16 @@ public class ConstantConfig {
 
     private boolean showErrorOnly;
 
-    private int reOpenTableName;
-
-    private int simulateStartNum;
-
-    private String virtual_network;
-
     private String tshark_path;
+
+    private SimulateArgs simulate;
+
+    @Data
+    public static class SimulateArgs{
+        private int reOpenTableName; //20190625
+        private String simulateStartNum;
+        private String simulateDBUrl;
+        private String simulateDBUser;
+        private String simulateDBPassword;
+    }
 }

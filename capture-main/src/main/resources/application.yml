@@ -2,7 +2,7 @@ myconfig:
   #global_address : 192.168.1.106
   #global_address : 192.168.0.114
   #global_address : 10.180.81.207
-  global_address : 192.168.41.7
+  global_address : 192.168.0.121
   admin_server_port : 8989
   packet_master_web_port : 8080
   openAOPLog : true   # 是否开启请求日志
@@ -11,11 +11,13 @@ myconfig:
   redis_ip : 10.15.191.100  # redis ip地址
   redis_port : 6379         # redis 端口
   openMapperAop : true      # 是否开启hessian mapper检测
-  reOpenTableName : 20190703  # 重放的数据库表名【packet_info_】 + 【表名】
-  simulateStartNum : 0        # 从第几条数据开始
-  virtual_network : \Device\NPF_{06E3803C-6CBD-4AD5-829B-58220E549DE0}         # 建立的虚拟网卡的名字
-  tshark-path: C:\Users\Administrator\Desktop\Release
-
+  tshark-path:
+  simulate :
+    reOpenTableName: 20190703  # 重放的数据库表名【packet_info_】 + 【表名】
+    simulateStartNum: 0        # 从第几条数据开始
+    simulateDBUrl : jdbc:mysql://10.15.191.100:3306/csc_db?serverTimezone=UTC
+    simulateDBUser : root
+    simulateDBPassword : 920614
 pre-processors:
 #  list[0] : s7comm
 #  list[1] : modbus
@@ -26,14 +28,14 @@ pre-processors:
 #  list[6] : opcua
   list :
      - s7comm
-     - modbus
-     - iec104
-     - dnp3_0
-     - pnio
-     - cip
-     - opcua
-     - mms
-     - dcerpc
+#     - modbus
+#     - iec104
+#     - dnp3_0
+#     - pnio
+#     - cip
+#     - opcua
+#     - mms
+#     - dcerpc
   i_protocols:
     - s7comm
     - modbus
@@ -49,7 +51,7 @@ tshark-config:
   s7comm_filter : not tcp
 
 hessian-config:
-  hessian-url: 192.168.41.8:36955/hessian
+  hessian-url: 10.15.191.214:36955/hessian
   art_history_data: http://${hessian-config.hessian-url}/ArtHistoryDataMapper.hessian
   art_config: http://${hessian-config.hessian-url}/ArtConfigMapper.hessian
   configuration_setting: http://${hessian-config.hessian-url}/ConfigurationSettingMapper.hessian
@@ -123,15 +125,15 @@ spring:
 #      batch-size: 40960
 #      buffer-memory: 40960
 
-  redis:
-    host: ${myconfig.redis_ip}
-    port: ${myconfig.redis_port}
-    password:
-    jedis:
-      pool:
-        min-idle: 8
-        max-idle: 500
-        max-active: 2000
+#  redis:
+#    host: ${myconfig.redis_ip}
+#    port: ${myconfig.redis_port}
+#    password:
+#    jedis:
+#      pool:
+#        min-idle: 8
+#        max-idle: 500
+#        max-active: 2000
 
 management:
   endpoints:

@@ -26,12 +26,15 @@ import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.kafka.KafkaThread;
 import com.zjucsc.socket_io.SocketIoEvent;
 import com.zjucsc.socket_io.SocketServiceCenter;
+import com.zjucsc.tshark.TsharkCommon;
 import com.zjucsc.tshark.bean.CollectorState;
 import com.zjucsc.tshark.handler.AbstractAsyncHandler;
 import com.zjucsc.tshark.handler.DefaultPipeLine;
 import com.zjucsc.tshark.packets.*;
 import com.zjucsc.tshark.pre_processor.BasePreProcessor;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -100,9 +103,8 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             commandWrapper.setSrcTag(srcTag);
             SocketServiceCenter.updateAllClient(SocketIoEvent.COMMAND,commandWrapper);
             COMMAND_PACKET.sendMsg(commandWrapper);
-
             //工艺参数操作指令工艺判断
-            AttackCommon.appendArtCommandAnalyze(command,layer, AppCommonUtil.getGlobalArtMap());
+            AttackCommon.appendArtCommandAnalyze(command,layer, StatisticsData.getGlobalArtMap());
         });
 
         ArtDecodeCommon.registerPacketValidCallback((argName, value, layer, objs) -> {
@@ -112,11 +114,11 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                 artPacketDetail.setArtName(argName);
                 ART_PACKET.sendMsg(artPacketDetail);
                 //iArtPacketService.insertArtPacket(argName,artPacketDetail);
-                Map<String, Float> res = AppCommonUtil.getGlobalArtMap();
+                Map<String, Float> res = StatisticsData.getGlobalArtMap();
                 AttackCommon.appendArtAnalyze(res, layer);
                 //分析结果
-                //数据发送
-                StatisticsData.addArtMapData(res);
+                //当有工艺参数更新的时候更新发送参数值
+                StatisticsData.addOrUpdateArtData(argName,String.valueOf(value));
             }else{
                 String event = (String) objs[0];
                 switch (event){
@@ -457,11 +459,13 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         return funCode;
     }
 
+    @SuppressFBWarnings({"NP_NONNULL_PARAM_VIOLATION", "SF_SWITCH_NO_DEFAULT"})
     @Async("common_async")
     @Override
-    public CompletableFuture<Exception> start(ProcessCallback<String,String> callback) {
+    public CompletableFuture<Exception> start(String macAddress,
+                                              String interfaceName,
+                                              ProcessCallback<String,String> callback) {
         startAllKafkaThread();
-        this.callback = callback;
         basePreProcessors = new LinkedList<>();
         boolean cipMms = false;
         boolean iec104Dnp = false;
@@ -501,13 +505,8 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             }
         }
         basePreProcessors.add(new UndefinedPreProcessor());
-        try {
-            callback.start(doStart(fvDimensionLayerAbstractAsyncHandler,
-                                    basePreProcessors
-                                   ));
-        } catch (InterruptedException e) {
-            return CompletableFuture.completedFuture(e);
-        }
+        callback.start(doStart(macAddress,interfaceName,
+                                basePreProcessors));
         return CompletableFuture.completedFuture(null);
     }
 
@@ -530,11 +529,12 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         return -1;
     }
 
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
     @Async("common_async")
     @Override
     public CompletableFuture<Exception> stop() {
         for (BasePreProcessor basePreProcessor : basePreProcessors) {
-            basePreProcessor.stopProcess();
+            basePreProcessor.stopCapture();
             callback.end("end " + basePreProcessor.getClass().getName());
         }
         basePreProcessors.clear();
@@ -542,38 +542,43 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         return CompletableFuture.completedFuture(null);
     }
 
-    private String doStart(AbstractAsyncHandler<FvDimensionLayer> fvDimensionHandler ,
-                           List<BasePreProcessor> packetPreProcessor) throws InterruptedException {
+    private String doStart(String macAddress,String interfaceName,
+                           List<BasePreProcessor> packetPreProcessor) {
         CountDownLatch downLatch = new CountDownLatch(packetPreProcessor.size() - 1);
         StringBuilder sb = new StringBuilder();
         int i = 0;
         for (; i < packetPreProcessor.size() - 1; i++) {
             BasePreProcessor basePreProcessor = packetPreProcessor.get(i);
-            doNow(basePreProcessor , fvDimensionHandler , downLatch , sb);
+            doNow(macAddress,interfaceName,basePreProcessor , downLatch , sb);
         }
-        downLatch.await(100, TimeUnit.SECONDS);
-        doNow(packetPreProcessor.get(i) , fvDimensionHandler,null , sb);
+        try {
+            downLatch.await(100, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            TsharkCommon.shotDownAllRunningTsharkProcess();
+            return "tshark process start error! <timeout> ";
+        }
+        doNow(macAddress,interfaceName,packetPreProcessor.get(i) ,null , sb);
         return sb.toString();
     }
 
-    private void doNow(BasePreProcessor basePreProcessor , AbstractAsyncHandler<FvDimensionLayer> fvDimensionHandler,
+    private void doNow(String macAddress,String interfaceName,
+                       BasePreProcessor basePreProcessor ,
                        CountDownLatch downLatch , StringBuilder sb){
         String processName = basePreProcessor.getClass().getName();
         DefaultPipeLine pipeLine = new DefaultPipeLine(processName);
-        //fv_dimension_handler --> bad_packet_analyze_handler
-        pipeLine.addLast(fvDimensionHandler);
+        pipeLine.addLast(fvDimensionLayerAbstractAsyncHandler);
         pipeLine.addLast(deviceHandler);
         pipeLine.addLast(attackAnalyzeHandler);
         pipeLine.addLast(packetDetectHandler);
         pipeLine.addLast(badPacketAnalyzeHandler);
-        basePreProcessor.setPipeLine(pipeLine);
         Thread processThread = new Thread(() -> {
             basePreProcessor.setCommandBuildFinishCallback(()->{
                 if (downLatch!=null) {
                     downLatch.countDown();
                 }
             });
-            basePreProcessor.execCommand(1 , -1);
+            basePreProcessor.startCapture(StringUtils.isBlank(constantConfig.getTshark_path()) ?"tshark":constantConfig.getTshark_path(),
+                    macAddress,interfaceName,pipeLine,BasePreProcessor.ONLINE_CAPTURE, -1);
         });
         processThread.setName(processName + "-thread");
         processThread.start();
@@ -620,6 +625,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         this.newFvDimensionCallback = newFvDimensionCallback;
     }
 
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
     @Async("common_async")
     @Override
     public CompletableFuture<Exception> startSimulate() {
@@ -642,6 +648,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         return CompletableFuture.completedFuture(null);
     }
 
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
     @Async("common_async")
     @Override
     public CompletableFuture<Exception> stopSimulate() {
@@ -674,9 +681,9 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
 
         {
             try {
-                String PASSWORD = "920614";
-                String USER_NAME = "root";
-                String JDBC_URL = "jdbc:mysql://10.15.191.100:3306/csc_db?serverTimezone=UTC";
+                String PASSWORD = constantConfig.getSimulate().getSimulateDBPassword();
+                String USER_NAME = constantConfig.getSimulate().getSimulateDBUser();
+                String JDBC_URL = constantConfig.getSimulate().getSimulateDBUrl();
                 connection = DBUtil.getConnection(JDBC_URL, USER_NAME, PASSWORD);
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -688,8 +695,8 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             fvDimensionLayers.clear();
             if (preparedStatement == null) {
                 int date;
-                if (constantConfig.getReOpenTableName() > 0) {
-                    date = constantConfig.getReOpenTableName();
+                if (constantConfig.getSimulate().getReOpenTableName() > 0) {
+                    date = constantConfig.getSimulate().getReOpenTableName();
                 }else {
                     date = 20190625;
                 }
@@ -701,28 +708,30 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             }
             preparedStatement.setInt(1,hasSendFvDimensionNumber);
             preparedStatement.setInt(2,hasSendFvDimensionNumber + num);
-            hasSendFvDimensionNumber+=num;
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()){
-                FvDimensionLayer fvDimensionLayer = new FvDimensionLayer();
-                fvDimensionLayer.timeStamp = resultSet.getString("time_stamp");
-                fvDimensionLayer.frame_protocols[0] = resultSet.getString("protocol_name");
-                fvDimensionLayer.eth_src[0] = resultSet.getString("src_mac");
-                fvDimensionLayer.eth_dst[0] = resultSet.getString("dst_mac");
-                fvDimensionLayer.ip_src[0] = resultSet.getString("src_ip");
-                fvDimensionLayer.ip_dst[0] = resultSet.getString("dst_ip");
-                fvDimensionLayer.src_port[0] = resultSet.getString("src_port");
-                fvDimensionLayer.dst_port[0] = resultSet.getString("dst_port");
-                fvDimensionLayer.funCode = resultSet.getString("fun_code");
-                fvDimensionLayer.frame_cap_len[0] = resultSet.getString("length");
-                fvDimensionLayer.funCodeMeaning = resultSet.getString("fun_code_meaning");
-                fvDimensionLayer.tcp_payload[0] = resultSet.getString("tcp_payload");
-                fvDimensionLayer.custom_ext_raw_data[0] = resultSet.getString("raw_data");
-                fvDimensionLayers.add(fvDimensionLayer);
+            hasSendFvDimensionNumber += num;
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    FvDimensionLayer fvDimensionLayer = new FvDimensionLayer();
+                    fvDimensionLayer.timeStamp = resultSet.getString("time_stamp");
+                    fvDimensionLayer.frame_protocols[0] = resultSet.getString("protocol_name");
+                    fvDimensionLayer.eth_src[0] = resultSet.getString("src_mac");
+                    fvDimensionLayer.eth_dst[0] = resultSet.getString("dst_mac");
+                    fvDimensionLayer.ip_src[0] = resultSet.getString("src_ip");
+                    fvDimensionLayer.ip_dst[0] = resultSet.getString("dst_ip");
+                    fvDimensionLayer.src_port[0] = resultSet.getString("src_port");
+                    fvDimensionLayer.dst_port[0] = resultSet.getString("dst_port");
+                    fvDimensionLayer.funCode = resultSet.getString("fun_code");
+                    fvDimensionLayer.frame_cap_len[0] = resultSet.getString("length");
+                    fvDimensionLayer.funCodeMeaning = resultSet.getString("fun_code_meaning");
+                    fvDimensionLayer.tcp_payload[0] = resultSet.getString("tcp_payload");
+                    fvDimensionLayer.custom_ext_raw_data[0] = resultSet.getString("raw_data");
+                    fvDimensionLayers.add(fvDimensionLayer);
+                }
             }
             return fvDimensionLayers;
         }
 
+        @SuppressFBWarnings("DM_NEXTINT_VIA_NEXTDOUBLE")
         @Override
         public void run() {
             hasStart = true;
@@ -731,11 +740,12 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                 if (idle){
                     synchronized (IDLE_LOCK){
                         try {
-                            IDLE_LOCK.wait();
+                            while(idle) {
+                                IDLE_LOCK.wait();
+                            }
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        idle = false;
                     }
                 }
                 //200 - 500
@@ -757,6 +767,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         }
 
         private void notifyNow(){
+            idle = false;
             synchronized (IDLE_LOCK){
                 IDLE_LOCK.notifyAll();
             }
@@ -804,7 +815,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             AttackCommon.appendOptCommandDecode(layer);
             //工艺参数分析
             byte[] tcpPayload = layer.tcpPayload;
-            Map<String,Float> res = AppCommonUtil.getGlobalArtMap();
+            Map<String,Float> res = StatisticsData.getGlobalArtMap();
             String protocol = layer.protocol;
             if (!(layer instanceof UndefinedPacket.LayersBean)){
                 artAnalyze(protocol,tcpPayload,layer,res);
@@ -819,31 +830,32 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     };
 
     private Map<String, Float> artAnalyze(String protocol, byte[] tcpPayload, FvDimensionLayer layer, Map<String, Float> res) {
+        Map<String,Float> artGlobalMap = StatisticsData.getGlobalArtMap();
         switch (protocol){
             case "s7comm":
                 if (!layer.tcp_flags_ack[0].equals("") || Common.systemRunType == 0){
-                   ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,"s7comm",layer,1);
+                   ArtDecodeCommon.artDecodeEntry(artGlobalMap,tcpPayload,"s7comm",layer,1);
                 }else{
-                    ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),layer.rawData,"s7comm",layer,0);
+                    ArtDecodeCommon.artDecodeEntry(artGlobalMap,layer.rawData,"s7comm",layer,0);
                 }
                 break;
             case PACKET_PROTOCOL.MODBUS :
-                ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.protocol,layer);
+                ArtDecodeCommon.artDecodeEntry(artGlobalMap,tcpPayload,layer.protocol,layer);
                 break;
             case PACKET_PROTOCOL.PN_IO :
-                ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),layer.rawData,layer.protocol,layer);
+                ArtDecodeCommon.artDecodeEntry(artGlobalMap,layer.rawData,layer.protocol,layer);
                 break;
             case PACKET_PROTOCOL.IEC104_ASDU :
-                ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),layer.rawData,layer.protocol,layer);
+                ArtDecodeCommon.artDecodeEntry(artGlobalMap,layer.rawData,layer.protocol,layer);
                 break;
             case PACKET_PROTOCOL.OPC_UA :
-                ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.protocol,layer);
+                ArtDecodeCommon.artDecodeEntry(artGlobalMap,tcpPayload,layer.protocol,layer);
                 break;
             case "dnp3" :
-                ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.protocol,layer);
+                ArtDecodeCommon.artDecodeEntry(artGlobalMap,tcpPayload,layer.protocol,layer);
                 break;
             case PACKET_PROTOCOL.MMS :
-                ArtDecodeCommon.artDecodeEntry(AppCommonUtil.getGlobalArtMap(),tcpPayload,layer.protocol,layer);
+                ArtDecodeCommon.artDecodeEntry(artGlobalMap,tcpPayload,layer.protocol,layer);
                 break;
         }
         return res;

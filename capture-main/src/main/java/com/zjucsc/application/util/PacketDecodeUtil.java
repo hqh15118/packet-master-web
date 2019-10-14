@@ -14,6 +14,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+
 import static com.zjucsc.application.config.PACKET_PROTOCOL.*;
 
 /**
@@ -258,12 +260,13 @@ public class PacketDecodeUtil {
         CollectorState state;
         int A_state = payload[start + 2] & STATE_REF;
         int B_state = payload[start + 3] & STATE_REF;
-        if ((state = COLLECTOR_STATE_MAP.get(collectorId))==null){
-            //还没有定义过该设备，初始化该设备状态
-            COLLECTOR_STATE_MAP.put(collectorId , new CollectorState(collectorId , -1,-1,
-                    A_state,B_state));
-            return null;
-        }
+        state = COLLECTOR_STATE_MAP.computeIfAbsent(collectorId, new Function<Integer, CollectorState>() {
+            @Override
+            public CollectorState apply(Integer integer) {
+                return new CollectorState(collectorId , -1,-1,
+                        A_state,B_state);
+            }
+        });
         //当前检测到的A或者B口的状态与之前检测到的不同，说明A或者B或者A和B口状态发生了改变
         //前端只需要比较lastState和currentState是否出现偏差，即可知道哪个或者全部口是否发生了状态改变
         if (A_state != state.getA_currentState() || B_state != state.getB_currentState()){
@@ -283,7 +286,7 @@ public class PacketDecodeUtil {
             return -1;
         }
         int start = payload.length - offset;
-        return (payload[start] << 8) + payload[start + 1];
+        return (payload[start] << 8) + Byte.toUnsignedInt(payload[start + 1]) ;
     }
 
     public static int decodeCollectorDelay(byte[] payload , int offsetFromEnd) {

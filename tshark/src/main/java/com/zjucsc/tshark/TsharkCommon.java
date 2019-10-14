@@ -4,14 +4,15 @@ import com.zjucsc.tshark.bean.ProcessWrapper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
 
 public class TsharkCommon {
+    public interface ErrorCallback{
+        void errorCallback(String errorMsg);
+    }
+
     public static String OS_NAME = System.getProperty("os.name");
 
     public static String filter = "tcp";
@@ -21,13 +22,6 @@ public class TsharkCommon {
     public static String s7comm_filter = null;
 
     public static String sessionReset = "100000";
-
-    public static Thread.UncaughtExceptionHandler uncaughtExceptionHandler
-            = (t, e) ->
-    {
-        System.out.println("thread " + t.getName() + " caught an exception " + e);
-        e.printStackTrace();
-    };
 
     public static final Set<String> CAPTURE_PROTOCOL = new HashSet<>();
 
@@ -80,7 +74,44 @@ public class TsharkCommon {
         TsharkCommon.errorCallback = errorCallback;
     }
 
-    public interface ErrorCallback{
-        void errorCallback(String errorMsg);
+
+    public static synchronized void addCaptureProtocol(String[] protocols){
+        TsharkCommon.CAPTURE_PROTOCOL.addAll(Arrays.asList(protocols));
     }
+
+    public static synchronized Set<String> getCaptureProtocols(){
+        return TsharkCommon.CAPTURE_PROTOCOL;
+    }
+
+    public static void clearCaptureProtocols(){
+        TsharkCommon.CAPTURE_PROTOCOL.clear();
+    }
+
+    public static final byte[] LOCK = new byte[1];
+
+    public static void removeTsharkProcess(ProcessWrapper processWrapper){
+        synchronized (LOCK){
+            TsharkCommon.TSHARK_RUNNING_PROCESS.remove(processWrapper);
+        }
+    }
+
+    public static void addTsharkProcess(ProcessWrapper processWrapper){
+        synchronized (LOCK){
+            TsharkCommon.TSHARK_RUNNING_PROCESS.add(processWrapper);
+        }
+    }
+
+    public static List<ProcessWrapper> findAllRunningTsharkProcess(){
+        return TsharkCommon.TSHARK_RUNNING_PROCESS;
+    }
+
+    public static void shotDownAllRunningTsharkProcess(){
+        synchronized (LOCK){
+            for (ProcessWrapper tsharkRunningProcess : TsharkCommon.TSHARK_RUNNING_PROCESS) {
+                tsharkRunningProcess.getProcess().destroyForcibly();
+            }
+            TsharkCommon.TSHARK_RUNNING_PROCESS.clear();
+        }
+    }
+
 }

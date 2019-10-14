@@ -7,7 +7,7 @@ import com.corundumstudio.socketio.listener.DisconnectListener;
 
 public class MainServer {
 
-    private static boolean hasStartedService = false;
+    private static volatile boolean hasStartedService = false;
     private static SocketIOServer server = null;
 
     public static void initSocketIoServer(String ip,int port){
@@ -52,7 +52,7 @@ public class MainServer {
         return true;
     }
 
-    public static boolean close(){
+    public static synchronized boolean close(){
         if (!hasStartedService){
             return false;
         }else{

@@ -12,6 +12,6 @@ public class SingleProtocol {
     @JSONField(name = "layers")
     public LayersBean layers;
     public static class LayersBean{
-        public String[] frame_protocols = {""};
+
     }
 }

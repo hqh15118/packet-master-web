@@ -37,7 +37,9 @@ public abstract class AbstractAsyncHandler<T> extends AbstractHandler<T> {
         if (executor==null){
             //run handle in sync schema
             T t = handle(inValue);
-            nextHandler().handleAndPass(t);
+            if (nextHandler()!=null) {
+                nextHandler().handleAndPass(t);
+            }
             for (PipeLine pipeLine : pipeLines) {
                 pipeLine.pushDataAtHead(t);
             }
@@ -60,7 +62,7 @@ public abstract class AbstractAsyncHandler<T> extends AbstractHandler<T> {
         return " ---> " + id;
     }
 
-    List<PipeLine> getPipeLine(){
+    public List<PipeLine> getPipeLines(){
         return pipeLines;
     }
 }

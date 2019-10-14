@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public class KafkaThread<V> extends Thread implements IKafka<V> {
-    private final int maxSize = 100000;
+    private final static int maxSize = 100000;
     private final LinkedBlockingQueue<V> TASK_QUEUE =
             new LinkedBlockingQueue<>(maxSize);
     private KafkaProducer<String,String> kafkaProducer;

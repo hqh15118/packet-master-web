@@ -58,6 +58,12 @@ public class CommonUtil {
                 executionHandler).setTag(tag);
     }
 
+    public static ThreadPoolExecutor getFixThreadPoolSizeThreadPool(int coreSize , int poolSize , ThreadFactory threadFactory,String tag){
+        return new CustomThreadPoolExecutor(coreSize, coreSize, Integer.MAX_VALUE, TimeUnit.SECONDS, new LinkedBlockingQueue<>(poolSize),
+                threadFactory,
+                (r, executor) -> logger.error("[{}] reject task : [{}]",tag,r)).setTag(tag);
+    }
+
     public static ThreadPoolExecutor getSingleThreadPoolSizeThreadPool(int poolSize , ThreadFactory threadFactory,String tag){
         if (REJECT_EXECUTION_HANDLER == null){
             return new CustomThreadPoolExecutor(1, 1, Integer.MAX_VALUE, TimeUnit.SECONDS, new LinkedBlockingQueue<>(poolSize),

@@ -1,5 +1,7 @@
 package com.zjucsc.tshark.pre_processor;
 
+import com.zjucsc.tshark.handler.PipeLine;
+
 import java.util.List;
 
 /**
@@ -8,15 +10,10 @@ import java.util.List;
  * @author hongqianhui
  * #create_time 2019-05-11 - 17:40
  */
-public interface PreProcessor {
-
-    void execCommand(int type, int limit);
-
-    String tsharkPath();
+public interface PreProcessor extends TsharkPreProcessor{
 
     void pcapFilePath(int limit);
 
-    void stopProcess();
     /**
      * 只使用该协议的报文 -Y
      * @return
@@ -35,9 +32,4 @@ public interface PreProcessor {
 
     void decodeJSONString(String packetJSON);
 
-    String extConfig();
-
-    void doExecCommand(String command);
-
-    void restartCapture();
 }

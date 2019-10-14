@@ -14,6 +14,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
 
 @Slf4j
 public class StatisticsData {
@@ -57,10 +58,20 @@ public class StatisticsData {
     public static final ConcurrentHashMap<String,AtomicInteger> ATTACK_BY_DEVICE = new ConcurrentHashMap<>();
     public static final ConcurrentHashMap<String,AtomicInteger> EXCEPTION_BY_DEVICE = new ConcurrentHashMap<>();
     public static final ConcurrentHashMap<String, GraphInfoCollection> GRAPH_BY_DEVICE = new ConcurrentHashMap<>();
+
+    private static ConcurrentHashMap<String,Float> GLOBAL_ART_INFO = new ConcurrentHashMap<>();
+    /**
+     * 工艺参数Map，塞到每个art decoder中的map，用来填充工艺参数的
+     * 【工艺参数名称，工艺参数数据】
+     * @return map
+     */
+    public static Map<String,Float> getGlobalArtMap(){
+        return GLOBAL_ART_INFO;
+    }
     /**
      * key 是工艺参数的名字
      */
-    public static final ConcurrentHashMap<String, LinkedList<String>> ART_INFO = new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<String, String> ART_INFO = new ConcurrentHashMap<>();
     //public static final ConcurrentHashMap<String, LinkedList<String>> ART_INFO_SEND = new ConcurrentHashMap<>();//只发送需要显示的个工艺参数
     public static final ConcurrentHashMap<String, ArtGroupWrapper> ART_INFO_SEND_SINGLE = new ConcurrentHashMap<>();
 
@@ -108,11 +119,7 @@ public class StatisticsData {
     }
 
     public static void addDeviceGraphInfo(String deviceNumber , GraphInfo info){
-        GraphInfoCollection collection = GRAPH_BY_DEVICE.get(deviceNumber);
-        if (collection == null){
-            collection = new GraphInfoCollection();
-            GRAPH_BY_DEVICE.put(deviceNumber , collection);
-        }
+        GraphInfoCollection collection = GRAPH_BY_DEVICE.computeIfAbsent(deviceNumber, s -> new GraphInfoCollection());
         doAddInfoToList(collection.getAttack(),info.getAttack());
         doAddInfoToList(collection.getDelay(),info.getDelay());
         doAddInfoToList(collection.getException(),info.getException());
@@ -139,53 +146,29 @@ public class StatisticsData {
         }
     }
 
-    static {
-        ART_INFO.put("timestamp",new LinkedList<>());
-    }
-
-    public static void initArtArgs(String artArg){
-        ART_INFO.putIfAbsent(artArg,new LinkedList<>());
-    }
-
     public static void removeArtArgs(String artArg){
         ART_INFO.remove(artArg);
     }
 
-    public static final byte[] LINKED_LIST_LOCK = new byte[1];
-
-    public static void addArtData(String artArg , String value){
-        synchronized (LINKED_LIST_LOCK){
-            LinkedList<String> var = ART_INFO.get(artArg);
-        if (var == null){
-            //需要先调用AppCommonUtil.initArtMap
-            AppCommonUtil.initArtMap(artArg);
-        }else{
-                if (var.size() >= 6){
-                    var.removeFirst();
-                    var.addLast(value);
-                }else{
-                    var.addLast(value);
-                }
-            }
-        }
+    /**
+     * 更新要发送到前端的工艺参数MAP
+     * @param artArg 工艺参数名称
+     * @param value 工艺参数值 string类型
+     */
+    public static void addOrUpdateArtData(String artArg , String value){
+        ART_INFO.put(artArg, value);
     }
 
-    public static synchronized void addArtMapData(Map<String,Float> artDataMap){
-        artDataMap.forEach((artArg, value) -> addArtData(artArg,String.valueOf(value)));
-    }
 
     /*********************************
      *
-     *  STATISTICS  PROTOCOL NUM e.g. [S7comm,20] [Modbus,30]
+     *  STATISTICS PROTOCOL NUM e.g. [S7comm,20] [Modbus,30]
      *
      **********************************/
     public static void addProtocolNum(String protocolName,int deltaNumber){
-        AtomicLong atomicLong = PROTOCOL_NUM.get(protocolName);
-        if (atomicLong == null){
-            PROTOCOL_NUM.put(protocolName,new AtomicLong(1));
-        }else{
-            atomicLong.addAndGet(deltaNumber);
-        }
+        AtomicLong atomicLong = PROTOCOL_NUM.computeIfAbsent(protocolName,
+                s -> new AtomicLong(0));
+        atomicLong.addAndGet(deltaNumber);
     }
 
     public static Map<String,AtomicLong> getProtocolNum(){
@@ -208,23 +191,27 @@ public class StatisticsData {
     }
 
     /**
-     * 清除所有的统计数据
+     * 用于初始化工艺参数需要的数据
+     * 1.StatisticsData.initArtArgs(artArg);
+     * 【ConcurrentHashMap<String, LinkedList<String>> ART_INFO】 ==> 发送给前端的
+     * 2.map.put(artArg,0F);
+     * 【ConcurrentHashMap<String,Float> map】 ==> 用于记录实时的参数
+     * @param artArg
      */
-    public static void removeTargetDeviceStatisticsData(){
-        NUMBER_BY_DEVICE_IN.clear();
-        NUMBER_BY_DEVICE_OUT.clear();
-        FLOW_BY_DEVICE_OUT.clear();
-        FLOW_BY_DEVICE_IN.clear();
-        ATTACK_BY_DEVICE.clear();
-        EXCEPTION_BY_DEVICE.clear();
-        GRAPH_BY_DEVICE.clear();
-        ART_INFO.clear();
-        ART_INFO_SEND_SINGLE.clear();
-        recvPacketNumber.set(0);
-        PROTOCOL_NUM.clear();
-        COLLECTOR_DELAY_MAP.clear();
-        FLOW.set(0);
-        ALL_IP_ADDRESS.clear();
-        attackNumber.set(0);
+    public static void initArtMap(String artArg){
+        /*
+         * 新增工艺参数的时候，前端推送也需要增加一个参数，并将其初始化为0
+         * @param artArg 工艺参数名称
+         */
+        ART_INFO.putIfAbsent(artArg,"0");
+        /*
+         * 全局的工艺参数map，value是float类型
+         */
+        GLOBAL_ART_INFO.put(artArg,0F);
+    }
+
+    public static void removeArtMap(String artArg){
+        StatisticsData.removeArtArgs(artArg);
+        GLOBAL_ART_INFO.remove(artArg);
     }
 }

@@ -32,6 +32,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 @Slf4j
 public class CacheUtil {
@@ -683,9 +684,10 @@ public class CacheUtil {
 //        }
         if (/*CommonCacheUtil.iProtocolExist(layer.protocol) && */DeviceOptUtil.validPacketInfo(layer)){
             String deviceTag = DeviceOptUtil.getSrcDeviceTag(layer);
-            if (!ALL_DEVICES.containsKey(deviceTag) && ALL_MAC_ADDRESS.putIfAbsent(layer.eth_src[0],"") == null/*未存过该MAC地址*/) {
-                Device srcDevice = createDeviceInverse(layer, deviceTag);
-                ALL_DEVICES.put(srcDevice.getDeviceTag(), srcDevice);
+            Device srcDevice;
+            if (((ALL_DEVICES.putIfAbsent(deviceTag,(srcDevice = createDeviceInverse(layer, deviceTag)))) == null/*不存在该设备tag*/)
+                &&
+                ALL_MAC_ADDRESS.putIfAbsent(layer.eth_src[0],"") == null/*未存过该MAC地址*/) {
                 //缓存中的设备名和设备TAG
                 addOrUpdateDeviceNumberAndTAG(srcDevice.getDeviceNumber(),srcDevice.getDeviceTag());
                 //缓存找那个的设备Number和Name更新
@@ -755,11 +757,8 @@ public class CacheUtil {
         String dstTag = DeviceOptUtil.getDstDeviceTag(layer);
         Device dstDevice = getDeviceByTag(dstTag);        //接收设备
         if (srcDevice!=null && dstDevice!=null) {
-            ConcurrentHashMap<Device, AtomicInteger> device2PacketNum = DEVICE_TO_DEVICE_PACKETS.get(dstDevice);
-            if (device2PacketNum == null) {
-                device2PacketNum = new ConcurrentHashMap<>();
-                DEVICE_TO_DEVICE_PACKETS.put(dstDevice, device2PacketNum);
-            }
+            ConcurrentHashMap<Device, AtomicInteger> device2PacketNum =
+                    DEVICE_TO_DEVICE_PACKETS.computeIfAbsent(dstDevice, device -> new ConcurrentHashMap<>());
             AtomicInteger atomicInteger = device2PacketNum.putIfAbsent(srcDevice, new AtomicInteger(1));
             if (atomicInteger != null) {
                 atomicInteger.incrementAndGet();
@@ -885,10 +884,10 @@ public class CacheUtil {
         return sysRunArg;
     }
     public static void initCpuAndMemState(){
-        maxCPURate = Double.valueOf(ConfigUtil.getData("cpu_rate","75"));
-        maxMemoryRate = Double.valueOf(ConfigUtil.getData("mem_rate","75"));
-        cpuCount = Integer.valueOf(ConfigUtil.getData("cpu","30"));
-        memCount = Integer.valueOf(ConfigUtil.getData("mem","30"));
+        maxCPURate = Double.parseDouble(ConfigUtil.getData("cpu_rate","75"));
+        maxMemoryRate = Double.parseDouble(ConfigUtil.getData("mem_rate","75"));
+        cpuCount = Integer.parseInt(ConfigUtil.getData("cpu","30"));
+        memCount = Integer.parseInt(ConfigUtil.getData("mem","30"));
     }
     public static void updateCpuOrMemoryRate(double cpu,double mem){
         maxCPURate = cpu;

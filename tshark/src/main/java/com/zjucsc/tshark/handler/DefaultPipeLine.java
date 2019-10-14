@@ -61,7 +61,7 @@ public class DefaultPipeLine extends AbstractPipeLine {
         stringBuilder.append("\n");
         for (AbstractHandler handlerInstance : handlerLinkedList) {
             if (handlerInstance instanceof AbstractAsyncHandler){
-                List pipeLines = ((AbstractAsyncHandler)handlerInstance).getPipeLine();
+                List pipeLines = ((AbstractAsyncHandler)handlerInstance).getPipeLines();
                 for (Object pipeLine : pipeLines){
                     stringBuilder.append(pipeLine);
                 }

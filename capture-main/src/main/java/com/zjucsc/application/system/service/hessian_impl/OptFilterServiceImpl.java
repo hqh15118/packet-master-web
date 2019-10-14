@@ -10,6 +10,7 @@ import com.zjucsc.application.tshark.analyzer.OperationAnalyzer;
 import com.zjucsc.application.util.CacheUtil;
 import com.zjucsc.application.util.OptFilterUtil;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ import static com.zjucsc.application.util.CacheUtil.convertIdToName;
 @Service
 public class OptFilterServiceImpl extends BaseServiceImpl<OptFilter,OptFilterMapper> implements IOptFilterService {
 
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
     @Override
     public CompletableFuture<Exception> addOperationFilter(List<OptFilterForFront> optFilterForFront) {
         this.baseMapper.deleteByDeviceNumber(optFilterForFront.get(0).getDeviceNumber(),Common.GPLOT_ID);

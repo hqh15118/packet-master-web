@@ -14,6 +14,7 @@ import com.zjucsc.application.util.OptFilterUtil;
 import com.zjucsc.common.exceptions.DeviceNotValidException;
 import com.zjucsc.common.exceptions.OptFilterNotValidException;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +33,7 @@ public class FvDimensionFilterServiceImpl extends BaseServiceImpl<Rule,FvDimensi
 
     @Autowired private IOptFilterService iOptFilterService;
 
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
     @Override
     public CompletableFuture<Exception> addFvDimensionFilter(List<Rule> rules) throws ProtocolIdNotValidException {
         //更新缓存

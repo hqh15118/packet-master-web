@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.corundumstudio.socketio.SocketIOClient;
 import com.zjucsc.application.config.Common;
+import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.config.TsharkConfig;
 import com.zjucsc.application.system.service.common_impl.CapturePacketServiceImpl;
 import com.zjucsc.application.system.service.common_iservice.CapturePacketService;
@@ -47,7 +48,7 @@ public class SysWatchConfig {
             clientStrings.add(client.getRemoteAddress().toString());
         }
         map.put("SOCKET-IO-CLIENT", clientStrings);
-        map.put("ART_DATA",AppCommonUtil.getGlobalArtMap());
+        map.put("ART_DATA", StatisticsData.getGlobalArtMap());
         map.put("TSHARK-FILTER-S7COMM",tsharkConfig.getS7comm_filter());
         map.put("TSHARK-FILTER-MODBUS",tsharkConfig.getModbus_filter());
         map.put("ALL_DROP_PROTOCOL", CacheUtil.getAllDropProtocol());

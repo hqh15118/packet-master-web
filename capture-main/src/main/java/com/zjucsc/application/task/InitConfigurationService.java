@@ -66,41 +66,6 @@ public class InitConfigurationService implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws IllegalAccessException, NoSuchFieldException, ProtocolIdNotValidException, IOException {
-        String str = null;
-        if (constantConfig.getTshark_path() == null) {str = TsharkUtil.checkTsharkValid();}
-        else{str = constantConfig.getTshark_path();}
-        if (str == null) {
-            System.err.println("tshark is not in system PATH , application failed to start");
-            return;
-        }else{
-            TsharkUtil.setTsharkPath(str);
-            PrinterUtil.printMsg(0,"find tshark in: " + str);
-        }
-
-        try {
-            if(!TsharkUtil.addTsharkPlugin()){
-                PrinterUtil.printError("无法自动创建【tshark插件】，请检查权限或者手动添加到wireshark/plugins目录下");
-                return;
-            }
-        } catch (IOException e) {
-            PrinterUtil.printError("无法自动创建【tshark插件】，请检查权限或者手动添加到wireshark/plugins目录下");
-            log.error("创建tshark插件失败***",e);
-            return;
-        }
-        /*
-        List<String> virTempPath = args.getOptionValues("temp");
-        //设置临时文件夹路径
-        String command;
-        if (virTempPath == null) {
-            command = "md C:\\temp\n" +
-                    "setx TEMP C:\\temp";
-            System.out.println("*******************\\n\" + \"program args [temp<--temp>]: \" + C:\\temp");
-        }else{
-            command = "md " + virTempPath.get(0) + " \n" + "setx TEMP " + virTempPath.get(0);
-            System.out.println("*******************\\n\" + \"program args [temp<--temp>]: \" + " + virTempPath.get(0));
-        }
-        Runtime.getRuntime().exec(command);
-        */
         /***************************
          * RELOAD FROM JAR
          ***************************/
@@ -143,7 +108,7 @@ public class InitConfigurationService implements ApplicationRunner {
         List<String> virType = args.getOptionValues("type");
         PrinterUtil.printMsg("program args [type--type]: " + virType);
         if (virType!=null && virType.size() > 0){
-            Common.systemRunType = Integer.valueOf(virType.get(0));
+            Common.systemRunType = Integer.parseInt(virType.get(0));
         }
 
         /***************************
@@ -205,14 +170,17 @@ public class InitConfigurationService implements ApplicationRunner {
                 String protocolName = iProtocolFuncodeMap.protocolAnalyzerName();
                 Map<String, String> map = iProtocolFuncodeMap.initProtocol();
                 List<ConfigurationSetting> configurationSettings = new ArrayList<>();
-                for (String fun_code : map.keySet()) {
-                    funcodeStatements.put(fun_code, map.get(fun_code));
+                String key,value;
+                for (Map.Entry<String,String> fun_code : map.entrySet()) {
+                    key = fun_code.getKey();
+                    value = fun_code.getValue();
+                    funcodeStatements.put(key, value);
                     //添加到protocol_id表
                     ConfigurationSetting configurationSetting = new ConfigurationSetting();
                     int protocolId = CacheUtil.convertNameToId(protocolName);
                     configurationSetting.setProtocolId(protocolId);
-                    configurationSetting.setOpt(map.get(fun_code));
-                    configurationSetting.setFunCode(fun_code);
+                    configurationSetting.setOpt(value);
+                    configurationSetting.setFunCode(key);
                     configurationSettings.add(configurationSetting);
                 }
                 iConfigurationSettingService.saveOrUpdateBatch(configurationSettings);
@@ -268,7 +236,7 @@ public class InitConfigurationService implements ApplicationRunner {
                     //添加工艺参数配置到缓存中
                     ArtDecodeCommon.addArtDecodeConfig(baseConfig);
                     //初始化工艺参数全局map，往里面放工艺参数名字和初始值0F
-                    AppCommonUtil.initArtMap(baseConfig.getTag());
+                    StatisticsData.initArtMap(baseConfig.getTag());
                     CacheUtil.addOrUpdateArtName2ArtGroup(baseConfig.getTag(),baseConfig.getGroup());
                     if (baseConfig.getShowGraph() == 1){
                         //添加要显示的工艺参数名字到缓存中

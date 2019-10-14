@@ -69,4 +69,6 @@ public class Common {
 
     public static final ThreadExceptionHandler COMMON_THREAD_EXCEPTION_HANDLER = new ThreadExceptionHandler();
 
+    public static boolean showArtDecodeDelay = false;
+
 }

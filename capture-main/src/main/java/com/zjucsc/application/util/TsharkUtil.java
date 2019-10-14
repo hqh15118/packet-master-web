@@ -40,14 +40,17 @@ public class TsharkUtil {
                 System.err.println("未检测到tshark【mywireshark_plugin.lua】插件，创建失败，检查权限");
                 return false;
             }
-            InputStream is = TsharkUtil.class.getResourceAsStream("/mywireshark_plugin.lua");
-            int length = is.available();
-            byte[] data = new byte[length];
-            int readLength = is.read(data);
-            assert readLength == length;
-            OutputStream os = new FileOutputStream(file);
-            os.write(data);
-            os.flush();
+            try(InputStream is = TsharkUtil.class.getResourceAsStream("/mywireshark_plugin.lua");
+                OutputStream os = new FileOutputStream(file)) {
+                int length = is.available();
+                byte[] data = new byte[length];
+                int readLength = is.read(data);
+                assert readLength == length;
+                os.write(data);
+                os.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }else{
             System.out.println("检测到tshark插件>>");
         }
@@ -57,14 +60,18 @@ public class TsharkUtil {
     public static String analyzeRawData(byte[] rawData) throws PcapNativeException, IOException, NotOpenException {
         File file = new File("temp.pcap");
         file.deleteOnExit();
-        file.createNewFile();
-        String filePath = file.getAbsolutePath();
-        PcapHandle handle = Pcaps.openDead(DataLinkType.EN10MB, 65536);
-        PcapDumper pcapDumper = handle.dumpOpen(filePath);
-        pcapDumper.dumpRaw(rawData);
-        String res =  tsharkAnalyzeTempFile(filePath);
-        pcapDumper.close();
-        handle.close();
+        String res = "";
+        if (file.createNewFile()) {
+            String filePath = file.getAbsolutePath();
+            PcapHandle handle = Pcaps.openDead(DataLinkType.EN10MB, 65536);
+            PcapDumper pcapDumper = handle.dumpOpen(filePath);
+            pcapDumper.dumpRaw(rawData);
+            res = tsharkAnalyzeTempFile(filePath);
+            pcapDumper.close();
+            handle.close();
+        }else{
+            System.err.println("临时文件创建失败");
+        }
         return res;
     }
 

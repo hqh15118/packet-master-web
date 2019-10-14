@@ -3,6 +3,7 @@ package com.zjucsc.application.controller;
 import com.alibaba.fastjson.JSON;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.PACKET_PROTOCOL;
+import com.zjucsc.application.config.StatisticsData;
 import com.zjucsc.application.config.auth.Log;
 import com.zjucsc.application.domain.bean.ArtArgShowState;
 import com.zjucsc.application.domain.bean.BaseArtConfig;
@@ -16,6 +17,7 @@ import com.zjucsc.art_decode.artconfig.*;
 import com.zjucsc.art_decode.base.BaseConfig;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,8 +35,8 @@ import java.util.concurrent.ExecutionException;
  */
 @RestController
 @RequestMapping("/art_config/")
+@Slf4j
 public class ArtConfigController {
-
     @Autowired private IArtConfigService iArtConfigService;
 
     @ApiOperation("添加工艺参数配置，artConfig > 0表示更新；不填表示添加新的配置，顺序返回记录的ID列表")
@@ -58,7 +60,7 @@ public class ArtConfigController {
             iArtConfigService.insertByJSONStr(jsonData);
             //初始化工艺参数配置
             //将该工艺参数添加到MAP中
-            AppCommonUtil.initArtMap(baseConfig.getTag());
+            StatisticsData.initArtMap(baseConfig.getTag());
         }
 
         if (baseConfig.getShowGraph() == 1){
@@ -66,8 +68,8 @@ public class ArtConfigController {
         }else{
             CacheUtil.removeShowGraph(baseConfig.getProtocolId(),baseConfig.getTag());
         }
-
-        switch (baseConfig.getProtocolId()) {
+        int id = baseConfig.getProtocolId();
+        switch (id) {
             case PACKET_PROTOCOL.MODBUS_ID:
                 ModBusConfig modBusConfig = JSON.parseObject(jsonData, ModBusConfig.class);
                 modBusConfig.setProtocol(PACKET_PROTOCOL.MODBUS);
@@ -108,6 +110,7 @@ public class ArtConfigController {
                 opcdaConfig.setProtocol(PACKET_PROTOCOL.OPC_DA);
                 ArtDecodeCommon.addArtDecodeConfig(opcdaConfig);
                 break;
+            default: log.error("未指定工艺参数解析ID [{}]",id);
         }
         CacheUtil.addOrUpdateArtName2ArtGroup(baseConfig.getTag(),baseConfig.getGroup());
         return BaseResponse.OK();
@@ -132,7 +135,7 @@ public class ArtConfigController {
             baseConfig.setProtocol(CacheUtil.convertIdToName(baseConfig.getProtocolId()));
         }
         //移除要显示的map
-        AppCommonUtil.removeArtMap(baseConfig.getTag());
+        StatisticsData.removeArtMap(baseConfig.getTag());
         //移除解析库中的配置
         ArtDecodeCommon.deleteArtConfig(baseConfig);
         //移除工艺参数组别中的工艺参数
@@ -167,7 +170,7 @@ public class ArtConfigController {
     private void addNewTag(List configList,Class<? extends BaseConfig> targetClass){
         for (Object o : configList) {
             BaseConfig baseConfig = targetClass.cast(o);
-            AppCommonUtil.initArtMap(baseConfig.getTag());
+            StatisticsData.initArtMap(baseConfig.getTag());
             if (baseConfig.getShowGraph() == 1){
                 CacheUtil.addShowGraphArg(baseConfig.getProtocolId(),baseConfig.getTag());
             }

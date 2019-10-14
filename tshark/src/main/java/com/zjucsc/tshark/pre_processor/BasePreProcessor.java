@@ -1,18 +1,16 @@
 package com.zjucsc.tshark.pre_processor;
 
 import com.zjucsc.tshark.TsharkCommon;
-import com.zjucsc.tshark.CommonTsharkUtil;
 import com.zjucsc.tshark.bean.ProcessWrapper;
-import com.zjucsc.tshark.exception.TsharkProcessNotOpenException;
 import com.zjucsc.tshark.handler.PipeLine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
 
@@ -35,36 +33,52 @@ import java.util.concurrent.Semaphore;
  */
 //@Slf4j
 public abstract class BasePreProcessor implements PreProcessor {
-
-    private static String chosenDeviceMac = null;
-    private static String captureDeviceName = null;
+    private static Logger logger = LoggerFactory.getLogger(BasePreProcessor.class);
     private CommandBuildFinishCallback commandBuildFinishCallback;
     private String filePath = null;
     private volatile boolean processRunning = false;
     private static final Semaphore semaphore = new Semaphore(1);
     PipeLine pipeLine;
     private String bindCommand;
-    //用于每个tshark进程解析
-//    ExecutorService decodeThreadPool = Executors.newSingleThreadExecutor(r -> {
-//        Thread thread = new Thread(r);
-//        thread.setName(BasePreProcessor.this.getClass().getName() + " -pre_process_thread");
-//        thread.setUncaughtExceptionHandler(TsharkCommon.uncaughtExceptionHandler);
-//        return thread;
-//    });
+
+    public static final int ONLINE_CAPTURE = 1;
+    public static final int OFFLINE_CAPTURE = 0;
     private ProcessWrapper oldProcessWrapper;
+    private Process process = null;
 
     static {
         Thread thread = new Thread(() -> {
             System.out.println("hook start working ... ");
-            CommonTsharkUtil.shotDownAllRunningTsharkProcess();
+            TsharkCommon.shotDownAllRunningTsharkProcess();
             System.out.println("hook finish working ... ");
         });
         Runtime.getRuntime().addShutdownHook(thread);
     }
 
+    /**
+     * @param tsharkPath
+     * @param macAddress
+     * @param interfaceName
+     * @param pipeLine
+     * @param type
+     * @param limit
+     */
     @Override
-    public void execCommand(int type , int limit) {
-        assert pipeLine!=null;
+    public void startCapture(String tsharkPath , String macAddress, String interfaceName, PipeLine pipeLine,
+                             int type , int limit) {
+        execCommand(tsharkPath,macAddress,interfaceName,pipeLine,1,-1);
+    }
+
+    private void execCommand(String tsharkPath , String macAddress,
+                             String interfaceName, PipeLine pipeLine,
+                             int type , int limit) {
+        this.pipeLine = pipeLine;
+        doExecCommand(buildCommand(tsharkPath, macAddress, interfaceName, type, limit));
+    }
+
+    private String buildCommand(String tsharkPath , String macAddress,
+                                String interfaceName,
+                                int type , int limit) {
         StringBuilder commandBuilder = new StringBuilder();
         /*
          * command builder
@@ -72,15 +86,13 @@ public abstract class BasePreProcessor implements PreProcessor {
         List<String> fieldList = filterFields();
         appendBaseCommand(fieldList);       //init fv dimension packet format add all fv dimension into field list
 
-        commandBuilder.append(tsharkPath()).append(" ")
+        commandBuilder.append(tsharkPath).append(" ")
                 .append("-l -n").append(" ");           //tshark -l -n
 
         if (type == 0) {
             pcapFilePath(limit);                        //init pcap file path
         }else{
-            assert chosenDeviceMac!=null;
-            assert captureDeviceName!=null;
-            commandBuilder.append(" -i ").append(captureDeviceName).append(" ");    // -i capture_service
+            commandBuilder.append(" -i ").append(interfaceName).append(" ");    // -i capture_service
         }
 
         commandBuilder.append("-T ek").append(" ");       // -T ek
@@ -89,7 +101,7 @@ public abstract class BasePreProcessor implements PreProcessor {
         }
 
         if (!protocolFilterField()[0].contains("not")){
-            CommonTsharkUtil.addCaptureProtocol(protocolFilterField());
+            TsharkCommon.addCaptureProtocol(protocolFilterField());
         }
 
         if (type == 0) {
@@ -103,10 +115,10 @@ public abstract class BasePreProcessor implements PreProcessor {
             // -f "xxx not mac"
             if (filter().length() > 0){
                 commandBuilder.append(" -f ").append("\"").append(filter())
-                        .append(" and not ether src ").append(chosenDeviceMac).append("\"");
+                        .append(" and not ether src ").append(macAddress).append("\"");
             }else{
                 commandBuilder.append(" -f ").append("\"").append(" not ether src ")
-                .append(chosenDeviceMac).append("\"");
+                        .append(macAddress).append("\"");
             }
         }
         if (extConfig()!=null && extConfig().length() > 0) {
@@ -119,21 +131,12 @@ public abstract class BasePreProcessor implements PreProcessor {
         commandBuilder.append(" ").append(protocolFilterField()[protocolFilterField().length - 1]);
         commandBuilder.append("\"");   // 最后的部分 + s7comm/...用于过滤
         commandBuilder.append(" -M ").append(TsharkCommon.sessionReset);    //设置n条之后重置回话
-        String command = commandBuilder.toString();
-
-        ////////////////////////////////////////////
-        doExecCommand(command);
+        return commandBuilder.toString();
     }
 
-
-    @Override
-    public String tsharkPath() {
-        return tsharkWinPath;
-    }
 
     @Override
     public void pcapFilePath(int limit) {
-        System.out.println("*** operation name is : " + TsharkCommon.OS_NAME);
         if (limit < 0)
             filePath =  " -r  " + pcapPath();
         else
@@ -141,14 +144,9 @@ public abstract class BasePreProcessor implements PreProcessor {
     }
 
     @Override
-    public void stopProcess() {
-        CommonTsharkUtil.shotDownAllRunningTsharkProcess(); //退出所有的tshark进程
+    public void stopCapture() {
         processRunning = false; //停止读取数据流
-//        decodeThreadPool.shutdown();
-    }
-
-    public void setPipeLine(PipeLine pipeLine) {
-        this.pipeLine = pipeLine;
+        process.destroy();
     }
 
     private void appendBaseCommand(List<String> fields){
@@ -197,18 +195,8 @@ public abstract class BasePreProcessor implements PreProcessor {
         }
     }
 
-    private String tsharkMacPath = " tshark ";
-    private String tsharkWinPath = " tshark";
-//    private String pcapFilePathForMac = " /Users/hongqianhui/JavaProjects/packet-master-web/src/main/resources/pcap/104_dnp_packets.pcapng ";
-//    private String pcapFilePathForWin = " C:\\Users\\Administrator\\IdeaProjects\\packet-master-web\\src\\main\\resources\\pcap\\104_dnp_packets.pcapng";
-
     public String pcapPath(){
         return "";
-    }
-
-    public static void setCaptureDeviceNameAndMacAddress(String macAddress,String captureDeviceName){
-        BasePreProcessor.captureDeviceName = captureDeviceName;
-        BasePreProcessor.chosenDeviceMac = macAddress;
     }
 
     @Override
@@ -224,13 +212,11 @@ public abstract class BasePreProcessor implements PreProcessor {
         void commandBuildFinish();
     }
 
-    @Override
     public String extConfig() {
         return null;
     }
 
-    @Override
-    public void doExecCommand(String command) {
+    private void doExecCommand(String command) {
         bindCommand = command;
         try {
             /**
@@ -241,13 +227,11 @@ public abstract class BasePreProcessor implements PreProcessor {
         } catch (InterruptedException e) {
             return;
         }
-        Process process = null;
+
         try {
-            //System.out.println(String.format("***************** %s ==> run command :%s ",this.getClass().getName() , command));
-            //process = Runtime.getRuntime().exec(new String[]{"bash","-c",command});
             process = Runtime.getRuntime().exec(command);
             oldProcessWrapper = new ProcessWrapper(process,command);
-            CommonTsharkUtil.addTsharkProcess(oldProcessWrapper);
+            TsharkCommon.addTsharkProcess(oldProcessWrapper);
             //本地离线不需要设置error stream
             doWithErrorStream(process.getErrorStream(), command);
             if (commandBuildFinishCallback!=null){
@@ -264,10 +248,10 @@ public abstract class BasePreProcessor implements PreProcessor {
                     }else{
                         if (processRunning) {
                             //System.out.println("tshark process out by finishing read data");
-                            //log.info("{} exit by end finishing reading ..", this.getClass().getName());
+                            logger.info("{} exit by end finishing reading ..", this.getClass().getName());
                         }else {
                             //System.out.println("tshark process out by stop capture");
-                            //log.info("{} exit by end quiting capture service..", this.getClass().getName());
+                            logger.info("{} exit by end quiting capture service..", this.getClass().getName());
                         }
                         break;
                     }
@@ -280,7 +264,7 @@ public abstract class BasePreProcessor implements PreProcessor {
             e.printStackTrace();
         }finally {
             if (process!=null){
-                CommonTsharkUtil.removeTsharkProcess(oldProcessWrapper);
+                TsharkCommon.removeTsharkProcess(oldProcessWrapper);
                 process.destroy();
                 /*
                   Returns the exit value for the subprocess.
@@ -291,15 +275,14 @@ public abstract class BasePreProcessor implements PreProcessor {
                  * @throws IllegalThreadStateException if the subprocess represented
                  *         by this {@code Process} object has not yet terminated
                  */
-                //log.info("{} exit with exit value : {} " , this.getClass().getName()  , process.exitValue());
+                logger.info("{} exit with exit value : {} " , this.getClass().getName()  , process.exitValue());
             }
         }
     }
 
     private void doWithErrorStream(InputStream errorStream , String command) {
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(errorStream));
-        String str;
-        try {
+        try(BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(errorStream))) {
+            String str;
             if ((str = bufferedReader.readLine()) != null) {
                 System.out.println(">>>>>>>>>>>>>" + str);
                 if (!str.startsWith("Capturing")){
@@ -317,18 +300,20 @@ public abstract class BasePreProcessor implements PreProcessor {
             }
             semaphore.release();
         } catch (IOException e) {
+            logger.error("exception is caught while exec [{}]",command,e);
         }
     }
 
     @Override
     public void restartCapture() {
-        CommonTsharkUtil.removeTsharkProcess(oldProcessWrapper);
+        TsharkCommon.removeTsharkProcess(oldProcessWrapper);
         oldProcessWrapper.getProcess().destroyForcibly();
         doExecCommand(bindCommand);
     }
 
+
+
     public String getBindCommand(){
         return bindCommand;
     }
-
 }

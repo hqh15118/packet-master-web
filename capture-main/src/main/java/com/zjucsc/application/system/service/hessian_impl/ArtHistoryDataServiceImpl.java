@@ -29,15 +29,20 @@ public class ArtHistoryDataServiceImpl extends BaseServiceImpl<ArtHistoryData,Ar
         this.baseMapper.saveArtData(artName, artValue, payload,Common.GPLOT_ID);
     }
 
-    private HashMap<Integer,Integer> T2TMap = new HashMap<Integer,Integer>(){
-        {
-            put(5,Calendar.MONTH);
-            put(4,Calendar.DAY_OF_MONTH);
-            put(3,Calendar.HOUR_OF_DAY);
-            put(2,Calendar.MINUTE);
-            put(1,Calendar.SECOND);
-        }
-    };
+    @Override
+    public void saveArtData(Map<String, String> artData) {
+        this.baseMapper.saveArtData(artData);
+    }
+
+//    private HashMap<Integer,Integer> T2TMap = new HashMap<Integer,Integer>(){
+//        {
+//            put(5,Calendar.MONTH);
+//            put(4,Calendar.DAY_OF_MONTH);
+//            put(3,Calendar.HOUR_OF_DAY);
+//            put(2,Calendar.MINUTE);
+//            put(1,Calendar.SECOND);
+//        }
+//    };
 
     private final static HashMap<Integer,List<String>> TIME_LIST =
             new HashMap<Integer,List<String>>(){

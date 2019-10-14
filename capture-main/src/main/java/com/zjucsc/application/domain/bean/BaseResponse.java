@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 
 @ApiModel(description = "return")
-public class BaseResponse implements Serializable {
+public class BaseResponse  {
     @ApiModelProperty(value = "code")
     public int code;
     @ApiModelProperty(value = "msg")

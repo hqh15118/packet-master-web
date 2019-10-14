@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class S7Decode extends BaseArtDecode<S7Config> {
 
-    private class S7Inner{
+    private static class S7Inner{
         private Map<Integer,List<DBclass>> DBmap = new HashMap<>(); ////pduref,DB
 
         private Map<Integer,byte[]> Datamap = new HashMap<>();  //// seq ,data

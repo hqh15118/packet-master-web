@@ -32,6 +32,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 import static com.zjucsc.application.config.StatisticsData.*;
 
@@ -56,7 +57,6 @@ public class ScheduledService {
     }
 
     private final HashMap<String,Integer> attackByDevice = new HashMap<>(10);
-    //private final HashMap<String,Integer> exceptionByDevice = new HashMap<>(10);
     private final HashMap<String,Integer> numberByDeviceIn = new HashMap<>(10);
     private final HashMap<String,Integer> numberByDeviceOut = new HashMap<>(10);
     private final HashMap<String,GraphInfo> graphInfoInList = new HashMap<>(10);
@@ -66,7 +66,7 @@ public class ScheduledService {
             StatisticsData::addDeviceGraphInfo;
 
     @Scheduled(fixedDelay = 1000)
-    @Async(value = "common_schedule")
+    @Async(value = "sendAllFvDimensionPacket2")
     public void commonScheduleService(){
         if (CacheUtil.getScheduleServiceRunningState()){
             try {
@@ -80,10 +80,17 @@ public class ScheduledService {
     @Scheduled(fixedRate = 5000)
     @Async(value = "common_service")
     public void commonService(){
-        sendGraphInfo();        //工艺参数
         statisticFlow();        //统计总流量，超过限制报错
         CacheUtil.updateAttackLog();  //统计攻击类型，及所占比例
-        //detectDecodeMethodDelay();
+        if (Common.showArtDecodeDelay) {
+            detectDecodeMethodDelay();
+        }
+    }
+
+    @Scheduled(fixedRate = 5000)
+    @Async(value = "art_info_service")
+    public void sendArtGraphInfo(){
+        sendGraphInfo();        //工艺参数
     }
 
     private void detectDecodeMethodDelay() {
@@ -101,7 +108,6 @@ public class ScheduledService {
         }
     }
 
-
     //判断系统运行状态
     @Scheduled(fixedRate = 2000)
     public void sysRunState() throws SigarException {
@@ -109,6 +115,9 @@ public class ScheduledService {
         wrapper.setDbState(deviceMapper.selectDatabaseStatus());
         SocketServiceCenter.updateAllClient(SocketIoEvent.SYS_RUN_STATE,wrapper);
         int state = CacheUtil.runStateDetect(wrapper);
+        if (state < 0){
+            return;
+        }
         String info = null;
         switch (state){
             case 1 : info = "CPU异常";break;
@@ -239,6 +248,7 @@ public class ScheduledService {
             }
         }
     }
+
     //@Scheduled(fixedRate = 1000)
 //    private void sendAllFvDimensionPacket() throws InterruptedException {
 //        layers.clear();
@@ -275,40 +285,24 @@ public class ScheduledService {
         SocketServiceCenter.updateAllClient(SocketIoEvent.ALL_PACKET,layers);
     }
 
-    /**
-     * 工艺参数信息
-     */
-    //@Scheduled(fixedRate = 5000)
     private void sendGraphInfo(){
         StatisticsData.ART_INFO_SEND_SINGLE.clear();
-        synchronized (StatisticsData.LINKED_LIST_LOCK){
-//            for (String artName : Common.SHOW_GRAPH_SET) {
-//                StatisticsData.ART_INFO_SEND.put(artName, StatisticsData.ART_INFO.get(artName));
-//            }
-            StatisticsData.ART_INFO.forEach((artName, artValueList) -> {
-                if (CacheUtil.isArtShow(artName)){
-                    //StatisticsData.ART_INFO_SEND.put(artName, artValueList);
-                    if (artValueList.size() > 0)
-                        ART_INFO_SEND_SINGLE.put(artName,new ArtGroupWrapper(artValueList.getLast(), CacheUtil.getArtGroupByArtName(artName)));
-                }
-                if (artValueList.size() > 0 && !artName.equals("timestamp")){
-                    iArtHistoryDataService.saveArtData(artName,artValueList.getLast(),null);
-                }
-            });
-            //StatisticsData.ART_INFO_SEND.put("timestamp",StatisticsData.ART_INFO.get("timestamp"));
-            LinkedList<String> timeStamp = StatisticsData.ART_INFO.get("timestamp");
-            if (timeStamp.size() > 0){
-                ART_INFO_SEND_SINGLE.put("timestamp",new ArtGroupWrapper(timeStamp.getLast(),"timeStamp"));
+        StatisticsData.ART_INFO.forEach((artName, artValueList) -> {
+            if (CacheUtil.isArtShow(artName)){
+                //StatisticsData.ART_INFO_SEND.put(artName, artValueList);
+                if (artValueList!=null)
+                    ART_INFO_SEND_SINGLE.put(artName,new ArtGroupWrapper(artValueList, CacheUtil.getArtGroupByArtName(artName)));
             }
-            SocketServiceCenter.updateAllClient(SocketIoEvent.ART_INFO, StatisticsData.ART_INFO_SEND_SINGLE);
-            addArtData("timestamp", AppCommonUtil.getDateFormat().format(new Date()));
-        }
-    }
-
-    private void doSend(FvDimensionLayer layer){
-        if (layer!=null){
-            SocketServiceCenter.updateAllClient(SocketIoEvent.ALL_PACKET,layer);
-        }
+            if (artValueList != null && !artName.equals("timestamp")){
+                iArtHistoryDataService.saveArtData(artName,artValueList,null);
+            }
+        });
+        //TODO 替换一下，用批量存的方式进行存储
+        //iArtHistoryDataService.saveArtData(ART_INFO);
+        ART_INFO_SEND_SINGLE.put("timestamp",
+                new ArtGroupWrapper(AppCommonUtil.getDateFormat().format(new Date()),
+                "timeStamp"));
+        SocketServiceCenter.updateAllClient(SocketIoEvent.ART_INFO, StatisticsData.ART_INFO_SEND_SINGLE);
     }
 
     /**
@@ -370,11 +364,10 @@ public class ScheduledService {
             /**
              * 设置需要保存的统计信息
              */
-            StatisticInfoSaveBean bean = CacheUtil.getStatisticsInfoBean().get(deviceNumber);
-            if (bean == null) {
-                bean = new StatisticInfoSaveBean();
-                CacheUtil.getStatisticsInfoBean().put(deviceNumber,bean);
-            }
+            StatisticInfoSaveBean bean = CacheUtil.getStatisticsInfoBean().computeIfAbsent(
+                    deviceNumber,
+                    s -> new StatisticInfoSaveBean()
+            );
                 bean.setTime(timeStamp);
                 switch (index){
                     case 1://ATTACK_BY_DEVICE
@@ -430,6 +423,8 @@ public class ScheduledService {
                     SocketServiceCenter.updateAllClient(SocketIoEvent.DEVICE_FLOW_ERROR,new DeviceMaxFlow(deviceNumber,-1,deviceMaxFlow.getMaxFlowIn()));
                 }
                 break;
+                default:
+                    System.err.println("error of type " + type);
             }
         }
 

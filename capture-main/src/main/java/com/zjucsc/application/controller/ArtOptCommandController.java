@@ -28,8 +28,7 @@ public class ArtOptCommandController {
 
     @GetMapping("delete")
     public BaseResponse delete(@RequestParam int id){
-        //
-        S7OptCommandConfig s7OptCommandConfig = iArtOptCommandService.deleteArtOptCommand(id);
+        iArtOptCommandService.deleteArtOptCommand(id);
         return BaseResponse.OK();
     }
 

@@ -21,13 +21,8 @@ public class BaseSocketProducerThread<T> extends Thread{
     public void run() {
         Socket socket = new Socket();
         String[] properties = null;
-        try {
-            properties = clientPortAndbindAddress();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        properties = clientPortAndbindAddress();
         assert properties!=null;
-
         try {
             socket.bind(InetSocketAddress.createUnresolved(properties[2],Integer.parseInt(properties[3])));
             socket.connect(InetSocketAddress.createUnresolved(properties[0],Integer.parseInt(properties[1])));
@@ -62,14 +57,18 @@ public class BaseSocketProducerThread<T> extends Thread{
     }
 
 
-    private String[] clientPortAndbindAddress() throws IOException {
+    private String[] clientPortAndbindAddress(){
         File file = new File("config/socket.properties");
         if (!file.exists()){
             System.err.println("config/socket.properties文件不存在");
             throw new RuntimeException("config/socket.properties文件不存在");
         }
         Properties properties = new Properties();
-        properties.load(new FileInputStream(file));
+        try (FileInputStream fis = new FileInputStream(file)){
+            properties.load(fis);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return new String[]{
                 properties.getProperty("socket.client.remote.address"),
                 properties.getProperty("socket.client.remote.port"),

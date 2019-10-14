@@ -21,9 +21,9 @@ import java.util.concurrent.*;
 @Slf4j
 public class ServiceConfig {
 
-    @Bean("common_schedule")
+    @Bean("sendAllFvDimensionPacket2")
     public Executor taskExecutor() {
-        return generateCommonThreadPool("-common-schedule-", "error of common schedule service ", "common schedule service reject task");
+        return generateCommonThreadPool("-sendAllFvDimensionPacket2-", "error of sendAllFvDimensionPacket2 service ", "sendAllFvDimensionPacket2 reject task");
     }
 
     @Bean("common_async")
@@ -43,6 +43,11 @@ public class ServiceConfig {
     @Bean("common_service")
     public Executor taskExecutor1() {
         return generateCommonThreadPool("-common-service-", "error of common service service ", "common service service reject task");
+    }
+
+    @Bean("art_info_service")
+    public Executor artInfoService(){
+        return generateCommonThreadPool("-art-info-service-", "error of art info service ", "art info service reject task");
     }
 
     @Bean("device_schedule_service")

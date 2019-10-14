@@ -75,7 +75,6 @@ public class PcapUtils {
     public static List<String> getAllNetWorkInterfaceName(){
         List<PcapNetworkInterface> temp = doGetAllNetworkInterfaces();
         List<String> interfacesInfos = new ArrayList<>(temp.size());
-        int size = temp.size();
         for (PcapNetworkInterface pcapNetworkInterface : temp){
             interfacesInfos.add(pcapNetworkInterface.getName());
         }

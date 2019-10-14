@@ -35,6 +35,11 @@ public abstract class AbstractHandler<T> implements Handler<T>{
     }
 
     @Override
+    public PipeLine getPipeLine() {
+        return pipeLine;
+    }
+
+    @Override
     public AbstractHandler prevHandler() {
         return prevHandler;
     }

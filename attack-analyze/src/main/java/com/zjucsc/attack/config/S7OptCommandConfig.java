@@ -3,6 +3,7 @@ package com.zjucsc.attack.config;
 import com.zjucsc.attack.s7comm.CommandWrapper;
 
 import java.util.List;
+import java.util.Objects;
 
 public class S7OptCommandConfig implements Comparable<S7OptCommandConfig>{
     private int id;
@@ -64,8 +65,8 @@ public class S7OptCommandConfig implements Comparable<S7OptCommandConfig>{
 
     @Override
     public int compareTo(S7OptCommandConfig o) {
-        if (o == null){
-            return 1;
+        if (equals(o)){
+            return 0;
         }
         return process_operate.compareTo(o.process_operate);
     }
@@ -88,5 +89,18 @@ public class S7OptCommandConfig implements Comparable<S7OptCommandConfig>{
                 ", \ndescribe='" + describe + '\'' +
                 ", \nenable=" + enable +
                 "\n}";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof S7OptCommandConfig)) return false;
+        S7OptCommandConfig that = (S7OptCommandConfig) o;
+        return Objects.equals(getProcess_operate(), that.getProcess_operate());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getProcess_operate());
     }
 }

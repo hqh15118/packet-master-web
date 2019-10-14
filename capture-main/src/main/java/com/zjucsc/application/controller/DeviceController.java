@@ -33,15 +33,9 @@ public class DeviceController {
         CacheUtil.removeAllCachedDeviceNumber();
         CacheUtil.removeAllDeviceNumberToName();
         for (Device device : deviceList) {
-            if (Common.filterStatement == 0) {
-                CacheUtil.addOrUpdateDeviceNumberAndTAG(device.getDeviceNumber(), device.getDeviceTag());
-                CacheUtil.addDeviceNumberToName(device.getDeviceNumber(),device.getDeviceInfo());
-                CacheUtil.addOrUpdateDeviceManually(device);
-            }else{
-                CacheUtil.addOrUpdateDeviceNumberAndTAG(device.getDeviceNumber(), device.getDeviceTag());
-                CacheUtil.addDeviceNumberToName(device.getDeviceNumber(),device.getDeviceInfo());
-                CacheUtil.addOrUpdateDeviceManually(device);
-            }
+            CacheUtil.addOrUpdateDeviceNumberAndTAG(device.getDeviceNumber(), device.getDeviceTag());
+            CacheUtil.addDeviceNumberToName(device.getDeviceNumber(),device.getDeviceInfo());
+            CacheUtil.addOrUpdateDeviceManually(device);
         }
         iDeviceService.saveBatch(deviceList);
         return BaseResponse.OK();

@@ -5,6 +5,7 @@ import com.oracle.webservices.internal.api.databinding.DatabindingMode;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * #project packet-master-web
@@ -233,10 +234,23 @@ public class FvDimensionLayer implements Serializable,Comparable<FvDimensionLaye
 
     @Override
     public int compareTo(FvDimensionLayer o) {
-        if (o.timeStampInLong == timeStampInLong){
+        if (equals(o)){
             return 0;
         }else {
             return o.timeStampInLong > timeStampInLong ? -1 : 1;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof FvDimensionLayer)) return false;
+        FvDimensionLayer layer = (FvDimensionLayer) o;
+        return getTimeStampInLong() == layer.getTimeStampInLong();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getTimeStampInLong());
     }
 }

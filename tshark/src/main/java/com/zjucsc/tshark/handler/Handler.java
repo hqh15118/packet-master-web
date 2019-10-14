@@ -9,6 +9,7 @@ package com.zjucsc.tshark.handler;
 interface Handler<T> {
     T handle(Object t);
     void setPipeLine(PipeLine line);
+    PipeLine getPipeLine();
     AbstractHandler prevHandler();
     AbstractHandler nextHandler();
     void setPrevHandler(AbstractHandler prevHandler);

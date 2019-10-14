@@ -5,6 +5,7 @@ import com.zjucsc.application.domain.bean.ArtHistoryForFront;
 import com.zjucsc.application.domain.non_hessian.ArtBean;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public interface IArtHistoryDataService {
@@ -15,6 +16,12 @@ public interface IArtHistoryDataService {
      * @param payload 解析此条数据的tcp payload
      */
     void saveArtData(String artName, String artValue, byte[] payload);
+
+    /**
+     * 保存工艺参数
+     * @param artData 工艺参数
+     */
+    void saveArtData(Map<String,String> artData);
 
     /**
      * 查询历史工艺数据

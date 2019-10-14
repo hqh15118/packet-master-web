@@ -103,7 +103,7 @@ public class AttackCommon {
         analyzePoolEntry.removeDosAnalyzer(protocol);
     }
     public static void disableDeviceDosAnalyzePoolEntry(String deviceTag){
-        ANALYZE_POOL_ENTRY_CONCURRENT_HASH_MAP.get(deviceTag);
+       ANALYZE_POOL_ENTRY_CONCURRENT_HASH_MAP.remove(deviceTag);
     }
     public static void changeDosConfig(String deviceTag,String protocol,boolean enable){
         AnalyzePoolEntry analyzePoolEntry = ANALYZE_POOL_ENTRY_CONCURRENT_HASH_MAP.get(deviceTag);
@@ -168,8 +168,8 @@ public class AttackCommon {
             }
             Properties properties = new Properties();
             String host = null, port = null;
-            try {
-                properties.load(new FileInputStream(file));
+            try(FileInputStream fis = new FileInputStream(file)) {
+                properties.load(fis);
                 host = properties.getProperty("redis_host");
                 if (host == null) {
                     throw new RedisConfigNotFoundException("文件：根目录/config/attack-redis.properties不存在[redis_host]属性");
@@ -183,7 +183,7 @@ public class AttackCommon {
             }
             if (port != null) {
                 GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
-                jedisPool = new JedisPool(poolConfig,host,Integer.valueOf(port));
+                jedisPool = new JedisPool(poolConfig,host,Integer.parseInt(port));
             }else{
                 System.err.println("attack-service jedis未正确初始化，port参数为null");
             }
@@ -257,7 +257,7 @@ public class AttackCommon {
     public static void removeAllArtAttackAnalyzeConfig(String protocol){
         Set<ArtAttackAnalyzeConfig> configSet = ART_ATTACK_ANALYZE_CONFIGS.get(protocol);
         if (configSet!=null){
-            configSet.removeAll(configSet);
+            configSet.clear();
         }
     }
 

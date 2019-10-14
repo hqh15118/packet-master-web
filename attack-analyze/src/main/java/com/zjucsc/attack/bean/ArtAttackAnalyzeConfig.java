@@ -1,6 +1,7 @@
 package com.zjucsc.attack.bean;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ArtAttackAnalyzeConfig implements Comparable<ArtAttackAnalyzeConfig>{
     private List<String> expression;
@@ -55,12 +56,25 @@ public class ArtAttackAnalyzeConfig implements Comparable<ArtAttackAnalyzeConfig
 
     @Override
     public int compareTo(ArtAttackAnalyzeConfig o) {
-        if (o.id == this.id) {
+        if (equals(o)) {
             return 0;
         }
         else {
             return o.id > this.id ? 1 : -1;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ArtAttackAnalyzeConfig)) return false;
+        ArtAttackAnalyzeConfig that = (ArtAttackAnalyzeConfig) o;
+        return getId() == that.getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
     }
 
     @Override

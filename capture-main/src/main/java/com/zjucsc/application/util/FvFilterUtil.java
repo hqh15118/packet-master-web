@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 @Slf4j
 public class FvFilterUtil {
@@ -27,27 +28,25 @@ public class FvFilterUtil {
      * @param filterName =-=没用
      */
     public static void addOrUpdateFvFilter(String deviceTag , List<Rule> filterList , String filterName){
-        ConcurrentHashMap<String,FiveDimensionAnalyzer> map = Common.FV_DIMENSION_FILTER_PRO.get(deviceTag);
-        if (map == null){
-            map = new ConcurrentHashMap<>();
-            Common.FV_DIMENSION_FILTER_PRO.put(deviceTag,map);
-        }else{
-            map.clear();
-        }
+        ConcurrentHashMap<String,FiveDimensionAnalyzer> map =
+                Common.FV_DIMENSION_FILTER_PRO.computeIfAbsent(deviceTag, s -> new ConcurrentHashMap<>());
+        map.clear();
         FiveDimensionAnalyzer analyzer;
 
         for (Rule rule : filterList) {
             String srcTag = getSrcTagOfRule(rule);
-            analyzer = map.get(srcTag);
-            if (analyzer == null){
-                FiveDimensionPacketFilter fiveDimensionPacketFilter = new FiveDimensionPacketFilter(filterName);
-                fiveDimensionPacketFilter.setFilterList(Collections.singletonList(rule));
-                analyzer = new FiveDimensionAnalyzer(fiveDimensionPacketFilter);
-                map.put(srcTag,analyzer);
-            }else{
+            analyzer = map.putIfAbsent(srcTag,createNewFvDimensionAnalyzer(srcTag,rule));
+            if (analyzer != null){
                 analyzer.getAnalyzer().addRules(Collections.singletonList(rule));
             }
+
         }
+    }
+
+    private static FiveDimensionAnalyzer createNewFvDimensionAnalyzer(String filterName,Rule rule){
+        FiveDimensionPacketFilter fiveDimensionPacketFilter = new FiveDimensionPacketFilter(filterName);
+        fiveDimensionPacketFilter.setFilterList(Collections.singletonList(rule));
+        return new FiveDimensionAnalyzer(fiveDimensionPacketFilter);
     }
 
     private static String getSrcTagOfRule(Rule rule){

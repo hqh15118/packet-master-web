@@ -8,9 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.*;
 
 /**
  * 泛型化工艺参数
@@ -30,14 +28,14 @@ public abstract class BaseArtDecode<T extends BaseConfig> implements IArtDecode<
         return configs;
     }
 
-    private ExecutorService executorService = CommonUtil.getSingleThreadPoolSizeThreadPool(10000, r -> {
-        Thread thread = new Thread(r);
-        thread.setName("-" + BaseArtDecode.this.getClass().getSimpleName() + "-");
-        thread.setUncaughtExceptionHandler((t, e) -> {
-            logger.error("[{}]线程池工艺参数异常--解析异常",this.getClass().getName(),e);
-        });
-        return thread;
-    },"-" + BaseArtDecode.this.getClass().getSimpleName() + "-thread-pool-");
+    private ExecutorService executorService = CommonUtil.getFixThreadPoolSizeThreadPool(1, 100000, r -> {
+                Thread thread = new Thread(r);
+                thread.setName("-" + BaseArtDecode.this.getClass().getSimpleName() + "-");
+                thread.setUncaughtExceptionHandler((t, e) -> {
+                    logger.error("[{}]线程池工艺参数异常--解析异常", this.getClass().getName(), e);
+                });
+                return thread;
+            }, "-" + BaseArtDecode.this.getClass().getSimpleName() + "-thread-pool-");
 
     /**
      * 添加工艺参数配置

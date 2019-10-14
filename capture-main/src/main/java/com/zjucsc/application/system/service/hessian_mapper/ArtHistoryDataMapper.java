@@ -6,6 +6,7 @@ import com.zjucsc.application.domain.non_hessian.ArtBean;
 import com.zjucsc.application.system.mapper.base.BaseMapper;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ArtHistoryDataMapper extends BaseMapper<ArtHistoryData> {
     /**
@@ -26,4 +27,10 @@ public interface ArtHistoryDataMapper extends BaseMapper<ArtHistoryData> {
     List<Float> getArtData(String startTime, String endTime, String artName, int gplotId);
 
     ArtBeanFWrapper selectArtPacketByTimeStamp(ArtBean artBean);
+
+    /**
+     * 保存工艺参数
+     * @param artData
+     */
+    void saveArtData(Map<String,String> artData);
 }

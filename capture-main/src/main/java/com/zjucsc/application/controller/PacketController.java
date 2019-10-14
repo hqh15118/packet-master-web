@@ -64,9 +64,11 @@ public class PacketController {
                 }
             }
             service.macAddress = service.macAddress.replace("-" , ":");
-            BasePreProcessor.setCaptureDeviceNameAndMacAddress(service.macAddress , service.service_name);
             //real packet analyze
-            CompletableFuture<Exception> completableFuture = capturePacketService.start(new ProcessCallback<String, String>() {
+            CompletableFuture<Exception> completableFuture = capturePacketService.start(
+                    service.getMacAddress(),
+                    service.getService_name(),
+                    new ProcessCallback<String, String>() {
                 @Override
                 public void error(Exception e) {
 

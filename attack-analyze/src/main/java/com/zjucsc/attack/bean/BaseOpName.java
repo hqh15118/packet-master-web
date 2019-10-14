@@ -1,5 +1,7 @@
 package com.zjucsc.attack.bean;
 
+import java.util.Objects;
+
 public class BaseOpName implements Comparable<BaseOpName>{
     private int id;
     private String protocol;
@@ -49,9 +51,22 @@ public class BaseOpName implements Comparable<BaseOpName>{
 
     @Override
     public int compareTo(BaseOpName o) {
-        if (o == null){
-            return 1;
+        if (equals(o)){
+            return 0;
         }
         return opName.compareTo(o.opName);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof BaseOpName)) return false;
+        BaseOpName that = (BaseOpName) o;
+        return Objects.equals(getOpName(), that.getOpName());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getOpName());
     }
 }

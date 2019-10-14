@@ -17,13 +17,18 @@ public class ConfigUtil {
         }
         try {
             connection = DriverManager.getConnection("jdbc:sqlite:local.db");
-            Statement statement = connection.createStatement();
-            statement.execute("CREATE TABLE IF NOT EXISTS key_value(\n" +
-                    "  k VARCHAR(64) PRIMARY KEY ,\n" +
-                    "  v VARCHAR(64)\n" +
-                    ")");
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+        if (connection!=null) {
+            try (Statement statement = connection.createStatement()) {
+                statement.execute("CREATE TABLE IF NOT EXISTS key_value(\n" +
+                        "  k VARCHAR(64) PRIMARY KEY ,\n" +
+                        "  v VARCHAR(64)\n" +
+                        ")");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -38,7 +43,6 @@ public class ConfigUtil {
                 return def;
             }
         }
-        if (preparedStatement!=null){
             try {
                 preparedStatement.setString(1,key);
                 preparedStatement.execute();
@@ -48,8 +52,6 @@ public class ConfigUtil {
             } catch (SQLException e) {
                 return def;
             }
-        }
-        return def;
     }
 
     public synchronized static boolean setData(String k,String v){

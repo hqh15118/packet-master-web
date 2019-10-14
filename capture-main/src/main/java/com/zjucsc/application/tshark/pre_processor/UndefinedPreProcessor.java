@@ -1,6 +1,6 @@
 package com.zjucsc.application.tshark.pre_processor;
 
-import com.zjucsc.tshark.CommonTsharkUtil;
+import com.zjucsc.tshark.TsharkCommon;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import com.zjucsc.tshark.packets.UndefinedPacket;
 import com.zjucsc.tshark.pre_processor.SinglePreProcessor;
@@ -31,7 +31,7 @@ public class UndefinedPreProcessor extends SinglePreProcessor<UndefinedPacket> {
     @Override
     public String singleProtocolFilterField() {
         StringBuilder sb = new StringBuilder();
-        Set<String> captureProtocolSet = CommonTsharkUtil.getCaptureProtocols();
+        Set<String> captureProtocolSet = TsharkCommon.getCaptureProtocols();
         int i = 0;
         int setSize = captureProtocolSet.size();
         for (String s : captureProtocolSet) {

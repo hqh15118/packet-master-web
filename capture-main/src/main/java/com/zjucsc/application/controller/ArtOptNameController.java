@@ -28,7 +28,7 @@ public class ArtOptNameController {
 
     @DeleteMapping("delete")
     public BaseResponse delete(@RequestParam String optName){
-        BaseOpName baseOpName = iArtOptNameService.deleteArtOptName(optName);
+        iArtOptNameService.deleteArtOptName(optName);
         return BaseResponse.OK();
     }
 

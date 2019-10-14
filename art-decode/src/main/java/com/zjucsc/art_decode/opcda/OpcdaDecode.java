@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class OpcdaDecode extends BaseArtDecode<OpcdaConfig> {
 
-    private class OpcdaMap{
+    private static class OpcdaMap{
         /** 考虑到opcda创建监控变量的流程特点，构建三个hashmap，形成MonitoredItemId -> Name -> ClientHandle -> Value的链式结构，方便索引与修改 **/
         //private Map<String,Float> Handle_Value_Map = new HashMap<>();
         private BiMap<String,String> Handle_Name_Map = HashBiMap.create();
@@ -200,7 +200,7 @@ public class OpcdaDecode extends BaseArtDecode<OpcdaConfig> {
     private void decode_ItemMgt_Response(byte[] payload, String payload_String, String call_id){
         //目前只解析添加变量操作的返回响应
         int offset = 0;
-        ArrayList<String> handlelist = new ArrayList<>();
+        ArrayList<String> handlelist;
 
         /* 如果requestmap能找到对应键值，则说明本条response报文有对应的request */
         if(opcdaMap.Request_Map.containsKey(call_id)) {

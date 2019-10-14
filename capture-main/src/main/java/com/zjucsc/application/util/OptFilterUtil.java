@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 import static com.zjucsc.application.util.CacheUtil.convertIdToName;
 
@@ -48,19 +49,15 @@ public class OptFilterUtil {
      */
     @SuppressWarnings("unchecked")
     public static void addOrUpdateAnalyzer(String deviceTag , OptFilterForFront optFilterForFront , String filterName) throws ProtocolIdNotValidException {
-        ConcurrentHashMap<String,ConcurrentHashMap<String,OperationAnalyzer>> srcAnalyzeMap = OPERATION_FILTER_PRO.get(deviceTag);
-        if (srcAnalyzeMap == null){
-            srcAnalyzeMap = new ConcurrentHashMap<>();
-            OPERATION_FILTER_PRO.put(deviceTag,srcAnalyzeMap);
-        }
+        ConcurrentHashMap<String,ConcurrentHashMap<String,OperationAnalyzer>> srcAnalyzeMap = OPERATION_FILTER_PRO.computeIfAbsent(deviceTag,
+                s -> new ConcurrentHashMap<>());
         ConcurrentHashMap<String, OperationAnalyzer> analyzerMap;
         String srcTag = !optFilterForFront.getSrcIp().equals("--") ? optFilterForFront.getSrcIp() : optFilterForFront.getSrcMac();
-        if ((analyzerMap = OPERATION_FILTER_PRO.get(deviceTag).get(srcTag)) == null){
-            //新建设备
-            analyzerMap = new ConcurrentHashMap<>();
-            srcAnalyzeMap.put(srcTag,analyzerMap);
-            OPERATION_FILTER_PRO.put(deviceTag, srcAnalyzeMap);
-        }
+        analyzerMap = OPERATION_FILTER_PRO.get(deviceTag).computeIfAbsent(srcTag, s -> {
+            ConcurrentHashMap<String,OperationAnalyzer> map = new ConcurrentHashMap<>();
+            srcAnalyzeMap.put(srcTag,map);
+            return map;
+        });
         String protocolName = CacheUtil.convertIdToName(optFilterForFront.getProtocolId());
         analyzerMap.putIfAbsent(protocolName,new OperationAnalyzer(new OperationPacketFilter<>(filterName)));
         OperationPacketFilter analyzer = analyzerMap.get(protocolName).getAnalyzer();

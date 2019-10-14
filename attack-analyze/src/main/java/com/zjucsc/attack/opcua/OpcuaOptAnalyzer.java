@@ -116,7 +116,7 @@ public class OpcuaOptAnalyzer extends BaseOptAnalyzer<OpcuaOptConfig> {
                                     break;
                             }
                             /* 检查写入的数值是否与规则中的相匹配 */
-                            if((name == name_target) && (opcuaOptConfig.isResult() == value)) {
+                            if((name.equals(name_target) ) && (opcuaOptConfig.isResult() == value)) {
                                 /* 变量名称、结果均匹配，返回true */
                                 return true;
                             }
@@ -159,7 +159,7 @@ public class OpcuaOptAnalyzer extends BaseOptAnalyzer<OpcuaOptConfig> {
         opcua_double
     }
 
-    private class OpcUaValue{
+    private static class OpcUaValue{
         /** 参数 **/
         private ArrayList<String> opcua_nodeid_string = new ArrayList<>();
         private ArrayList<String> opcua_clienthandle = new ArrayList<>();

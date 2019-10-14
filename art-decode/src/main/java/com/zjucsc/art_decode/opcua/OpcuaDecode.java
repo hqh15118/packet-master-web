@@ -25,7 +25,7 @@ public class OpcuaDecode extends BaseArtDecode<OpcuaConfig> {
     /** TODO：如果同一个clienthandle下面的变量类型变了怎么处理？（一般来说不会有这种情况，除非有异常包，或者中间监控有一段时间没在线，目前并不处理，算是一个漏洞） **/
     /** TODO:为了处理不同的OPC UA通信进程，可能需要记录源/目标的mac信息，以作为区分标记 **/
 
-    private class OpcuaMap{
+    private static class OpcuaMap{
         /** 考虑到opcua创建监控变量的流程特点，构建三个hashmap，形成MonitoredItemId -> Name -> ClientHandle -> Value的链式结构，方便索引与修改 **/
         /** TODO：考虑到ModifyMonitoredItems服务会发送MonitoredItemId与ClientHandle，但不会发送name，想要把ModifyMonitoredItems也作为构建Map的依据可能需要再加入MonitoredItemId -> ClientHandle的对应关系 **/
         private Map<String,Float> Handle_Value_Map = new HashMap<>();
@@ -72,7 +72,7 @@ public class OpcuaDecode extends BaseArtDecode<OpcuaConfig> {
         opcua_double
     }
 
-    public class OpcUaValue{
+    public static class OpcUaValue{
         /** 参数 **/
         private ArrayList<String> opcua_nodeid_string = new ArrayList<>();
         private ArrayList<String> opcua_clienthandle = new ArrayList<>();
@@ -306,14 +306,14 @@ public class OpcuaDecode extends BaseArtDecode<OpcuaConfig> {
     private void decode_CreateMonitoredItemsResponse(OpcUaPacket.LayersBean opcUaPacket){
         int i = 0;
         OpcUaValue opcUaValue = new OpcUaValue(opcUaPacket);
-        ArrayList<String> handlelist = new ArrayList<>();
+        ArrayList<String> handlelist;
 
         /** 如果requestmap能找到对应键值，则说明本条response报文有对应的request **/
         if(opcuaMap.Request_Map.containsKey(opcUaPacket.opcua_request_handle[0])){
             handlelist = opcuaMap.Request_Map.get(opcUaPacket.opcua_request_handle[0]);
             for(String handle: handlelist){
                 if(opcuaMap.Handle_Name_Map.containsKey(handle)){
-                    int statuscode = Integer.valueOf((opcUaPacket.opcua_StatusCode[i]).substring(2));
+                    int statuscode = Integer.parseInt((opcUaPacket.opcua_StatusCode[i]).substring(2));
                     if(statuscode == 0){
                         /** statuscode为0，说明操作成功 **/
                         opcuaMap.Id_Handle_Map.put(opcUaValue.getValue(OpcUaValueType.opcua_monitoreditemid), handle);

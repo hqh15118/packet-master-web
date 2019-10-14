@@ -11,6 +11,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 
 public class KafkaProducerCreator {
@@ -26,8 +27,8 @@ public class KafkaProducerCreator {
         File file = new File("config/kafka-config-producer.properties");
         if (file.exists()){
             Properties properties = new Properties();
-            try {
-                properties.load(new FileInputStream(file));
+            try(FileInputStream fis = new FileInputStream(file)) {
+                properties.load(fis);
             } catch (IOException e) {
                 System.err.println("error load properties");
                 return null;
@@ -55,12 +56,8 @@ public class KafkaProducerCreator {
     @SuppressWarnings("unchecked")
     private static <K,V> KafkaProducer<K, V> getProducer(Properties properties, String service,
                                                     Class<K> keyClass, Class<V> valueClass) {
-        KafkaProducer<K,V> kafkaProducer = cachedKafkaProducer.get(service);
-        if (kafkaProducer==null){
-            kafkaProducer = new KafkaProducer<>(properties);
-            cachedKafkaProducer.put(service,kafkaProducer);
-        }
-        return kafkaProducer;
+        return (KafkaProducer<K,V>) cachedKafkaProducer.computeIfAbsent(service
+                , s -> new KafkaProducer<>(properties));
     }
 
     public static void removeProducer(String service){

@@ -2,6 +2,7 @@ package com.zjucsc.art_decode.base;
 
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class BaseConfig implements Serializable , Comparable<BaseConfig>{
     private String protocol;
@@ -63,6 +64,10 @@ public class BaseConfig implements Serializable , Comparable<BaseConfig>{
 
     @Override
     public int compareTo(BaseConfig o) {
+        assert o!=null;
+        if (equals(o)){
+            return 0;
+        }
         return this.getTag().hashCode() > o.getTag().hashCode() ? 1 : -1;
     }
 
@@ -81,5 +86,18 @@ public class BaseConfig implements Serializable , Comparable<BaseConfig>{
 
     public void setGroup(String group) {
         this.group = group;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof BaseConfig)) return false;
+        BaseConfig that = (BaseConfig) o;
+        return Objects.equals(getTag(), that.getTag());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getTag());
     }
 }
