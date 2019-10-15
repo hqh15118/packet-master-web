@@ -281,7 +281,7 @@ public class InitConfigurationService implements ApplicationRunner {
         /************************************
          * 启动结束
          ***********************************/
-        PrinterUtil.printMsg(1,"程序启动完成");
+        PrinterUtil.printMsg(1,"程序启动完成--v10.15");
     }
 
     private void handleDataSourceClass(Class<?> clazz,Object obj){
