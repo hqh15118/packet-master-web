@@ -19,12 +19,6 @@ public class ConfigUtil {
             connection = DriverManager.getConnection("jdbc:sqlite:local.db");
         } catch (SQLException e) {
             e.printStackTrace();
-        }finally {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
         if (connection!=null) {
             try (Statement statement = connection.createStatement()) {
@@ -46,6 +40,7 @@ public class ConfigUtil {
             try {
                 preparedStatement  = connection.prepareStatement("SELECT k,v FROM key_value WHERE key_value.k = ?");
             } catch (SQLException e) {
+                log.error("SQL Exception " , e);
                 return def;
             }
         }
@@ -56,6 +51,7 @@ public class ConfigUtil {
                 String res =  resultSet.getString("v");
                 return res == null ? def : res;
             } catch (SQLException e) {
+                log.error("SQL Exception " , e);
                 return def;
             }
     }
@@ -65,7 +61,9 @@ public class ConfigUtil {
             try {
                 preparedStatement1 = connection.prepareStatement("INSERT INTO key_value VALUES (?,?)");
                 preparedStatement2 = connection.prepareStatement("DELETE FROM key_value WHERE k = ? ");
-            } catch (SQLException ignored) { }
+            } catch (SQLException e) {
+                log.error("SQL Exception " , e);
+            }
         }
         if (preparedStatement1!=null){
             try {
@@ -75,6 +73,7 @@ public class ConfigUtil {
                 preparedStatement1.setString(2,v);
                 preparedStatement1.execute();
             } catch (SQLException e) {
+                log.error("SQL Exception " , e);
                 return false;
             }
             return true;
