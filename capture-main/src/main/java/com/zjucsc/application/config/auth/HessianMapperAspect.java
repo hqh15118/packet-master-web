@@ -1,7 +1,7 @@
 package com.zjucsc.application.config.auth;
 
 
-import com.zjucsc.application.config.ConstantConfig;
+import com.zjucsc.application.config.properties.ConstantConfig;
 import com.zjucsc.application.domain.bean.BaseResponse;
 import com.zjucsc.common.exceptions.DataAccessException;
 import org.aspectj.lang.ProceedingJoinPoint;

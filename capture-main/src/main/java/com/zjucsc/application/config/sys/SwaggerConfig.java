@@ -1,4 +1,4 @@
-package com.zjucsc.application.config;
+package com.zjucsc.application.config.sys;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,6 @@
-package com.zjucsc.common.common_util;
+package com.zjucsc.common.util;
+
+import java.util.Date;
 
 public class PrinterUtil {
 
@@ -14,7 +16,7 @@ public class PrinterUtil {
     }
 
     public static void printMsg(String msg){
-        System.out.println("* " + msg);
+        System.out.println("* " + new Date().toString() + " -- " + msg);
     }
 
     public static void printEnder(){

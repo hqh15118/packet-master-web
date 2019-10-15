@@ -47,7 +47,7 @@ public class KafkaThread<V> extends Thread implements IKafka<V> {
     @Override
     public void run() {
         try {
-            for (; ;) {
+            for (;;) {
                 V v = TASK_QUEUE.take();
                 String msg = convertObjectToString(v);
                 //valid msg

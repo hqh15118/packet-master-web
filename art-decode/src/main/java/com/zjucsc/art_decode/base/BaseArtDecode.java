@@ -1,14 +1,15 @@
 package com.zjucsc.art_decode.base;
 
-import com.zjucsc.art_decode.ArtDecodeCommon;
-import com.zjucsc.common.common_util.CommonUtil;
+import com.zjucsc.art_decode.ArtDecodeUtil;
+import com.zjucsc.common.util.CommonUtil;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.ExecutorService;
 
 /**
  * 泛型化工艺参数
@@ -17,11 +18,10 @@ import java.util.concurrent.*;
 
 public abstract class BaseArtDecode<T extends BaseConfig> implements IArtDecode<T> , IArtEntry{
     private static Logger logger = LoggerFactory.getLogger(BaseArtDecode.class);
-    private ConcurrentSkipListSet<T> configs =
-            new ConcurrentSkipListSet<>();
+    private ConcurrentSkipListSet<T> configs = new ConcurrentSkipListSet<>();
 
     protected void callback(String artName,float value,FvDimensionLayer layer,Object...objs){
-        ArtDecodeCommon.validPacketCallback.callback(artName, value, layer,objs);
+        ArtDecodeUtil.validPacketCallback.callback(artName, value, layer,objs);
     }
 
     public Set<T> getArtConfigs(){

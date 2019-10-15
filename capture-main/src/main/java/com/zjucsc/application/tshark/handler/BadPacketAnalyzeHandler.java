@@ -47,7 +47,6 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<FvDimensionLay
         return layer;
     }
 
-
     private void protocolAnalyze(FvDimensionLayer layer) {
         FiveDimensionAnalyzer fiveDimensionAnalyzer;
         //根据报文tag，定位到具体的报文过滤器进行分析
@@ -92,7 +91,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<FvDimensionLay
                     /**
                      * 非授权访问设备
                      */
-                    AttackCommon.appendFvDimensionError(new AttackBean.Builder()
+                    AttackCommon.appendFvDimensionError(AttackBean.builder()
                             .fvDimension(layer)
                             .attackType(AttackTypePro.VISIT_DEVICE)
                             .attackInfo(!layer.ip_src[0].equals("--") ? layer.ip_src[0] : layer.eth_src[0])
@@ -105,12 +104,10 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<FvDimensionLay
     }
 
     private void operationAnalyze(FvDimensionLayer layer){
-        if (!(layer instanceof UndefinedPacket.LayersBean)) {
-            String funCode = layer.funCode;
-            //有功能码
-            if (!"--".equals(funCode)) {
-                doOperationAnalyze(layer.funCode, layer);
-            }
+        String funCode = layer.funCode;
+        //有功能码
+        if (!"--".equals(funCode)) {
+            doOperationAnalyze(layer.funCode, layer);
         }
     }
 
@@ -158,7 +155,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<FvDimensionLay
                 return PacketDecodeUtil.getPacketDetailProtocol(layer);
             case "104apci":
                 return PacketDecodeUtil.getIEC104DetailType(layer);
-            default:return PacketDecodeUtil.discernPacket(layer);
+            default:return PacketDecodeUtil.discernPacket(layer.frame_protocols[0]);
         }
 
     }

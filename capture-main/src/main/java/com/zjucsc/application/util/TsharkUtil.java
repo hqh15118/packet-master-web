@@ -41,15 +41,13 @@ public class TsharkUtil {
                 return false;
             }
             try(InputStream is = TsharkUtil.class.getResourceAsStream("/mywireshark_plugin.lua");
-                OutputStream os = new FileOutputStream(file)) {
+                OutputStream os = new FileOutputStream(file)){
                 int length = is.available();
                 byte[] data = new byte[length];
                 int readLength = is.read(data);
                 assert readLength == length;
                 os.write(data);
                 os.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }else{
             System.out.println("检测到tshark插件>>");

@@ -4,7 +4,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.zjucsc.art_decode.artconfig.OpcdaConfig;
 import com.zjucsc.art_decode.base.BaseArtDecode;
-import com.zjucsc.common.common_util.Bytecut;
+import com.zjucsc.common.util.Bytecut;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import com.zjucsc.tshark.packets.OpcDaPacket;
 

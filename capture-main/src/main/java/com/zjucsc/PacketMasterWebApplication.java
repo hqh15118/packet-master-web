@@ -1,13 +1,8 @@
 package com.zjucsc;
 
-import com.zjucsc.application.config.ConstantConfig;
-import com.zjucsc.application.config.PreProcessor;
-import com.zjucsc.application.util.TsharkUtil;
-import com.zjucsc.common.bean.CustomThreadPoolExecutor;
-import com.zjucsc.common.common_util.CommonUtil;
-import com.zjucsc.common.common_util.PrinterUtil;
-import com.zjucsc.socket_io.SocketIoEvent;
-import com.zjucsc.socket_io.SocketServiceCenter;
+import com.zjucsc.application.config.properties.ConstantConfig;
+import com.zjucsc.application.config.properties.PreProcessor;
+import com.zjucsc.common.util.PrinterUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,11 +10,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import java.io.IOException;
-import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.ThreadPoolExecutor;
 
 @SpringBootApplication
 @EnableScheduling

@@ -1,12 +1,10 @@
-package com.zjucsc.common.common_util;
+package com.zjucsc.common.util;
 
 import com.zjucsc.common.bean.CustomThreadPoolExecutor;
-import com.zjucsc.common.bean.ThreadPoolInfoWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
-import java.util.List;
 import java.util.concurrent.*;
 
 public class CommonUtil {

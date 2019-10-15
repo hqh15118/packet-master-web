@@ -12,7 +12,7 @@ import static com.zjucsc.application.util.CacheUtil.convertIdToName;
 
 
 @Slf4j
-public class CommonConfigUtil {
+public class ProtocolUtil {
 
     public static boolean SHOW_LOG = false;
 
@@ -61,7 +61,7 @@ public class CommonConfigUtil {
                         protocol, funcode, optMeaning, CONFIGURATION_MAP);
             }
         }else{
-            synchronized (CommonConfigUtil.class){
+            synchronized (ProtocolUtil.class){
                 //防止多个线程对同一个hash map并发访问
                 //由于只是加了一个写锁，所以读的时候可能会出现滞后的问题
                 funcodeMeaning.put(funcode,optMeaning);
@@ -80,7 +80,7 @@ public class CommonConfigUtil {
             funcodeMeaning = new HashMap<>();
             CONFIGURATION_MAP.put(protocol, funcodeMeaning);
         }
-        synchronized (CommonConfigUtil.class){
+        synchronized (ProtocolUtil.class){
             //防止多个线程对同一个hashmap并发访问
             //由于只是加了一个写锁，所以读的时候可能会出现滞后的问题
             for (FuncodeStatement funcodeStatement : funcodeStatements) {

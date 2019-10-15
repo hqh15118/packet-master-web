@@ -1,8 +1,8 @@
 package com.zjucsc.art_decode.iec101;
 
 import com.zjucsc.art_decode.artconfig.IEC101Config;
-import com.zjucsc.common.common_util.ByteUtil;
-import com.zjucsc.common.common_util.Bytecut;
+import com.zjucsc.common.util.ByteUtil;
+import com.zjucsc.common.util.Bytecut;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 
 import java.util.Map;

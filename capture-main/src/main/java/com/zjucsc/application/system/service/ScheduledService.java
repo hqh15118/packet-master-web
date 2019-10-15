@@ -1,7 +1,7 @@
 package com.zjucsc.application.system.service;
 
 import com.zjucsc.application.config.Common;
-import com.zjucsc.application.config.StatisticsData;
+import com.zjucsc.application.statistic.StatisticsData;
 import com.zjucsc.application.domain.bean.*;
 import com.zjucsc.application.domain.non_hessian.ArtGroupWrapper;
 import com.zjucsc.application.domain.non_hessian.D2DWrapper;
@@ -11,10 +11,10 @@ import com.zjucsc.application.system.service.common_iservice.CapturePacketServic
 import com.zjucsc.application.system.service.hessian_iservice.IArtHistoryDataService;
 import com.zjucsc.application.system.service.hessian_mapper.DeviceMapper;
 import com.zjucsc.application.util.AppCommonUtil;
-import com.zjucsc.application.util.ArtDecodeUtil;
 import com.zjucsc.application.util.CacheUtil;
 import com.zjucsc.base.util.SysRunStateUtil;
-import com.zjucsc.art_decode.ArtDecodeCommon;
+import com.zjucsc.art_decode.ArtDecodeUtil;
+import com.zjucsc.common.util.PrinterUtil;
 import com.zjucsc.socket_io.SocketIoEvent;
 import com.zjucsc.socket_io.SocketServiceCenter;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-import static com.zjucsc.application.config.StatisticsData.*;
+import static com.zjucsc.application.statistic.StatisticsData.*;
 
 @Slf4j
 @Service
@@ -94,7 +94,7 @@ public class ScheduledService {
     }
 
     private void detectDecodeMethodDelay() {
-        Map<String,Long> map = ArtDecodeCommon.getDecodeDelayMapInfo();
+        Map<String,Long> map = ArtDecodeUtil.getDecodeDelayMapInfo();
         map.forEach((s, aLong) -> {
             System.out.println(s + " time - " + aLong);
         });
@@ -228,27 +228,49 @@ public class ScheduledService {
         }
     }
 
+    @Scheduled(cron = "0 0/10 * * * ? ")
+    public synchronized void detectWiresharkTempFile() throws InterruptedException {
+        File[] files = getFiles();
+        if (files!=null){
+            for (File file : files) {
+                if(file.getName().startsWith("wireshark") && detect(file.length())){
+                    restartTsharkProcess();
+                    Thread.sleep(5000);
+                    deletePcapFileScheduled();
+                    break;
+                }
+            }
+        }
+    }
+
+    private boolean detect(long length) {
+        return length > Common.MAX_WIREESHARK_SIZE_IN_BYTE;
+    }
+
     //定时删除临时的wireshark报文
     //@Scheduled(cron = "0 5 0 ? * MON-FRI")
-    @Scheduled(cron = "30 0 0 * * ? ")
+    //@Scheduled(cron = "30 0 0 * * ? ")
     public synchronized void deletePcapFileScheduled(){
-        File file = new File(Common.WIRESHARK_TEMP_FILE);
-        File[] files = file.listFiles();
+        File[] files = getFiles();
         if (files!=null) {
             for (File tempFile : files) {
                 if (tempFile.getName().startsWith("wireshark")) {//wireshark temp pcap file
                     File file1 = new File(tempFile.getAbsolutePath());
                     if(file1.delete()){
-                        System.out.println("成功删除【wireshark】临时文件" + file1.getAbsolutePath());
+                        PrinterUtil.printMsg("成功删除【wireshark】临时文件" + file1.getAbsolutePath());
                     } //如果文件正在被占用，那么会先删除失败，没关系第二天继续尝试就好了
                     else{
-                        System.out.println("无法删除【wireshark】临时文件" + file1.getAbsolutePath());
+                        PrinterUtil.printMsg("无法删除【wireshark】临时文件" + file1.getAbsolutePath());
                     }
                 }
             }
         }
     }
 
+    private File[] getFiles(){
+        File file = new File(Common.WIRESHARK_TEMP_FILE);
+        return file.listFiles();
+    }
     //@Scheduled(fixedRate = 1000)
 //    private void sendAllFvDimensionPacket() throws InterruptedException {
 //        layers.clear();

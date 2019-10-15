@@ -1,5 +1,8 @@
 package com.zjucsc.tshark.handler;
 
+import com.zjucsc.common.util.ExceptionSafeRunnable;
+import com.zjucsc.tshark.exception.NextHandlerNotExistException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -45,13 +48,21 @@ public abstract class AbstractAsyncHandler<T> extends AbstractHandler<T> {
             }
         }else{
             //run handle in async schema
-            executor.execute(() -> {
-                T t = handle(inValue);
-                if (nextHandler()!=null) {
-                    nextHandler().handleAndPass(t);
-                }
-                for (PipeLine pipeLine : pipeLines) {
-                    pipeLine.pushDataAtHead(t);
+            executor.execute(new ExceptionSafeRunnable<Object>(){
+                @Override
+                public void run(Object o) {
+                    T t = handle(inValue);
+                    if (nextHandler()!=null) {
+                        nextHandler().handleAndPass(t);
+                    }
+                    /**
+                     * 把该部分的处理结果推送到其他的pipeLine
+                     */
+                    if (pipeLines.size() > 0){
+                        for (PipeLine pipeLine : pipeLines) {
+                            pipeLine.pushDataAtHead(t);
+                        }
+                    }
                 }
             });
         }
@@ -64,5 +75,13 @@ public abstract class AbstractAsyncHandler<T> extends AbstractHandler<T> {
 
     public List<PipeLine> getPipeLines(){
         return pipeLines;
+    }
+
+    public void directPass(T t){
+        if (nextHandler()!=null){
+            nextHandler().handleAndPass(t);
+        }else{
+            throw new NextHandlerNotExistException("can not pass object[T] to next handler cause next handler is null!");
+        }
     }
 }

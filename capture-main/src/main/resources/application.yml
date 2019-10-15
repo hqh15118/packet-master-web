@@ -2,7 +2,11 @@ myconfig:
   #global_address : 192.168.1.106
   #global_address : 192.168.0.114
   #global_address : 10.180.81.207
+<<<<<<< HEAD
   global_address : 192.168.0.121
+=======
+  global_address : localhost
+>>>>>>> tshark
   admin_server_port : 8989
   packet_master_web_port : 8080
   openAOPLog : true   # 是否开启请求日志
@@ -11,6 +15,7 @@ myconfig:
   redis_ip : 10.15.191.100  # redis ip地址
   redis_port : 6379         # redis 端口
   openMapperAop : true      # 是否开启hessian mapper检测
+<<<<<<< HEAD
   tshark-path:
   simulate :
     reOpenTableName: 20190703  # 重放的数据库表名【packet_info_】 + 【表名】
@@ -18,16 +23,23 @@ myconfig:
     simulateDBUrl : jdbc:mysql://10.15.191.100:3306/csc_db?serverTimezone=UTC
     simulateDBUser : root
     simulateDBPassword : 920614
+=======
+  reOpenTableName : 20190703  # 重放的数据库表名【packet_info_】 + 【表名】
+  simulateStartNum : 0        # 从第几条数据开始
+  #tshark可执行文件所在路径
+  tshark-path: C:\Users\Administrator\Desktop\Release\tshark
+  #临时文件路径，默认C:\\temp
+  temp_path :
+  # 最大字节数，byte为单位
+  max_temp_file_size :
+  # wireshark version 2.0/3.0
+  wireshark_version : 3.0
+
+>>>>>>> tshark
 pre-processors:
-#  list[0] : s7comm
-#  list[1] : modbus
-#  list[2] : iec104
-#  list[3] : dnp3_0
-#  list[4] : pnio
-#  list[5] : cip
-#  list[6] : opcua
   list :
      - s7comm
+<<<<<<< HEAD
 #     - modbus
 #     - iec104
 #     - dnp3_0
@@ -36,6 +48,16 @@ pre-processors:
 #     - opcua
 #     - mms
 #     - dcerpc
+=======
+    # - modbus
+    # - iec104
+    # - dnp3_0
+    # - pnio
+    # - cip
+    # - opcua
+    # - mms
+    # - dcerpc
+>>>>>>> tshark
   i_protocols:
     - s7comm
     - modbus
@@ -124,6 +146,7 @@ spring:
 #      retries: 1
 #      batch-size: 40960
 #      buffer-memory: 40960
+<<<<<<< HEAD
 
 #  redis:
 #    host: ${myconfig.redis_ip}
@@ -134,6 +157,17 @@ spring:
 #        min-idle: 8
 #        max-idle: 500
 #        max-active: 2000
+=======
+  redis:
+    host: ${myconfig.redis_ip}
+    port: ${myconfig.redis_port}
+    password:
+    jedis:
+      pool:
+        min-idle: 8
+        max-idle: 500
+        max-active: 2000
+>>>>>>> tshark
 
 management:
   endpoints:
@@ -167,4 +201,3 @@ management:
 #    anonUrl: /login,/logout/**,/regist,/user/check/**
 #    # token有效期，单位秒
 #    jwtTimeOut: 3600
-

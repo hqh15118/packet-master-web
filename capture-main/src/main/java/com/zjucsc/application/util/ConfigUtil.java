@@ -19,6 +19,12 @@ public class ConfigUtil {
             connection = DriverManager.getConnection("jdbc:sqlite:local.db");
         } catch (SQLException e) {
             e.printStackTrace();
+        }finally {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         if (connection!=null) {
             try (Statement statement = connection.createStatement()) {

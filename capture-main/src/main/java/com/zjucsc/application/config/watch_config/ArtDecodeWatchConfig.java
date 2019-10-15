@@ -2,7 +2,7 @@ package com.zjucsc.application.config.watch_config;
 
 
 import com.zjucsc.application.config.Common;
-import com.zjucsc.art_decode.ArtDecodeCommon;
+import com.zjucsc.art_decode.ArtDecodeUtil;
 import com.zjucsc.art_decode.base.BaseConfig;
 import com.zjucsc.attack.AttackCommon;
 import com.zjucsc.attack.bean.ArtAttackAnalyzeConfig;
@@ -20,7 +20,7 @@ public class ArtDecodeWatchConfig {
 
     @WriteOperation
     public Set<BaseConfig> getArtConfigsByProtocol(String protocolName){
-        return ArtDecodeCommon.getArtConfig(protocolName);
+        return ArtDecodeUtil.getArtConfig(protocolName);
     }
 
     @WriteOperation

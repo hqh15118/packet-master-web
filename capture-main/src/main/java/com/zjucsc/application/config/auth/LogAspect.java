@@ -1,10 +1,8 @@
 package com.zjucsc.application.config.auth;
 
 import com.alibaba.fastjson.JSON;
-import com.zjucsc.application.config.ConstantConfig;
-import com.zjucsc.application.config.KafkaTopic;
+import com.zjucsc.application.config.properties.ConstantConfig;
 import com.zjucsc.application.domain.bean.LogBean;
-import com.zjucsc.kafka.KafkaThread;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;

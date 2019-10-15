@@ -1,4 +1,4 @@
-package com.zjucsc.application.config;
+package com.zjucsc.application.statistic;
 
 import com.zjucsc.application.domain.bean.GraphInfo;
 import com.zjucsc.application.domain.bean.GraphInfoCollection;
