@@ -224,8 +224,10 @@ public class MMSDecode extends BaseArtDecode<MMSConfig> {
         String value1, value2;
         int stop = 0;
         int start = 0;
-        for(String key : MMS_title.keySet()){                                                     //得到配置信息key值
-            value1 = MMS_title.get(key);                                                          //并把其中value保存下来
+        String key;
+        for(Map.Entry<String,String> entry : MMS_title.entrySet()){//得到配置信息key值
+            value1 = entry.getValue();//并把其中value保存下来
+            key = entry.getKey();
             for(int i=0;i<key.length();i++){                                                      //遍历string中每一个字符，判断是否出现ID字母
                 if(key.charAt(i)=='I'&& key.charAt(i+1)=='D'){
                     substr = key.substring(i+2);                                                  //出现则提取后面，为invokeID
@@ -233,7 +235,9 @@ public class MMSDecode extends BaseArtDecode<MMSConfig> {
                 }
             }
             //System.out.println(MMSData_map);
-            for(String key2 : MMSData_map.keySet()){                                              //得到读取信息的key值
+            String key2;
+            for(Map.Entry<String,String> entry1 : MMSData_map.entrySet()){//得到读取信息的key值
+                key2 = entry1.getKey();
                 for(int j=0;j<key2.length();j++){                                                 //遍历string中每一个字符，判断是否出现ID字母
                     if(key2.charAt(j)=='I'&&key2.charAt(j+1)=='D'){
                         substr2 = key2.substring(j+2);                                            //出现则提取后面，为invokeID
@@ -242,7 +246,7 @@ public class MMSDecode extends BaseArtDecode<MMSConfig> {
                     }
                 }
                 if(substr .equals(substr2)){                                                            //判断invokeID是否相同
-                    value2 = MMSData_map.get(key2);                                               //相同则把数据value保存下来
+                    value2 = entry1.getValue();                                               //相同则把数据value保存下来
                     //System.out.println(key2);
                     /* if(mmsConfig.getTech_param()!= ""){
                         globalMap.put(mmsConfig.getTech_param(), Float.parseFloat(value2));

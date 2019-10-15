@@ -33,14 +33,14 @@ public class ModbusDecode extends BaseArtDecode<ModBusConfig> {
 
     private Map<String,Map> map= new HashMap<>();
 
-    private Map<String,Map> decode( byte[] bytes) {
-        renewmap(bytes);
-        map.put("离散量输入",Dis_input_map);
-        map.put("线圈",Coil_map);
-        map.put("保持寄存器",Holding_reg_map);
-        map.put("输出寄存器",Input_reg_map);
-        return map;
-    }
+//    private Map<String,Map> decode( byte[] bytes) {
+//        renewmap(bytes);
+//        map.put("离散量输入",Dis_input_map);
+//        map.put("线圈",Coil_map);
+//        map.put("保持寄存器",Holding_reg_map);
+//        map.put("输出寄存器",Input_reg_map);
+//        return map;
+//    }
 
 
     @Override
