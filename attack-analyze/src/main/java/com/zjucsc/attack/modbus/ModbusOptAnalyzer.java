@@ -39,7 +39,7 @@ public class ModbusOptAnalyzer extends BaseOptAnalyzer<ModbusOptConfig> {
             return false;
         }
         else {
-            byte[] payload =layer.tcpPayload;
+            byte[] payload =layer.getUseTcpPayload();
             int len = ByteUtil.bytesToShort(payload,4);
             byte[] modbusload = Bytecut.Bytecut(payload,7,len-1);
             if (modbusopconfig.getReg() == 0 && modbusload!=null) {

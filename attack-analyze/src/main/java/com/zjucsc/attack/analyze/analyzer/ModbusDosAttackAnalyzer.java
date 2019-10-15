@@ -27,9 +27,9 @@ public class ModbusDosAttackAnalyzer<T extends AbstractDosList> extends BaseAtta
          * 保证是modbus请求，且是连接请求
          */
             if(!TImap.containsKey(layer.funCode)
-                    || TImap.get(layer.funCode)!= ByteUtil.bytesToShort(layer.tcpPayload,0))
+                    || TImap.get(layer.funCode)!= ByteUtil.bytesToShort(layer.getUseTcpPayload(),0))
             {
-                TImap.put(layer.funCode, ByteUtil.bytesToShort(layer.tcpPayload,0));
+                TImap.put(layer.funCode, ByteUtil.bytesToShort(layer.getUseTcpPayload(),0));
                 return true;
             }
         return false;

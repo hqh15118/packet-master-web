@@ -28,9 +28,9 @@ public class ConstantConfig {
 
     private boolean showErrorOnly;
 
-    private String tshark_path;
-
     private SimulateArgs simulate;
+
+    private TsharkConfig tshark_config;
 
     @Data
     public static class SimulateArgs{
@@ -39,6 +39,14 @@ public class ConstantConfig {
         private String simulateDBUrl;
         private String simulateDBUser;
         private String simulateDBPassword;
+    }
+
+    @Data
+    public static class TsharkConfig{
+        private String wireshark_version;
+        private String temp_path;
+        private int max_temp_file_size;
+        private String tshark_path;
     }
 
 }

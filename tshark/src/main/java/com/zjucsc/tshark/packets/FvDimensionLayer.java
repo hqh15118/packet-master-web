@@ -1,6 +1,7 @@
 package com.zjucsc.tshark.packets;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.zjucsc.tshark.util.TsharkUtil;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -54,8 +55,7 @@ public class FvDimensionLayer implements Serializable,Comparable<FvDimensionLaye
     @JSONField(serialize = false,deserialize = false)
     public String deviceNumber;     //该条报文对应的设备号
     @JSONField(serialize = false,deserialize = false)
-    public byte[] tcpPayload;
-
+    private byte[] tcpPayload;
 
     @Override
     public String toString() {
@@ -75,6 +75,31 @@ public class FvDimensionLayer implements Serializable,Comparable<FvDimensionLaye
                 '}';
     }
 
+    private static int wireshark_version_detect_2 = -1;
+
+    public byte[] getUseTcpPayload(){
+        if (tcpPayload != null){
+            return tcpPayload;
+        }else{
+            if (wireshark_version_detect_2 < 0)
+            {
+                if (tcp_payload[0].contains(":")){
+                    wireshark_version_detect_2 = 1;
+                    tcpPayload = TsharkUtil.hexStringToByteArray(tcp_payload[0]);
+                }else{
+                    wireshark_version_detect_2 = 2;
+                    tcpPayload = TsharkUtil.hexStringToByteArray2(tcp_payload[0]);
+                }
+            }else{
+                if (wireshark_version_detect_2 == 1){ // :
+                    tcpPayload = TsharkUtil.hexStringToByteArray(tcp_payload[0]);
+                }else{ // not :
+                    tcpPayload = TsharkUtil.hexStringToByteArray2(tcp_payload[0]);
+                }
+            }
+            return tcpPayload;
+        }
+    }
 
     @Override
     public int compareTo(FvDimensionLayer o) {

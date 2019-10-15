@@ -178,7 +178,12 @@ public class ScheduledService {
             receivePacket = allReceivePacket - lastReceivePacket;
             lastReceivePacket = allReceivePacket;
         }
-        DELAY_INFO.replaceAll((collectorId, allDelay) -> allDelay / receivePacket);
+        DELAY_INFO.replaceAll((collectorId, allDelay) -> {
+            if (receivePacket == 0){
+                return 0;
+            }
+            return allDelay / receivePacket;
+        });
         NUMBER_BY_DEVICE_IN.forEach(MAX_FLOW_CONSUMER.setType(1));//download
         NUMBER_BY_DEVICE_OUT.forEach(MAX_FLOW_CONSUMER.setType(0));//upload
         ATTACK_BY_DEVICE.forEach(SEND_CONSUMER.setMap(attackByDevice , 1));

@@ -19,9 +19,9 @@ public class s7Opdecode extends AbstractOptCommandAttackEntry<S7OpName> {
 
     public static List<DBclass> getdBclasses(FvDimensionLayer S7layer, List<DBclass> dBlist) {
         byte[] S7data;
-        if(S7layer.tcpPayload.length != 0)
+        if(S7layer.getUseTcpPayload().length != 0)
         {
-            S7data = GetS7load.S7load(S7layer.tcpPayload,1);
+            S7data = GetS7load.S7load(S7layer.getUseTcpPayload(),1);
         }
         else
         {

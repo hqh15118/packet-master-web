@@ -70,19 +70,16 @@ public class InitConfigurationService implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws IllegalAccessException, NoSuchFieldException, ProtocolIdNotValidException, IOException {
+        String wiresharkVersion = constantConfig.getTshark_config().getWireshark_version();
+        Common.wiresharkVersion = wiresharkVersion == null ? Common.WiresharkConfig.WIRESHARK_VERSION2_0 :
+                wiresharkVersion.contains("2") ? Common.WiresharkConfig.WIRESHARK_VERSION2_0 :
+                        Common.WiresharkConfig.WIRESHARK_VERISON3_0;
         /***************************
          * RELOAD FROM JAR
          ***************************/
         List<String> virReload = args.getOptionValues("reload");
         PrinterUtil.printStarter();
         PrinterUtil.printMsg("program args [reload <--reload>]: " + virReload);
-        boolean reload = false;
-        if (virReload!=null && virReload.size() > 0){
-            if ("true".equals(virReload.get(0))){
-                //重新到jar包中加载功能码含义
-                reload = true;
-            }
-        }
 
         /***************************
          * IP OR MAC_ADDRESS

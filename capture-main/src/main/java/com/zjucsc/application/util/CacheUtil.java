@@ -879,10 +879,14 @@ public class CacheUtil {
         return sysRunArg;
     }
     public static void initCpuAndMemState(){
-        maxCPURate = Double.parseDouble(ConfigUtil.getData("cpu_rate","75"));
-        maxMemoryRate = Double.parseDouble(ConfigUtil.getData("mem_rate","75"));
-        cpuCount = Integer.parseInt(ConfigUtil.getData("cpu","30"));
-        memCount = Integer.parseInt(ConfigUtil.getData("mem","30"));
+//        maxCPURate = Double.parseDouble(ConfigUtil.getData("cpu_rate","75"));
+//        maxMemoryRate = Double.parseDouble(ConfigUtil.getData("mem_rate","75"));
+//        cpuCount = Integer.parseInt(ConfigUtil.getData("cpu","30"));
+//        memCount = Integer.parseInt(ConfigUtil.getData("mem","30"));
+        maxCPURate = 75;
+        maxMemoryRate = 75;
+        cpuCount = 30;
+        memCount = 30;
     }
     public static void updateCpuOrMemoryRate(double cpu,double mem){
         maxCPURate = cpu;

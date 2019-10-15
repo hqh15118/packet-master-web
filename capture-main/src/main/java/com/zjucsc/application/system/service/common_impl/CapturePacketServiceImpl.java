@@ -277,6 +277,14 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         }
     };
 
+    private void setFrameInfo1(FvDimensionLayer rawFvDimensionLayer) {
+//        rawFvDimensionLayer.setFrame_protocols(new String[]{protocolStack});
+        rawFvDimensionLayer.setProtocol(/*设置协议栈*/PacketDecodeUtil.discernPacket(rawFvDimensionLayer.frame_protocols[0]));
+        //frame infos
+//        rawFvDimensionLayer.setFrame_cap_len(new String[]{rawFvDimensionLayer.getLayers().getFrame().getFrame_frame_len()});
+        rawFvDimensionLayer.setRawData(PacketDecodeUtil.hexStringToByteArray2(rawFvDimensionLayer.getCustom_ext_raw_data()[0]));    //t-s);
+    }
+
     private void setFrameInfo(FvDimensionLayer rawFvDimensionLayer) {
         String protocolStack = rawFvDimensionLayer.getLayers().getFrame().getFrame_frame_protocols();
         rawFvDimensionLayer.setFrame_protocols(new String[]{protocolStack});
@@ -342,6 +350,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         @Override
         public FvDimensionLayer handle(Object t) {
             FvDimensionLayer fvDimensionLayer = ((FvDimensionLayer) t);
+            setFrameInfo1(fvDimensionLayer);
             preProcess(fvDimensionLayer);
             fvDimensionLayer.deviceNumber = CacheUtil.getTargetDeviceNumberByTag(fvDimensionLayer.ip_dst[0],fvDimensionLayer.eth_dst[0]);
             //统计所有的IP地址
@@ -364,15 +373,10 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             sendFvDimensionPacket(fvDimensionLayer , payload);                    //发送五元组所有报文到前端
             sendPacketStatisticsEvent(fvDimensionLayer);                          //发送统计信息
             int collectorId = PacketDecodeUtil.decodeCollectorId(payload,24);
-            if (collectorId > 0 && collectorId < 50){
+            if (collectorId > 0 && collectorId < 50){//
                 analyzeCollectorState(payload , collectorId);                         //分析采集器状态信息
                 fvDimensionLayer.delay = collectorDelayInfo(fvDimensionLayer,payload,collectorId);     //解析时延信息
                 fvDimensionLayer.collectorId = collectorId;                           //设置报文采集器ID
-            }
-            else
-                {
-//                log.error("error decode collector id Id : [{}] , rawData : [{}] , protocol:[{}]",collectorId,
-//                        fvDimensionLayer.custom_ext_raw_data[0],fvDimensionLayer.protocol);
             }
             FV_D_SENDER.sendMsg(fvDimensionLayer);                                //发送消息到数据库服务器
             return fvDimensionLayer;                                              //将五元组发送给BadPacketHandler
@@ -383,7 +387,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         switch (fvDimensionLayer.protocol){
             case "tcp" :
                 if (!fvDimensionLayer.tcp_payload[0].equals("")){
-                    byte[] tcpPayload = PacketDecodeUtil.hexStringToByteArray2(fvDimensionLayer.tcp_payload[0]);
+                    byte[] tcpPayload = fvDimensionLayer.getUseTcpPayload();
                     //set iec101 protocol 单字节的101怎么设置
                     byte startByte = tcpPayload[0];
                     if (startByte == 0x68 || startByte == 0x10){
@@ -508,7 +512,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             CipPacket.LayersBean cipPacket = ((CipPacket.LayersBean) t);
             funCode = cipPacket.cip_funcode[0];
             t.funCodeMeaning = ProtocolUtil.
-                    getTargetProtocolFuncodeMeaning(PACKET_PROTOCOL.CIP_IP, funCode);
+                    getTargetProtocolFuncodeMeaning(PACKET_PROTOCOL.CIP_IP, String.valueOf(Integer.decode(funCode)));
         }else if (t instanceof MmsPacket.LayersBean){
             MmsPacket.LayersBean mmsPacket = ((MmsPacket.LayersBean) t);
             funCode = mmsPacket.mmsFuncode[0];
@@ -517,7 +521,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         }else if (t instanceof UndefinedPacket.LayersBean){
             UndefinedPacket.LayersBean unknownPacket = ((UndefinedPacket.LayersBean) t);
             if (unknownPacket.protocol.equals("iec101")){
-                String funCodeMeaningStr = IEC101DecodeMain.decode101Funcode(unknownPacket.tcpPayload);
+                String funCodeMeaningStr = IEC101DecodeMain.decode101Funcode(unknownPacket.getUseTcpPayload());
                 if (funCodeMeaningStr!=null){
                     t.funCodeMeaning = funCodeMeaningStr;
                 }
@@ -553,12 +557,14 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         return newStart1(macAddress, interfaceName);
     }
 
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
     private synchronized CompletableFuture<Exception> newStart1(String macAddress, String interfaceName) {
         if (tsharkPreProcessor == null)
         {
             tsharkPreProcessor = new TsharkProxy();
             tsharkPreProcessor.setTsharkPreProcessorInfos(macAddress, interfaceName,
-                    constantConfig.getTshark_path() == null ? "tshark" : constantConfig.getTshark_path(),
+                    constantConfig.getTshark_config().getTshark_path() == null ? "tshark" :
+                            constantConfig.getTshark_config().getTshark_path(),
                     100000,
                     new TsharkListener() {
                         @Override
@@ -588,6 +594,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         return CompletableFuture.completedFuture(null);
     }
 
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
     private CompletableFuture<Exception> oldStart(ProcessCallback<String,String> callback,
                                                   String macAddress,
                                                   String interfaceName){
@@ -703,7 +710,8 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                     downLatch.countDown();
                 }
             });
-            basePreProcessor.startCapture(StringUtils.isBlank(constantConfig.getTshark_path()) ?"tshark":constantConfig.getTshark_path(),
+            basePreProcessor.startCapture(StringUtils.isBlank(constantConfig.getTshark_config().getTemp_path()) ?"tshark":
+                            constantConfig.getTshark_config().getTshark_path(),
                     macAddress,interfaceName,pipeLine,BasePreProcessor.ONLINE_CAPTURE, -1);
         });
         processThread.setName(processName + "-thread");
@@ -941,7 +949,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             FvDimensionLayer layer = ((FvDimensionLayer) t);
             AttackCommon.appendOptCommandDecode(layer);
             //工艺参数分析
-            byte[] tcpPayload = layer.tcpPayload;
+            byte[] tcpPayload = layer.getUseTcpPayload();
             Map<String,Float> res = StatisticsData.getGlobalArtMap();
             String protocol = layer.protocol;
             if (!(layer instanceof UndefinedPacket.LayersBean)){

@@ -17,9 +17,9 @@ public class ModbusAttackAnalyzelist extends FvDimensionList {
          if(layer.protocol.equals("modbus"))
          {
              if(!TImap.containsKey(layer.funCode)
-                || TImap.get(layer.funCode)!=ByteUtil.bytesToShort(layer.tcpPayload,0))
+                || TImap.get(layer.funCode)!=ByteUtil.bytesToShort(layer.getUseTcpPayload(),0))
              {
-                 TImap.put(layer.funCode, ByteUtil.bytesToShort(layer.tcpPayload,0));
+                 TImap.put(layer.funCode, ByteUtil.bytesToShort(layer.getUseTcpPayload(),0));
                  return super.append(layer);
              }
          }

@@ -18,13 +18,13 @@ myconfig:
     simulateDBUser : root
     simulateDBPassword : 920614
   #tshark可执行文件所在路径
-  tshark-path: C:\Users\Administrator\Desktop\Release\tshark
-  #临时文件路径，默认C:\\temp
-  temp_path :
-  # 最大字节数，byte为单位
-  max_temp_file_size :
-  # wireshark version 2.0/3.0
-  wireshark_version : 3.0
+  tshark_config :
+    tshark-path: C:\Users\Administrator\Desktop\Release\tshark
+    #临时文件路径，默认C:\\temp
+    temp_path :
+    # 最大字节数，byte为单位
+    max_temp_file_size : 1
+    # wireshark version 2.0/3.0
 
 pre-processors:
   list :

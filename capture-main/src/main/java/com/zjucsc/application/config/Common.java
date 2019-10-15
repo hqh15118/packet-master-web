@@ -73,4 +73,11 @@ public class Common {
 
     public static boolean showArtDecodeDelay = false;
 
+
+    public static int wiresharkVersion = 1;
+
+    public static class WiresharkConfig{
+        public static final int WIRESHARK_VERSION2_0 = 1;
+        public static final int WIRESHARK_VERISON3_0 = 2;
+    }
 }

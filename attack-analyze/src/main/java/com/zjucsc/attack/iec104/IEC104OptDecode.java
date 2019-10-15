@@ -40,7 +40,7 @@ public class IEC104OptDecode extends BaseOptAnalyzer<IEC104Opconfig> {
             return false;
         }
         else {
-            byte[] payload = layer.tcpPayload;
+            byte[] payload = layer.getUseTcpPayload();
             if ((iec104opconfig.getCategory() == 0 || iec104opconfig.getCategory() == 1 || iec104opconfig.getCategory() == 2) && payload!=null) {
                 packetSQ = (Byte.toUnsignedInt(payload[7]) & 0x80) >> 7;
                 if (payload[6] == 0x2d && packetSQ == 0)

@@ -40,7 +40,7 @@ public class dnp3optdecode extends BaseOptAnalyzer<dnp3Opconfig> {
             return false;
         }
         else {
-            byte[] payload = layer.tcpPayload;
+            byte[] payload = layer.getUseTcpPayload();
             if ((dnp3opconfig.getCategory() == 0 || dnp3opconfig.getCategory() == 1 || dnp3opconfig.getCategory() == 2) && payload!=null) {
 
                 if (payload[12] == 0x05)
