@@ -12,13 +12,14 @@ import java.util.List;
 public class CipMmsPreProcessor extends MultiPreProcessor {
     @Override
     public String[] packetProtocolStacks() {
-        return new String[]{"cipcls","mms"};
+        return new String[]{"cipcls","mms","cip"};
     }
 
     @Override
     public FvDimensionLayer outPacketIndexInStacks(int index, String packetJSON) {
         switch (index){
             case 0 :
+            case 2 :
                 CipPacket cipPacket = JSON.parseObject(packetJSON,CipPacket.class);
                 return cipPacket.layers;
             case 1 :

@@ -201,11 +201,14 @@ public class PacketDecodeUtil {
         for (int i = index + 1 ; i < protocolStack.length() ; i ++){
             sb.append(protocolStack.charAt(i));
         }
-        String protocol = sb.toString();
-        if (protocol.equals("cipcls")){
+        return specialProcess(sb.toString());
+    }
+
+    private static String specialProcess(String protocol){
+        if (protocol.equals("cipcls")){//国测 10.15 cip报文显示为cip和cipcls
             return "cip";
         }
-        return sb.toString();
+        return protocol;
     }
 
     private static final int STATE_REF = 0b00000111;
