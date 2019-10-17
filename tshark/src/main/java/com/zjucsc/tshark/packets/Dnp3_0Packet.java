@@ -20,5 +20,6 @@ public class Dnp3_0Packet {
         public String[] dnp3_ctl_secfunc = {""};
         @JSONField(name = "dnp3_ctl_prm")
         public String[] dnp3_ctl_prm={"-1"};
+        public String dnpProtocol;
     }
 }

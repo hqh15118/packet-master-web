@@ -293,6 +293,7 @@ public class InitConfigurationService implements ApplicationRunner {
 
     private void handleEventHandlerMethod(Method declaredMethod,Object obj) {
         try {
+            declaredMethod.setAccessible(true);
             Object res = declaredMethod.invoke(obj);
             List dataListeners = (List) res;
             for (Object dataListener : dataListeners) {

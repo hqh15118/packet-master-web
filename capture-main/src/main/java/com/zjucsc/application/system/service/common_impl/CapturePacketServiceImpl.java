@@ -278,10 +278,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     };
 
     private void setFrameInfo1(FvDimensionLayer rawFvDimensionLayer) {
-//        rawFvDimensionLayer.setFrame_protocols(new String[]{protocolStack});
         rawFvDimensionLayer.setProtocol(/*设置协议栈*/PacketDecodeUtil.discernPacket(rawFvDimensionLayer.frame_protocols[0]));
-        //frame infos
-//        rawFvDimensionLayer.setFrame_cap_len(new String[]{rawFvDimensionLayer.getLayers().getFrame().getFrame_frame_len()});
         rawFvDimensionLayer.setRawData(PacketDecodeUtil.hexStringToByteArray2(rawFvDimensionLayer.getCustom_ext_raw_data()[0]));    //t-s);
     }
 
@@ -350,7 +347,6 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         @Override
         public FvDimensionLayer handle(Object t) {
             FvDimensionLayer fvDimensionLayer = ((FvDimensionLayer) t);
-            setFrameInfo1(fvDimensionLayer);
             preProcess(fvDimensionLayer);
             fvDimensionLayer.deviceNumber = CacheUtil.getTargetDeviceNumberByTag(fvDimensionLayer.ip_dst[0],fvDimensionLayer.eth_dst[0]);
             //统计所有的IP地址
@@ -383,7 +379,12 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         }
     };
 
+    /**
+     * 报文前置处理
+     * @param fvDimensionLayer 五元组
+     */
     private void preProcess(FvDimensionLayer fvDimensionLayer) {
+        setFrameInfo1(fvDimensionLayer);
         switch (fvDimensionLayer.protocol){
             case "tcp" :
                 if (!fvDimensionLayer.tcp_payload[0].equals("")){

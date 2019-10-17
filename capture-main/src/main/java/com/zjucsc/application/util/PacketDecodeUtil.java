@@ -78,13 +78,7 @@ public class PacketDecodeUtil {
      * @return
      */
 
-
-    private static ThreadLocal<SimpleDateFormat> simpleDateFormatThreadLocal = new ThreadLocal<SimpleDateFormat>(){
-        @Override
-        protected SimpleDateFormat initialValue() {
-            return new SimpleDateFormat("yyyy-MM-dd-hh:mm:ss:SSS");
-        }
-    };
+    private static ThreadLocal<SimpleDateFormat> simpleDateFormatThreadLocal = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd-hh:mm:ss:SSS"));
 
     private static int offset1 = Byte.toUnsignedInt((byte)0b11100000);
     private static int offset2 = Byte.toUnsignedInt((byte)0b10000000);
@@ -92,6 +86,12 @@ public class PacketDecodeUtil {
     private static int offset4 = Byte.toUnsignedInt((byte)0b11111110);
     private static int offset5 = Byte.toUnsignedInt((byte)0b11110000);
 
+
+    private static StringBuilder getEmptyStringBuilder(){
+        StringBuilder sb = stringBuilderThreadLocal.get();
+        sb.delete(0,sb.length());
+        return sb;
+    }
     /**
      *
      * @param payload 负载
@@ -102,8 +102,7 @@ public class PacketDecodeUtil {
         if (payload.length < offset){
             return simpleDateFormatThreadLocal.get().format(new Date());
         }
-        StringBuilder sb = stringBuilderThreadLocal.get();
-        sb.delete(0,sb.length());
+        StringBuilder sb = getEmptyStringBuilder();
         int len = payload.length;
         offset = len - offset;          //offset 就是start index
         int year = (Byte.toUnsignedInt(payload[offset]) << 3) + ((payload[offset + 1] & offset1) >>> 5);
@@ -171,19 +170,28 @@ public class PacketDecodeUtil {
 
     public static String decodeS7Protocol(FvDimensionLayer layer){
             S7CommPacket.LayersBean layersX = ((S7CommPacket.LayersBean) layer);
+            if (layersX.s7Protocol != null){
+                return layersX.s7Protocol;
+            }
             String rosctr = layersX.s7comm_header_rosctr[0];
-            if (S7CommPacket.ACK_DATA.equals(rosctr)){
-                return S7;
-            }else if (S7CommPacket.JOB.equals(rosctr)) {
-                return S7;
+            String realProtocol;
+            if (S7CommPacket.ACK_DATA.equals(rosctr) || S7CommPacket.JOB.equals(rosctr)){
+                realProtocol = S7;
             }else if (S7CommPacket.USER_DATA.equals(rosctr)){
-                return S7_User_data;
+                realProtocol =  S7_User_data;
             }
             else{
-                return S7;
+                realProtocol =  S7;
             }
+            layersX.s7Protocol = realProtocol;
+            return realProtocol;
     }
 
+    /**
+     * 仿真的时候用的，因为没有存rosctr参数
+     * @param layer
+     * @return
+     */
     public static String decodeS7Protocol2(FvDimensionLayer layer){
         if (layer.funCodeMeaning.equals("循环数据") || layer.funCodeMeaning.equals("CPU功能")){
             return S7_User_data;
@@ -191,6 +199,7 @@ public class PacketDecodeUtil {
             return S7;
         }
     }
+
     public static String getUnDefinedPacketProtocol(String protocolStack){
         StringBuilder sb = stringBuilderThreadLocal.get();
         sb.delete(0,sb.length());
@@ -294,7 +303,6 @@ public class PacketDecodeUtil {
         }
         return allBytes;
     }
-
 
     public static String getAttackBeanInfo(FvDimensionLayer layer)
     {
@@ -551,40 +559,61 @@ public class PacketDecodeUtil {
         switch (layer.protocol){
             case "s7comm" : return getS7commDetailType(layer);
             case "dnp3" : return getDnp3DetailType(layer);
+            case "104apci" : return PacketDecodeUtil.getIEC104DetailType(layer);
+            default:return PacketDecodeUtil.discernPacket(layer.frame_protocols[0]);
         }
-        return null;
     }
 
     private static String getDnp3DetailType(FvDimensionLayer layer){
         Dnp3_0Packet.LayersBean dnpPacket = ((Dnp3_0Packet.LayersBean) layer);
+        if (dnpPacket.dnpProtocol != null)
+        {
+            return dnpPacket.dnpProtocol;
+        }
         int type = Integer.decode(dnpPacket.dnp3_ctl_prm[0]);
         switch (type){
-            case 1: return PACKET_PROTOCOL.DNP3_0_PRI ;
-            case 0: return PACKET_PROTOCOL.DNP3_0_SET ;
+            case 1:
+                dnpPacket.dnpProtocol = PACKET_PROTOCOL.DNP3_0_PRI;
+                return PACKET_PROTOCOL.DNP3_0_PRI ;
+            case 0:
+                dnpPacket.dnpProtocol = PACKET_PROTOCOL.DNP3_0_SET;
+                return PACKET_PROTOCOL.DNP3_0_SET ;
+            default:log.error("dnp3.0 type not define [{}]" , type);
         }
         return "dnp3";
     }
 
-    public static String getIEC104DetailType(FvDimensionLayer layer){
+    private static String getIEC104DetailType(FvDimensionLayer layer){
         IEC104Packet.LayersBean iec104_packet = ((IEC104Packet.LayersBean) layer);
+        if (iec104_packet.iecProtocol != null)
+        {
+            return iec104_packet.iecProtocol;
+        }
         int type = Integer.decode(iec104_packet.iec104_type[0]);
         switch (type){
             case 0 :
+                iec104_packet.iecProtocol = PACKET_PROTOCOL.IEC104_ASDU;
                 return PACKET_PROTOCOL.IEC104_ASDU;
             default:
+                iec104_packet.iecProtocol = PACKET_PROTOCOL.IEC104_APCI;
                 return PACKET_PROTOCOL.IEC104_APCI;
         }
     }
 
-    public static String getS7commDetailType(FvDimensionLayer layer){
+    private static String getS7commDetailType(FvDimensionLayer layer){
         S7CommPacket.LayersBean s7comm_packet = ((S7CommPacket.LayersBean) layer);
-            //setFuncodeMeaning of s7comm
-            if (s7comm_packet.s7comm_header_rosctr[0].equals(S7CommPacket.USER_DATA)) {
-                //user data
-                return PACKET_PROTOCOL.S7_User_data;
-            } else {
-                return PACKET_PROTOCOL.S7;
-            }
+        if (s7comm_packet.s7Protocol != null){
+            return s7comm_packet.s7Protocol;
+        }
+        //setFuncodeMeaning of s7comm
+        if (s7comm_packet.s7comm_header_rosctr[0].equals(S7CommPacket.USER_DATA)) {
+            //user data
+            s7comm_packet.s7Protocol = PACKET_PROTOCOL.S7_User_data;
+            return PACKET_PROTOCOL.S7_User_data;
+        } else {
+            s7comm_packet.s7Protocol = PACKET_PROTOCOL.S7;
+            return PACKET_PROTOCOL.S7;
+        }
     }
 
     public static byte[] getTcpPayload(byte[] rawData){

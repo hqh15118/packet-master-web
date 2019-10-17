@@ -33,5 +33,6 @@ public class IEC104Packet {
         public String[] iec104_type={"-1"};
         @JSONField(name = "104apci_utype")
         public String[] iec104apci_utype={""};
+        public String iecProtocol;
     }
 }

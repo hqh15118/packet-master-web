@@ -27,5 +27,7 @@ public class S7CommPacket{
         public String[] s7comm_param_func={""};
         public String[] s7comm_header_rosctr={""};
         public String[] s7comm_param_userdata_funcgroup={""};
+        //s7comm s7comm_user_data
+        public String s7Protocol;
     }
 }

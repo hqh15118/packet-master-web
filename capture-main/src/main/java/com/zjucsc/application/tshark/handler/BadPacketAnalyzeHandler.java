@@ -114,7 +114,7 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<FvDimensionLay
     private void doOperationAnalyze(String funCode , FvDimensionLayer layer) {
         //根据目的IP/MAC地址获取对应的功能码分析器
         ConcurrentHashMap<String, OperationAnalyzer> map = CacheUtil.getOptAnalyzer(layer);
-        String protocol = checkProtocol(layer);
+        String protocol = PacketDecodeUtil.getPacketDetailProtocol(layer);
         if (map != null){
             OperationAnalyzer operationAnalyzer;
             /**
@@ -146,17 +146,11 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<FvDimensionLay
     private String checkProtocol(FvDimensionLayer layer){
         switch (layer.protocol){
             case "s7comm" :
-                if (Common.systemRunType !=0 ) {
-                    return PacketDecodeUtil.decodeS7Protocol(layer);
-                }else{
-                    return PacketDecodeUtil.decodeS7Protocol2(layer);
-                }
-            case "dnp3":
+            case "dnp3" :
                 return PacketDecodeUtil.getPacketDetailProtocol(layer);
-            case "104apci":
+            case "104apci" :
                 return PacketDecodeUtil.getIEC104DetailType(layer);
             default:return PacketDecodeUtil.discernPacket(layer.frame_protocols[0]);
         }
-
     }
 }
