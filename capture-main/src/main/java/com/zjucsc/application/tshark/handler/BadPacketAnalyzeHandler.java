@@ -147,9 +147,8 @@ public class BadPacketAnalyzeHandler extends AbstractAsyncHandler<FvDimensionLay
         switch (layer.protocol){
             case "s7comm" :
             case "dnp3" :
-                return PacketDecodeUtil.getPacketDetailProtocol(layer);
             case "104apci" :
-                return PacketDecodeUtil.getIEC104DetailType(layer);
+                return PacketDecodeUtil.getPacketDetailProtocol(layer);
             default:return PacketDecodeUtil.discernPacket(layer.frame_protocols[0]);
         }
     }

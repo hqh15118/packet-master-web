@@ -33,7 +33,6 @@ public class SocketIoConfig {
 
     @Event(eventType = Object.class,event = "collector_state")
     public static class CollectorStateListener implements DataListener<Object>{
-
         @Override
         public void onData(SocketIOClient socketIOClient, Object o, AckRequest ackRequest) {
             SocketServiceCenter.updateAllClient(SocketIoEvent.COLLECTOR_STATE, PacketDecodeUtil.getCollectorStateMap());

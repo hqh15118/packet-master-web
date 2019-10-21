@@ -29,7 +29,9 @@ public class FvDimensionLayer implements Serializable,Comparable<FvDimensionLaye
     public String[] eth_src_re = {"--"};
     public String[] ip_src = {"--"};
     public String[] ip_dst = {"--"};
+    @JSONField(name = "tcp_srcport")
     public String[] src_port = {"--"};
+    @JSONField(name = "tcp_dstport")
     public String[] dst_port = {"--"};
     //public String[] eth_trailer = {""};
     //public String[] eth_fcs = {""};

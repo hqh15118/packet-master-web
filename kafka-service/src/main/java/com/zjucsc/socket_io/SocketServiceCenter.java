@@ -43,7 +43,9 @@ public class SocketServiceCenter {
     }
 
     @SuppressWarnings("unchecked")
-    public static void registerSocketIoDataListenter(String eventName, Class<?> eventType, DataListener dataListener){
+    public static void registerSocketIoDataListener(String eventName, Class<?> eventType, DataListener dataListener){
         MainServer.getServer().addEventListener(eventName,eventType,dataListener);
     }
+
+
 }

@@ -216,16 +216,6 @@ public class InitConfigurationService implements ApplicationRunner {
         }
 
         initArtTest();
-        /**************************
-         *  PRINT INIT RESULT
-         ***************************/
-        //log.info("\n******************** \n AUTH_MAP : {} \n********************" , Common.AUTH_MAP);
-        //log.info("\n******************** \n size : {} ; CONFIGURATION_MAP : {}\n********************" ,  Common.CONFIGURATION_MAP.size() , Common.CONFIGURATION_MAP);
-        //log.info("\n******************** \n size : {} ; PROTOCOL_STR_TO_INT : {} \n********************" , Common.PROTOCOL_STR_TO_INT.size() ,  Common.PROTOCOL_STR_TO_INT  );
-        //log.info("\n******************** \n size : {} ; ALL_ART_CONFIG : {} \n********************",ArtDecodeCommon.getAllArtConfigs().size(),ArtDecodeCommon.getAllArtConfigs());
-        //System.out.println("spring boot admin address : http://your-address:8989");
-        //System.out.println("swagger-ui address : http://your-address:your-port/swagger-ui.html#/greeting-controller");
-
         /***********************************
          * 初始化设备最大上行和下行流量
          **********************************/
@@ -248,11 +238,7 @@ public class InitConfigurationService implements ApplicationRunner {
         /*************************************
          * 扫描注册SocketIo事件
          ************************************/
-        DataSourceClass dataSourceClass = getClass().getAnnotation(DataSourceClass.class);
-        Class<?>[] dataSourceClasses = dataSourceClass.value();
-        for (Class<?> sourceClass : dataSourceClasses) {
-            handleDataSourceClass(sourceClass, SpringContextUtil.getBean(sourceClass));
-        }
+        initSocketIoEvent();
         /************************************
          * 初始化工艺参数操作攻击配置
          ***********************************/
@@ -278,7 +264,15 @@ public class InitConfigurationService implements ApplicationRunner {
         /************************************
          * 启动结束
          ***********************************/
-        PrinterUtil.printMsg(1,"程序启动完成--v10.16");
+        PrinterUtil.printMsg(1,"程序启动完成--v10.21");
+    }
+
+    private void initSocketIoEvent() {
+        DataSourceClass dataSourceClass = getClass().getAnnotation(DataSourceClass.class);
+        Class<?>[] dataSourceClasses = dataSourceClass.value();
+        for (Class<?> sourceClass : dataSourceClasses) {
+            handleDataSourceClass(sourceClass, SpringContextUtil.getBean(sourceClass));
+        }
     }
 
     private void handleDataSourceClass(Class<?> clazz,Object obj){
@@ -300,7 +294,7 @@ public class InitConfigurationService implements ApplicationRunner {
                 Event event = dataListener.getClass().getAnnotation(Event.class);
                 String eventMsg = event.event();
                 Class<?> eventType = event.eventType();
-                SocketServiceCenter.registerSocketIoDataListenter(eventMsg,eventType, ((DataListener) dataListener));
+                SocketServiceCenter.registerSocketIoDataListener(eventMsg,eventType, ((DataListener) dataListener));
             }
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
