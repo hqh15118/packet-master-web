@@ -7,6 +7,7 @@ import com.zjucsc.application.domain.non_hessian.DeviceMaxFlow;
 import com.zjucsc.application.util.AppCommonUtil;
 import com.zjucsc.socket_io.SocketIoEvent;
 import com.zjucsc.socket_io.SocketServiceCenter;
+import com.zjucsc.tshark.packets.FvDimensionLayer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.crypto.hash.Hash;
 
@@ -15,6 +16,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
+
+import static com.zjucsc.application.system.service.ScheduledService.getDateFormat;
 
 @Slf4j
 public class StatisticsData {
@@ -118,6 +121,8 @@ public class StatisticsData {
         }
     }
 
+
+
     public static void addDeviceGraphInfo(String deviceNumber , GraphInfo info){
         GraphInfoCollection collection = GRAPH_BY_DEVICE.computeIfAbsent(deviceNumber, s -> new GraphInfoCollection());
         doAddInfoToList(collection.getAttack(),info.getAttack());
@@ -140,9 +145,9 @@ public class StatisticsData {
     private static void addTimeStamp(LinkedList<String> timeStamps){
         if (timeStamps.size() >= 12){
             timeStamps.removeFirst();
-            timeStamps.addLast(AppCommonUtil.getDateFormat().format(new Date()));
+            timeStamps.addLast(getDateFormat().format(new Date()));
         }else{
-            timeStamps.addLast(AppCommonUtil.getDateFormat().format(new Date()));
+            timeStamps.addLast(getDateFormat().format(new Date()));
         }
     }
 

@@ -115,7 +115,9 @@ public class ArtConfigController {
                 opcdaConfig.setProtocol(PACKET_PROTOCOL.OPC_DA);
                 ArtDecodeUtil.addArtDecodeConfig(opcdaConfig);
                 break;
-            default: log.error("未指定工艺参数解析ID [{}]",id);
+            default:
+                log.error("未指定工艺参数解析ID [{}]",id);
+                return BaseResponse.ERROR(500,"未指定工艺参数解析ID" + id);
         }
         CacheUtil.addOrUpdateArtName2ArtGroup(baseConfig.getTag(),baseConfig.getGroup());
         return BaseResponse.OK();

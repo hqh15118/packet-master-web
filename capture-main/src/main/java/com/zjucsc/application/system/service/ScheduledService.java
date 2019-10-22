@@ -27,6 +27,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -39,6 +40,18 @@ import static com.zjucsc.application.statistic.StatisticsData.*;
 @Slf4j
 @Service
 public class ScheduledService {
+
+    private static final ThreadLocal<SimpleDateFormat> SIMPLE_DATE_FORMAT_THREAD_LOCAL
+            = new ThreadLocal<SimpleDateFormat>(){
+        @Override
+        protected SimpleDateFormat initialValue() {
+            return new SimpleDateFormat("HH:mm:ss");
+        }
+    };
+
+    public static SimpleDateFormat getDateFormat(){
+        return SIMPLE_DATE_FORMAT_THREAD_LOCAL.get();
+    }
 
     @Autowired public PacketAnalyzeService packetAnalyzeService;
 
@@ -80,17 +93,21 @@ public class ScheduledService {
     @Scheduled(fixedRate = 5000)
     @Async(value = "common_service")
     public void commonService(){
-        statisticFlow();        //统计总流量，超过限制报错
-        CacheUtil.updateAttackLog();  //统计攻击类型，及所占比例
-        if (Common.showArtDecodeDelay) {
-            detectDecodeMethodDelay();
+        if (CacheUtil.getScheduleServiceRunningState()) {
+            statisticFlow();        //统计总流量，超过限制报错
+            CacheUtil.updateAttackLog();  //统计攻击类型，及所占比例
+            if (Common.showArtDecodeDelay) {
+                detectDecodeMethodDelay();
+            }
         }
     }
 
     @Scheduled(fixedRate = 5000)
     @Async(value = "art_info_service")
     public void sendArtGraphInfo(){
-        sendGraphInfo();        //工艺参数
+        if (CacheUtil.getScheduleServiceRunningState()) {
+            sendGraphInfo();        //工艺参数
+        }
     }
 
     private void detectDecodeMethodDelay() {
@@ -327,7 +344,7 @@ public class ScheduledService {
         //TODO 替换一下，用批量存的方式进行存储
         //iArtHistoryDataService.saveArtData(ART_INFO);
         ART_INFO_SEND_SINGLE.put("timestamp",
-                new ArtGroupWrapper(AppCommonUtil.getDateFormat().format(new Date()),
+                new ArtGroupWrapper(getDateFormat().format(new Date()),
                 "timeStamp"));
         SocketServiceCenter.updateAllClient(SocketIoEvent.ART_INFO, StatisticsData.ART_INFO_SEND_SINGLE);
     }

@@ -953,9 +953,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             byte[] tcpPayload = layer.getUseTcpPayload();
             Map<String,Float> res = StatisticsData.getGlobalArtMap();
             String protocol = layer.protocol;
-            if (!(layer instanceof UndefinedPacket.LayersBean)){
-                artAnalyze(protocol,tcpPayload,layer,res);
-            }
+            artAnalyze(protocol,tcpPayload,layer,res);
             AttackCommon.appendDOSAnalyze(layer, DeviceOptUtil.getDstDeviceTag(layer));                     //将五元组添加到攻击分析模块中分析
             try {
                 AttackCommon.appendOptAnalyze(res, layer, CacheUtil.convertNameToId(layer.protocol));
@@ -965,7 +963,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         }
     };
 
-    private Map<String, Float> artAnalyze(String protocol, byte[] tcpPayload, FvDimensionLayer layer, Map<String, Float> res) {
+    private void artAnalyze(String protocol, byte[] tcpPayload, FvDimensionLayer layer, Map<String, Float> res) {
         Map<String,Float> artGlobalMap = StatisticsData.getGlobalArtMap();
         switch (protocol){
             case "s7comm":
@@ -994,7 +992,6 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                 ArtDecodeUtil.artDecodeEntry(artGlobalMap,tcpPayload,layer.protocol,layer);
                 break;
         }
-        return res;
     }
 
     private final AbstractAsyncHandler<FvDimensionLayer> packetDetectHandler =

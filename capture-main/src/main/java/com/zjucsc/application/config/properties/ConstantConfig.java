@@ -43,7 +43,6 @@ public class ConstantConfig {
 
     @Data
     public static class TsharkConfig{
-        private String wireshark_version;
         private String temp_path;
         private int max_temp_file_size;
         private String tshark_path;

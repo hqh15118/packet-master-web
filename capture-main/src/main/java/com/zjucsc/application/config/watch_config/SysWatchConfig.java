@@ -46,7 +46,6 @@ public class SysWatchConfig {
             clientStrings.add(client.getRemoteAddress().toString());
         }
         map.put("SOCKET-IO-CLIENT", clientStrings);
-        map.put("ART_DATA", StatisticsData.getGlobalArtMap());
         map.put("TSHARK-FILTER-S7COMM",tsharkConfig.getS7comm_filter());
         map.put("TSHARK-FILTER-MODBUS",tsharkConfig.getModbus_filter());
         map.put("ALL_DROP_PROTOCOL", CacheUtil.getAllDropProtocol());

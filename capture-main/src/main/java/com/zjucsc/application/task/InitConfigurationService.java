@@ -69,11 +69,7 @@ public class InitConfigurationService implements ApplicationRunner {
     @Autowired private ArtOptCommandMapper artOptCommandMapper;
 
     @Override
-    public void run(ApplicationArguments args) throws IllegalAccessException, NoSuchFieldException, ProtocolIdNotValidException, IOException {
-        String wiresharkVersion = constantConfig.getTshark_config().getWireshark_version();
-        Common.wiresharkVersion = wiresharkVersion == null ? Common.WiresharkConfig.WIRESHARK_VERSION2_0 :
-                wiresharkVersion.contains("2") ? Common.WiresharkConfig.WIRESHARK_VERSION2_0 :
-                        Common.WiresharkConfig.WIRESHARK_VERISON3_0;
+    public void run(ApplicationArguments args) throws IllegalAccessException, NoSuchFieldException, ProtocolIdNotValidException {
         /***************************
          * RELOAD FROM JAR
          ***************************/
@@ -138,25 +134,25 @@ public class InitConfigurationService implements ApplicationRunner {
         //就判断是否需要重新加载使用数据库中的条目初始化 PROTOCOL_STR_TO_INT ， 用户协议ID和协议字符串之间的转换
         List<Protocol> protocols = new ArrayList<>();
         String str_name = "java.lang.String";
-        if (iProtocolIdService.selectAll().size() == 0 ){
-            Class<PACKET_PROTOCOL> packet_protocolClass = PACKET_PROTOCOL.class;
-            Field[] allField = packet_protocolClass.getDeclaredFields();
-            for (Field field : allField) {
-                field.setAccessible(true);
-                if (field.getType().getTypeName().equals(str_name) && field.getAnnotation(ProtocolIgnore.class) == null){
-                    String protocol_name = (String) field.get(null);
-                    int protocol_id = (int) packet_protocolClass.getDeclaredField(field.getName() + "_ID").get(null);
-                    PROTOCOL_STR_TO_INT.put(protocol_id,protocol_name);
-                    protocols.add(new Protocol(protocol_id , protocol_name));
-                }
-            }
-            iProtocolIdService.saveOrUpdateBatch(protocols);
-        }else{
+//        if (iProtocolIdService.selectAll().size() == 0 ){
+//            Class<PACKET_PROTOCOL> packet_protocolClass = PACKET_PROTOCOL.class;
+//            Field[] allField = packet_protocolClass.getDeclaredFields();
+//            for (Field field : allField) {
+//                field.setAccessible(true);
+//                if (field.getType().getTypeName().equals(str_name) && field.getAnnotation(ProtocolIgnore.class) == null){
+//                    String protocol_name = (String) field.get(null);
+//                    int protocol_id = (int) packet_protocolClass.getDeclaredField(field.getName() + "_ID").get(null);
+//                    PROTOCOL_STR_TO_INT.put(protocol_id,protocol_name);
+//                    protocols.add(new Protocol(protocol_id , protocol_name));
+//                }
+//            }
+//            iProtocolIdService.saveOrUpdateBatch(protocols);
+//        }else{
             protocols = iProtocolIdService.selectAll();
             for (Protocol protocol : protocols) {
                 PROTOCOL_STR_TO_INT.put(protocol.getProtocolId() , protocol.getProtocolName());
             }
-        }
+//        }
 
         for (ConfigurationSetting configuration : iConfigurationSettingService.selectAll()) {
             addProtocolFuncodeMeaning(convertIdToName(configuration.getProtocolId()),
