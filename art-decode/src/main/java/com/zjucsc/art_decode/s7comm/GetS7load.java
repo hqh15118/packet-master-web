@@ -3,15 +3,14 @@ package com.zjucsc.art_decode.s7comm;
 
 import com.zjucsc.common.util.ByteUtil;
 import com.zjucsc.common.util.Bytecut;
-
 import java.util.Arrays;
 
 class GetS7load {
 
     private  byte[] getfromtcp(byte[] payload)
     {
-        int length = ByteUtil.bytesToShort(payload,2);
-        int ISOlen = (int)payload[4];
+        int length = Short.toUnsignedInt(ByteUtil.bytesToShort(payload,2));
+        int ISOlen = Byte.toUnsignedInt(payload[4]);
         return Bytecut.Bytecut(payload,(5 + ISOlen),(length - 5 - ISOlen));
     }
 

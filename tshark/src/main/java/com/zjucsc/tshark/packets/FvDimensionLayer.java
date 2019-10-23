@@ -77,7 +77,8 @@ public class FvDimensionLayer implements Serializable,Comparable<FvDimensionLaye
                 '}';
     }
 
-    private static int wireshark_version_detect_2 = -1;
+    private static volatile int wireshark_version_detect_2 = -1;
+    private static final Object LOCK = new Object();
 
     public byte[] getUseTcpPayload(){
         if (tcpPayload != null){
@@ -85,12 +86,17 @@ public class FvDimensionLayer implements Serializable,Comparable<FvDimensionLaye
         }else{
             if (wireshark_version_detect_2 < 0)
             {
-                if (tcp_payload[0].contains(":")){
-                    wireshark_version_detect_2 = 1;
-                    tcpPayload = TsharkUtil.hexStringToByteArray(tcp_payload[0]);
-                }else{
-                    wireshark_version_detect_2 = 2;
-                    tcpPayload = TsharkUtil.hexStringToByteArray2(tcp_payload[0]);
+                //这里必须加同步，否则会出现并发bug
+                synchronized (LOCK) {
+                    if (wireshark_version_detect_2 < 0) {
+                        if (tcp_payload[0].contains(":")) {
+                            wireshark_version_detect_2 = 1;
+                            tcpPayload = TsharkUtil.hexStringToByteArray(tcp_payload[0]);
+                        } else {
+                            wireshark_version_detect_2 = 2;
+                            tcpPayload = TsharkUtil.hexStringToByteArray2(tcp_payload[0]);
+                        }
+                    }
                 }
             }else{
                 if (wireshark_version_detect_2 == 1){ // :

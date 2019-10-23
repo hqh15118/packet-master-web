@@ -1,4 +1,4 @@
-package com.zjucsc.application.controller;
+package com.zjucsc.application.controller.artcontroller;
 
 
 import com.zjucsc.application.domain.bean.BaseResponse;
@@ -46,5 +46,10 @@ public class ArtOptNameController {
     public BaseResponse selectByProtocol(@RequestParam String protocol){
         return BaseResponse.OK(iArtOptNameService.selectByProtocol(protocol));
     }
+
+//    @PostMapping("enable")
+//    public BaseResponse enableArtOpConfig(){
+//
+//    }
 
 }

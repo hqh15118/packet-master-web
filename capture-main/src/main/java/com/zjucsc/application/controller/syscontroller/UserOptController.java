@@ -1,4 +1,4 @@
-package com.zjucsc.application.controller;
+package com.zjucsc.application.controller.syscontroller;
 
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.auth.Auth;

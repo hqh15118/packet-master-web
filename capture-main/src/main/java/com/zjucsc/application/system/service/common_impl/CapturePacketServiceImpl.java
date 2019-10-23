@@ -3,6 +3,7 @@ package com.zjucsc.application.system.service.common_impl;
 import com.zjucsc.application.config.*;
 import com.zjucsc.application.config.properties.ConstantConfig;
 import com.zjucsc.application.config.properties.PreProcessor;
+import com.zjucsc.application.config.properties.TsharkConfig;
 import com.zjucsc.application.config.sys.KafkaTopic;
 import com.zjucsc.application.domain.bean.ArtPacketDetail;
 import com.zjucsc.application.domain.bean.Device;
@@ -66,6 +67,8 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     @Autowired private ConstantConfig constantConfig;
     @Autowired private PreProcessor preProcessor;
     @Autowired private IDeviceService iDeviceService;
+    @Autowired private TsharkConfig tsharkConfig;
+
     //@Autowired private IArtPacketService iArtPacketService;
     public static List<BasePreProcessor> basePreProcessors = new LinkedList<>();
     //五元kafka发送线程
@@ -177,7 +180,8 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             String deviceName = CacheUtil.convertDeviceNumberToName(dstDeviceNumber);
             if (deviceName!=null) {
                 attackBean.setDstDevice(deviceName);
-            }else {
+            }else
+                {
                 setUnknownAttackDevice(attackBean,0);
             }
         }else{
@@ -953,7 +957,9 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             byte[] tcpPayload = layer.getUseTcpPayload();
             Map<String,Float> res = StatisticsData.getGlobalArtMap();
             String protocol = layer.protocol;
+
             artAnalyze(protocol,tcpPayload,layer,res);
+
             AttackCommon.appendDOSAnalyze(layer, DeviceOptUtil.getDstDeviceTag(layer));                     //将五元组添加到攻击分析模块中分析
             try {
                 AttackCommon.appendOptAnalyze(res, layer, CacheUtil.convertNameToId(layer.protocol));
@@ -967,7 +973,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         Map<String,Float> artGlobalMap = StatisticsData.getGlobalArtMap();
         switch (protocol){
             case "s7comm":
-                if (!layer.tcp_flags_ack[0].equals("") || Common.systemRunType == 0){
+                if (tsharkConfig.isTcp() || Common.systemRunType == 0){
                    ArtDecodeUtil.artDecodeEntry(artGlobalMap,tcpPayload,"s7comm",layer,1);
                 }else{
                     ArtDecodeUtil.artDecodeEntry(artGlobalMap,layer.rawData,"s7comm",layer,0);

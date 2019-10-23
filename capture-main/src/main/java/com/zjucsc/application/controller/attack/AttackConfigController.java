@@ -1,4 +1,4 @@
-package com.zjucsc.application.controller;
+package com.zjucsc.application.controller.attack;
 
 
 import com.alibaba.fastjson.JSON;

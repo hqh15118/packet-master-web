@@ -72,10 +72,9 @@ public class StatisticsData {
         return GLOBAL_ART_INFO;
     }
     /**
-     * key 是工艺参数的名字
+     * key 是工艺参数的名字，字符串形式的工艺参数数据，多了一个时间戳
      */
     public static final ConcurrentHashMap<String, String> ART_INFO = new ConcurrentHashMap<>();
-    //public static final ConcurrentHashMap<String, LinkedList<String>> ART_INFO_SEND = new ConcurrentHashMap<>();//只发送需要显示的个工艺参数
     public static final ConcurrentHashMap<String, ArtGroupWrapper> ART_INFO_SEND_SINGLE = new ConcurrentHashMap<>();
 
     public static void increaseNumberByDeviceIn(String deviceNumber,int delta){
@@ -151,7 +150,7 @@ public class StatisticsData {
         }
     }
 
-    public static void removeArtArgs(String artArg){
+    public static void removeArtMap2Show(String artArg){
         ART_INFO.remove(artArg);
     }
 
@@ -215,8 +214,14 @@ public class StatisticsData {
         GLOBAL_ART_INFO.put(artArg,0F);
     }
 
-    public static void removeArtMap(String artArg){
-        StatisticsData.removeArtArgs(artArg);
+    public static void removeArtMap2ShowAndSave(String artArg){
+        //前端推送map
+        StatisticsData.removeArtMap2Show(artArg);
+        //后端map
+        removeArtMap2Save(artArg);
+    }
+
+    public static void removeArtMap2Save(String artArg){
         GLOBAL_ART_INFO.remove(artArg);
     }
 }

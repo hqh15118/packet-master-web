@@ -13,11 +13,11 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 public class ArtOptAttackUtil {
     /**************************************
-     * 操作名称 -- 操作具体配置
+     * 操作名称 -- 操作具体配置       开闸 -- 如何识别开闸的报文
      *************************************/
     public static final ConcurrentHashMap<String, BaseOpName> OPNAME_TO_OPT_CONFIG = new ConcurrentHashMap<>();
     /***************************************
-     * 协议 -- 该协议下的所有操作配置
+     * 协议 -- 该协议下的所有操作配置  s7comm -- Set 所有跟s7comm相关的操作配置
      **************************************/
     public static final ConcurrentHashMap<String,ConcurrentSkipListSet<BaseOpName>> PROTOCOL_TO_OPT_CONFIGS =
             new ConcurrentHashMap<>();
@@ -31,9 +31,10 @@ public class ArtOptAttackUtil {
      * 重置opName 配置
      * opName -- 配置（用于解析协议指令）
      ***************************************/
-    public static void resetOpName2OptConfig(List<? extends BaseOpName> baseOpNames){
+    public static void resetOpName2OptConfig(List<? extends BaseOpName> allBaseOpNames){
         OPNAME_TO_OPT_CONFIG.clear();
-        for (BaseOpName baseOpName : baseOpNames) {
+        PROTOCOL_TO_OPT_CONFIGS.clear();
+        for (BaseOpName baseOpName : allBaseOpNames) {
             OPNAME_TO_OPT_CONFIG.put(baseOpName.getOpName(),baseOpName);
             Set<BaseOpName> baseOpNameSet = PROTOCOL_TO_OPT_CONFIGS.putIfAbsent(baseOpName.getProtocol(),
                     new ConcurrentSkipListSet<BaseOpName>(){{add(baseOpName);}});
@@ -43,11 +44,11 @@ public class ArtOptAttackUtil {
         }
     }
 
-    public static BaseOpName getS7OptNameByOpName(String opName){
+    public static BaseOpName getOptNameByOpName(String opName){
         return OPNAME_TO_OPT_CONFIG.get(opName);
     }
 
-    public static Set<BaseOpName> getS7OptNameSetByProtocol(String protocol){
+    public static Set<BaseOpName> getOptNameSetByProtocol(String protocol){
         return PROTOCOL_TO_OPT_CONFIGS.get(protocol);
     }
 

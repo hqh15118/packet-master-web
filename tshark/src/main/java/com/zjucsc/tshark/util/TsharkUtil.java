@@ -3,6 +3,7 @@ package com.zjucsc.tshark.util;
 public class TsharkUtil {
 
     private static final byte[] EMPTY = new byte[]{};
+
     public static byte[] hexStringToByteArray(String s) {
         int len = s.length();
         if (len == 0){

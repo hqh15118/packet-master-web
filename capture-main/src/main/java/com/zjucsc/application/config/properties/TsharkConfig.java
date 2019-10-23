@@ -18,5 +18,5 @@ public class TsharkConfig {
 
     private String modbus_filter;
     private String s7comm_filter;
-
+    private boolean tcp = false;
 }

@@ -62,7 +62,7 @@ public class S7Decode extends BaseArtDecode<S7Config> {
                             int itemlength = (int)itemdata[1]+ 2;
                             if (itemdata[2]==(byte)0x10 && itemdata[8]==(byte)0x84) {
                                 int dbnum = ByteUtil.bytesToShort(itemdata,6);
-                                int address = ByteUtil.bytesToInt(new byte[]{0x00,itemdata[7],itemdata[8],itemdata[9]},0);
+                                int address = ByteUtil.bytesToInt(new byte[]{0x00,itemdata[9],itemdata[10],itemdata[11]},0);
                                 int byteoffset = address>>3 & 0xffff;
                                 int bitoffset = address & 0x7;
                                 int length = ByteUtil.bytesToShort(itemdata,4);
@@ -141,7 +141,6 @@ public class S7Decode extends BaseArtDecode<S7Config> {
         }
     }
 
-
     private void decodeDBlist(List<DBclass> DBlist, byte[] data)
     {
         if(data!=null && DBlist!=null && DBlist.size() > 0)
@@ -152,7 +151,7 @@ public class S7Decode extends BaseArtDecode<S7Config> {
                 if (iteamdata == null)
                     break;
                 if (iteamdata[0] == (byte) 0xff) {
-                    int len = ByteUtil.bytesToShort(iteamdata, 2);
+                    int len = ByteUtil.bytesToShort(iteamdata, 2) >> 3;
                     if (len == DBlist.get(j).getLength()) {
                         DBclass s = DBlist.get(j);
                         for (int i = 0; i < s.getLength(); i++) {

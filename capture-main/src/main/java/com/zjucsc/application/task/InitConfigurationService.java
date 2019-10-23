@@ -7,7 +7,7 @@ import com.zjucsc.application.config.properties.ConstantConfig;
 import com.zjucsc.application.config.properties.PreProcessor;
 import com.zjucsc.application.config.properties.TsharkConfig;
 import com.zjucsc.application.config.sys.SocketIoConfig;
-import com.zjucsc.application.controller.AttackConfigController;
+import com.zjucsc.application.controller.attack.AttackConfigController;
 import com.zjucsc.application.domain.bean.*;
 import com.zjucsc.application.domain.non_hessian.DeviceMaxFlow;
 import com.zjucsc.application.system.service.hessian_iservice.IArtConfigService;
@@ -17,14 +17,12 @@ import com.zjucsc.application.system.service.hessian_iservice.IProtocolIdService
 import com.zjucsc.application.system.service.hessian_mapper.*;
 import com.zjucsc.application.util.AppCommonUtil;
 import com.zjucsc.application.util.CacheUtil;
-import com.zjucsc.application.util.TsharkUtil;
 import com.zjucsc.art_decode.ArtDecodeUtil;
 import com.zjucsc.art_decode.base.BaseConfig;
 import com.zjucsc.attack.AttackCommon;
 import com.zjucsc.attack.bean.BaseOpName;
 import com.zjucsc.attack.bean.BaseOptConfig;
 import com.zjucsc.attack.config.S7OptCommandConfig;
-import com.zjucsc.attack.s7comm.S7OpName;
 import com.zjucsc.attack.util.ArtOptAttackUtil;
 import com.zjucsc.base.util.SpringContextUtil;
 import com.zjucsc.common.util.PrinterUtil;
@@ -32,13 +30,11 @@ import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.socket_io.*;
 import com.zjucsc.tshark.TsharkCommon;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -70,6 +66,7 @@ public class InitConfigurationService implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws IllegalAccessException, NoSuchFieldException, ProtocolIdNotValidException {
+        globalInit();
         /***************************
          * RELOAD FROM JAR
          ***************************/
@@ -261,6 +258,12 @@ public class InitConfigurationService implements ApplicationRunner {
          * 启动结束
          ***********************************/
         PrinterUtil.printMsg(1,"程序启动完成--v10.21");
+    }
+
+    private void globalInit() {
+        if (tsharkConfig.getS7comm_filter().trim().equals("tcp")){
+            tsharkConfig.setTcp(true);
+        }
     }
 
     private void initSocketIoEvent() {

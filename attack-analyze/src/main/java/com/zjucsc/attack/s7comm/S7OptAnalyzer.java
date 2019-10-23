@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.zjucsc.attack.common.ArtAttackAnalyzeUtil.attackDecode;
-import static com.zjucsc.attack.s7comm.s7Opdecode.getdBclasses;
+import static com.zjucsc.attack.s7comm.S7OpDecode.getdBclasses;
 
 public class S7OptAnalyzer extends BaseOptAnalyzer<S7OptAttackConfig>{
 
@@ -48,7 +48,7 @@ public class S7OptAnalyzer extends BaseOptAnalyzer<S7OptAttackConfig>{
         {
             return false;
         }
-        if (s7Opdecode.s7m1(DBlist, s7OptAttackConfig.getDBnum(), s7OptAttackConfig.getByteoffset(), s7OptAttackConfig.getBitoffset(), s7OptAttackConfig.isResult()))
+        if (S7OpDecode.s7m1(DBlist, s7OptAttackConfig.getDBnum(), s7OptAttackConfig.getByteoffset(), s7OptAttackConfig.getBitoffset(), s7OptAttackConfig.isResult()))
             return true;
         return false;
     }

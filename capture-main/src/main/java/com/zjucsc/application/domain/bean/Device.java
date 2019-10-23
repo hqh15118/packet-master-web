@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author hongqianhui
  */
 @Data
-public class Device extends BaseResponse implements Serializable {
+public class Device extends BaseResponse {
     private int device_id;
     private String deviceNumber;
     private int deviceType;

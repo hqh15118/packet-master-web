@@ -2,6 +2,7 @@ package com.zjucsc.application.system.service.hessian_iservice;
 
 import com.zjucsc.application.domain.bean.*;
 import com.zjucsc.application.system.mapper.base.IService;
+import com.zjucsc.art_decode.base.BaseConfig;
 
 import java.io.InputStream;
 import java.util.List;
@@ -25,4 +26,6 @@ public interface IArtConfigService extends IService<BaseArtConfig> {
     BaseResponse updateByJSONStr(String jsonData);
     BaseResponse insertByJSONStr(String jsonData);
     List<ConfigValue> selectArtNameByProtocolName(String protocol);
+
+    BaseResponse setArtConfig(int protocolId, String jsonData, BaseConfig baseConfig);
 }

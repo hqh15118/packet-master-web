@@ -951,6 +951,8 @@ public class CacheUtil {
 
     /*********************************
      *
+     * 工艺参数组别操作
+     *
      *********************************/
     public static void addOrUpdateArtName2ArtGroup(String artName,String artGroup){
         ART_NAME_TO_GROUP.put(artName, artGroup);

@@ -1,4 +1,4 @@
-package com.zjucsc.application.controller;
+package com.zjucsc.application.controller.config;
 
 
 import com.zjucsc.application.config.auth.Log;
@@ -79,11 +79,6 @@ public class ConfigurationSettingController {
     @PostMapping(value = "/update_funcode")
     public BaseResponse updateConfigurationFuncode(@RequestBody @Valid ConfigurationForFront configuration) throws ProtocolIdNotValidException {
         for (ConfigurationForFront.ConfigurationWrapper configurationWrapper : configuration.getConfigurationWrappers()) {
-//            ConfigurationSetting configurationSetting = new ConfigurationSetting();
-//            configurationSetting.setOpt(configurationWrapper.getOpt());
-//            QueryWrapper<ConfigurationSetting> wrapper = new QueryWrapper<>(configurationSetting);
-//            wrapper.eq("protocol_id" , configuration.getProtocolId());
-//            wrapper.eq("fun_code" , configurationWrapper.getFun_code());
             iConfigurationSettingService.updateFuncode(configuration.getProtocolId(),configurationWrapper.getFun_code(),configurationWrapper.getOpt());
             updateOldProtocolCacheById(configuration.getProtocolId(),configurationWrapper.getFun_code(),configurationWrapper.getOpt());
         }

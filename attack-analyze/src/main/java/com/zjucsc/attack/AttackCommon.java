@@ -10,7 +10,7 @@ import com.zjucsc.attack.config.S7OptCommandConfig;
 import com.zjucsc.attack.modbus.ModbusOptAnalyzer;
 import com.zjucsc.attack.pn_io.PnioOptDecode;
 import com.zjucsc.attack.s7comm.S7OptAnalyzer;
-import com.zjucsc.attack.s7comm.s7Opdecode;
+import com.zjucsc.attack.s7comm.S7OpDecode;
 import com.zjucsc.attack.util.ArtOptAttackUtil;
 import com.zjucsc.common.bean.ThreadPoolInfoWrapper;
 import com.zjucsc.common.util.CommonUtil;
@@ -70,7 +70,7 @@ public class AttackCommon {
         OPT_ATTACK_DECODE_CONCURRENT_HASH_MAP.put(23,new PnioOptDecode());
 
         //init command decode hash_map
-        COMMAND_DECODE_HASH_MAP.put("s7comm",new s7Opdecode());
+        COMMAND_DECODE_HASH_MAP.put("s7comm",new S7OpDecode());
     }
 
     private static ExecutorService ART_COMMAND_ATTACK_ANALYZE_SERVICE = CommonUtil.getSingleThreadPoolSizeThreadPool(10000,r -> {
@@ -236,14 +236,17 @@ public class AttackCommon {
      * 操作指令解析
      * @param layer
      */
+    @SuppressWarnings("unchecked")
     public static void appendOptCommandDecode(FvDimensionLayer layer){
-        final Set<BaseOpName> baseOpNames = ArtOptAttackUtil.getS7OptNameSetByProtocol(layer.protocol);
+        final Set<BaseOpName> baseOpNames = ArtOptAttackUtil.getOptNameSetByProtocol(layer.protocol);
         if (baseOpNames != null && baseOpNames.size() > 0){
-            AbstractOptCommandAttackEntry abstractOptCommandAttackEntry = COMMAND_DECODE_HASH_MAP.get(layer.protocol);
+            AbstractOptCommandAttackEntry<BaseOpName> abstractOptCommandAttackEntry = COMMAND_DECODE_HASH_MAP.get(layer.protocol);
             if (abstractOptCommandAttackEntry!=null){
                 OPT_COMMAND_ANALYZE_SERVICE.execute(()->{
-                    for (BaseOpName s7OptName : baseOpNames) {
-                        abstractOptCommandAttackEntry.analyze(layer,s7OptName);
+                    for (BaseOpName baseOpName : baseOpNames) {
+                        if (baseOpName.isEnable()){
+                            abstractOptCommandAttackEntry.analyze(layer,baseOpName);
+                        }
                     }
                 });
             }

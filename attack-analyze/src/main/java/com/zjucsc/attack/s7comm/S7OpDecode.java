@@ -8,7 +8,7 @@ import com.zjucsc.tshark.packets.FvDimensionLayer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class s7Opdecode extends AbstractOptCommandAttackEntry<S7OpName> {
+public class S7OpDecode extends AbstractOptCommandAttackEntry<S7OpName> {
 
     private List<DBclass> DBlist = new ArrayList<>();
 

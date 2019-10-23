@@ -16,14 +16,14 @@ public class ArtOptNameServiceImpl implements IArtOptNameService {
     @Autowired private ArtOptNameMapper optNameMapper;
 
     @Override
-    public void insertArtOptName(BaseOpName s7OptName) {
-        optNameMapper.insertArtOptName(s7OptName);
+    public void insertArtOptName(BaseOpName optName2OpConfig) {
+        optNameMapper.insertArtOptName(optName2OpConfig);
         resetConfigs();
     }
 
     @Override
-    public void updateArtOptName(BaseOpName s7OptName) {
-        optNameMapper.updateArtOptName(s7OptName);
+    public void updateArtOptName(BaseOpName optName2OpConfig) {
+        optNameMapper.updateArtOptName(optName2OpConfig);
         resetConfigs();
     }
 

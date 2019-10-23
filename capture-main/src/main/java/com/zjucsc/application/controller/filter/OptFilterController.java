@@ -1,4 +1,4 @@
-package com.zjucsc.application.controller;
+package com.zjucsc.application.controller.filter;
 
 
 import com.zjucsc.application.config.auth.Log;

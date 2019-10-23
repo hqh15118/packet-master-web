@@ -1,8 +1,9 @@
-package com.zjucsc.application.controller;
+package com.zjucsc.application.controller.artcontroller;
 
 import com.alibaba.fastjson.JSON;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.PACKET_PROTOCOL;
+import com.zjucsc.application.config.Refactor;
 import com.zjucsc.application.config.auth.Log;
 import com.zjucsc.application.domain.bean.ArtArgShowState;
 import com.zjucsc.application.domain.bean.BaseArtConfig;
@@ -35,23 +36,13 @@ import java.util.concurrent.ExecutionException;
 @RequestMapping("/art_config/")
 @Slf4j
 public class ArtConfigController {
+
     @Autowired private IArtConfigService iArtConfigService;
 
-    private String getJSONDataFromRequest(HttpServletRequest request){
-        StringBuilder sb = new StringBuilder();
-        try(BufferedReader bfr = request.getReader()){
-            String str;
-            while ((str = bfr.readLine())!=null){
-                sb.append(str);
-            }
-        } catch (IOException e) {
-            log.error("无法读取JSON数据");
-        }
-        return sb.toString();
-    }
 
     @ApiOperation("添加工艺参数配置，artConfig > 0表示更新；不填表示添加新的配置，顺序返回记录的ID列表")
     @PostMapping("new_config")
+    @Refactor("20191023")
     public BaseResponse addOrUpdateArtConfig(HttpServletRequest request) {
         String jsonData = getJSONDataFromRequest(request);
         BaseConfig baseConfig = JSON.parseObject(jsonData,BaseConfig.class);
@@ -64,76 +55,25 @@ public class ArtConfigController {
             //添加新的工艺参数配置到数据库
             iArtConfigService.insertByJSONStr(jsonData);
             //初始化工艺参数配置
-            //将该工艺参数添加到MAP中
+            //将该工艺参数添加到MAP中，包括前端推送的map和后端内存存储put的map
             StatisticsData.initArtMap(baseConfig.getTag());
         }
-
-        if (baseConfig.getShowGraph() == 1){
-            CacheUtil.addShowGraphArg(baseConfig.getProtocolId(),baseConfig.getTag());
-        }else{
-            CacheUtil.removeShowGraph(baseConfig.getProtocolId(),baseConfig.getTag());
-        }
-        int id = baseConfig.getProtocolId();
-        switch (id) {
-            case PACKET_PROTOCOL.MODBUS_ID:
-                ModBusConfig modBusConfig = JSON.parseObject(jsonData, ModBusConfig.class);
-                modBusConfig.setProtocol(PACKET_PROTOCOL.MODBUS);
-                ArtDecodeUtil.addArtDecodeConfig(modBusConfig);
-                return BaseResponse.OK(true);
-            case PACKET_PROTOCOL.S7_ID:
-                S7Config s7Config = JSON.parseObject(jsonData, S7Config.class);
-                s7Config.setProtocol("s7comm");
-                ArtDecodeUtil.addArtDecodeConfig(s7Config);
-                return BaseResponse.OK(true);
-            case PACKET_PROTOCOL.IEC104_ASDU_ID:
-                IEC104Config iec104Config = JSON.parseObject(jsonData, IEC104Config.class);
-                iec104Config.setProtocol(PACKET_PROTOCOL.IEC104_ASDU);
-                ArtDecodeUtil.addArtDecodeConfig(iec104Config);
-                break;
-            case PACKET_PROTOCOL.DNP3_0_PRI_ID:
-                DNP3Config dnp3Config = JSON.parseObject(jsonData, DNP3Config.class);
-                dnp3Config.setProtocol("dnp3");     //这个协议是和工艺参数解析的模块对应起来的
-                ArtDecodeUtil.addArtDecodeConfig(dnp3Config);
-                break;
-            case PACKET_PROTOCOL.PN_IO_ID:
-                PnioConfig pnioConfig = JSON.parseObject(jsonData, PnioConfig.class);
-                pnioConfig.setProtocol(PACKET_PROTOCOL.PN_IO);
-                ArtDecodeUtil.addArtDecodeConfig(pnioConfig);
-                break;
-            case PACKET_PROTOCOL.OPC_UA_ID:
-                OpcuaConfig opcuaConfig = JSON.parseObject(jsonData, OpcuaConfig.class);
-                opcuaConfig.setProtocol(PACKET_PROTOCOL.OPC_UA);
-                ArtDecodeUtil.addArtDecodeConfig(opcuaConfig);
-                break;
-            case PACKET_PROTOCOL.MMS_ID:
-                MMSConfig mmsConfig = JSON.parseObject(jsonData,MMSConfig.class);
-                mmsConfig.setProtocol(PACKET_PROTOCOL.MMS);
-                ArtDecodeUtil.addArtDecodeConfig(mmsConfig);
-                break;
-            case PACKET_PROTOCOL.OPC_DA_ID:
-                OpcdaConfig opcdaConfig = JSON.parseObject(jsonData,OpcdaConfig.class);
-                opcdaConfig.setProtocol(PACKET_PROTOCOL.OPC_DA);
-                ArtDecodeUtil.addArtDecodeConfig(opcdaConfig);
-                break;
-            default:
-                log.error("未指定工艺参数解析ID [{}]",id);
-                return BaseResponse.ERROR(500,"未指定工艺参数解析ID" + id);
-        }
-        CacheUtil.addOrUpdateArtName2ArtGroup(baseConfig.getTag(),baseConfig.getGroup());
-        return BaseResponse.OK();
+        //更新缓存
+        return iArtConfigService.setArtConfig(baseConfig.getProtocolId(),
+                                              jsonData, baseConfig);
     }
 
     @ApiOperation("根据ID删除工艺参数配置")
     @Log
     @DeleteMapping("delete_art_config")
+    /**
+     * 1.前端不显示；（不推送）
+     * 2.后端删除配置；
+     * 3.GLOBAL MAP删除；
+     * 4.工艺参数组别删除；
+     */
     public BaseResponse deleteArtConfig(@RequestParam  int artConfigId , @RequestParam int protocolId) throws ProtocolIdNotValidException {
-        BaseArtConfig baseArtConfig;
-        //获取协议ID和工艺参数ID对应的那个工艺参数数据
-        //{
-        //      protocolId : 协议ID
-        //      data : 工艺参数配置结构
-        // }
-        baseArtConfig = iArtConfigService.getArtConfigByProtocolIdAndId(protocolId, artConfigId);
+        BaseArtConfig baseArtConfig = iArtConfigService.getArtConfigByProtocolIdAndId(protocolId, artConfigId);
 
         BaseConfig baseConfig = ((BaseConfig) baseArtConfig.getConfigStructure());
         if (baseConfig.getProtocolId() == 2){
@@ -141,8 +81,8 @@ public class ArtConfigController {
         }else{
             baseConfig.setProtocol(CacheUtil.convertIdToName(baseConfig.getProtocolId()));
         }
-        //移除要显示的map
-        StatisticsData.removeArtMap(baseConfig.getTag());
+        //移除要显示的map和存储的map
+        StatisticsData.removeArtMap2ShowAndSave(baseConfig.getTag());
         //移除解析库中的配置
         ArtDecodeUtil.deleteArtConfig(baseConfig);
         //移除工艺参数组别中的工艺参数
@@ -233,6 +173,21 @@ public class ArtConfigController {
     @Log
     public BaseResponse getAllArtConfigOfTargetProtocol(@RequestParam String protocol){
         return BaseResponse.OK(iArtConfigService.selectArtNameByProtocolName(protocol));
+    }
+
+
+
+    private String getJSONDataFromRequest(HttpServletRequest request){
+        StringBuilder sb = new StringBuilder();
+        try(BufferedReader bfr = request.getReader()){
+            String str;
+            while ((str = bfr.readLine())!=null){
+                sb.append(str);
+            }
+        } catch (IOException e) {
+            log.error("无法读取JSON数据");
+        }
+        return sb.toString();
     }
 
 }

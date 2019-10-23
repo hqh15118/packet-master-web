@@ -2,10 +2,13 @@ package com.zjucsc.attack.bean;
 
 import java.util.Objects;
 
+/**
+ * opName config
+ */
 public class BaseOpName implements Comparable<BaseOpName>{
     private int id;
     private String protocol;
-    private String opName;
+    private String opName;      //key value
     private String deviceMac;
     private boolean enable;
 
