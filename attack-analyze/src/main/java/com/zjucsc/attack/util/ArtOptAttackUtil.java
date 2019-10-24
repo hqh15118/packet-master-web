@@ -3,7 +3,8 @@ package com.zjucsc.attack.util;
 import com.zjucsc.attack.bean.BaseOpName;
 import com.zjucsc.attack.s7comm.CommandWrapper;
 import com.zjucsc.attack.config.S7OptCommandConfig;
-import com.zjucsc.attack.s7comm.S7OpName;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +12,11 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
+
 public class ArtOptAttackUtil {
+
+    private static final Logger logger = LoggerFactory.getLogger(ArtOptAttackUtil.class);
+
     /**************************************
      * 操作名称 -- 操作具体配置       开闸 -- 如何识别开闸的报文
      *************************************/
@@ -42,6 +47,32 @@ public class ArtOptAttackUtil {
                 baseOpNameSet.add(baseOpName);
             }
         }
+    }
+
+    public static boolean changeOpName2OptConfigState(String opName,boolean enable){
+        BaseOpName baseOpName = getOptNameByOpName(opName);
+        if (baseOpName != null) {
+            baseOpName.setEnable(enable);
+            return true;
+        }else{
+            logger.error("不存在 opName 为[{}] 的BaseOpName 配置，状态修改失败",opName);
+        }
+        return false;
+    }
+
+    public static BaseOpName getOpNameConfigByOpNameAndProtocol(String opName,String protocol){
+        Set<BaseOpName> opNameConfigSet = getOptNameSetByProtocol(protocol);
+        if (opNameConfigSet != null){
+            for (BaseOpName baseOpName : opNameConfigSet) {
+                if (baseOpName.getOpName().equals(opName)){
+                    return baseOpName;
+                }
+                logger.error("不存在 协议 [] ，opName [] 的BaseOpName配置",protocol,opName);
+            }
+        }else{
+            logger.error("协议 [{}] 不存在对应的 opNameConfigSet ， 获取BaseOpName失败",protocol);
+        }
+        return null;
     }
 
     public static BaseOpName getOptNameByOpName(String opName){

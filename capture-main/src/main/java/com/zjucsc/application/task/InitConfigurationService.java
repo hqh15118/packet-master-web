@@ -25,11 +25,13 @@ import com.zjucsc.attack.bean.BaseOptConfig;
 import com.zjucsc.attack.config.S7OptCommandConfig;
 import com.zjucsc.attack.util.ArtOptAttackUtil;
 import com.zjucsc.base.util.SpringContextUtil;
+import com.zjucsc.common.util.ByteUtil;
 import com.zjucsc.common.util.PrinterUtil;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.socket_io.*;
 import com.zjucsc.tshark.TsharkCommon;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -208,7 +210,6 @@ public class InitConfigurationService implements ApplicationRunner {
             CacheUtil.addNormalRightPacketInfo(rightPacketInfo);
         }
 
-        initArtTest();
         /***********************************
          * 初始化设备最大上行和下行流量
          **********************************/
@@ -299,20 +300,6 @@ public class InitConfigurationService implements ApplicationRunner {
             e.printStackTrace();
         }
     }
-
-    private void initArtTest(){
-//        DNP3Config dnp3Config = new DNP3Config();
-//        dnp3Config.setProtocol("dnp3");
-//        dnp3Config.setProtocolId(PACKET_PROTOCOL.DNP3_0_PRI_ID);
-//        dnp3Config.setShowGraph(1);
-//        dnp3Config.setTag("Ub");
-//        dnp3Config.setindex(1);
-//        dnp3Config.setObjGroup(30);
-//        ArtDecodeCommon.addArtDecodeConfig(dnp3Config);
-//        StatisticsData.initArtArgs("Ub");
-//        CommonCacheUtil.addShowGraphArg(PACKET_PROTOCOL.DNP3_0_PRI_ID,"Ub");
-    }
-
 
     private void initArtArgConfig(List<Integer> protocolIds,PagedArtConfig pagedArtConfig) throws ProtocolIdNotValidException {
         for (Integer protocolId : protocolIds) {

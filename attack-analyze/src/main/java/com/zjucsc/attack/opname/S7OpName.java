@@ -1,4 +1,4 @@
-package com.zjucsc.attack.s7comm;
+package com.zjucsc.attack.opname;
 
 import com.zjucsc.attack.bean.BaseOpName;
 

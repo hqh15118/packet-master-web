@@ -13,13 +13,28 @@ public class ByteUtil {
     public static byte[] longToBytes(long x) {
         ByteBuffer buffer = byteToLongByteBuffer.get();
         buffer.putLong(0, x);
-        return buffer.array();
+        buffer.flip();
+        byte[] data = buffer.array();
+        byte[] newData = byteDeepCopy(data,new byte[4]);
+        buffer.clear();
+        return newData;
     }
 
     public static byte[] shortToByte(short s){
         ByteBuffer buffer = byteToShortByteBuffer.get();
         buffer.putShort(0,s);
-        return buffer.array();
+        buffer.flip();
+        byte[] data = buffer.array();
+        byte[] newData = byteDeepCopy(data,new byte[2]);
+        buffer.clear();
+        return newData;
+    }
+
+    private static byte[] byteDeepCopy(byte[] from,byte[] to){
+        for (int i = 0 , len = from.length; i < len; i++) {
+            to[i] = from[i];
+        }
+        return to;
     }
 
     public static long bytesToLong(byte[] bytes,int offset) {

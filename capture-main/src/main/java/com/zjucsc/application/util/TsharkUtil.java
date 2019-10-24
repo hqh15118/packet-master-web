@@ -1,10 +1,12 @@
 package com.zjucsc.application.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.pcap4j.core.*;
 import org.pcap4j.packet.namednumber.DataLinkType;
 
 import java.io.*;
 
+@Slf4j
 public class TsharkUtil {
 
     private static String tsharkPath = null;
@@ -82,5 +84,21 @@ public class TsharkUtil {
         bfReader.close();
         process.destroyForcibly();
         return res;
+    }
+
+    public static boolean sendPacket(String interfaceName,byte[] data){
+        try {
+            PcapNetworkInterface pcapNetworkInterface = Pcaps.getDevByName(interfaceName);
+            if (pcapNetworkInterface == null){
+                log.error("pcapNetworkInterface is null");
+                return false;
+            }
+            PcapHandle handle = pcapNetworkInterface.openLive(65535, PcapNetworkInterface.PromiscuousMode.PROMISCUOUS,1000);
+            handle.sendPacket(data);
+            return true;
+        } catch (PcapNativeException | NotOpenException e) {
+            log.error("send packet error" , e);
+        }
+        return false;
     }
 }

@@ -1,10 +1,11 @@
 package com.zjucsc.application.controller.artcontroller;
 
 
+import com.zjucsc.application.domain.bean.ArtOpNameConfigStateDTO;
+import com.zjucsc.application.domain.bean.ArtOpNameDTO;
 import com.zjucsc.application.domain.bean.BaseResponse;
 import com.zjucsc.application.system.service.hessian_iservice.IArtOptNameService;
 import com.zjucsc.attack.bean.BaseOpName;
-import com.zjucsc.attack.s7comm.S7OpName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,26 +16,26 @@ public class ArtOptNameController {
     @Autowired private IArtOptNameService iArtOptNameService;
 
     @PostMapping("insert")
-    public BaseResponse insert(@RequestBody S7OpName s7OptName){
-        iArtOptNameService.insertArtOptName(s7OptName);
+    public BaseResponse insert(@RequestBody BaseOpName opNameConfig){
+        iArtOptNameService.insertArtOptName(opNameConfig);
         return BaseResponse.OK();
     }
 
     @PostMapping("update")
-    public BaseResponse update(@RequestBody S7OpName s7OptName){
-        iArtOptNameService.updateArtOptName(s7OptName);
+    public BaseResponse update(@RequestBody BaseOpName opNameConfig){
+        iArtOptNameService.updateArtOptName(opNameConfig);
         return BaseResponse.OK();
     }
 
-    @DeleteMapping("delete")
-    public BaseResponse delete(@RequestParam String optName){
-        iArtOptNameService.deleteArtOptName(optName);
+    @PostMapping("delete")
+    public BaseResponse delete(@RequestBody ArtOpNameDTO artOpNameDTO){
+        iArtOptNameService.deleteArtOptName(artOpNameDTO);
         return BaseResponse.OK();
     }
 
-    @GetMapping("select")
-    public BaseResponse select(@RequestParam String s7OptName){
-        return BaseResponse.OK(iArtOptNameService.selectArtOptName(s7OptName));
+    @PostMapping("select")
+    public BaseResponse select(@RequestBody ArtOpNameDTO artOpNameDTO){
+        return BaseResponse.OK(iArtOptNameService.selectArtOptName(artOpNameDTO));
     }
 
     @GetMapping("all")
@@ -47,9 +48,13 @@ public class ArtOptNameController {
         return BaseResponse.OK(iArtOptNameService.selectByProtocol(protocol));
     }
 
-//    @PostMapping("enable")
-//    public BaseResponse enableArtOpConfig(){
-//
-//    }
+    @PostMapping("enable")
+    public BaseResponse enableArtOpConfig(@RequestBody ArtOpNameConfigStateDTO artOpNameConfigStateDTO){
+        if (iArtOptNameService.enableOptNameConfig(artOpNameConfigStateDTO)) {
+            return BaseResponse.OK();
+        }else{
+            return BaseResponse.ERROR(500,"状态修改失败");
+        }
+    }
 
 }

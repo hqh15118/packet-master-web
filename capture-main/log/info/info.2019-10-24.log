@@ -1,0 +1,282 @@
+2019-10-24 15:03:38.553 packet-master-web [main] INFO  c.z.a.c.a.ArtOptNameControllerTest - Starting ArtOptNameControllerTest on SC-201705181836 with PID 3632 (started by Administrator in E:\IdeaProjects\packet-master-web\capture-main)
+2019-10-24 15:03:38.553 packet-master-web [main] INFO  c.z.a.c.a.ArtOptNameControllerTest - No active profile set, falling back to default profiles: default
+2019-10-24 15:03:43.567 packet-master-web [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode!
+2019-10-24 15:03:43.582 packet-master-web [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data repositories in DEFAULT mode.
+2019-10-24 15:03:43.857 packet-master-web [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 243ms. Found 0 repository interfaces.
+2019-10-24 15:03:45.501 packet-master-web [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.springframework.kafka.annotation.KafkaBootstrapConfiguration' of type [org.springframework.kafka.annotation.KafkaBootstrapConfiguration$$EnhancerBySpringCGLIB$$1b955695] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-10-24 15:03:46.516 packet-master-web [main] INFO  o.a.k.c.producer.ProducerConfig - ProducerConfig values: 
+	acks = 1
+	batch.size = 16384
+	bootstrap.servers = [10.15.191.100:9092]
+	buffer.memory = 33554432
+	client.id = client1
+	compression.type = none
+	connections.max.idle.ms = 540000
+	enable.idempotence = false
+	interceptor.classes = []
+	key.serializer = class org.apache.kafka.common.serialization.StringSerializer
+	linger.ms = 0
+	max.block.ms = 60000
+	max.in.flight.requests.per.connection = 5
+	max.request.size = 1048576
+	metadata.max.age.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partitioner.class = class org.apache.kafka.clients.producer.internals.DefaultPartitioner
+	receive.buffer.bytes = 32768
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retries = 0
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.mechanism = GSSAPI
+	security.protocol = PLAINTEXT
+	send.buffer.bytes = 131072
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.1, TLSv1]
+	ssl.endpoint.identification.algorithm = https
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLS
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	transaction.timeout.ms = 60000
+	transactional.id = null
+	value.serializer = class org.apache.kafka.common.serialization.StringSerializer
+
+2019-10-24 15:03:46.994 packet-master-web [main] INFO  o.a.kafka.common.utils.AppInfoParser - Kafka version : 2.0.1
+2019-10-24 15:03:46.994 packet-master-web [main] INFO  o.a.kafka.common.utils.AppInfoParser - Kafka commitId : fa14705e51bd2ce5
+2019-10-24 15:03:46.994 packet-master-web [main] INFO  o.a.k.c.producer.ProducerConfig - ProducerConfig values: 
+	acks = 1
+	batch.size = 16384
+	bootstrap.servers = [10.15.191.100:9092]
+	buffer.memory = 33554432
+	client.id = client1
+	compression.type = none
+	connections.max.idle.ms = 540000
+	enable.idempotence = false
+	interceptor.classes = []
+	key.serializer = class org.apache.kafka.common.serialization.StringSerializer
+	linger.ms = 0
+	max.block.ms = 60000
+	max.in.flight.requests.per.connection = 5
+	max.request.size = 1048576
+	metadata.max.age.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partitioner.class = class org.apache.kafka.clients.producer.internals.DefaultPartitioner
+	receive.buffer.bytes = 32768
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retries = 0
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.mechanism = GSSAPI
+	security.protocol = PLAINTEXT
+	send.buffer.bytes = 131072
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.1, TLSv1]
+	ssl.endpoint.identification.algorithm = https
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLS
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	transaction.timeout.ms = 60000
+	transactional.id = null
+	value.serializer = class org.apache.kafka.common.serialization.StringSerializer
+
+2019-10-24 15:03:46.994 packet-master-web [main] INFO  o.a.kafka.common.utils.AppInfoParser - Kafka version : 2.0.1
+2019-10-24 15:03:46.994 packet-master-web [main] INFO  o.a.kafka.common.utils.AppInfoParser - Kafka commitId : fa14705e51bd2ce5
+2019-10-24 15:03:47.010 packet-master-web [main] INFO  o.a.k.c.producer.ProducerConfig - ProducerConfig values: 
+	acks = 1
+	batch.size = 16384
+	bootstrap.servers = [10.15.191.100:9092]
+	buffer.memory = 33554432
+	client.id = client1
+	compression.type = none
+	connections.max.idle.ms = 540000
+	enable.idempotence = false
+	interceptor.classes = []
+	key.serializer = class org.apache.kafka.common.serialization.StringSerializer
+	linger.ms = 0
+	max.block.ms = 60000
+	max.in.flight.requests.per.connection = 5
+	max.request.size = 1048576
+	metadata.max.age.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partitioner.class = class org.apache.kafka.clients.producer.internals.DefaultPartitioner
+	receive.buffer.bytes = 32768
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retries = 0
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.mechanism = GSSAPI
+	security.protocol = PLAINTEXT
+	send.buffer.bytes = 131072
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.1, TLSv1]
+	ssl.endpoint.identification.algorithm = https
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLS
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	transaction.timeout.ms = 60000
+	transactional.id = null
+	value.serializer = class org.apache.kafka.common.serialization.StringSerializer
+
+2019-10-24 15:03:47.010 packet-master-web [main] INFO  o.a.kafka.common.utils.AppInfoParser - Kafka version : 2.0.1
+2019-10-24 15:03:47.010 packet-master-web [main] INFO  o.a.kafka.common.utils.AppInfoParser - Kafka commitId : fa14705e51bd2ce5
+2019-10-24 15:03:47.026 packet-master-web [main] INFO  o.a.k.c.producer.ProducerConfig - ProducerConfig values: 
+	acks = 1
+	batch.size = 16384
+	bootstrap.servers = [10.15.191.100:9092]
+	buffer.memory = 33554432
+	client.id = client1
+	compression.type = none
+	connections.max.idle.ms = 540000
+	enable.idempotence = false
+	interceptor.classes = []
+	key.serializer = class org.apache.kafka.common.serialization.StringSerializer
+	linger.ms = 0
+	max.block.ms = 60000
+	max.in.flight.requests.per.connection = 5
+	max.request.size = 1048576
+	metadata.max.age.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partitioner.class = class org.apache.kafka.clients.producer.internals.DefaultPartitioner
+	receive.buffer.bytes = 32768
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retries = 0
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.mechanism = GSSAPI
+	security.protocol = PLAINTEXT
+	send.buffer.bytes = 131072
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.1, TLSv1]
+	ssl.endpoint.identification.algorithm = https
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLS
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	transaction.timeout.ms = 60000
+	transactional.id = null
+	value.serializer = class org.apache.kafka.common.serialization.StringSerializer
+
+2019-10-24 15:03:47.065 packet-master-web [main] INFO  o.a.kafka.common.utils.AppInfoParser - Kafka version : 2.0.1
+2019-10-24 15:03:47.066 packet-master-web [main] INFO  o.a.kafka.common.utils.AppInfoParser - Kafka commitId : fa14705e51bd2ce5
+2019-10-24 15:03:52.145 packet-master-web [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 25 endpoint(s) beneath base path '/actuator'
+2019-10-24 15:03:54.462 packet-master-web [main] INFO  o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
+2019-10-24 15:03:55.584 packet-master-web [main] INFO  o.s.s.c.ThreadPoolTaskScheduler - Initializing ExecutorService
+2019-10-24 15:03:57.305 packet-master-web [main] INFO  o.s.s.c.ThreadPoolTaskScheduler - Initializing ExecutorService 'taskScheduler'
+2019-10-24 15:03:57.457 packet-master-web [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Context refreshed
+2019-10-24 15:03:57.489 packet-master-web [main] INFO  s.d.s.w.p.DocumentationPluginsBootstrapper - Found 1 custom documentation plugin(s)
+2019-10-24 15:03:57.504 packet-master-web [main] INFO  s.d.s.w.s.ApiListingReferenceScanner - Scanning for api listing references
+2019-10-24 15:03:57.969 packet-master-web [main] INFO  s.d.s.w.r.o.CachingOperationNameGenerator - Generating unique operation named: insertUsingPOST_1
+2019-10-24 15:03:57.985 packet-master-web [main] INFO  s.d.s.w.r.o.CachingOperationNameGenerator - Generating unique operation named: selectAllUsingGET_1
+2019-10-24 15:03:57.985 packet-master-web [main] INFO  s.d.s.w.r.o.CachingOperationNameGenerator - Generating unique operation named: updateUsingPOST_1
+2019-10-24 15:03:58.016 packet-master-web [main] INFO  s.d.s.w.r.o.CachingOperationNameGenerator - Generating unique operation named: insertUsingPOST_2
+2019-10-24 15:03:58.032 packet-master-web [main] INFO  s.d.s.w.r.o.CachingOperationNameGenerator - Generating unique operation named: selectAllUsingGET_2
+2019-10-24 15:03:58.032 packet-master-web [main] INFO  s.d.s.w.r.o.CachingOperationNameGenerator - Generating unique operation named: updateUsingPOST_2
+2019-10-24 15:03:58.668 packet-master-web [main] INFO  s.d.s.w.r.o.CachingOperationNameGenerator - Generating unique operation named: selectPacketHistoryUsingPOST_1
+2019-10-24 15:03:58.843 packet-master-web [main] INFO  c.z.a.c.a.ArtOptNameControllerTest - Started ArtOptNameControllerTest in 22.819 seconds (JVM running for 26.445)
+2019-10-24 15:03:59.248 packet-master-web [main] INFO  o.s.b.a.l.ConditionEvaluationReportLoggingListener - 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2019-10-24 15:03:59.264 packet-master-web [main] INFO  o.s.s.c.ThreadPoolTaskScheduler - Shutting down ExecutorService 'taskScheduler'
+2019-10-24 15:03:59.264 packet-master-web [main] INFO  o.s.s.c.ThreadPoolTaskScheduler - Shutting down ExecutorService

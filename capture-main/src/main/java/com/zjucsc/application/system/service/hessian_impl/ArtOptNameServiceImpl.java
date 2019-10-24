@@ -1,5 +1,7 @@
 package com.zjucsc.application.system.service.hessian_impl;
 
+import com.zjucsc.application.domain.bean.ArtOpNameConfigStateDTO;
+import com.zjucsc.application.domain.bean.ArtOpNameDTO;
 import com.zjucsc.application.system.service.hessian_iservice.IArtOptNameService;
 import com.zjucsc.application.system.service.hessian_mapper.ArtOptNameMapper;
 import com.zjucsc.attack.bean.BaseOpName;
@@ -28,15 +30,15 @@ public class ArtOptNameServiceImpl implements IArtOptNameService {
     }
 
     @Override
-    public BaseOpName deleteArtOptName(String opName) {
-        BaseOpName baseOpName = optNameMapper.deleteArtOptName(opName);
+    public BaseOpName deleteArtOptName(ArtOpNameDTO artOpNameDTO) {
+        BaseOpName baseOpName = optNameMapper.deleteArtOptName(artOpNameDTO.getId(),artOpNameDTO.getProtocol());
         resetConfigs();
         return baseOpName;
     }
 
     @Override
-    public BaseOpName selectArtOptName(String opName) {
-        return optNameMapper.selectArtOptName(opName);
+    public BaseOpName selectArtOptName(ArtOpNameDTO artOpNameDTO) {
+        return optNameMapper.selectArtOptName(artOpNameDTO.getId(),artOpNameDTO.getProtocol());
     }
 
     @Override
@@ -47,6 +49,12 @@ public class ArtOptNameServiceImpl implements IArtOptNameService {
     @Override
     public List<BaseOpName> selectByProtocol(String protocol) {
         return optNameMapper.selectByProtocol(protocol);
+    }
+
+    @Override
+    public boolean enableOptNameConfig(ArtOpNameConfigStateDTO artOpNameConfigStateDTO) {
+        String opName = optNameMapper.enableOptNameConfig(artOpNameConfigStateDTO); //修改数据库状态
+        return ArtOptAttackUtil.changeOpName2OptConfigState(opName,artOpNameConfigStateDTO.isEnable());
     }
 
     private void resetConfigs(){

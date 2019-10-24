@@ -1,6 +1,7 @@
 package com.zjucsc.attack.s7comm;
 
 import com.zjucsc.attack.base.AbstractOptCommandAttackEntry;
+import com.zjucsc.attack.opname.S7OpName;
 import com.zjucsc.common.util.ByteUtil;
 import com.zjucsc.common.util.Bytecut;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
