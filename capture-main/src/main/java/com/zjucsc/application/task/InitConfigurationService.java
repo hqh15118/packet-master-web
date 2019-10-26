@@ -258,7 +258,7 @@ public class InitConfigurationService implements ApplicationRunner {
         /************************************
          * 启动结束
          ***********************************/
-        PrinterUtil.printMsg(1,"程序启动完成--v10.21");
+        PrinterUtil.printMsg(1,"程序启动完成--v10.24");
     }
 
     private void globalInit() {

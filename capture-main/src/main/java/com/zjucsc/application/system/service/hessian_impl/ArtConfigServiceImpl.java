@@ -170,8 +170,13 @@ public class ArtConfigServiceImpl extends BaseServiceImpl<BaseArtConfig,ArtConfi
                 opcdaConfig.setProtocol(PACKET_PROTOCOL.OPC_DA);
                 ArtDecodeUtil.addArtDecodeConfig(opcdaConfig);
                 break;
+            case PACKET_PROTOCOL.IEC101_ID:
+                IEC101Config iec101Config = JSON.parseObject(jsonData,IEC101Config.class);
+                iec101Config.setProtocol(PACKET_PROTOCOL.IEC101);
+                ArtDecodeUtil.addArtDecodeConfig(iec101Config);
+                break;
             default:
-                log.error("未指定工艺参数解析ID [{}]",protocolId);
+                log.error("未指定工艺参数解析--协议：ID [{}]",protocolId);
                 return BaseResponse.ERROR(500,"未指定工艺参数解析ID" + protocolId);
         }
         //工艺参数组别

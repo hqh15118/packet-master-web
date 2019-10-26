@@ -1,5 +1,6 @@
 package com.zjucsc.application.system.service;
 
+import com.alibaba.fastjson.JSON;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.statistic.StatisticsData;
 import com.zjucsc.application.domain.bean.*;
@@ -346,7 +347,8 @@ public class ScheduledService {
         ART_INFO_SEND_SINGLE.put("timestamp",
                 new ArtGroupWrapper(getDateFormat().format(new Date()),
                 "timeStamp"));
-        SocketServiceCenter.updateAllClient(SocketIoEvent.ART_INFO, StatisticsData.ART_INFO_SEND_SINGLE);
+        String strData = JSON.toJSONString(StatisticsData.ART_INFO_SEND_SINGLE);
+        SocketServiceCenter.updateAllClient(SocketIoEvent.ART_INFO, strData);
     }
 
     /**
