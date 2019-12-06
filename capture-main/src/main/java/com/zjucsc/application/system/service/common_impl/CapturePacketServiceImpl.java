@@ -24,9 +24,9 @@ import com.zjucsc.attack.bean.AttackBean;
 import com.zjucsc.attack.AttackCommon;
 import com.zjucsc.attack.common.AttackTypePro;
 import com.zjucsc.base.util.limit.LimitServiceEntry;
-import com.zjucsc.common.util.CommonUtil;
 import com.zjucsc.common.util.DBUtil;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
+import com.zjucsc.common.util.ThreadPoolUtil;
 import com.zjucsc.kafka.KafkaThread;
 import com.zjucsc.socket_io.SocketIoEvent;
 import com.zjucsc.socket_io.SocketServiceCenter;
@@ -51,6 +51,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.zjucsc.application.config.Common.COMMON_THREAD_EXCEPTION_HANDLER;
 import static com.zjucsc.application.config.PACKET_PROTOCOL.*;
@@ -59,7 +60,6 @@ import static com.zjucsc.socket_io.SocketIoEvent.REAL_TIME_PACKET_FILTER;
 @Slf4j
 @Service
 public class CapturePacketServiceImpl implements CapturePacketService<String,String> {
-
     private final PacketAnalyzeService packetAnalyzeService;
 
     private SimulateThread simulateThread;
@@ -237,7 +237,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
 
 
     private AbstractAsyncHandler<FvDimensionLayer> fvDimensionLayerPreProcessor
-            = new AbstractAsyncHandler<FvDimensionLayer>(CommonUtil.getSingleThreadPoolSizeThreadPool(100000,
+            = new AbstractAsyncHandler<FvDimensionLayer>(ThreadPoolUtil.getSingleThreadPoolSizeThreadPool(100000,
             r -> {
                 Thread thread = new Thread(r);
                 thread.setName("-fv-dimension-preprocessor-" + thread.getId());
@@ -325,7 +325,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
      * 单线程处理，保证线程安全
      */
     private AbstractAsyncHandler<FvDimensionLayer> fvDimensionLayerAbstractAsyncHandler
-            = new AbstractAsyncHandler<FvDimensionLayer>(CommonUtil.getSingleThreadPoolSizeThreadPool(100000,
+            = new AbstractAsyncHandler<FvDimensionLayer>(ThreadPoolUtil.getSingleThreadPoolSizeThreadPool(100000,
             r -> {
                 Thread thread = new Thread(r);
                 thread.setName("-fv-dimension-entry-handler-" + thread.getId());
@@ -414,8 +414,8 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                 }
                 break;
             default:
-                if (fvDimensionLayer.rawData.length >= 16 && Byte.toUnsignedInt(fvDimensionLayer.rawData[13]) == 0x89
-                        && fvDimensionLayer.rawData[14] == 0x07 && fvDimensionLayer.rawData[15] == 0x12 && fvDimensionLayer.rawData[16] == 0x34){
+                if (fvDimensionLayer.rawData.length >= 14 && Byte.toUnsignedInt(fvDimensionLayer.rawData[12]) == 0x89
+                        && fvDimensionLayer.rawData[13] == 0x07){
                     fvDimensionLayer.protocol = "can";
                 }
         }
@@ -914,7 +914,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         }
     }
     private final AbstractAsyncHandler<FvDimensionLayer> deviceHandler =
-            new AbstractAsyncHandler<FvDimensionLayer>(CommonUtil.getSingleThreadPoolSizeThreadPool(100000,
+            new AbstractAsyncHandler<FvDimensionLayer>(ThreadPoolUtil.getSingleThreadPoolSizeThreadPool(100000,
                     r -> {
                         Thread thread = new Thread(r);
                         thread.setUncaughtExceptionHandler((t, e) -> log.error("-device-analyze-捕获异常=====>\n" , e));
@@ -941,7 +941,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
             };
 
     private final AbstractAsyncHandler<FvDimensionLayer> attackAnalyzeHandler = new AbstractAsyncHandler<FvDimensionLayer>
-            (CommonUtil.getSingleThreadPoolSizeThreadPool(100000, r -> {
+            (ThreadPoolUtil.getSingleThreadPoolSizeThreadPool(100000, r -> {
                 Thread thread = new Thread(r);
                 thread.setName("-attack-analyze-handler-");
                 thread.setUncaughtExceptionHandler((t, e) -> {
@@ -1001,7 +1001,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
     }
 
     private final AbstractAsyncHandler<FvDimensionLayer> packetDetectHandler =
-            new AbstractAsyncHandler<FvDimensionLayer>(CommonUtil.getSingleThreadPoolSizeThreadPool(100000, r -> {
+            new AbstractAsyncHandler<FvDimensionLayer>(ThreadPoolUtil.getSingleThreadPoolSizeThreadPool(100000, r -> {
                 Thread thread = new Thread(r);
                 thread.setUncaughtExceptionHandler((t, e) -> System.err.println("-packet-detect-捕获异常=====>\n" + e));
                 thread.setName("-packet-detect-handler-");

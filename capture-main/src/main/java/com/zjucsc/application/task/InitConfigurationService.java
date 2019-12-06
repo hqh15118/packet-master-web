@@ -75,7 +75,6 @@ public class InitConfigurationService implements ApplicationRunner {
         List<String> virReload = args.getOptionValues("reload");
         PrinterUtil.printStarter();
         PrinterUtil.printMsg("program args [reload <--reload>]: " + virReload);
-
         /***************************
          * IP OR MAC_ADDRESS
          ***************************/
@@ -97,7 +96,6 @@ public class InitConfigurationService implements ApplicationRunner {
         if (virPreProcessor!=null && virPreProcessor.size() > 0){
             Common.TSHARK_PRE_PROCESSOR_PROTOCOLS.addAll(virPreProcessor);
         }
-
         /****************************
          * 演示/ 真实场景
          ***************************/
@@ -106,7 +104,6 @@ public class InitConfigurationService implements ApplicationRunner {
         if (virType!=null && virType.size() > 0){
             Common.systemRunType = Integer.parseInt(virType.get(0));
         }
-
         /***************************
          * INIT FILTER
          ***************************/
@@ -131,7 +128,7 @@ public class InitConfigurationService implements ApplicationRunner {
          ***************************/
         //如果数据库中没有条目，就从代码中加载之前配置好的，如果数据库中有条目，
         //就判断是否需要重新加载使用数据库中的条目初始化 PROTOCOL_STR_TO_INT ， 用户协议ID和协议字符串之间的转换
-        List<Protocol> protocols = new ArrayList<>();
+        List<Protocol> protocols;
         String str_name = "java.lang.String";
 //        if (iProtocolIdService.selectAll().size() == 0 ){
 //            Class<PACKET_PROTOCOL> packet_protocolClass = PACKET_PROTOCOL.class;
@@ -147,16 +144,18 @@ public class InitConfigurationService implements ApplicationRunner {
 //            }
 //            iProtocolIdService.saveOrUpdateBatch(protocols);
 //        }else{
+        PrinterUtil.printMsg("start init infos --> protocol str to id start");
             protocols = iProtocolIdService.selectAll();
             for (Protocol protocol : protocols) {
                 PROTOCOL_STR_TO_INT.put(protocol.getProtocolId() , protocol.getProtocolName());
             }
 //        }
-
+        PrinterUtil.printMsg("protocol str to id end --> protocol configuration start");
         for (ConfigurationSetting configuration : iConfigurationSettingService.selectAll()) {
             addProtocolFuncodeMeaning(convertIdToName(configuration.getProtocolId()),
                     configuration.getFunCode(),configuration.getOpt());
         }
+        PrinterUtil.printMsg("protocol configuration end --> auth start");
         /***************************
          * INIT AUTH
          ***************************/
@@ -170,12 +169,14 @@ public class InitConfigurationService implements ApplicationRunner {
                 AUTH_MAP.put(auth,authName);
             }
         }
-
+        PrinterUtil.printMsg("auth end --> art decode start");
         /***************************
          * INIT ART|OPT ATTACK DECODER
          ***************************/
         ArtDecodeUtil.init();
+        PrinterUtil.printMsg("art decode end --> attack common start");
         AttackCommon.init();
+        PrinterUtil.printMsg("attack common to id end --> art decode start");
         /***************************
          * 初始化工艺参数配置
          **************************/
@@ -196,6 +197,7 @@ public class InitConfigurationService implements ApplicationRunner {
         /****************************
          * 获取工艺参数攻击配置
          ***************************/
+        PrinterUtil.printMsg("art decode end --> art attack start");
         List<ArtAttackConfigDB> configDBS = packetInfoMapper.selectArtAttackConfigPaged(999,1);
 
         AttackConfigController.addArtAttackConfig2Cache(configDBS);
@@ -205,6 +207,7 @@ public class InitConfigurationService implements ApplicationRunner {
         /*****************************
          * 初始化所有的正常报文
          ****************************/
+        PrinterUtil.printMsg("art attack end --> right packet start");
         List<RightPacketInfo> rightPacketInfos = packetInfoMapper.selectAllRightPacketInfo();
         for (RightPacketInfo rightPacketInfo : rightPacketInfos) {
             CacheUtil.addNormalRightPacketInfo(rightPacketInfo);
@@ -213,6 +216,7 @@ public class InitConfigurationService implements ApplicationRunner {
         /***********************************
          * 初始化设备最大上行和下行流量
          **********************************/
+        PrinterUtil.printMsg("right packet end --> device max flow start");
         List<DeviceMaxFlow> deviceMaxFlows = deviceMaxFlowMapper.selectBatch();
         for (DeviceMaxFlow deviceMaxFlow : deviceMaxFlows) {
             CacheUtil.addOrUpdateDeviceMaxFlow(deviceMaxFlow);
@@ -227,8 +231,9 @@ public class InitConfigurationService implements ApplicationRunner {
         /************************************
          * 设置图的ID，初始化一些设置
          ***********************************/
+        PrinterUtil.printMsg("device max flow end --> change glot start");
         iGplotService.changeGplot(Common.GPLOT_ID);
-
+        PrinterUtil.printMsg("change glot end --> art opt attack start");
         /*************************************
          * 扫描注册SocketIo事件
          ************************************/
@@ -245,6 +250,7 @@ public class InitConfigurationService implements ApplicationRunner {
                 }
             }
         }
+        PrinterUtil.printMsg("art opt attack end --> opt command decode start");
         /*************************************
          * 加载操作指令解析
          ************************************/
@@ -253,12 +259,14 @@ public class InitConfigurationService implements ApplicationRunner {
         /*************************************
          * 加载操作指令公式
          ************************************/
+        PrinterUtil.printMsg("opt command decode end --> opt command operation start");
         List<S7OptCommandConfig> s7OptCommandConfigs = artOptCommandMapper.selectBatch();
         ArtOptAttackUtil.resetProtocol2OptCommandConfig(s7OptCommandConfigs);
+        PrinterUtil.printMsg("opt command operation end");
         /************************************
          * 启动结束
          ***********************************/
-        PrinterUtil.printMsg(1,"程序启动完成--v10.24");
+        PrinterUtil.printMsg(1,"程序启动完成--v10.28");
     }
 
     private void globalInit() {

@@ -2,6 +2,7 @@ package com.zjucsc.art_decode.base;
 
 import com.zjucsc.art_decode.ArtDecodeUtil;
 import com.zjucsc.common.util.CommonUtil;
+import com.zjucsc.common.util.ThreadPoolUtil;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,7 @@ public abstract class BaseArtDecode<T extends BaseConfig> implements IArtDecode<
         return configs;
     }
 
-    private ExecutorService executorService = CommonUtil.getFixThreadPoolSizeThreadPool(1, 100000, r -> {
+    private ExecutorService executorService = ThreadPoolUtil.getFixThreadPoolSizeThreadPool(1, 100000, r -> {
                 Thread thread = new Thread(r);
                 thread.setName("-" + BaseArtDecode.this.getClass().getSimpleName() + "-");
                 thread.setUncaughtExceptionHandler((t, e) -> {

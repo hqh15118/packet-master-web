@@ -2,6 +2,7 @@ package com.zjucsc.kafka;
 
 
 import com.zjucsc.common.util.CommonUtil;
+import com.zjucsc.common.util.ThreadLocalUtil;
 
 import java.util.HashSet;
 
@@ -15,7 +16,7 @@ public class KafkaCommon {
     }
 
     public static synchronized String getKafkaServiceState(){
-        StringBuilder sb = CommonUtil.getGlobalStringBuilder();
+        StringBuilder sb = ThreadLocalUtil.getStringBuilder();
         for (KafkaThread kafkaThread : ALL_REGISTERED_KAFKA_THREAD) {
             sb.append(kafkaThread.toString()).append("\n");
         }

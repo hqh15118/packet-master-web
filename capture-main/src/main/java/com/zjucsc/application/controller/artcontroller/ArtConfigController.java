@@ -15,7 +15,9 @@ import com.zjucsc.application.util.CacheUtil;
 import com.zjucsc.art_decode.ArtDecodeUtil;
 import com.zjucsc.art_decode.artconfig.*;
 import com.zjucsc.art_decode.base.BaseConfig;
+import com.zjucsc.base.util.HttpUtil;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
+import com.zjucsc.tshark.packets.OpcDaPacket;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +46,7 @@ public class ArtConfigController {
     @PostMapping("new_config")
     @Refactor("20191023")
     public BaseResponse addOrUpdateArtConfig(HttpServletRequest request) {
-        String jsonData = getJSONDataFromRequest(request);
+        String jsonData = HttpUtil.getJSONDataFromRequest(request);
         BaseConfig baseConfig = JSON.parseObject(jsonData,BaseConfig.class);
 
         //更新数据库
@@ -56,12 +58,23 @@ public class ArtConfigController {
             iArtConfigService.insertByJSONStr(jsonData);
             //初始化工艺参数配置
             //将该工艺参数添加到MAP中，包括前端推送的map和后端内存存储put的map
+//            switch (baseConfig.getProtocolId()){
+//                case PACKET_PROTOCOL.OPC_UA_ID :
+//                    OpcuaConfig opcuaConfig = JSON.parseObject(jsonData,OpcuaConfig.class);
+//                    baseConfig.setTag(opcuaConfig.get);
+//                    break;
+//                case PACKET_PROTOCOL.OPC_DA_ID :
+//                    OpcdaConfig opcdaConfig = JSON.parseObject(jsonData, OpcdaConfig.class);
+//                    baseConfig.setTag(opcdaConfig.getName_en());
+//                    break;
+//            }
             StatisticsData.initArtMap(baseConfig.getTag());
         }
         //更新缓存
         return iArtConfigService.setArtConfig(baseConfig.getProtocolId(),
                                               jsonData, baseConfig);
     }
+
 
     @ApiOperation("根据ID删除工艺参数配置")
     @Log
@@ -177,17 +190,6 @@ public class ArtConfigController {
 
 
 
-    private String getJSONDataFromRequest(HttpServletRequest request){
-        StringBuilder sb = new StringBuilder();
-        try(BufferedReader bfr = request.getReader()){
-            String str;
-            while ((str = bfr.readLine())!=null){
-                sb.append(str);
-            }
-        } catch (IOException e) {
-            log.error("无法读取JSON数据");
-        }
-        return sb.toString();
-    }
+
 
 }

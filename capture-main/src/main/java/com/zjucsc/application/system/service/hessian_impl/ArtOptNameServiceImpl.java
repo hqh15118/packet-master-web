@@ -18,13 +18,13 @@ public class ArtOptNameServiceImpl implements IArtOptNameService {
     @Autowired private ArtOptNameMapper optNameMapper;
 
     @Override
-    public void insertArtOptName(BaseOpName optName2OpConfig) {
+    public void insertArtOptName(String optName2OpConfig) {
         optNameMapper.insertArtOptName(optName2OpConfig);
         resetConfigs();
     }
 
     @Override
-    public void updateArtOptName(BaseOpName optName2OpConfig) {
+    public void updateArtOptName(String optName2OpConfig) {
         optNameMapper.updateArtOptName(optName2OpConfig);
         resetConfigs();
     }
@@ -47,18 +47,21 @@ public class ArtOptNameServiceImpl implements IArtOptNameService {
     }
 
     @Override
-    public List<BaseOpName> selectByProtocol(String protocol) {
-        return optNameMapper.selectByProtocol(protocol);
+    public List<BaseOpName> selectByProtocolPaged(int page , int limit ,String protocol) {
+        return optNameMapper.selectByProtocolPaged(page, limit, protocol);
     }
 
     @Override
     public boolean enableOptNameConfig(ArtOpNameConfigStateDTO artOpNameConfigStateDTO) {
-        String opName = optNameMapper.enableOptNameConfig(artOpNameConfigStateDTO); //修改数据库状态
-        return ArtOptAttackUtil.changeOpName2OptConfigState(opName,artOpNameConfigStateDTO.isEnable());
+        optNameMapper.enableOptNameConfig(artOpNameConfigStateDTO); //修改数据库状态
+        //String opName = optNameMapper.enableOptNameConfig(artOpNameConfigStateDTO);
+        //ArtOptAttackUtil.changeOpName2OptConfigState(opName,artOpNameConfigStateDTO.isEnable());
+        resetConfigs();
+        return true;
     }
 
     private void resetConfigs(){
-        List<BaseOpName> s7OptNameList = optNameMapper.selectBatch();
-        ArtOptAttackUtil.resetOpName2OptConfig(s7OptNameList);
+        List<BaseOpName> optNameList = optNameMapper.selectBatch();
+        ArtOptAttackUtil.resetOpName2OptConfig(optNameList);
     }
 }

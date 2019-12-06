@@ -1,8 +1,8 @@
 package com.zjucsc.application.config.sys;
 
-import com.zjucsc.base.util.ThreadPoolUtil;
 import com.zjucsc.common.bean.CustomThreadPoolExecutor;
 import com.zjucsc.common.util.CommonUtil;
+import com.zjucsc.common.util.ThreadPoolUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +28,7 @@ public class ServiceConfig {
 
     @Bean("common_async")
     public Executor commonAsync() {
-        CustomThreadPoolExecutor customThreadPoolExecutor = (CustomThreadPoolExecutor) CommonUtil.getFixThreadPoolSizeThreadPool(
+        return ThreadPoolUtil.getFixThreadPoolSizeThreadPool(
                 5, 50, r -> {
                     Thread thread = new Thread(r);
                     thread.setName("-common_async-");
@@ -36,8 +36,6 @@ public class ServiceConfig {
                     return thread;
                 }
                 , "common async service", (r, executor) -> log.error("common async service reject  task"));
-        ThreadPoolUtil.registerThreadPoolExecutor(customThreadPoolExecutor);
-        return customThreadPoolExecutor;
     }
 
     @Bean("common_service")
@@ -56,19 +54,19 @@ public class ServiceConfig {
     }
 
     private CustomThreadPoolExecutor generateCommonThreadPool(String threadName, String threadErrorMsg, String rejectErrorMsg) {
-        CustomThreadPoolExecutor customThreadPoolExecutor = (CustomThreadPoolExecutor) CommonUtil.getFixThreadPoolSizeThreadPool(50, r -> {
+        return (CustomThreadPoolExecutor) ThreadPoolUtil.getSingleThreadPoolSizeThreadPool(50, r -> {
             Thread thread = new Thread(r);
             thread.setName(threadName);
             thread.setUncaughtExceptionHandler((t, e) -> log.error(threadErrorMsg,e));
             return thread;
-        },threadName, (r, executor) -> log.error(rejectErrorMsg));
-        ThreadPoolUtil.registerThreadPoolExecutor(customThreadPoolExecutor);
-        return customThreadPoolExecutor;
+        },threadName, (r, executor) -> {
+            log.error(rejectErrorMsg);
+        });
     }
 
     @Bean("d2d_schedule_service")
     public Executor d2dScheduleService(){
-        CustomThreadPoolExecutor customThreadPoolExecutor = (CustomThreadPoolExecutor) CommonUtil.getFixThreadPoolSizeThreadPool(10, r -> {
+        return ThreadPoolUtil.getSingleThreadPoolSizeThreadPool(100, r -> {
             Thread thread = new Thread(r);
             thread.setName("-d2d-schedule-service-");
             thread.setUncaughtExceptionHandler((t, e) -> System.err.println("error of d2d schedule service " + e));
@@ -76,8 +74,6 @@ public class ServiceConfig {
         }, "d2d_schedule_service", (r, executor) -> {
             log.error("d2d_schedule_service reject task");
         });
-        ThreadPoolUtil.registerThreadPoolExecutor(customThreadPoolExecutor);
-        return customThreadPoolExecutor;
     }
 
     @Bean("top5_schedule_service")

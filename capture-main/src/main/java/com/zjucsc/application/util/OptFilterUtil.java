@@ -48,26 +48,22 @@ public class OptFilterUtil {
                 s -> new ConcurrentHashMap<>());
         ConcurrentHashMap<String, OperationAnalyzer> analyzerMap;
         String srcTag = !optFilterForFront.getSrcIp().equals("--") ? optFilterForFront.getSrcIp() : optFilterForFront.getSrcMac();
-        analyzerMap = OPERATION_FILTER_PRO.get(deviceTag).computeIfAbsent(srcTag, s -> {
+//        if (OPERATION_FILTER_PRO.get(deviceTag) == null || OPERATION_FILTER_PRO.get(deviceTag).get(srcTag) == null){
+//            ConcurrentHashMap<String,OperationAnalyzer> map = new ConcurrentHashMap<>();
+//            srcAnalyzeMap.put(srcTag,map);
+//            OPERATION_FILTER_PRO.put(deviceTag,srcAnalyzeMap);
+//        }
+        OPERATION_FILTER_PRO.computeIfAbsent(deviceTag, deviceTag1 -> {
             ConcurrentHashMap<String,OperationAnalyzer> map = new ConcurrentHashMap<>();
-            srcAnalyzeMap.put(srcTag,map);
-            return map;
+            srcAnalyzeMap.putIfAbsent(srcTag,map);
+            return srcAnalyzeMap;
         });
+        analyzerMap = OPERATION_FILTER_PRO.get(deviceTag).get(srcTag);
         String protocolName = CacheUtil.convertIdToName(optFilterForFront.getProtocolId());
         analyzerMap.putIfAbsent(protocolName,new OperationAnalyzer(new OperationPacketFilter<>(filterName)));
         OperationPacketFilter analyzer = analyzerMap.get(protocolName).getAnalyzer();
         analyzer.resetAllRule();
         for (String funCode : optFilterForFront.getFunCodes()) {
-//            int filterType = optFilter.getFilterType();
-//            if (filterType == 0){
-//                //white
-//                analyzerMap.get(protocolName).getAnalyzer().addWhiteRule(optFilter.getFunCode(),
-//                        CommonConfigUtil.getTargetProtocolFuncodeMeaning(protocolName,optFilter.getFunCode()));
-//            }else{
-//                analyzerMap.get(protocolName).getAnalyzer().addBlackRule(optFilter.getFunCode(),
-//                        CommonConfigUtil.getTargetProtocolFuncodeMeaning(protocolName,optFilter.getFunCode()));
-//            }
-            //white
             analyzer.addWhiteRule(funCode, ProtocolUtil.getTargetProtocolFuncodeMeaning(protocolName,funCode));
         }
     }

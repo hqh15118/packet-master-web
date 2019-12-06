@@ -16,6 +16,7 @@ import com.zjucsc.attack.bean.AttackBean;
 import com.zjucsc.base.util.SysRunStateUtil;
 import com.zjucsc.common.util.CommonUtil;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
+import com.zjucsc.common.util.ThreadLocalUtil;
 import com.zjucsc.socket_io.SocketIoEvent;
 import com.zjucsc.socket_io.SocketServiceCenter;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
@@ -27,7 +28,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 @Slf4j
 public class CacheUtil {
@@ -727,7 +727,7 @@ public class CacheUtil {
      * @return 设备
      */
     private static Device createDeviceInverse(FvDimensionLayer layer , String deviceTag){
-        StringBuilder sb = CommonUtil.getGlobalStringBuilder();
+        StringBuilder sb = ThreadLocalUtil.getStringBuilder();
         long timeNow = System.nanoTime();                       //防止太快重复设备
         Device device = new Device();
         Date date = new Date();
@@ -804,7 +804,7 @@ public class CacheUtil {
 //        addOrUpdateDeviceManually(device);
 //    }
     private static Device createUnknownDevice(FvDimensionLayer layer){
-        StringBuilder sb = CommonUtil.getGlobalStringBuilder();
+        StringBuilder sb = ThreadLocalUtil.getStringBuilder();
         long timeNow = System.nanoTime();
         Device device = new Device();
         sb.append("未知设备").append(CommonUtil.getDateFormat2().format(new Date()))
@@ -933,7 +933,7 @@ public class CacheUtil {
     }
 
     public static void addD2DAttackPair(String dstDeviceNumber,String srcDeviceNumber){
-        StringBuilder sb = CommonUtil.getGlobalStringBuilder();
+        StringBuilder sb = ThreadLocalUtil.getStringBuilder();
         sb.append(dstDeviceNumber).append("-").append(srcDeviceNumber);
         D2DAttackPair.putIfAbsent(sb.toString(),"");
     }
@@ -941,7 +941,7 @@ public class CacheUtil {
         D2DAttackPair.clear();
     }
     public static boolean d2DAttackExist(String dstDeviceNumber,String srcDeviceNumber){
-        StringBuilder sb = CommonUtil.getGlobalStringBuilder();
+        StringBuilder sb = ThreadLocalUtil.getStringBuilder();
         sb.append(dstDeviceNumber).append("-").append(srcDeviceNumber);
         return D2DAttackPair.containsKey(sb.toString());
     }

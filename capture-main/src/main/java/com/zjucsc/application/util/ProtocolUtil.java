@@ -36,10 +36,10 @@ public class ProtocolUtil {
         String funcodeMeaning;
         HashMap<String,String> map = getTargetProtocolAllFuncodeMeaning(protocol);
         if (map==null || (funcodeMeaning = map.get(funcode)) == null){
-            if (funcode == null){
+            if (funcode.equals("--")){
                 return "--";
             }
-            funcodeMeaning = "未知功能码操作--" + funcode;
+            funcodeMeaning = "未知功能码操作：" + funcode;
             if (SHOW_LOG) {
                 log.info("can not find protocol {} funcode {} meaning in CONFIGURATION_MAP \n CONFIGURATION_MAP is {}"
                         , protocol, funcode, CONFIGURATION_MAP);

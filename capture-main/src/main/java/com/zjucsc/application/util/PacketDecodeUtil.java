@@ -2,7 +2,7 @@ package com.zjucsc.application.util;
 
 import com.zjucsc.application.config.PACKET_PROTOCOL;
 import com.zjucsc.common.util.ByteUtil;
-import com.zjucsc.common.util.CommonUtil;
+import com.zjucsc.common.util.ThreadLocalUtil;
 import com.zjucsc.tshark.bean.CollectorState;
 import com.zjucsc.tshark.packets.Dnp3_0Packet;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
@@ -69,8 +69,7 @@ public class PacketDecodeUtil {
         return data;
     }
 
-    private static ThreadLocal<StringBuilder> stringBuilderThreadLocal
-            = ThreadLocal.withInitial(() -> new StringBuilder(100));
+
     /**
      *
      * @param payload tcp payload
@@ -88,7 +87,7 @@ public class PacketDecodeUtil {
 
 
     private static StringBuilder getEmptyStringBuilder(){
-        StringBuilder sb = stringBuilderThreadLocal.get();
+        StringBuilder sb = ThreadLocalUtil.getStringBuilder();
         sb.delete(0,sb.length());
         return sb;
     }
@@ -154,7 +153,7 @@ public class PacketDecodeUtil {
     public static String discernPacket(String protocolStack){
         if(protocolStack.endsWith("data"))
         {
-            StringBuilder sb = CommonUtil.getGlobalStringBuilder();
+            StringBuilder sb = ThreadLocalUtil.getStringBuilder();
             char ch;
             for (int i = protocolStack.length() - 6;; i--) {
                 if ((ch = protocolStack.charAt(i))!=':'){
@@ -201,7 +200,7 @@ public class PacketDecodeUtil {
     }
 
     public static String getUnDefinedPacketProtocol(String protocolStack){
-        StringBuilder sb = stringBuilderThreadLocal.get();
+        StringBuilder sb = ThreadLocalUtil.getStringBuilder();
         sb.delete(0,sb.length());
         int index = protocolStack.lastIndexOf(":");
         if (index < 0){

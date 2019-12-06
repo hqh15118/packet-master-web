@@ -3,6 +3,7 @@ package com.zjucsc.application.config.auth;
 import com.alibaba.fastjson.JSON;
 import com.zjucsc.application.config.properties.ConstantConfig;
 import com.zjucsc.application.domain.bean.LogBean;
+import com.zjucsc.common.util.ThreadLocalUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -39,14 +40,10 @@ public class LogAspect {
         // do nothing
     }
 
-    private static ThreadLocal<StringBuilder> builderThreadLocal
-            = ThreadLocal.withInitial(() -> new StringBuilder(20));
-
     @Around("pointcut()")
     public Object around(ProceedingJoinPoint point) throws Throwable {
         Exception exception = null;
-        StringBuilder sb = builderThreadLocal.get();
-        sb.delete(0,sb.length());
+        StringBuilder sb = ThreadLocalUtil.getStringBuilder();
         Object result = null;
         long beginTime = System.currentTimeMillis();
         MethodSignature signature = (MethodSignature) point.getSignature();

@@ -3,6 +3,7 @@ package com.zjucsc.application.config.auth;
 
 import com.zjucsc.application.config.properties.ConstantConfig;
 import com.zjucsc.application.domain.bean.BaseResponse;
+import com.zjucsc.base.util.HttpUtil;
 import com.zjucsc.common.exceptions.DataAccessException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Aspect
+
 public class HessianMapperAspect {
 
     @Autowired private ConstantConfig constantConfig;

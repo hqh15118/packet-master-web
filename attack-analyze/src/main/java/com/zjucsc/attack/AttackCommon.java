@@ -13,7 +13,7 @@ import com.zjucsc.attack.s7comm.S7OptAnalyzer;
 import com.zjucsc.attack.s7comm.S7OpDecode;
 import com.zjucsc.attack.util.ArtOptAttackUtil;
 import com.zjucsc.common.bean.ThreadPoolInfoWrapper;
-import com.zjucsc.common.util.CommonUtil;
+import com.zjucsc.common.util.ThreadPoolUtil;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.slf4j.Logger;
@@ -73,7 +73,7 @@ public class AttackCommon {
         COMMAND_DECODE_HASH_MAP.put("s7comm",new S7OpDecode());
     }
 
-    private static ExecutorService ART_COMMAND_ATTACK_ANALYZE_SERVICE = CommonUtil.getSingleThreadPoolSizeThreadPool(10000,r -> {
+    private static ExecutorService ART_COMMAND_ATTACK_ANALYZE_SERVICE = ThreadPoolUtil.getSingleThreadPoolSizeThreadPool(10000, r -> {
         Thread thread = new Thread(r);
         thread.setName("-attack-command-art-analyze-service-");
         thread.setUncaughtExceptionHandler((t, e) -> {
@@ -82,7 +82,7 @@ public class AttackCommon {
         return thread;
     },"ART_COMMAND_ATTACK_ANALYZE_SERVICE");
 
-    private static ExecutorService ART_ATTACK_ANALYZE_SERVICE = CommonUtil.getSingleThreadPoolSizeThreadPool(10000,r -> {
+    private static ExecutorService ART_ATTACK_ANALYZE_SERVICE = ThreadPoolUtil.getSingleThreadPoolSizeThreadPool(10000,r -> {
         Thread thread = new Thread(r);
         thread.setName("-attack-art-analyze-service-");
         thread.setUncaughtExceptionHandler((t, e) -> {
@@ -139,7 +139,7 @@ public class AttackCommon {
                 return thread;
             });
 
-    private static ExecutorService ART_OPT_ANALYZE_SERVICE = CommonUtil.getSingleThreadPoolSizeThreadPool(10000,
+    private static ExecutorService ART_OPT_ANALYZE_SERVICE = ThreadPoolUtil.getSingleThreadPoolSizeThreadPool(10000,
             r -> {
                 Thread thread = new Thread(r);
                 thread.setName("-attack-art-opt-analyze-service-");

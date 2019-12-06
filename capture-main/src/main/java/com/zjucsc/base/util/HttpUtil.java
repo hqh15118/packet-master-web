@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.net.ssl.*;
+import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
@@ -154,6 +155,20 @@ public class HttpUtil {
         public boolean verify(String hostname, SSLSession session) {
             return true;
         }
+    }
+
+
+    public static String getJSONDataFromRequest(HttpServletRequest request){
+        StringBuilder sb = new StringBuilder();
+        try(BufferedReader bfr = request.getReader()){
+            String str;
+            while ((str = bfr.readLine())!=null){
+                sb.append(str);
+            }
+        } catch (IOException e) {
+            log.error("无法读取JSON数据");
+        }
+        return sb.toString();
     }
 
 }

@@ -6,7 +6,7 @@ import com.zjucsc.attack.bean.BaseOpName;
 public class ModbusOpName extends BaseOpName {
     private int address;
     private int reg;
-    private int bitoffset;
+    private int bitOffset;
     private boolean result;
 
     public int getAddress() {
@@ -25,12 +25,12 @@ public class ModbusOpName extends BaseOpName {
         this.reg = reg;
     }
 
-    public int getBitoffset() {
-        return bitoffset;
+    public int getBitOffset() {
+        return bitOffset;
     }
 
-    public void setBitoffset(int bitoffset) {
-        this.bitoffset = bitoffset;
+    public void setBitOffset(int bitOffset) {
+        this.bitOffset = bitOffset;
     }
 
     public boolean isResult() {

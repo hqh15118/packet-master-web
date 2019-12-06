@@ -7,13 +7,13 @@ import com.zjucsc.attack.bean.BaseOpName;
 import java.util.List;
 
 public interface IArtOptNameService {
-    void insertArtOptName(BaseOpName s7OptName);
-    void updateArtOptName(BaseOpName s7OptName);
+    void insertArtOptName(String optNameJSON);
+    void updateArtOptName(String optNameJSON);
     BaseOpName deleteArtOptName(ArtOpNameDTO artOpNameDTO);
     BaseOpName selectArtOptName(ArtOpNameDTO artOpNameDTO);
     List<BaseOpName> selectBatch();
 
-    List<BaseOpName> selectByProtocol(String protocol);
+    List<BaseOpName> selectByProtocolPaged(int page , int limit , String protocol);
 
     boolean enableOptNameConfig(ArtOpNameConfigStateDTO artOpNameConfigStateDTO);
 }

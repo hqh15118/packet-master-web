@@ -24,8 +24,10 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
         return tag;
     }
 
-    public ThreadPoolExecutor setTag(String tag) {
+    public CustomThreadPoolExecutor setTag(String tag) {
         this.tag = tag;
         return this;
     }
+
+
 }

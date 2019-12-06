@@ -4,6 +4,7 @@ import com.zjucsc.art_decode.base.BaseArtDecode;
 import com.zjucsc.art_decode.base.BaseConfig;
 import com.zjucsc.art_decode.base.IArtEntry;
 import com.zjucsc.art_decode.base.ValidPacketCallback;
+import com.zjucsc.art_decode.can.CanDecode;
 import com.zjucsc.art_decode.dnp3.DNP3Decode;
 import com.zjucsc.art_decode.iec101.IEC101Decode;
 import com.zjucsc.art_decode.iec104.IEC104Decode;
@@ -42,6 +43,7 @@ public class ArtDecodeUtil {
         ART_DECODE_CONCURRENT_HASH_MAP.put("mms",new MMSDecode());
         ART_DECODE_CONCURRENT_HASH_MAP.put("iec101",new IEC101Decode());
         ART_DECODE_CONCURRENT_HASH_MAP.put("dcerpc",new OpcdaDecode());
+        ART_DECODE_CONCURRENT_HASH_MAP.put("can",new CanDecode());
     }
 
     /**
