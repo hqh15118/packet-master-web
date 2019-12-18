@@ -44,6 +44,17 @@ public class IEC104DnpPreProcessor extends MultiPreProcessor {
                 add("104asdu.typeid");
                 add("104apci.type");
                 add("104apci.utype");
+                add("104asdu.ioa");
+                add("104asdu.float");
+                add("104asdu.siq");
+                add("104asdu.sco");
+                add("104asdu.normval");
+                add("104asdu.scalval");
+                add("104asdu.numix");
+                add("dnp3.al.boq.b7");
+                add("dnp3.al.boq.b0");
+                add("dnp3.al.ana.int");
+                add("dnp3.al.point_index");
             }
         };
     }

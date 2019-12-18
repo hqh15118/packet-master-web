@@ -34,5 +34,19 @@ public class IEC104Packet {
         @JSONField(name = "104apci_utype")
         public String[] iec104apci_utype={""};
         public String iecProtocol;
+        @JSONField(name = "104asdu_ioa")
+        public String[] ioaAddress;
+        @JSONField(name = "104asdu_float")
+        public String[] measureFloatValue;
+        @JSONField(name = "104asdu_siq")
+        public String[] singlePointValue;  //on / off
+//        @JSONField(name = "104asdu_sco")
+//        public String[] controlPacketStatus;    //select execute packet sco
+        @JSONField(name = "104asdu_normval")
+        public String[] normalValues;
+        @JSONField(name = "104asdu_scalval")
+        public String[] scaleValue;
+        @JSONField(name = "104asdu_numix")
+        public String[] asduNumIx;
     }
 }

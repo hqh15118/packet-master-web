@@ -39,7 +39,6 @@ public class ArtDecodeUtil {
         ART_DECODE_CONCURRENT_HASH_MAP.put("104asdu",new IEC104Decode());
         ART_DECODE_CONCURRENT_HASH_MAP.put("opcua",new OpcuaDecode());
         ART_DECODE_CONCURRENT_HASH_MAP.put("dnp3",new DNP3Decode());
-        ART_DECODE_CONCURRENT_HASH_MAP.put("iec101",new IEC104Decode());
         ART_DECODE_CONCURRENT_HASH_MAP.put("mms",new MMSDecode());
         ART_DECODE_CONCURRENT_HASH_MAP.put("iec101",new IEC101Decode());
         ART_DECODE_CONCURRENT_HASH_MAP.put("dcerpc",new OpcdaDecode());

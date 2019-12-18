@@ -10,7 +10,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class TsharkProxy {
     private TsharkPreProcessor tsharkPreProcessor = new TsharkPreProcessor();
-    static final String DEFAULT_TSHARK_PATH = "tshark";
+    private static final String DEFAULT_TSHARK_PATH = "tshark";
     private LinkedBlockingQueue<String> FVDIMENSIONLAYER_JSON_BUFFER;
     private NewDataCallback<FvDimensionLayer> newDataCallback;
     private volatile boolean running = true;
