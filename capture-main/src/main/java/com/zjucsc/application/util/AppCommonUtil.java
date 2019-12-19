@@ -6,6 +6,7 @@ import com.zjucsc.common.util.ByteUtil;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class AppCommonUtil {
 
@@ -43,6 +44,11 @@ public class AppCommonUtil {
     public static boolean timeCheck(String interfaceName){
         byte[] packetData = getPacketData();
         return TsharkUtil.sendPacket(interfaceName,packetData);
+    }
+
+    private static Pattern pattern = Pattern.compile("-?\\d+(\\.\\d+)?");
+    public static boolean isNumeric(String str) {
+        return pattern.matcher(str).matches();  //match a number with optional '-' and decimal.
     }
 
 }

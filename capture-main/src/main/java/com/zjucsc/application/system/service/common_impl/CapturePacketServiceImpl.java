@@ -19,7 +19,9 @@ import com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler;
 import com.zjucsc.application.tshark.pre_processor.*;
 import com.zjucsc.application.util.*;
 import com.zjucsc.art_decode.ArtDecodeUtil;
+import com.zjucsc.art_decode.dnp3.DNP3Wrapper;
 import com.zjucsc.art_decode.iec101.IEC101DecodeMain;
+import com.zjucsc.art_decode.iec104.IEC104Wrapper;
 import com.zjucsc.attack.bean.AttackBean;
 import com.zjucsc.attack.AttackCommon;
 import com.zjucsc.attack.common.AttackTypePro;
@@ -39,6 +41,7 @@ import com.zjucsc.tshark.pre_processor.BasePreProcessor;
 import com.zjucsc.tshark.pre_processor2.TsharkListener;
 import com.zjucsc.tshark.pre_processor2.TsharkProxy;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,10 +55,12 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Pattern;
 
 import static com.zjucsc.application.config.Common.COMMON_THREAD_EXCEPTION_HANDLER;
 import static com.zjucsc.application.config.PACKET_PROTOCOL.*;
 import static com.zjucsc.socket_io.SocketIoEvent.REAL_TIME_PACKET_FILTER;
+import static org.apache.commons.lang3.StringUtils.isNumeric;
 
 @Slf4j
 @Service
@@ -116,23 +121,37 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         });
 
         ArtDecodeUtil.registerPacketValidCallback((argName, value, layer, objs) -> {
-            if (objs.length == 0) {
-                ArtPacketDetail artPacketDetail = ArtPacketDetail.newOne(layer);
-                artPacketDetail.setValue(value);
-                artPacketDetail.setArtName(argName);
-                ART_PACKET.sendMsg(artPacketDetail);
-                //iArtPacketService.insertArtPacket(argName,artPacketDetail);
-                Map<String, Float> res = StatisticsData.getGlobalArtMap();
-                AttackCommon.appendArtAnalyze(res, layer);
-                //分析结果
-                //当有工艺参数更新的时候更新发送参数值
-                StatisticsData.addOrUpdateArtData(argName,String.valueOf(value));
-            }else{
+            ArtPacketDetail artPacketDetail = ArtPacketDetail.newOne(layer);
+            artPacketDetail.setValue(value);
+            artPacketDetail.setArtName(argName);
+            ART_PACKET.sendMsg(artPacketDetail);
+            //iArtPacketService.insertArtPacket(argName,artPacketDetail);
+            Map<String, Float> res = StatisticsData.getGlobalArtMap();
+            AttackCommon.appendArtAnalyze(res, layer);
+            //分析结果
+            //当有工艺参数更新的时候更新发送参数值
+            StatisticsData.addOrUpdateArtData(argName,String.valueOf(value));
+            if (objs.length > 0) {
                 String event = (String) objs[0];
                 switch (event){
                     case "opcda":
                         //TODO SAVE TO DB
                         break;
+                    case "iec104":
+                        IEC104Wrapper iec104Wrapper = (IEC104Wrapper) objs[1];
+                        if (isNumeric(iec104Wrapper.getIdOrIOA())){
+                            SocketServiceCenter.updateAllClient(SocketIoEvent.IEC104ValueChange, iec104Wrapper);
+                        }else{
+                            log.error("【IEC104Mapper】iec104匹配失败[{}]",iec104Wrapper.toString());
+                        }
+                        break;
+                    case "dnp3":
+                        DNP3Wrapper dnp3Wrapper = ((DNP3Wrapper) objs[1]);
+                        if (isNumeric(dnp3Wrapper.getId())){
+                            SocketServiceCenter.updateAllClient(SocketIoEvent.DNP3ValueChange, dnp3Wrapper);
+                        }else{
+                            log.error("【DNP3Mapper】DNP匹配失败[{}]",dnp3Wrapper.toString());
+                        }
                 }
             }
         });

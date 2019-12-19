@@ -41,6 +41,15 @@ public class IEC104DnpPreProcessor extends MultiPreProcessor {
                 add("dnp3.ctl.prm");
                 add("dnp3.ctl.prifunc");
                 add("dnp3.ctl.secfunc");
+                add("dnp3.al.boq.b7");
+                add("dnp3.al.boq.b0");
+                add("dnp3.al.ana.int");
+                add("dnp3.al.point_index");
+                add("dnp3.al.obj");
+                add("dnp3.al.biq.b7");
+                add("dnp3.al.range.start");
+                add("dnp3.al.range.stop");
+
                 add("104asdu.typeid");
                 add("104apci.type");
                 add("104apci.utype");
@@ -51,10 +60,7 @@ public class IEC104DnpPreProcessor extends MultiPreProcessor {
                 add("104asdu.normval");
                 add("104asdu.scalval");
                 add("104asdu.numix");
-                add("dnp3.al.boq.b7");
-                add("dnp3.al.boq.b0");
-                add("dnp3.al.ana.int");
-                add("dnp3.al.point_index");
+
             }
         };
     }

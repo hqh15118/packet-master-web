@@ -4,6 +4,7 @@ package com.zjucsc.application.config.sys;
 import com.corundumstudio.socketio.AckRequest;
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.listener.DataListener;
+import com.zjucsc.application.AppControl;
 import com.zjucsc.application.system.service.ScheduledService;
 import com.zjucsc.application.util.PacketDecodeUtil;
 import com.zjucsc.socket_io.Event;
@@ -27,6 +28,7 @@ public class SocketIoConfig {
             {
                 add(new CollectorStateListener());
                 add(new D2DPacketListener().setInnerCall(() -> scheduledService.sendDevice2DevicePackets()));
+                add(new ElecAllStatusListener());
             }
         };
     }
@@ -49,6 +51,15 @@ public class SocketIoConfig {
         private D2DPacketListener setInnerCall(InnerCall innerCall){
             this.innerCall = innerCall;
             return this;
+        }
+    }
+
+    @Event(eventType = String.class, event = "elec_all_status")
+    public static class ElecAllStatusListener implements DataListener<String>{
+
+        @Override
+        public void onData(SocketIOClient socketIOClient, String type, AckRequest ackRequest) throws Exception {
+
         }
     }
 

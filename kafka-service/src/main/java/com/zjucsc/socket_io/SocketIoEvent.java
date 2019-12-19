@@ -43,4 +43,8 @@ public class SocketIoEvent {
     public static final String COMMAND = "command";
 
     public static final String ART_COMMAND_ATTACK = "art_command_attack";
+
+    public static final String IEC104ValueChange = "iec_status_change";
+
+    public static final String DNP3ValueChange = "dnp3_status_change";
 }

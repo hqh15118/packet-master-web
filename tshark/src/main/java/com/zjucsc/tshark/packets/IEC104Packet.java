@@ -28,11 +28,11 @@ public class IEC104Packet {
     public static class LayersBean extends FvDimensionLayer {
         @JSONField(name = "104asdu_typeid")
         //asdu
-        public String[] iec104asdu_typeid={""};
+        public String[] iec104asdu_typeid;
         @JSONField(name = "104apci_type")
         public String[] iec104_type={"-1"};
         @JSONField(name = "104apci_utype")
-        public String[] iec104apci_utype={""};
+        public String[] iec104apci_utype;
         public String iecProtocol;
         @JSONField(name = "104asdu_ioa")
         public String[] ioaAddress;

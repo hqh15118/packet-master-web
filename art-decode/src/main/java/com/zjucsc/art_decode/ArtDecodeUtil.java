@@ -1,5 +1,6 @@
 package com.zjucsc.art_decode;
 
+import com.alibaba.fastjson.JSON;
 import com.zjucsc.art_decode.base.BaseArtDecode;
 import com.zjucsc.art_decode.base.BaseConfig;
 import com.zjucsc.art_decode.base.IArtEntry;
@@ -8,6 +9,7 @@ import com.zjucsc.art_decode.can.CanDecode;
 import com.zjucsc.art_decode.dnp3.DNP3Decode;
 import com.zjucsc.art_decode.iec101.IEC101Decode;
 import com.zjucsc.art_decode.iec104.IEC104Decode;
+import com.zjucsc.art_decode.iec104.IEC104DecodeByTshark;
 import com.zjucsc.art_decode.mms.MMSDecode;
 import com.zjucsc.art_decode.modbus.ModbusDecode;
 import com.zjucsc.art_decode.opcda.OpcdaDecode;
@@ -43,6 +45,32 @@ public class ArtDecodeUtil {
         ART_DECODE_CONCURRENT_HASH_MAP.put("iec101",new IEC101Decode());
         ART_DECODE_CONCURRENT_HASH_MAP.put("dcerpc",new OpcdaDecode());
         ART_DECODE_CONCURRENT_HASH_MAP.put("can",new CanDecode());
+        load104AndDNPMapperFile(3);
+    }
+
+    public static String load104AndDNPMapperFile(int option){
+        switch (option){
+            case 1:
+                IEC104DecodeByTshark.setIEC104MapperFile();
+                return "reload 104";
+            case 2:
+                return "reload dnp";
+            case 3:
+                IEC104DecodeByTshark.setIEC104MapperFile();
+                return "reload 104 and dnp";
+        }
+        return "reload failed, can not resolve option {" + option + "}\n" +
+                "1 -- 104,2 -- dnp,3 -- all";
+    }
+
+    public static String getWatchVar(String option){
+        switch (option){
+            case "iec_dnp":
+                return JSON.toJSONString(new Map[]{
+                        //IEC104DecodeByTshark.readIOA2IDMapper()
+                });
+        }
+        return "invalid option {" + option + "}";
     }
 
     /**
