@@ -4,10 +4,18 @@ public class DNP3Wrapper {
 
     private String id;
     private float value;
+    private String type;
+    private String pointIndex;
+    private String ip;
 
-    public DNP3Wrapper(String id, float value) {
+    public DNP3Wrapper(String id, float value,
+                       String type,String pointIndex,
+                       String ip) {
         this.id = id;
         this.value = value;
+        this.type = type;
+        this.pointIndex = pointIndex;
+        this.ip = ip;
     }
 
     public String getId() {
@@ -31,6 +39,9 @@ public class DNP3Wrapper {
         return "DNP3Wrapper{" +
                 "id='" + id + '\'' +
                 ", value=" + value +
+                ", type='" + type + '\'' +
+                ", pointIndex='" + pointIndex + '\'' +
+                ", ip='" + ip + '\'' +
                 '}';
     }
 }

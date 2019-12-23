@@ -1,9 +1,12 @@
 package com.zjucsc.art_decode.base;
 
 import com.zjucsc.art_decode.ArtDecodeUtil;
+import com.zjucsc.art_decode.iec104.IEC104Decode;
 import com.zjucsc.common.util.CommonUtil;
 import com.zjucsc.common.util.ThreadPoolUtil;
+import com.zjucsc.tshark.packets.Dnp3_0Packet;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
+import com.zjucsc.tshark.packets.IEC104Packet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +22,7 @@ import java.util.concurrent.ExecutorService;
 
 public abstract class BaseArtDecode<T extends BaseConfig> implements IArtDecode<T> , IArtEntry{
     private static Logger logger = LoggerFactory.getLogger(BaseArtDecode.class);
+
     private ConcurrentSkipListSet<T> configs = new ConcurrentSkipListSet<>();
 
     protected void callback(String artName,float value,FvDimensionLayer layer,Object...objs){
@@ -65,11 +69,16 @@ public abstract class BaseArtDecode<T extends BaseConfig> implements IArtDecode<
             return;
         }
         executorService.execute(() -> {
+            int configIndex = 0;
             for (T config : configs) {
-                if (layer.eth_src[0].equals(config.getDeviceMac())
-                        || layer.eth_dst[0].equals(config.getDeviceMac())){
-                    decode(config,map,payload,layer,objs);
+                if (layer instanceof IEC104Packet.LayersBean || layer instanceof Dnp3_0Packet.LayersBean){
+                    decode(config, map, payload, layer, configIndex);
+                    continue;
                 }
+                if (layer.eth_src[0].equals(config.getDeviceMac()) || layer.eth_dst[0].equals(config.getDeviceMac())){
+                    decode(config,map,payload,layer,objs,configIndex);
+                }
+                configIndex++;
             }
         });
     }

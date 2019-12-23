@@ -1,13 +1,22 @@
 package com.zjucsc.art_decode.util.mapper;
 
+import com.zjucsc.art_decode.iec104.IEC104DecodeByTshark;
+
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 public abstract class AbstractMapper implements Mapper {
     private String mapperFilePath;
     public AbstractMapper(String mapperFilePath){
         this.mapperFilePath = mapperFilePath;
     }
+    public AbstractMapper(){
+        this(null);
+    }
 
+    public void setMapperFilePath(String mapperFilePath){
+        this.mapperFilePath = mapperFilePath;
+    }
     @Override
     public String getIDByIPAndIOA(String ip, String ioa) {
         throw new InvalidMapperOperation("dnp mapper，无效操作");
@@ -21,7 +30,11 @@ public abstract class AbstractMapper implements Mapper {
     @Override
     public void createMapper() {
         File file = new File(mapperFilePath);
-        try(BufferedReader bf = new BufferedReader(new InputStreamReader(new FileInputStream(file)))){
+        if (!file.exists()){
+            throw new MapperFileNotFoundException("路径{" + file.getAbsolutePath() + "}不存在Mapper文件");
+        }
+        beforeMapper();
+        try(BufferedReader bf = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))){
             String line;
             String ip = null;
             for (;;){
@@ -42,8 +55,9 @@ public abstract class AbstractMapper implements Mapper {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            errorMapper(e);
         }
+        afterMapper();
     }
 
     /**
@@ -51,4 +65,14 @@ public abstract class AbstractMapper implements Mapper {
      * @param validLine
      */
     public abstract void processValidLine(String validLine,String ip);
+
+    public void beforeMapper(){}
+    public void afterMapper(){}
+    public void errorMapper(Exception e){}
+
+    static class MapperFileNotFoundException extends RuntimeException{
+        MapperFileNotFoundException(String msg){
+            super(msg);
+        }
+    }
 }

@@ -48,5 +48,10 @@ public class IEC104Packet {
         public String[] scaleValue;
         @JSONField(name = "104asdu_numix")
         public String[] asduNumIx;
+        @JSONField(name = "104asdu_causetx")
+        public String[] causetx;
+        //104asdu.sco
+        @JSONField(name = "104asdu_sco")
+        public String[] SCO;
     }
 }

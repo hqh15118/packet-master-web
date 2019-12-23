@@ -13,4 +13,5 @@ public class IEC104ConfigTshark extends BaseConfig {
     public void setIoaAddress(String ioaAddress) {
         this.ioaAddress = ioaAddress;
     }
+
 }

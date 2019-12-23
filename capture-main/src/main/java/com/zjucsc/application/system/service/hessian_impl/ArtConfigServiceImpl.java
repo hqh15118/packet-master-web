@@ -141,14 +141,18 @@ public class ArtConfigServiceImpl extends BaseServiceImpl<BaseArtConfig,ArtConfi
                 ArtDecodeUtil.addArtDecodeConfig(s7Config);
                 return BaseResponse.OK(true);
             case PACKET_PROTOCOL.IEC104_ASDU_ID:
-                IEC104Config iec104Config = JSON.parseObject(jsonData, IEC104Config.class);
-                iec104Config.setProtocol(PACKET_PROTOCOL.IEC104_ASDU);
-                ArtDecodeUtil.addArtDecodeConfig(iec104Config);
+//                IEC104Config iec104Config = JSON.parseObject(jsonData, IEC104Config.class);
+//                iec104Config.setProtocol(PACKET_PROTOCOL.IEC104_ASDU);
+                IEC104ConfigTshark iec104ConfigTshark = JSON.parseObject(jsonData,IEC104ConfigTshark.class);
+                iec104ConfigTshark.setProtocol(PACKET_PROTOCOL.IEC104_ASDU);
+                ArtDecodeUtil.addArtDecodeConfig(iec104ConfigTshark);
                 break;
             case PACKET_PROTOCOL.DNP3_0_PRI_ID:
-                DNP3Config dnp3Config = JSON.parseObject(jsonData, DNP3Config.class);
-                dnp3Config.setProtocol("dnp3");     //这个协议是和工艺参数解析的模块对应起来的
-                ArtDecodeUtil.addArtDecodeConfig(dnp3Config);
+//                DNP3Config dnp3Config = JSON.parseObject(jsonData, DNP3Config.class);
+//                dnp3Config.setProtocol("dnp3");     //这个协议是和工艺参数解析的模块对应起来的
+                DNP3ConfigByTshark dnp3ConfigByTshark = JSON.parseObject(jsonData,DNP3ConfigByTshark.class);
+                dnp3ConfigByTshark.setProtocol("dnp3");
+                ArtDecodeUtil.addArtDecodeConfig(dnp3ConfigByTshark);
                 break;
             case PACKET_PROTOCOL.PN_IO_ID:
                 PnioConfig pnioConfig = JSON.parseObject(jsonData, PnioConfig.class);

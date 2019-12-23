@@ -13,8 +13,8 @@ public class IEC104AndDNP3MapperOpt {
 
 
     @WriteOperation
-    public String reloadMapperFile(int option){
-        return ArtDecodeUtil.load104AndDNPMapperFile(option);
+    public String reloadMapperFile(String iec104 ,String dnp3){
+        return ArtDecodeUtil.load104AndDNPMapperFile(iec104, dnp3);
     }
 
     @ReadOperation

@@ -17,6 +17,8 @@ public class DNP3ConfigByTshark extends BaseConfig {
     private String objAndVar;
 
     private String pointIndex;
+
+    private String ipAddress;
     public String getObjAndVar() {
         return objAndVar;
     }
@@ -31,5 +33,13 @@ public class DNP3ConfigByTshark extends BaseConfig {
 
     public void setPointIndex(String pointIndex) {
         this.pointIndex = pointIndex;
+    }
+
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
     }
 }

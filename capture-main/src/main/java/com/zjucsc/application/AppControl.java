@@ -5,7 +5,7 @@ package com.zjucsc.application;
  * 1.三峡
  * 2.电网
  */
-public class AppControl {
+public final class AppControl {
 
     private static final String sysTypeCommon = "common",
                                 sysTypeElec = "electricity";

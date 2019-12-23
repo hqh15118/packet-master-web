@@ -13,6 +13,7 @@ public class BaseConfig implements Serializable , Comparable<BaseConfig>{
     private String detail;
     private String deviceMac;
     private String group;
+    private String ipAddress;
 
     public String getProtocol() {
         return protocol;
@@ -99,5 +100,13 @@ public class BaseConfig implements Serializable , Comparable<BaseConfig>{
     @Override
     public int hashCode() {
         return Objects.hash(getTag());
+    }
+
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
     }
 }

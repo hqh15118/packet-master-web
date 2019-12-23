@@ -60,7 +60,7 @@ public class IEC104DnpPreProcessor extends MultiPreProcessor {
                 add("104asdu.normval");
                 add("104asdu.scalval");
                 add("104asdu.numix");
-
+                add("104asdu.causetx");
             }
         };
     }

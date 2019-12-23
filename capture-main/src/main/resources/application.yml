@@ -3,7 +3,7 @@
   #global_address : 192.168.0.114
   #global_address : 10.180.81.207
   #【全局IP】
-  global_address : 192.168.0.122
+  global_address : 192.168.0.121
   #【全局PORT】
   admin_server_port : 8989
   packet_master_web_port : 8080
@@ -33,10 +33,10 @@ pre-processors:
 #  list[6] : opcua
 #【需要开启的tshark进程（需要开启的去掉#）】
   list :
-     - s7comm
-#     - modbus
-#     - iec104
-#     - dnp3_0
+ #    - s7comm
+ #    - modbus
+    - iec104
+    - dnp3_0
 #     - pnio
 #     - cip
 #     - opcua

@@ -1,12 +1,16 @@
 package com.zjucsc.art_decode;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.zjucsc.art_decode.artconfig.DNP3ConfigByTshark;
+import com.zjucsc.art_decode.artconfig.IEC104ConfigTshark;
 import com.zjucsc.art_decode.base.BaseArtDecode;
 import com.zjucsc.art_decode.base.BaseConfig;
 import com.zjucsc.art_decode.base.IArtEntry;
 import com.zjucsc.art_decode.base.ValidPacketCallback;
 import com.zjucsc.art_decode.can.CanDecode;
 import com.zjucsc.art_decode.dnp3.DNP3Decode;
+import com.zjucsc.art_decode.dnp3.DNP3DecodeByTshark;
 import com.zjucsc.art_decode.iec101.IEC101Decode;
 import com.zjucsc.art_decode.iec104.IEC104Decode;
 import com.zjucsc.art_decode.iec104.IEC104DecodeByTshark;
@@ -24,13 +28,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-public class ArtDecodeUtil {
+public final class ArtDecodeUtil {
     private static Logger logger = LoggerFactory.getLogger(ArtDecodeUtil.class);
 
     public static ArtData artData = new ArtData();
     public static ValidPacketCallback validPacketCallback;
+    public static ElecStatusChangeCallback elecStatusChangeCallback;
     private static final HashMap<String, BaseArtDecode> ART_DECODE_CONCURRENT_HASH_MAP
             = new HashMap<>(10);
+
+    private static IEC104DecodeByTshark iec104DecodeByTshark;
+    private static DNP3DecodeByTshark dnp3DecodeByTshark;
     /**
      * 初始化
      */
@@ -38,37 +46,37 @@ public class ArtDecodeUtil {
         ART_DECODE_CONCURRENT_HASH_MAP.put("modbus",new ModbusDecode());
         ART_DECODE_CONCURRENT_HASH_MAP.put("s7comm",new S7Decode());
         ART_DECODE_CONCURRENT_HASH_MAP.put("pn_io",new PnioDecode());
-        ART_DECODE_CONCURRENT_HASH_MAP.put("104asdu",new IEC104Decode());
+        ART_DECODE_CONCURRENT_HASH_MAP.put("104asdu",(iec104DecodeByTshark = new IEC104DecodeByTshark()));
         ART_DECODE_CONCURRENT_HASH_MAP.put("opcua",new OpcuaDecode());
-        ART_DECODE_CONCURRENT_HASH_MAP.put("dnp3",new DNP3Decode());
+        ART_DECODE_CONCURRENT_HASH_MAP.put("dnp3",(dnp3DecodeByTshark = new DNP3DecodeByTshark()));
         ART_DECODE_CONCURRENT_HASH_MAP.put("mms",new MMSDecode());
         ART_DECODE_CONCURRENT_HASH_MAP.put("iec101",new IEC101Decode());
         ART_DECODE_CONCURRENT_HASH_MAP.put("dcerpc",new OpcdaDecode());
         ART_DECODE_CONCURRENT_HASH_MAP.put("can",new CanDecode());
-        load104AndDNPMapperFile(3);
     }
 
-    public static String load104AndDNPMapperFile(int option){
-        switch (option){
-            case 1:
-                IEC104DecodeByTshark.setIEC104MapperFile();
-                return "reload 104";
-            case 2:
-                return "reload dnp";
-            case 3:
-                IEC104DecodeByTshark.setIEC104MapperFile();
-                return "reload 104 and dnp";
+    public static String load104AndDNPMapperFile(String iec104Mapper,String dnp3Mapper){
+        String info = null;
+        if (iec104Mapper != null){
+            IEC104DecodeByTshark.setIEC104MapperFile(iec104Mapper);
+            info = "reload iec104 mapper file";
         }
-        return "reload failed, can not resolve option {" + option + "}\n" +
-                "1 -- 104,2 -- dnp,3 -- all";
+        if (dnp3Mapper != null){
+            DNP3DecodeByTshark.setDNP3MapperFile(dnp3Mapper);
+            info = "reload dnp3 mapper file";
+        }
+        if (info == null) {
+            info = "reload iec104 and dnp3 mapper file";
+        }
+        return info;
     }
 
     public static String getWatchVar(String option){
         switch (option){
             case "iec_dnp":
                 return JSON.toJSONString(new Map[]{
-                        //IEC104DecodeByTshark.readIOA2IDMapper()
-                });
+                        IEC104DecodeByTshark.readIOA2IDMapper(),
+                }, SerializerFeature.PrettyFormat);
         }
         return "invalid option {" + option + "}";
     }
@@ -162,6 +170,10 @@ public class ArtDecodeUtil {
         ArtDecodeUtil.validPacketCallback = validPacketCallback;
     }
 
+    public static void registerElecStatusChangeCallback(ElecStatusChangeCallback elecStatusChangeCallback){
+        ArtDecodeUtil.elecStatusChangeCallback = elecStatusChangeCallback;
+    }
+
     public static final class ArtData{
         //工艺参数解析数据map，key工艺参数名称，value，工艺参数值
         private final ConcurrentHashMap<String,Float> ART_DATA_MAP = new ConcurrentHashMap<>();
@@ -175,5 +187,26 @@ public class ArtDecodeUtil {
         {
             ART_DATA_MAP.remove(artTag);
         }
+    }
+
+    /**
+     * 根据协议及特定规则获取特定协议数据
+     * @return 数据值
+     */
+    public static Float getElecDataByIpAddressAndId(String protocol,String ipAddress,String id){
+        switch (protocol){
+            case "iec104":
+                String ioa = IEC104DecodeByTshark.getIOAByIpAndId(ipAddress,id);
+                if (ioa != null){
+//                    throw new RuntimeException("无法根据{" + ipAddress + "}" +"id{" +id + "}查询到对应的IOA地址，" +
+//                            "【检查IEC104Mapper】");
+                    return iec104DecodeByTshark.getIec104ResultValueMap().getResultValue(ipAddress,ioa);
+                }
+        }
+        return null ;
+    }
+
+    public interface ElecStatusChangeCallback{
+        void callback(String event,Object obj);
     }
 }

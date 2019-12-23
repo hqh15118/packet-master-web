@@ -1,87 +1,30 @@
 package com.zjucsc.art_decode.dnp3;
 
 import com.zjucsc.art_decode.artconfig.DNP3ConfigByTshark;
-import com.zjucsc.art_decode.base.BaseArtDecode;
+import com.zjucsc.art_decode.base.ElecBaseArtDecode;
+import com.zjucsc.art_decode.util.mapper.DNP3Mapper;
 import com.zjucsc.tshark.packets.Dnp3_0Packet;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DNP3DecodeByTshark extends BaseArtDecode<DNP3ConfigByTshark> {
-    private ConcurrentHashMap<String,ConcurrentHashMap<String,Float>> dnp3ResultValue =
-            new ConcurrentHashMap<String,ConcurrentHashMap<String,Float>>(){
-                {
-                    put("binary_output",new ConcurrentHashMap<>());
-                    put("binary_input",new ConcurrentHashMap<>());
-                    put("analog_input",new ConcurrentHashMap<>());
-                }
-            };
+public class DNP3DecodeByTshark extends ElecBaseArtDecode<DNP3ConfigByTshark> {
 
-    private static final String BINARY_OUTPUT = "binary_output",
-            BINARY_INPUT = "binary_input",
-            ANALOG_INPUT = "analog_input";
+    private DNPResultWrapper dnp3ResultValue = new DNPResultWrapper();
 
-    private static HashMap<String,HashMap<String,String>> objVarAndPointIndex2ID = new HashMap<>(3);
+    private static DNP3Mapper dnp3Mapper = new DNP3Mapper();
 
     static {
-        objVarAndPointIndex2ID.put(BINARY_OUTPUT,new HashMap<>(0));
-        objVarAndPointIndex2ID.put(BINARY_INPUT,new HashMap<>(0));
-        objVarAndPointIndex2ID.put(ANALOG_INPUT,new HashMap<>(0));
-        setDNP3MapperFile();
+        setDNP3MapperFile("config/dnp3mapper");
     }
 
-    private StringBuilder sb = new StringBuilder();
-
-    public static void setDNP3MapperFile(){
-        HashMap<String,HashMap<String,String>> map = new HashMap<>(3);
-        map.put(BINARY_OUTPUT,new HashMap<>());
-        map.put(BINARY_INPUT,new HashMap<>());
-        map.put(ANALOG_INPUT,new HashMap<>());
-        File file = new File("config/dnp3mapper");
-        if (!file.exists()){
-            throw new DNP3MapperFileNotFoundException("路径{" + file.getAbsolutePath() + "}不存在dnp3mapper");
-        }
-        try(BufferedReader bf = new BufferedReader(new InputStreamReader(new FileInputStream(file),
-                StandardCharsets.UTF_8))){
-            String data;
-            String type;
-            Map<String,String> typeMap = null;
-            while (true){
-                data = bf.readLine();
-                if (data == null){
-                    break;
-                }
-                data = data.trim();
-                if (data .equals("") ){
-                    continue;
-                }
-                if (data.startsWith("#") || data.equals("\n") ){
-                    continue;
-                }
-                if (data.startsWith(">")){
-                    type = data.replace(">","");
-                    typeMap = map.get(type.trim());
-                    assert typeMap!=null;
-                    continue;
-                }
-                if (typeMap == null){
-                    continue;
-                }
-                String[] pointIndex2ID = data.split(":");
-                assert pointIndex2ID.length == 2;
-                typeMap.put(pointIndex2ID[0].trim(),pointIndex2ID[1].trim());
-            }
-            objVarAndPointIndex2ID = map;
-        } catch (IOException e) {
-            e.printStackTrace();
-            logger.error("fail to init [dnp3 mapper]");
-        }
+    public static void setDNP3MapperFile(String mapperFilePath){
+        dnp3Mapper.setMapperFilePath(mapperFilePath);
+        dnp3Mapper.createMapper();
     }
 
     private static Logger logger = LoggerFactory.getLogger(DNP3DecodeByTshark.class);
@@ -117,26 +60,31 @@ public class DNP3DecodeByTshark extends BaseArtDecode<DNP3ConfigByTshark> {
     @Override
     public Map<String, Float> decode(DNP3ConfigByTshark dnp3ConfigByTshark, Map<String, Float> globalMap, byte[] payload, FvDimensionLayer layer, Object... obj) {
         if (layer instanceof Dnp3_0Packet.LayersBean){
+            int configIndex = ((Integer) obj[0]);
+            if (configIndex != 0){
+                String ip = layer.ip_src[0];
+                saveResultToArtMap(ip,dnp3ConfigByTshark,globalMap,layer);
+            }
             Dnp3_0Packet.LayersBean dnpPacketLayer = ((Dnp3_0Packet.LayersBean) layer);
             if (!storeDNP3Values(dnpPacketLayer)){
                 resetValuesArrIndex();
                 return globalMap;
             }
-            System.out.println(dnp3ResultValue);
-            Float config2Value = dnp3ResultValue.get(dnp3ConfigByTshark.getObjAndVar()).get(dnp3ConfigByTshark.getPointIndex());
-            if (config2Value!=null){
-                globalMap.put(dnp3ConfigByTshark.getTag(),config2Value);
-                String id = objVarAndPointIndex2ID.get(dnp3ConfigByTshark.getObjAndVar()).get(dnp3ConfigByTshark.getPointIndex());
-                if (id == null){
-                    sb.delete(0,sb.length());
-                    id = sb.append(dnp3ConfigByTshark.getObjAndVar()).append(dnp3ConfigByTshark.getPointIndex()).toString();
-                }
-                callback(dnp3ConfigByTshark.getTag(),config2Value,layer,"dnp3",
-                        new DNP3Wrapper(id,config2Value));
-            }
+            String ip = layer.ip_src[0];
+            saveResultToArtMap(ip,dnp3ConfigByTshark,globalMap,layer);
             resetValuesArrIndex();
         }
         return globalMap;
+    }
+
+    private void saveResultToArtMap(String ip,DNP3ConfigByTshark dnp3ConfigByTshark,Map<String, Float> globalMap,FvDimensionLayer layer){
+        Float config2Value = dnp3ResultValue.getResultValue(ip,dnp3ConfigByTshark.getObjAndVar(),dnp3ConfigByTshark.getPointIndex());
+        if (config2Value!=null){
+            Float prev = globalMap.put(dnp3ConfigByTshark.getTag(),config2Value);
+            if (prev == null || !prev.equals(config2Value)){
+                callback(dnp3ConfigByTshark.getTag(),config2Value,layer);
+            }
+        }
     }
 
     private DNP3ValueWrapper getDNP3ArrByObj(String objAndVar){
@@ -177,8 +125,8 @@ public class DNP3DecodeByTshark extends BaseArtDecode<DNP3ConfigByTshark> {
         DNP3ValueWrapper dnp3ValueWrapper;
         String pointIndexStr;
         String valueType;
-        Map<String,Float> typeMap;
         int offset;
+        String ip = dnpPacketLayer.ip_src[0];
         for (int i = 0,len = objAndVars.length; i < len; i++) {
             objAndVar = objAndVars[i];  //"2562" "7682" "258"
             valueType = objAndVar2Tag.get(objAndVar);   //binary_input/binary_output/analog_input
@@ -190,7 +138,6 @@ public class DNP3DecodeByTshark extends BaseArtDecode<DNP3ConfigByTshark> {
                 logger.error("【DNP3工艺参数解析】未定义[{}] objAndVar",objAndVar);
                 continue;
             }
-            typeMap = dnp3ResultValue.get(valueType);   //binary_input/binary_output/analog_input map
             dnp3ValueWrapper = getDNP3ArrByObj(objAndVar);
             if (dnp3ValueWrapper == null){
                 //skip unknown obj&var
@@ -200,10 +147,16 @@ public class DNP3DecodeByTshark extends BaseArtDecode<DNP3ConfigByTshark> {
             for (int j = dnpPointIndex; j < dnpPointIndex + offset; j++) {
                 pointIndexStr = pointIndex[j];
                 int result = Integer.parseInt(dnp3ValueWrapper.getNextValue());
-                Float prevData = typeMap.put(pointIndexStr, (float) result);
-                if (!valueChange && (prevData == null || prevData.intValue() != result)){
+                boolean change = dnp3ResultValue.setResultValue(ip,valueType,pointIndexStr, (float)result);
+                if (change){
                     //stored value change and need to update global map
-                    valueChange = true;
+                    if (!valueChange) {
+                        valueChange = true;
+                    }
+                    String id = dnp3Mapper.getIDByIPAndTypeAndPointIndex(dnpPacketLayer.ip_src[0], objAndVar2Tag.get(objAndVar), pointIndexStr);
+                    if (id!=null){
+                        elecStatusChangeCallback("dnp3",new DNP3Wrapper(id,result,valueType,pointIndexStr,dnpPacketLayer.ip_src[0]));
+                    }
                 }
             }
             dnpPointIndex += offset;
@@ -236,13 +189,39 @@ public class DNP3DecodeByTshark extends BaseArtDecode<DNP3ConfigByTshark> {
         }
     }
 
-    private static class DNP3MapperFileNotFoundException extends RuntimeException{
-        DNP3MapperFileNotFoundException(String msg){
-            super(msg);
+    public DNPResultWrapper getDnp3ResultValue() {
+        return dnp3ResultValue;
+    }
+
+    public static class DNPResultWrapper {
+        //
+        private ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, Float>>> dnp3ResultValue =
+                new ConcurrentHashMap<>();
+
+        public boolean setResultValue(String ip, String type, String pointIndex, float value) {
+            ConcurrentHashMap<String, ConcurrentHashMap<String, Float>> type2PointIndex2ValueMap = dnp3ResultValue
+                    .computeIfAbsent(ip, ip1 -> new ConcurrentHashMap<>());
+            ConcurrentHashMap<String, Float> pointIndex2ValueMap = type2PointIndex2ValueMap.computeIfAbsent(type, type1 -> new ConcurrentHashMap<>());
+            Float prev = pointIndex2ValueMap.put(pointIndex, value);
+            return prev == null || prev != value;
+        }
+
+        public Float getResultValue(String ip,String type,String pointIndex){
+            ConcurrentHashMap<String, ConcurrentHashMap<String, Float>> type2PointIndex2ValueMap = dnp3ResultValue.get(ip);
+            if (type2PointIndex2ValueMap == null){
+                return null;
+            }
+            ConcurrentHashMap<String, Float> pointIndex2ValueMap = type2PointIndex2ValueMap.get(type);
+            if (pointIndex2ValueMap == null){
+                return null;
+            }
+            return pointIndex2ValueMap.get(pointIndex);
+        }
+
+        public ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, Float>>> getDnp3ResultValue(){
+            return dnp3ResultValue;
         }
     }
 
-    public ConcurrentHashMap<String, ConcurrentHashMap<String, Float>> getDnp3ResultValue() {
-        return dnp3ResultValue;
-    }
 }
+

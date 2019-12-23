@@ -1,6 +1,7 @@
 package com.zjucsc.application.system.service.common_impl;
 
-import com.zjucsc.application.config.*;
+import com.zjucsc.application.config.Common;
+import com.zjucsc.application.config.PACKET_PROTOCOL;
 import com.zjucsc.application.config.properties.ConstantConfig;
 import com.zjucsc.application.config.properties.PreProcessor;
 import com.zjucsc.application.config.properties.TsharkConfig;
@@ -17,17 +18,21 @@ import com.zjucsc.application.tshark.capture.NewFvDimensionCallback;
 import com.zjucsc.application.tshark.capture.ProcessCallback;
 import com.zjucsc.application.tshark.handler.BadPacketAnalyzeHandler;
 import com.zjucsc.application.tshark.pre_processor.*;
-import com.zjucsc.application.util.*;
+import com.zjucsc.application.util.CacheUtil;
+import com.zjucsc.application.util.DeviceOptUtil;
+import com.zjucsc.application.util.PacketDecodeUtil;
+import com.zjucsc.application.util.ProtocolUtil;
 import com.zjucsc.art_decode.ArtDecodeUtil;
 import com.zjucsc.art_decode.dnp3.DNP3Wrapper;
 import com.zjucsc.art_decode.iec101.IEC101DecodeMain;
+import com.zjucsc.art_decode.iec104.IEC104DecodeByTshark;
 import com.zjucsc.art_decode.iec104.IEC104Wrapper;
-import com.zjucsc.attack.bean.AttackBean;
 import com.zjucsc.attack.AttackCommon;
+import com.zjucsc.attack.bean.AttackBean;
 import com.zjucsc.attack.common.AttackTypePro;
 import com.zjucsc.base.util.limit.LimitServiceEntry;
-import com.zjucsc.common.util.DBUtil;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
+import com.zjucsc.common.util.DBUtil;
 import com.zjucsc.common.util.ThreadPoolUtil;
 import com.zjucsc.kafka.KafkaThread;
 import com.zjucsc.socket_io.SocketIoEvent;
@@ -54,13 +59,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Pattern;
 
 import static com.zjucsc.application.config.Common.COMMON_THREAD_EXCEPTION_HANDLER;
 import static com.zjucsc.application.config.PACKET_PROTOCOL.*;
 import static com.zjucsc.socket_io.SocketIoEvent.REAL_TIME_PACKET_FILTER;
+import static org.apache.commons.lang3.StringUtils.abbreviate;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
+import static org.apache.commons.lang3.StringUtils.swapCase;
 
 @Slf4j
 @Service
@@ -137,24 +142,22 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
                     case "opcda":
                         //TODO SAVE TO DB
                         break;
-                    case "iec104":
-                        IEC104Wrapper iec104Wrapper = (IEC104Wrapper) objs[1];
-                        if (isNumeric(iec104Wrapper.getIdOrIOA())){
-                            SocketServiceCenter.updateAllClient(SocketIoEvent.IEC104ValueChange, iec104Wrapper);
-                        }else{
-                            log.error("【IEC104Mapper】iec104匹配失败[{}]",iec104Wrapper.toString());
-                        }
-                        break;
-                    case "dnp3":
-                        DNP3Wrapper dnp3Wrapper = ((DNP3Wrapper) objs[1]);
-                        if (isNumeric(dnp3Wrapper.getId())){
-                            SocketServiceCenter.updateAllClient(SocketIoEvent.DNP3ValueChange, dnp3Wrapper);
-                        }else{
-                            log.error("【DNP3Mapper】DNP匹配失败[{}]",dnp3Wrapper.toString());
-                        }
                 }
             }
         });
+        //电网系统解析
+        ArtDecodeUtil.registerElecStatusChangeCallback((event, obj) -> SocketServiceCenter.updateAllClient(SocketIoEvent.ELEC_STATUS_CHANGE, new ElecWrapper(event, obj)));
+    }
+
+    @Data
+    private static class ElecWrapper{
+        private String event;
+        private Object obj;
+
+        public ElecWrapper(String event, Object obj) {
+            this.event = event;
+            this.obj = obj;
+        }
     }
 
     //攻击推送限流

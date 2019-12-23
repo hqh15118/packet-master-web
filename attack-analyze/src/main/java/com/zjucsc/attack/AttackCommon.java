@@ -7,6 +7,7 @@ import com.zjucsc.attack.base.IOptAttackEntry;
 import com.zjucsc.attack.bean.*;
 import com.zjucsc.attack.common.*;
 import com.zjucsc.attack.config.S7OptCommandConfig;
+import com.zjucsc.attack.iec104.IECOpDecodeByTshark;
 import com.zjucsc.attack.modbus.ModbusOptAnalyzer;
 import com.zjucsc.attack.pn_io.PnioOptDecode;
 import com.zjucsc.attack.s7comm.S7OptAnalyzer;
@@ -24,6 +25,7 @@ import redis.clients.jedis.JedisPool;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.CookieManager;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -71,6 +73,10 @@ public class AttackCommon {
 
         //init command decode hash_map
         COMMAND_DECODE_HASH_MAP.put("s7comm",new S7OpDecode());
+        //
+        IECOpDecodeByTshark iecOpDecodeByTshark = new IECOpDecodeByTshark();
+        COMMAND_DECODE_HASH_MAP.put("104apci",iecOpDecodeByTshark);
+        COMMAND_DECODE_HASH_MAP.put("104asdu",iecOpDecodeByTshark);
     }
 
     private static ExecutorService ART_COMMAND_ATTACK_ANALYZE_SERVICE = ThreadPoolUtil.getSingleThreadPoolSizeThreadPool(10000, r -> {

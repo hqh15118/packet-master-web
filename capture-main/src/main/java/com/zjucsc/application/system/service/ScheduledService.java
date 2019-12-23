@@ -338,12 +338,10 @@ public class ScheduledService {
                 if (artValueList!=null)
                     ART_INFO_SEND_SINGLE.put(artName,new ArtGroupWrapper(artValueList, CacheUtil.getArtGroupByArtName(artName)));
             }
-            if (artValueList != null && !artName.equals("timestamp")){
-                iArtHistoryDataService.saveArtData(artName,artValueList,null);
-            }
+//            if (artValueList != null && !artName.equals("timestamp")){
+//                iArtHistoryDataService.saveArtData(artName,artValueList,null);
+//            }
         });
-        //TODO 替换一下，用批量存的方式进行存储
-        //iArtHistoryDataService.saveArtData(ART_INFO);
         ART_INFO_SEND_SINGLE.put("timestamp",
                 new ArtGroupWrapper(getDateFormat().format(new Date()),
                 "timeStamp"));
