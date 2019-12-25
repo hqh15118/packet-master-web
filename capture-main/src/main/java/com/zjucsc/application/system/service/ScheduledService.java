@@ -56,8 +56,6 @@ public class ScheduledService {
 
     @Autowired public PacketAnalyzeService packetAnalyzeService;
 
-    @Autowired private IArtHistoryDataService iArtHistoryDataService;
-
     @Autowired private DeviceMapper deviceMapper;
 
     private LinkedBlockingQueue<FvDimensionLayer> fvDimensionLayers = new LinkedBlockingQueue<>(5);
@@ -97,9 +95,6 @@ public class ScheduledService {
         if (CacheUtil.getScheduleServiceRunningState()) {
             statisticFlow();        //统计总流量，超过限制报错
             CacheUtil.updateAttackLog();  //统计攻击类型，及所占比例
-            if (Common.showArtDecodeDelay) {
-                detectDecodeMethodDelay();
-            }
         }
     }
 
@@ -109,13 +104,6 @@ public class ScheduledService {
         if (CacheUtil.getScheduleServiceRunningState()) {
             sendGraphInfo();        //工艺参数
         }
-    }
-
-    private void detectDecodeMethodDelay() {
-        Map<String,Long> map = ArtDecodeUtil.getDecodeDelayMapInfo();
-        map.forEach((s, aLong) -> {
-            System.out.println(s + " time - " + aLong);
-        });
     }
 
     @Scheduled(fixedRate = 5000)
@@ -332,16 +320,11 @@ public class ScheduledService {
 
     private void sendGraphInfo(){
         StatisticsData.ART_INFO_SEND_SINGLE.clear();
-        StatisticsData.ART_INFO.forEach((artName, artValueList) -> {
-            if (CacheUtil.isArtShow(artName)){
-                //StatisticsData.ART_INFO_SEND.put(artName, artValueList);
-                if (artValueList!=null)
-                    ART_INFO_SEND_SINGLE.put(artName,new ArtGroupWrapper(artValueList, CacheUtil.getArtGroupByArtName(artName)));
-            }
-//            if (artValueList != null && !artName.equals("timestamp")){
-//                iArtHistoryDataService.saveArtData(artName,artValueList,null);
-//            }
-        });
+        for (String showTag : CacheUtil.SHOW_GRAPH_SET) {
+            String artValue = StatisticsData.ART_INFO.get(showTag);
+            if (artValue!=null)
+                ART_INFO_SEND_SINGLE.put(showTag,new ArtGroupWrapper(artValue, CacheUtil.getArtGroupByArtName(showTag)));
+        }
         ART_INFO_SEND_SINGLE.put("timestamp",
                 new ArtGroupWrapper(getDateFormat().format(new Date()),
                 "timeStamp"));

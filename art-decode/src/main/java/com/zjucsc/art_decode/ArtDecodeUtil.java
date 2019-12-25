@@ -60,6 +60,8 @@ public final class ArtDecodeUtil {
         if (iec104Mapper != null){
             IEC104DecodeByTshark.setIEC104MapperFile(iec104Mapper);
             info = "reload iec104 mapper file";
+        }else{
+
         }
         if (dnp3Mapper != null){
             DNP3DecodeByTshark.setDNP3MapperFile(dnp3Mapper);
@@ -73,32 +75,22 @@ public final class ArtDecodeUtil {
 
     public static String getWatchVar(String option){
         switch (option){
-            case "iec_dnp":
+            case "iec_dnp_mapper":
                 return JSON.toJSONString(new Map[]{
                         IEC104DecodeByTshark.readIOA2IDMapper(),
                 }, SerializerFeature.PrettyFormat);
+            case "iec_dnp_data":
+                return JSON.toJSONString(new Map[]{
+                        iec104DecodeByTshark.getIec104ResultValueMap().getIec104ResultValueMap()
+                },SerializerFeature.PrettyFormat);
         }
-        return "invalid option {" + option + "}";
+        return "invalid option {" + option + "} valid:{iec_dnp_mapper|iec_dnp_data}";
     }
-
-    /**
-     * 各个解析模块的延时统计
-     */
-    private static HashMap<String,Long> DECODE_DELAY_WRAPPER = new HashMap<String,Long>(){
-        {
-            put("modbus",0L);put("s7comm",0L);put("pn_io",0L);put("104asdu",0L);
-            put("opcua",0L);put("dnp3",0L);put("iec101",0L);put("mms",0L);
-        }
-    };
 
     @SuppressWarnings("unchecked")
     public static Set<BaseConfig> getArtConfig(String protocolName){
         BaseArtDecode baseArtDecode = ART_DECODE_CONCURRENT_HASH_MAP.get(protocolName);
         return baseArtDecode.getArtConfigs();
-    }
-
-    public static Map<String,Long> getDecodeDelayMapInfo(){
-        return DECODE_DELAY_WRAPPER;
     }
 
     /**
@@ -112,16 +104,7 @@ public final class ArtDecodeUtil {
                                                    String protocol, FvDimensionLayer layer , Object...objs){
         IArtEntry entry = ART_DECODE_CONCURRENT_HASH_MAP.get(protocol);
         if (entry != null){
-            long timeStart = System.currentTimeMillis();
             entry.doDecode(artMap,payload,layer,objs);
-            long timeDiff = System.currentTimeMillis() - timeStart;
-            DECODE_DELAY_WRAPPER.computeIfPresent(protocol, (s, aLong) -> {
-                if (aLong < timeDiff) {
-                    return timeDiff;
-                }else{
-                    return aLong;
-                }
-            });
         }else{
             if (logger.isDebugEnabled())
             {
@@ -205,6 +188,7 @@ public final class ArtDecodeUtil {
         }
         return null ;
     }
+
 
     public interface ElecStatusChangeCallback{
         void callback(String event,Object obj);

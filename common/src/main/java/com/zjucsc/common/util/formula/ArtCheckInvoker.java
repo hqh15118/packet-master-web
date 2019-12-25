@@ -1,4 +1,4 @@
-package com.zjucsc.application.util.formula;
+package com.zjucsc.common.util.formula;
 
 import java.util.Map;
 
@@ -9,5 +9,5 @@ import java.util.Map;
  * @create_time 2019-12-02 - 12:17
  */
 public interface ArtCheckInvoker {
-    public boolean artCheck(Map artMap);
+    String artCheck(Map artMap);
 }

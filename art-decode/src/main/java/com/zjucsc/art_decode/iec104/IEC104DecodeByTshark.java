@@ -24,11 +24,14 @@ public class IEC104DecodeByTshark extends ElecBaseArtDecode<IEC104ConfigTshark> 
     private static IEC104Mapper iec104Mapper = new IEC104Mapper();
 
     //read only
-
+    private static String mapperPath = "config/104mapper";
     static {
-        setIEC104MapperFile("config/104mapper");
+        setIEC104MapperFile(mapperPath);
     }
     public static void setIEC104MapperFile(String iec104MapperFilePath){
+        if (iec104MapperFilePath == null){
+            iec104MapperFilePath = mapperPath;
+        }
         iec104Mapper.setMapperFilePath(iec104MapperFilePath);
         iec104Mapper.createMapper();
     }
@@ -46,6 +49,9 @@ public class IEC104DecodeByTshark extends ElecBaseArtDecode<IEC104ConfigTshark> 
 
     {
         singlePointValue.setSiq();
+        IEC104ConfigTshark iec104ConfigTshark = new IEC104ConfigTshark();
+        iec104ConfigTshark.setTag("无用大棒");
+        addArtConfig(iec104ConfigTshark);
     }
 
     private static class IEC104ValuesWrapper{
@@ -126,6 +132,9 @@ public class IEC104DecodeByTshark extends ElecBaseArtDecode<IEC104ConfigTshark> 
     }
 
     private void saveValueToArtMap(IEC104ConfigTshark iec104ConfigTshark,FvDimensionLayer layer,Map<String, Float> globalMap){
+        if (iec104ConfigTshark.getIpAddress() == null){
+            return;
+        }
         Float value = iecResultMapWrapper.getResultValue(iec104ConfigTshark.getIpAddress(),iec104ConfigTshark.getIoaAddress());
         if (value!=null){
             Float prevValue = globalMap.put(iec104ConfigTshark.getTag(),value);
@@ -138,7 +147,7 @@ public class IEC104DecodeByTshark extends ElecBaseArtDecode<IEC104ConfigTshark> 
     /**
      *
      * @param layersBean
-     * @return 当检测到新的值加入或者旧的值变化时候返回true
+     * @return 当报文中携带工艺参数的时候返回true
      */
     private boolean storeValidValueIntoMap(IEC104Packet.LayersBean layersBean) {
         if (typeIds == null || typeIds.length == 0){
@@ -249,6 +258,9 @@ public class IEC104DecodeByTshark extends ElecBaseArtDecode<IEC104ConfigTshark> 
         }
 
         public Float getResultValue(String ip,String ioa){
+            if (ip == null){
+                return null;
+            }
             ConcurrentHashMap<String,Float> ioa2ValueMap = iec104ResultValueMap.get(ip);
             if (ioa2ValueMap == null){
                 return null;

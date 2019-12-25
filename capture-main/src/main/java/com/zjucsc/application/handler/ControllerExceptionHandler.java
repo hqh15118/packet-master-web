@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONException;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.domain.bean.BaseResponse;
 import com.zjucsc.common.exceptions.*;
+import javassist.CannotCompileException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -86,6 +87,13 @@ public class ControllerExceptionHandler {
         printException(e);
         return BaseResponse.ERROR(e.getCode(),e.getMsg());
     }
+    
+    @ExceptionHandler(CannotCompileException.class)
+    @ResponseBody
+    public BaseResponse handleFormulaCompileException(CannotCompileException e){
+        log.error("公式配置错误",e);
+        return BaseResponse.ERROR(500,"公式配置错误");
+    }
 
     @ExceptionHandler(Exception.class)
     @ResponseBody
@@ -93,7 +101,6 @@ public class ControllerExceptionHandler {
         log.error("controller exception \n",e);
         return BaseResponse.ERROR(500,e.getMessage());
     }
-
 
     private void printException(Exception e){
         log.error("catch controller exception : \n **************\nclass : {} ; msg : {} \n**************" , e.getClass() , e.getStackTrace()[0].toString());

@@ -1,5 +1,6 @@
 package com.zjucsc.application.system.service.common_impl;
 
+import com.google.common.util.concurrent.RateLimiter;
 import com.zjucsc.application.config.Common;
 import com.zjucsc.application.config.PACKET_PROTOCOL;
 import com.zjucsc.application.config.properties.ConstantConfig;
@@ -12,6 +13,7 @@ import com.zjucsc.application.domain.non_hessian.CommandWrapper;
 import com.zjucsc.application.exception.DecodeException;
 import com.zjucsc.application.statistic.StatisticsData;
 import com.zjucsc.application.system.service.PacketAnalyzeService;
+import com.zjucsc.application.system.service.ScheduledService;
 import com.zjucsc.application.system.service.common_iservice.CapturePacketService;
 import com.zjucsc.application.system.service.hessian_iservice.IDeviceService;
 import com.zjucsc.application.tshark.capture.NewFvDimensionCallback;
@@ -23,14 +25,10 @@ import com.zjucsc.application.util.DeviceOptUtil;
 import com.zjucsc.application.util.PacketDecodeUtil;
 import com.zjucsc.application.util.ProtocolUtil;
 import com.zjucsc.art_decode.ArtDecodeUtil;
-import com.zjucsc.art_decode.dnp3.DNP3Wrapper;
 import com.zjucsc.art_decode.iec101.IEC101DecodeMain;
-import com.zjucsc.art_decode.iec104.IEC104DecodeByTshark;
-import com.zjucsc.art_decode.iec104.IEC104Wrapper;
 import com.zjucsc.attack.AttackCommon;
 import com.zjucsc.attack.bean.AttackBean;
 import com.zjucsc.attack.common.AttackTypePro;
-import com.zjucsc.base.util.limit.LimitServiceEntry;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.common.util.DBUtil;
 import com.zjucsc.common.util.ThreadPoolUtil;
@@ -63,9 +61,6 @@ import java.util.concurrent.*;
 import static com.zjucsc.application.config.Common.COMMON_THREAD_EXCEPTION_HANDLER;
 import static com.zjucsc.application.config.PACKET_PROTOCOL.*;
 import static com.zjucsc.socket_io.SocketIoEvent.REAL_TIME_PACKET_FILTER;
-import static org.apache.commons.lang3.StringUtils.abbreviate;
-import static org.apache.commons.lang3.StringUtils.isNumeric;
-import static org.apache.commons.lang3.StringUtils.swapCase;
 
 @Slf4j
 @Service
@@ -126,23 +121,24 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         });
 
         ArtDecodeUtil.registerPacketValidCallback((argName, value, layer, objs) -> {
-            ArtPacketDetail artPacketDetail = ArtPacketDetail.newOne(layer);
-            artPacketDetail.setValue(value);
-            artPacketDetail.setArtName(argName);
-            ART_PACKET.sendMsg(artPacketDetail);
-            //iArtPacketService.insertArtPacket(argName,artPacketDetail);
-            Map<String, Float> res = StatisticsData.getGlobalArtMap();
-            AttackCommon.appendArtAnalyze(res, layer);
-            //分析结果
-            //当有工艺参数更新的时候更新发送参数值
-            StatisticsData.addOrUpdateArtData(argName,String.valueOf(value));
-            if (objs.length > 0) {
-                String event = (String) objs[0];
-                switch (event){
-                    case "opcda":
-                        //TODO SAVE TO DB
-                        break;
+            if (layer != null){
+                ArtPacketDetail artPacketDetail = ArtPacketDetail.newOne(layer);
+                artPacketDetail.setValue(value);
+                artPacketDetail.setArtName(argName);
+                ART_PACKET.sendMsg(artPacketDetail);
+                //分析结果
+                //当有工艺参数更新的时候更新发送参数值
+                StatisticsData.addOrUpdateArtData(argName,String.valueOf(value));
+                if (objs.length > 0) {
+                    String event = (String) objs[0];
+                    switch (event){
+                        case "opcda":
+                            //TODO SAVE TO DB
+                            break;
+                    }
                 }
+            }else{
+
             }
         });
         //电网系统解析
@@ -160,12 +156,6 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         }
     }
 
-    //攻击推送限流
-    private final LimitServiceEntry<AttackBean> LIMIT_SERVICE_ENTRY = new LimitServiceEntry<>
-            (Executors.newScheduledThreadPool(1), t -> {
-                SocketServiceCenter.updateAllClient(SocketIoEvent.ATTACK_INFO,t);
-            },2,4, TimeUnit.SECONDS);
-
     private void processAttackInfo(AttackBean attackBean) {
         if (attackBean.getAttackType().equals(AttackTypePro.ART_EXCEPTION)){
             //工艺参数攻击
@@ -176,8 +166,42 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         }
     }
 
+    private final ArtExceptionRateLimiter rateLimiter = new ArtExceptionRateLimiter(3);
+
+    /**
+     * 同一种攻击每秒钟限制推送次数
+     */
+    public static final class ArtExceptionRateLimiter{
+        private ConcurrentSkipListSet<String> attackBeanMap = new ConcurrentSkipListSet<>();
+        private ScheduledExecutorService scheduledService = Executors.newScheduledThreadPool(1);
+        private RateLimiter rateLimiter;
+        public ArtExceptionRateLimiter(int limit){
+            scheduledService.scheduleAtFixedRate(new Runnable() {
+                @Override
+                public void run() {
+                    attackBeanMap.clear();
+                }
+            },0,3,TimeUnit.SECONDS);
+            rateLimiter = RateLimiter.create(limit);
+        }
+        public boolean appendAttackBean(AttackBean attackBean){
+            if (rateLimiter.tryAcquire()){
+                attackBeanMap.add(attackBean.getAttackInfo());
+                return true;
+            }else{
+                if (!attackBeanMap.contains(attackBean.getAttackInfo())){
+                    attackBeanMap.add(attackBean.getAttackInfo());
+                    return true;
+                }
+                return false;
+            }
+        }
+    }
+
     private void appendArtLimitAttackBean(AttackBean attackBean){
-        LIMIT_SERVICE_ENTRY.appendInstance(attackBean);
+        if (rateLimiter.appendAttackBean(attackBean)){
+            SocketServiceCenter.updateAllClient(SocketIoEvent.ATTACK_INFO,attackBean);
+        }
     }
 
     private void statisticsBadPacket(String deviceNumber){
@@ -974,6 +998,7 @@ public class CapturePacketServiceImpl implements CapturePacketService<String,Str
         @Override
         public FvDimensionLayer handle(Object t) {
             FvDimensionLayer layer = ((FvDimensionLayer) t);
+            AttackCommon.appendArtAnalyze(StatisticsData.getGlobalArtMap(), layer);
             AttackCommon.appendOptCommandDecode(layer);
             //工艺参数分析
             byte[] tcpPayload = layer.getUseTcpPayload();

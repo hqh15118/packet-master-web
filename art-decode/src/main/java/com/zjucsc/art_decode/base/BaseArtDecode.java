@@ -73,6 +73,7 @@ public abstract class BaseArtDecode<T extends BaseConfig> implements IArtDecode<
             for (T config : configs) {
                 if (layer instanceof IEC104Packet.LayersBean || layer instanceof Dnp3_0Packet.LayersBean){
                     decode(config, map, payload, layer, configIndex);
+                    configIndex++;
                     continue;
                 }
                 if (layer.eth_src[0].equals(config.getDeviceMac()) || layer.eth_dst[0].equals(config.getDeviceMac())){

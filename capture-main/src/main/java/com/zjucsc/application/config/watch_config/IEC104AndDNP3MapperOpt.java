@@ -11,14 +11,18 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class IEC104AndDNP3MapperOpt {
 
-
     @WriteOperation
     public String reloadMapperFile(String iec104 ,String dnp3){
         return ArtDecodeUtil.load104AndDNPMapperFile(iec104, dnp3);
     }
 
     @ReadOperation
-    public String getOptCommandConfigs(){
-        return ArtDecodeUtil.getWatchVar("iec_dnp");
+    public String getIECDNPDecodeResult(){
+        return ArtDecodeUtil.getWatchVar("iec_dnp_data");
+    }
+
+    @WriteOperation
+    public String getIECDNPMapper(){
+        return ArtDecodeUtil.getWatchVar("iec_dnp_mapper");
     }
 }

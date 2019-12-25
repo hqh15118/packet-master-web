@@ -1,4 +1,4 @@
-package com.zjucsc.application.util.formula;
+package com.zjucsc.common.util.formula;
 
 import javassist.CannotCompileException;
 import javassist.CtClass;
@@ -26,7 +26,7 @@ public class FormulaUtilPlus extends AbstractFormulaUtil{
     protected void rebuildFormulaMethod(CtClass reloadClassCt,String code) {
         try {
             //往目标类中添加接口，接口方法名和之前添加的method的方法名相同
-            CtClass artCheckCtInterface = pool.getCtClass("com.tonggong.javassist_test.ArtCheckInvoker");
+            CtClass artCheckCtInterface = pool.getCtClass("com.zjucsc.common.util.formula.ArtCheckInvoker");
             reloadClassCt.setInterfaces(new CtClass[]{artCheckCtInterface});
             //写入本地文件
             reloadClassCt.writeFile("hot_swap");

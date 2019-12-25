@@ -1,4 +1,4 @@
-package com.zjucsc.application.util.formula;
+package com.zjucsc.common.util.formula;
 
 import javassist.CannotCompileException;
 import javassist.CtClass;

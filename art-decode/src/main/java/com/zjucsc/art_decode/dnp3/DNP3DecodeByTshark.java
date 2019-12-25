@@ -40,6 +40,12 @@ public class DNP3DecodeByTshark extends ElecBaseArtDecode<DNP3ConfigByTshark> {
         }
     };
 
+    {
+        DNP3ConfigByTshark dnp3ConfigByTshark = new DNP3ConfigByTshark();
+        dnp3ConfigByTshark.setTag("无用大棒");
+        addArtConfig(dnp3ConfigByTshark);
+    }
+
     private int dnpPointIndex;
 
     private DNP3ValueWrapper binaryOutputPointValue = new DNP3ValueWrapper(),
@@ -207,6 +213,9 @@ public class DNP3DecodeByTshark extends ElecBaseArtDecode<DNP3ConfigByTshark> {
         }
 
         public Float getResultValue(String ip,String type,String pointIndex){
+            if (type == null){
+                return null;
+            }
             ConcurrentHashMap<String, ConcurrentHashMap<String, Float>> type2PointIndex2ValueMap = dnp3ResultValue.get(ip);
             if (type2PointIndex2ValueMap == null){
                 return null;

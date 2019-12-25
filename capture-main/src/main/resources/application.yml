@@ -36,7 +36,7 @@ pre-processors:
  #    - s7comm
  #    - modbus
     - iec104
-    - dnp3_0
+ #   - dnp3_0
 #     - pnio
 #     - cip
 #     - opcua

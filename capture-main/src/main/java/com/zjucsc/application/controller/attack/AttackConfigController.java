@@ -19,6 +19,7 @@ import com.zjucsc.attack.AttackCommon;
 import com.zjucsc.attack.config.*;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import io.swagger.annotations.ApiOperation;
+import javassist.CannotCompileException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +27,10 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 /**
  * @author hongqianhui
@@ -130,37 +134,29 @@ public class AttackConfigController {
     @ApiOperation("添加/修改工艺参数攻击监测配置")
     @PostMapping("art_attack_config")
     public BaseResponse configArtAttack(@RequestBody ArtAttackConfig artAttackConfig){
-//        List<ArtAttack2Config> configs = artAttackConfig.getRule();
-//        List<String> list = new ArrayList<>();
-//        for (ArtAttack2Config config : configs) {
-//            list.add(config.getValue());
-//        }
-//        int id = ((Integer) packetInfoMapper.saveOrUpdateArtAttackConfig(artAttackConfig).data);
-//        AttackCommon.addArtAttackAnalyzeConfig(new ArtAttackAnalyzeConfig(list,
-//                artAttackConfig.getDetail(),artAttackConfig.isEnable(),id));
         packetInfoMapper.saveOrUpdateArtAttackConfig(artAttackConfig);
         return BaseResponse.OK();
     }
 
-    public static void addArtAttackConfig2Cache( List<ArtAttackConfigDB> configDBS) throws ProtocolIdNotValidException {
+    public static void addArtAttackConfig2Cache( List<ArtAttackConfigDB> configDBS) throws ProtocolIdNotValidException, CannotCompileException {
+        Map<String,ArrayList<String>> map = new HashMap<>();
         for (ArtAttackConfigDB configDB : configDBS) {
             if (configDB.isEnable()){
-                List<String> strings = new ArrayList<>();
-                List<ArtAttack2Config> artAttack2Configs = JSON.parseArray(configDB.getRuleJson(),ArtAttack2Config.class);
-                for (ArtAttack2Config artAttack2Config : artAttack2Configs)
-                {
-                    strings.add(artAttack2Config.getValue());
-                }
                 String protocol = CacheUtil.convertIdToName(configDB.getProtocolId());
-                AttackCommon.addArtAttackAnalyzeConfig(protocol,new ArtAttackAnalyzeConfig(strings,configDB.getDetail(),
-                        configDB.isEnable(),configDB.getId()));
+                List<String> formulaList = map.computeIfAbsent(protocol, s -> new ArrayList<>());
+                formulaList.add(configDB.getRuleString());
+//                AttackCommon.addArtAttackAnalyzeConfig(protocol,new ArtAttackAnalyzeConfig(strings,configDB.getDetail(),
+//                        configDB.isEnable(),configDB.getId()));
             }
+        }
+        for (Map.Entry<String, ArrayList<String>> entry : map.entrySet()) {
+            AttackCommon.changeArtArgAttackFormulaStatus(true,entry.getKey(),entry.getValue().toArray(new String[0]));
         }
     }
 
     @ApiOperation("修改攻击配置状态")
     @PostMapping("change_attack_config_state")
-    public BaseResponse changeAttackConfigState(@RequestBody AttackConfigState attackConfigState) throws ProtocolIdNotValidException {
+    public BaseResponse changeAttackConfigState(@RequestBody AttackConfigState attackConfigState) throws ProtocolIdNotValidException, CannotCompileException {
         packetInfoMapper.updateArtAttackConfigState(attackConfigState.getId(),attackConfigState.isEnable());
         List<ArtAttackConfigDB> configDBS = packetInfoMapper.selectArtAttackConfigPaged(999,1);
         AttackCommon.removeAllArtAttackAnalyzeConfig(attackConfigState.getProtocol());

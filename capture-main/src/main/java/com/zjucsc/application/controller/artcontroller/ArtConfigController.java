@@ -41,7 +41,6 @@ public class ArtConfigController {
 
     @Autowired private IArtConfigService iArtConfigService;
 
-
     @ApiOperation("添加工艺参数配置，artConfig > 0表示更新；不填表示添加新的配置，顺序返回记录的ID列表")
     @PostMapping("new_config")
     @Refactor("20191023")

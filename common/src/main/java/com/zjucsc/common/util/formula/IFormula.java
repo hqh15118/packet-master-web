@@ -1,4 +1,6 @@
-package com.zjucsc.application.util.formula;
+package com.zjucsc.common.util.formula;
+
+import javassist.CannotCompileException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
@@ -14,7 +16,7 @@ public interface IFormula {
 
     Object invokeMethod(Map<String, Float> artMap) throws InvocationTargetException, IllegalAccessException;
 
-    void addFormula(String... formula);
+    void addFormula(String... formula) throws CannotCompileException;
 
-    boolean removeFormula(String formula);
+    boolean removeFormula(String... formula) throws CannotCompileException;
 }

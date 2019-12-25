@@ -48,6 +48,9 @@ public class DNP3Mapper extends AbstractMapper {
 
     @Override
     public String getIDByIPAndTypeAndPointIndex(String ip, String type, String pointIndex) throws MapperFailException{
+        if (ip == null){
+            return null;
+        }
         Map<String,ConcurrentHashMap<String,String>> type2PointerIndex2IdMap = ip2Type2PointerIndex2IdMap.get(ip);
         if (type2PointerIndex2IdMap == null){
             //throw new MapperFailException("DNP3 mapper文件中找不到对应的IP{" + ip + "}");

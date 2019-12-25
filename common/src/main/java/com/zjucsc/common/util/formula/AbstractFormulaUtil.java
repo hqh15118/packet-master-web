@@ -1,4 +1,4 @@
-package com.zjucsc.application.util.formula;
+package com.zjucsc.common.util.formula;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
@@ -13,8 +13,7 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
-import java.util.Date;
-import java.util.Random;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -67,7 +66,7 @@ public abstract class AbstractFormulaUtil implements IFormula{
      * @return
      */
     private String getClassName(){
-        return "com.tonggong.ArtCheckClass_" + new Date().toString();
+        return "com.zjucsc.common.util.formula.ArtCheckClass_" + System.currentTimeMillis();
     }
 
     /**
@@ -77,7 +76,7 @@ public abstract class AbstractFormulaUtil implements IFormula{
      */
     protected abstract void rebuildFormulaMethod(CtClass rebuildClass,String code);
 
-    protected CtClass reloadClass(String code){
+    protected CtClass reloadClass(String code) throws CannotCompileException {
         //每次要重新创建一个class，旧的cc无法被修改，可以通过
         String className = getClassName();
         //删除旧的class文件
@@ -91,13 +90,9 @@ public abstract class AbstractFormulaUtil implements IFormula{
         lastName = className;
         //创建新的class_ct
         cc = pool.makeClass(className);
-        try {
-            //创建新的method(目标方法)
-            CtMethod checkArtArgMethod = CtMethod.make(code,cc);
-            cc.addMethod(checkArtArgMethod);
-        } catch (CannotCompileException e) {
-            e.printStackTrace();
-        }
+        //创建新的method(目标方法)
+        CtMethod checkArtArgMethod = CtMethod.make(code,cc);
+        cc.addMethod(checkArtArgMethod);
         return cc;
     }
 
@@ -121,45 +116,68 @@ public abstract class AbstractFormulaUtil implements IFormula{
      * @return
      */
     @Override
-    public void addFormula(String... formula) {
+    public void addFormula(String... formula) throws CannotCompileException {
         for (String s : formula) {
             FORMULA_MAP.put(s,appendIfStatement(processPureFormula(s)));
         }
-        String resultCode = appendStartAndEnd(FORMULA_MAP.values());
+        doRebuildFormula(FORMULA_MAP);
+    }
+
+    private void doRebuildFormula(Map<String,String> formulaMap) throws CannotCompileException {
+        String resultCode = appendStartAndEnd(formulaMap.values());
         CtClass ctClass = reloadClass(resultCode);
         rebuildFormulaMethod(ctClass,resultCode);
         ctClass.detach();
     }
 
+
+
     private static String appendStartAndEnd(Collection<String> formulas){
         StringBuilder sb = new StringBuilder();
-        sb.append("public boolean artCheck(java.util.Map artMap){\n");
+        sb.append("public String artCheck(java.util.Map artMap){\nFloat value = null;");
         for (String formula : formulas) {
             sb.append(formula);
         }
-        sb.append("return false;}");
+        sb.append("return null;}");
         return sb.toString();
     }
 
-    private String appendIfStatement(String processedFormula){
-        return "if(" + processedFormula + ")\n"+"  return true;\n";
+    private String appendIfStatement(FormulaWrapper formulaWrapper){
+        return "if(" + formulaWrapper.processedFormula + ")\n"+"  return \"" + formulaWrapper.rawFormula + "\";\n";
     }
 
-    private String processPureFormula(String formula){
+    private FormulaWrapper processPureFormula(String formula){
         //（[水位1]>10 & [电压1]=105) & [水位2]=10 --> （[水位1]>10 && [电压1]==105) && [水位2]==10
-        formula = formula.replace("（","(")
-                .replace("）","(")
-                .replace("&","&&")
-                .replace("|","||")
-                .replace("=","==");
+//        formula = formula.replace("（","(")
+//                .replace("）","(")
+//                .replace("&","&&")
+//                .replace("|","||")
+//                .replace("=","==");
         //（[水位1]>10 & [电压1]=105) & [水位2]=10 --> （[水位1]>10 && [电压1]==105) && [水位2]==10 -->
         //(artMap.get(水位1)>10&&artMap.get(电压1)=105)&&artMap.get(水位2)==10
-        return formula.replace("[","((Float)artMap.get(\"")
-                .replace("]","\")).floatValue()");
+        return new FormulaWrapper(formula,formula.replace("[","((value=(Float)artMap.get(\"")
+                .replace("]","\")))!=null && value.floatValue()"));
+    }
+
+    private static class FormulaWrapper{
+        public String rawFormula;
+        public String processedFormula;
+
+        public FormulaWrapper(String rawFormula, String processedFormula) {
+            this.rawFormula = rawFormula;
+            this.processedFormula = processedFormula;
+        }
     }
 
     @Override
-    public boolean removeFormula(String formula){
-        return FORMULA_MAP.remove(formula) == null;
+    public boolean removeFormula(String... formulas) throws CannotCompileException {
+        boolean change = false;
+        for (String formula : formulas) {
+            change |= FORMULA_MAP.remove(formula) != null;
+        }
+        if (change){
+            doRebuildFormula(FORMULA_MAP);
+        }
+        return change;
     }
 }

@@ -15,7 +15,10 @@ import com.zjucsc.attack.s7comm.S7OpDecode;
 import com.zjucsc.attack.util.ArtOptAttackUtil;
 import com.zjucsc.common.bean.ThreadPoolInfoWrapper;
 import com.zjucsc.common.util.ThreadPoolUtil;
+import com.zjucsc.common.util.formula.AbstractFormulaUtil;
+import com.zjucsc.common.util.formula.FormulaUtilPlus;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
+import javassist.CannotCompileException;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,9 +28,11 @@ import redis.clients.jedis.JedisPool;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.CookieManager;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.Function;
 
 
 /**
@@ -56,6 +61,9 @@ public class AttackCommon {
      * 【协议名字，该协议对应的公式】
      */
     private final static Map<String,Set<ArtAttackAnalyzeConfig>> ART_ATTACK_ANALYZE_CONFIGS
+            = new ConcurrentHashMap<>();
+
+    private final static Map<String, AbstractFormulaUtil> ART_ATTACK_ANALYZE_CONFIGS_PLUS
             = new ConcurrentHashMap<>();
 
     private static final HashMap<Integer, BaseOptAnalyzer> OPT_ATTACK_DECODE_CONCURRENT_HASH_MAP
@@ -228,13 +236,33 @@ public class AttackCommon {
         }
     }
 
-
+    /**
+     * 添加旧的工艺参数攻击判断
+     * @param protocol 协议
+     * @param artAttackAnalyzeConfig 工艺操作配置
+     */
     public static void addArtAttackAnalyzeConfig(String protocol,ArtAttackAnalyzeConfig artAttackAnalyzeConfig){
-        Set<ArtAttackAnalyzeConfig> configSet = ART_ATTACK_ANALYZE_CONFIGS.putIfAbsent(protocol,new ConcurrentSkipListSet<>());
-        configSet = ART_ATTACK_ANALYZE_CONFIGS.get(protocol);
-        if (configSet!=null){
-            configSet.remove(artAttackAnalyzeConfig);
-            configSet.add(artAttackAnalyzeConfig);
+        Set<ArtAttackAnalyzeConfig> configSet = ART_ATTACK_ANALYZE_CONFIGS.computeIfAbsent(protocol, s -> new ConcurrentSkipListSet<>());
+        configSet.remove(artAttackAnalyzeConfig);
+        configSet.add(artAttackAnalyzeConfig);
+    }
+
+    /**
+     * 使能工艺参数异常检测公式，只有使能时才需要重建class
+     * @param protocol
+     * @param formula
+     */
+    public static void changeArtArgAttackFormulaStatus(boolean enable,String protocol,String...formula) throws CannotCompileException {
+        AbstractFormulaUtil formulaUtil = ART_ATTACK_ANALYZE_CONFIGS_PLUS.computeIfAbsent(protocol, new Function<String, AbstractFormulaUtil>() {
+            @Override
+            public AbstractFormulaUtil apply(String formula) {
+                return new FormulaUtilPlus();
+            }
+        });
+        if (enable){
+            formulaUtil.addFormula(formula);
+        }else{
+            formulaUtil.removeFormula(formula);
         }
     }
 
@@ -264,10 +292,11 @@ public class AttackCommon {
     }
 
     public static void removeAllArtAttackAnalyzeConfig(String protocol){
-        Set<ArtAttackAnalyzeConfig> configSet = ART_ATTACK_ANALYZE_CONFIGS.get(protocol);
-        if (configSet!=null){
-            configSet.clear();
-        }
+//        Set<ArtAttackAnalyzeConfig> configSet = ART_ATTACK_ANALYZE_CONFIGS.get(protocol);
+//        if (configSet!=null){
+//            configSet.clear();
+//        }
+        ART_ATTACK_ANALYZE_CONFIGS_PLUS.remove(protocol);
     }
 
     public static void removeArtAttackAnalyzeConfig(String protocol,ArtAttackAnalyzeConfig artAttackAnalyzeConfig){
@@ -277,21 +306,23 @@ public class AttackCommon {
         }
     }
 
-
     /**
      * 工艺参数攻击检测
      * @param techmap
      */
     public static void appendArtAnalyze( Map<String,Float> techmap,FvDimensionLayer layer){
-        Set<ArtAttackAnalyzeConfig> expressionSet = ART_ATTACK_ANALYZE_CONFIGS.get(layer.protocol);
-        if (expressionSet!=null) {
-            for (ArtAttackAnalyzeConfig artAttackAnalyzeConfig : expressionSet) {
-                if (artAttackAnalyzeConfig.isEnable()) {
-                    doAppendArtAnalyze(artAttackAnalyzeConfig.getExpression(),
-                            techmap,
-                            artAttackAnalyzeConfig.getDescription(),
-                            layer);
+        AbstractFormulaUtil formulaUtil = ART_ATTACK_ANALYZE_CONFIGS_PLUS.get(layer.protocol);
+        if (formulaUtil!=null){
+            try {
+                String res = (String)formulaUtil.invokeMethod(techmap);
+                if (res!=null){
+                    AttackCommon.appendFvDimensionError(AttackBean.builder()
+                            .attackType(AttackTypePro.ART_EXCEPTION)
+                            .fvDimension(layer)
+                            .attackInfo(res).build(),layer);
                 }
+            } catch (InvocationTargetException | IllegalAccessException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -314,13 +345,6 @@ public class AttackCommon {
                 }
             });
         }
-    }
-
-    private static void doAppendArtAnalyze(List<String> expression ,
-                                           Map<String,Float> techmap ,
-                                           String description,
-                                           FvDimensionLayer layer){
-        ART_ATTACK_ANALYZE_SERVICE.execute(new ArtAttackAnalyzeTask(expression, techmap, description , layer));
     }
 
     /**

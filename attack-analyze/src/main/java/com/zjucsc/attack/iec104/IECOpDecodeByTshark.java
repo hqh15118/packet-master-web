@@ -27,7 +27,7 @@ public class IECOpDecodeByTshark extends AbstractOptCommandAttackEntry<IEC104OpN
                 int onOrOff = Integer.decode(iec104Packet.SCO[0]) & 0x1;
                 sb.delete(0,sb.length());
                 commandCallback(sb.append(opNameConfig.getOpName()).
-                        append("[IOA]").append(String.valueOf(onOrOff == 0?"OFF":"ON"))
+                        append("[IOA]").append(ioa).append(String.valueOf(onOrOff == 0?"OFF":"ON"))
                         .toString(),iec104Packet);
             }
         }

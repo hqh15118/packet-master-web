@@ -30,6 +30,7 @@ import com.zjucsc.common.util.PrinterUtil;
 import com.zjucsc.common.exceptions.ProtocolIdNotValidException;
 import com.zjucsc.socket_io.*;
 import com.zjucsc.tshark.TsharkCommon;
+import javassist.CannotCompileException;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -199,9 +200,15 @@ public class InitConfigurationService implements ApplicationRunner {
          ***************************/
         PrinterUtil.printMsg("art decode end --> art attack start");
         List<ArtAttackConfigDB> configDBS = packetInfoMapper.selectArtAttackConfigPaged(999,1);
+        try {
+            AttackConfigController.addArtAttackConfig2Cache(configDBS);
+        } catch (CannotCompileException e) {
+            e.printStackTrace();
+        }
 
-        AttackConfigController.addArtAttackConfig2Cache(configDBS);
-
+        /****************************
+         * 初始化工控协议（设备筛选的时候使用）
+         ***************************/
         CacheUtil.initIProtocol(preProcessor.getI_protocols());
 
         /*****************************
