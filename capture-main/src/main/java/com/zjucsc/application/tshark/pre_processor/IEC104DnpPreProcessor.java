@@ -31,7 +31,7 @@ public class IEC104DnpPreProcessor extends MultiPreProcessor {
 
     @Override
     public String[] protocolFilterField() {
-        return new String[]{"104apci or 104asdu","dnp3"};
+        return new String[]{"104apci","dnp3"};
     }
 
     @Override

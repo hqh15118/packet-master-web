@@ -34,15 +34,17 @@ public final class ArtDecodeUtil {
     public static ArtData artData = new ArtData();
     public static ValidPacketCallback validPacketCallback;
     public static ElecStatusChangeCallback elecStatusChangeCallback;
+
     private static final HashMap<String, BaseArtDecode> ART_DECODE_CONCURRENT_HASH_MAP
             = new HashMap<>(10);
 
     private static IEC104DecodeByTshark iec104DecodeByTshark;
     private static DNP3DecodeByTshark dnp3DecodeByTshark;
-    /**
-     * 初始化
-     */
+
     public static void init(){
+        /**
+         * 初始化
+         */
         ART_DECODE_CONCURRENT_HASH_MAP.put("modbus",new ModbusDecode());
         ART_DECODE_CONCURRENT_HASH_MAP.put("s7comm",new S7Decode());
         ART_DECODE_CONCURRENT_HASH_MAP.put("pn_io",new PnioDecode());

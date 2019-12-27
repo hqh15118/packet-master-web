@@ -22,9 +22,13 @@ public abstract class ExceptionSafeRunnable<T> implements Runnable {
         try{
             run(t);
         }catch (RuntimeException e){
-            Thread thread = Thread.currentThread();
-            logger.error("ERROR Thread [name = {},priority = {},groupName = {}]" ,
-                    thread.getName(),thread.getPriority(),thread.getThreadGroup().getName() , e);
+            exceptionRiseProcess(t,e);
         }
+    }
+
+    protected void exceptionRiseProcess(T t,RuntimeException e){
+        Thread thread = Thread.currentThread();
+        logger.error("ERROR Thread [name = {},priority = {},groupName = {}]" ,
+                thread.getName(),thread.getPriority(),thread.getThreadGroup().getName() , e);
     }
 }

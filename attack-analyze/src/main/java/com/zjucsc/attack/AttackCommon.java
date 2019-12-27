@@ -85,6 +85,7 @@ public class AttackCommon {
         IECOpDecodeByTshark iecOpDecodeByTshark = new IECOpDecodeByTshark();
         COMMAND_DECODE_HASH_MAP.put("104apci",iecOpDecodeByTshark);
         COMMAND_DECODE_HASH_MAP.put("104asdu",iecOpDecodeByTshark);
+        //
     }
 
     private static ExecutorService ART_COMMAND_ATTACK_ANALYZE_SERVICE = ThreadPoolUtil.getSingleThreadPoolSizeThreadPool(10000, r -> {
@@ -139,16 +140,6 @@ public class AttackCommon {
                 thread.setName("-opt-command-analyze-service-");
                 thread.setUncaughtExceptionHandler((t, e) -> {
                     logger.error("error in opt-command-service-thread ",e);
-                });
-                return thread;
-            });
-
-    private static ExecutorService OPT_COMMAND_ATTACK_ANALYZE_SERVICE = Executors.newFixedThreadPool(1,
-            r -> {
-                Thread thread = new Thread(r);
-                thread.setName("-opt-command-attack-analyze-service-");
-                thread.setUncaughtExceptionHandler((t, e) -> {
-                    logger.error("error in opt-command-attack-service-thread ",e);
                 });
                 return thread;
             });
@@ -277,11 +268,14 @@ public class AttackCommon {
             AbstractOptCommandAttackEntry<BaseOpName> abstractOptCommandAttackEntry = COMMAND_DECODE_HASH_MAP.get(layer.protocol);
             if (abstractOptCommandAttackEntry!=null){
                 OPT_COMMAND_ANALYZE_SERVICE.execute(()->{
+                    int index = 0;
                     for (BaseOpName baseOpName : baseOpNames) {
                         if (baseOpName.isEnable()){
-                            abstractOptCommandAttackEntry.analyze(layer,baseOpName);
+                            abstractOptCommandAttackEntry.analyze(layer,baseOpName,index);
                         }
+                        index++;
                     }
+                    abstractOptCommandAttackEntry.afterRoundDecode();
                 });
             }
         }

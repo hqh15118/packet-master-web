@@ -33,9 +33,9 @@ pre-processors:
 #  list[6] : opcua
 #【需要开启的tshark进程（需要开启的去掉#）】
   list :
- #    - s7comm
+     - s7comm
  #    - modbus
-    - iec104
+ #   - iec104
  #   - dnp3_0
 #     - pnio
 #     - cip
@@ -57,7 +57,7 @@ pre-processors:
 #【s7comm默认是非TCP，TCP将下面修改为TCP】
 tshark-config:
   modbus_filter : tcp
-  s7comm_filter : tcp
+  s7comm_filter : not tcp
 
 #【hessian的URL】
 hessian-config:

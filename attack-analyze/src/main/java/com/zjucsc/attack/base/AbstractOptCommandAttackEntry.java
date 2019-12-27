@@ -8,4 +8,8 @@ public abstract class AbstractOptCommandAttackEntry<T extends BaseOpName> implem
     protected void commandCallback(String command, FvDimensionLayer layer , Object...objs){
         AttackCommon.appendCommandFvDimensionPacket(command,layer,objs);
     }
+
+    public void afterRoundDecode(){
+
+    }
 }

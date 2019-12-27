@@ -1,0 +1,9 @@
+[
+    {
+        "ipAddress":"10.30.11.200",
+        "ioaAddress":"24592",
+        "enable":true,
+        "opName":"开关2221操作",
+        "protocol":"104asdu"
+    }
+]

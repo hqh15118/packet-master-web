@@ -1,5 +1,6 @@
 package com.zjucsc.application.task;
 
+import com.alibaba.fastjson.JSON;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.zjucsc.application.config.*;
 import com.zjucsc.application.config.auth.Auth;
@@ -23,6 +24,7 @@ import com.zjucsc.attack.AttackCommon;
 import com.zjucsc.attack.bean.BaseOpName;
 import com.zjucsc.attack.bean.BaseOptConfig;
 import com.zjucsc.attack.config.S7OptCommandConfig;
+import com.zjucsc.attack.opname.IEC104OpNameByTshark;
 import com.zjucsc.attack.util.ArtOptAttackUtil;
 import com.zjucsc.base.util.SpringContextUtil;
 import com.zjucsc.common.util.ByteUtil;
@@ -38,9 +40,13 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 import static com.zjucsc.application.util.CacheUtil.*;
@@ -263,6 +269,21 @@ public class InitConfigurationService implements ApplicationRunner {
          ************************************/
         List<BaseOpName> s7OptNameList = artOptNameMapper.selectBatch();
         ArtOptAttackUtil.resetOpName2OptConfig(s7OptNameList);
+
+        //104apci command init!!!
+        log.info("========初始化104配置========");
+        try {
+            List<String> allLines = Files.readAllLines(Paths.get("config/104command.json"));
+            StringBuilder sb = new StringBuilder();
+            for (String allLine : allLines) {
+                sb.append(allLine);
+            }
+            List<IEC104OpNameByTshark> iec104OpNameByTsharks = JSON.parseArray(sb.toString(),IEC104OpNameByTshark.class);
+            ArtOptAttackUtil.resetOpName2OptConfig(iec104OpNameByTsharks);
+        } catch (IOException e) {
+            log.error("104初始化配置失败",e);
+        }
+
         /*************************************
          * 加载操作指令公式
          ************************************/

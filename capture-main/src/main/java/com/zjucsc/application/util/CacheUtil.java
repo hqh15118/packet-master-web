@@ -647,7 +647,7 @@ public class CacheUtil {
         ALL_DEVICES.clear();
     }
 
-    public static void removeAllDeviceListByMacAddress(String deviceTag){
+    public static void removeDeviceByTag(String deviceTag){
         ALL_DEVICES.remove(deviceTag);
     }
 
@@ -664,48 +664,44 @@ public class CacheUtil {
      * @return 新增之前的设备，如果不存在为null
      */
     public static Device autoAddDevice(FvDimensionLayer layer){
-//        Device dstDevice = null;
-//        String deviceTag = layer.ip_dst[0].equals("--") ? layer.eth_dst[0] : layer.ip_dst[0];
-//        if (!ALL_DEVICES.containsKey(deviceTag)){
-//            if (!layer.eth_dst[0].equals("ff:ff:ff:ff:ff:ff") && !layer.ip_dst[0].equals("0.0.0.0")
-//            && !layer.ip_dst[0].equals("255.255.255.255")) {
-//                //非广播mac地址
-//                dstDevice = createDevice更新(layer);
-//                ALL_DEVICES.put(dstDevice.getDeviceTag(), dstDevice);
-//                //new device
-//                CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(dstDevice.getDeviceNumber(), dstDevice.getDeviceTag());
-//                CommonCacheUtil.addDeviceNumberToName(dstDevice.getDeviceNumber(), dstDevice.getDeviceInfo());
-//            }
-//        }
+        /**
+            是否是有效报文？
+
+
+
+
+         */
         if (/*CommonCacheUtil.iProtocolExist(layer.protocol) && */DeviceOptUtil.validPacketInfo(layer)){
             String deviceTag = DeviceOptUtil.getSrcDeviceTag(layer);
             Device srcDevice;
-            if (((ALL_DEVICES.putIfAbsent(deviceTag,(srcDevice = createDeviceInverse(layer, deviceTag)))) == null/*不存在该设备tag*/)
-                &&
-                ALL_MAC_ADDRESS.putIfAbsent(layer.eth_src[0],"") == null/*未存过该MAC地址*/) {
-                //缓存中的设备名和设备TAG
-                addOrUpdateDeviceNumberAndTAG(srcDevice.getDeviceNumber(),srcDevice.getDeviceTag());
-                //缓存找那个的设备Number和Name更新
-                addDeviceNumberToName(srcDevice.getDeviceNumber(),srcDevice.getDeviceInfo());
-                return srcDevice;
+            if (layer.ip_src[0].equals("--")){
+                if (ALL_MAC_ADDRESS.containsKey(layer.eth_src[0])){
+                    return null;
+                }else{
+                    if (((ALL_DEVICES.putIfAbsent(deviceTag,(srcDevice = createDeviceInverse(layer, deviceTag)))) == null/*不存在该设备tag*/)/*未存过该MAC地址*/) {
+                        //缓存中的设备名和设备TAG
+                        addOrUpdateDeviceNumberAndTAG(srcDevice.getDeviceNumber(),srcDevice.getDeviceTag());
+                        //缓存找那个的设备Number和Name更新
+                        addDeviceNumberToName(srcDevice.getDeviceNumber(),srcDevice.getDeviceInfo());
+                        //表示已经缓存过该mac
+                        ALL_MAC_ADDRESS.put(layer.eth_src[0],"");
+                        return srcDevice;
+                    }
+                }
+            }else{
+                //tag是一个IP，则添加新设备
+                if (((ALL_DEVICES.putIfAbsent(deviceTag,(srcDevice = createDeviceInverse(layer, deviceTag)))) == null/*不存在该设备tag*/)/*未存过该MAC地址*/) {
+                    //缓存中的设备名和设备TAG
+                    addOrUpdateDeviceNumberAndTAG(srcDevice.getDeviceNumber(),srcDevice.getDeviceTag());
+                    //缓存找那个的设备Number和Name更新
+                    addDeviceNumberToName(srcDevice.getDeviceNumber(),srcDevice.getDeviceInfo());
+                    //表示已经缓存过该mac对应的IP
+                    ALL_MAC_ADDRESS.put(layer.eth_src[0],"");
+                    removeDeviceByTag(layer.eth_src[0]);        //删除之前因为MAC报文先到达缓存的设备
+                    return srcDevice;
+                }
             }
         }
-        /*
-        else{
-            String deviceTag = DeviceOptUtil.getSrcDeviceTag(layer);
-            CommonCacheUtil.addDropProtocol(layer.protocol);
-            if (!ALL_DEVICES.containsKey(deviceTag)) {
-                Device srcDevice;
-                //srcDevice = createDeviceInverse(layer, deviceTag);
-                //ALL_DEVICES.put(srcDevice.getDeviceTag(), srcDevice);
-                //new device
-                //CommonCacheUtil.addOrUpdateDeviceNumberAndTAG(srcDevice.getDeviceNumber(), srcDevice.getDeviceTag());
-                //CommonCacheUtil.addDeviceNumberToName(srcDevice.getDeviceNumber(), srcDevice.getDeviceInfo());
-                return addUnKnownDevice(deviceTag,layer);
-            }
-        }
-        //return new Device[]{dstDevice,srcDevice};
-        */
         return null;
     }
 

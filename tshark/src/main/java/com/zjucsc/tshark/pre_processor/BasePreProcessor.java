@@ -175,12 +175,6 @@ public abstract class BasePreProcessor implements PreProcessor {
         if (!fields.contains("tcp.dstport")){
             fields.add("tcp.dstport");
         }
-//        if (!fields.contains("eth.trailer")){
-//            fields.add("eth.trailer");
-//        }
-//        if (!fields.contains("eth.fcs")){
-//            fields.add("eth.fcs");
-//        }
         if (!fields.contains("tcp.payload")){
             fields.add("tcp.payload");
         }
@@ -251,7 +245,7 @@ public abstract class BasePreProcessor implements PreProcessor {
                             logger.info("{} exit by end finishing reading ..", this.getClass().getName());
                         }else {
                             //System.out.println("tshark process out by stop capture");
-                            logger.info("{} exit by end quiting capture service..", this.getClass().getName());
+                            logger.error("{} exit by end quiting capture service..", this.getClass().getName());
                         }
                         break;
                     }
@@ -260,7 +254,7 @@ public abstract class BasePreProcessor implements PreProcessor {
                 e.printStackTrace();
             }
         } catch (IOException e) {
-            //log.error("can not run command {} " , commandBuilder.toString()); //LOG HERE
+            logger.error("can not run command {} " , getBindCommand()); //LOG HERE
             e.printStackTrace();
         }finally {
             if (process!=null){

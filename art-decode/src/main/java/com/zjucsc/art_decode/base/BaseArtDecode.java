@@ -1,8 +1,10 @@
 package com.zjucsc.art_decode.base;
 
+import com.alibaba.fastjson.JSON;
 import com.zjucsc.art_decode.ArtDecodeUtil;
 import com.zjucsc.art_decode.iec104.IEC104Decode;
 import com.zjucsc.common.util.CommonUtil;
+import com.zjucsc.common.util.ExceptionSafeRunnable;
 import com.zjucsc.common.util.ThreadPoolUtil;
 import com.zjucsc.tshark.packets.Dnp3_0Packet;
 import com.zjucsc.tshark.packets.FvDimensionLayer;
@@ -26,7 +28,11 @@ public abstract class BaseArtDecode<T extends BaseConfig> implements IArtDecode<
     private ConcurrentSkipListSet<T> configs = new ConcurrentSkipListSet<>();
 
     protected void callback(String artName,float value,FvDimensionLayer layer,Object...objs){
-        ArtDecodeUtil.validPacketCallback.callback(artName, value, layer,objs);
+        if (ArtDecodeUtil.validPacketCallback!=null) {
+            ArtDecodeUtil.validPacketCallback.callback(artName, value, layer, objs);
+        }else{
+            System.err.println("valid packet callback not register!");
+        }
     }
 
     public Set<T> getArtConfigs(){
@@ -68,18 +74,29 @@ public abstract class BaseArtDecode<T extends BaseConfig> implements IArtDecode<
         if (configs.size() == 0){
             return;
         }
-        executorService.execute(() -> {
-            int configIndex = 0;
-            for (T config : configs) {
-                if (layer instanceof IEC104Packet.LayersBean || layer instanceof Dnp3_0Packet.LayersBean){
-                    decode(config, map, payload, layer, configIndex);
+        executorService.execute(new ExceptionSafeRunnable<FvDimensionLayer>(layer) {
+            @Override
+            public void run(FvDimensionLayer layer) {
+                int configIndex = 0;
+                for (T config : configs) {
+                    if (layer instanceof IEC104Packet.LayersBean || layer instanceof Dnp3_0Packet.LayersBean){
+                        decode(config, map, payload, layer, configIndex);
+                        configIndex++;
+                        continue;
+                    }
+                    if (layer.eth_src[0].equals(config.getDeviceMac()) || layer.eth_dst[0].equals(config.getDeviceMac())){
+                        decode(config,map,payload,layer,objs);
+                    }
                     configIndex++;
-                    continue;
                 }
-                if (layer.eth_src[0].equals(config.getDeviceMac()) || layer.eth_dst[0].equals(config.getDeviceMac())){
-                    decode(config,map,payload,layer,objs,configIndex);
-                }
-                configIndex++;
+            }
+
+            @Override
+            protected void exceptionRiseProcess(FvDimensionLayer layer, RuntimeException e) {
+                Thread thread = Thread.currentThread();
+                logger.error("ERROR Thread [name = {},priority = {},groupName = {}]," +
+                                "layer-data = {}" ,
+                        thread.getName(),thread.getPriority(),thread.getThreadGroup().getName() ,JSON.toJSON(layer) , e);
             }
         });
     }
